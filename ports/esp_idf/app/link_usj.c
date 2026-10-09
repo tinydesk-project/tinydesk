@@ -1,6 +1,7 @@
 /*
- * link_usj.c - the ESP32-C6 board: the desktop on the built-in USB
- * Serial/JTAG port, and Modbus RTU on its two RS-485 channels.
+ * link_usj.c - the desktop on the chip's built-in USB Serial/JTAG port
+ * (ports/esp32c6, ports/esp32s3), and Modbus RTU on the RS-485 lines of the
+ * board configuration.
  *
  * The port is owned exclusively by the desktop (the ESP-IDF console is
  * off). A write waits up to WRITE_TIMEOUT_MS for room: long enough that a
@@ -11,6 +12,7 @@
 #include "link.h"
 
 #include "driver/usb_serial_jtag.h"
+#include "sdkconfig.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "rs485.h"
@@ -19,6 +21,12 @@
 #define TX_BUFFER        1024
 #define WRITE_CHUNK      256          /* the driver queues whole chunks or nothing */
 #define WRITE_TIMEOUT_MS 150          /* was 20: PuTTY dropped frames at full speed */
+
+#if CONFIG_IDF_TARGET_ESP32S3
+#define CHIP_NAME "ESP32-S3"
+#else
+#define CHIP_NAME "ESP32-C6"
+#endif
 
 static const char *TAG = "link_usj";
 
@@ -61,11 +69,11 @@ int link_write(const uint8_t *buf, int len)
 
 const char *board_platform(void)
 {
-    return "ESP32-C6 (USB Serial/JTAG)";
+    return CHIP_NAME " (USB Serial/JTAG)";
 }
 const char *board_hostname(void)
 {
-    return "esp32c6";
+    return CONFIG_IDF_TARGET; /* "esp32c6", "esp32s3" */
 }
 const td_mb_serial_t *board_rtu_lines(void)
 {

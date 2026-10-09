@@ -160,6 +160,34 @@ A successful build alone is not counted as a hardware test.
   built in), keeps its four board settings in `/etc/board.conf`, and all
   13 apps open.
 
+## Not released yet (branch experiment/pixelbuffer)
+
+- Pixel canvas and Pixels: the plasma and the palette on the ESP32-C6
+  (built-in USB), the ESP32-S3 (built-in USB) and the ESP32 with PSRAM
+  (UART at 921600), read back with vtshot; tests/test_canvas.c (66
+  checks). Pictures per second, plasma: default window (42x30 pixels) C6
+  30, S3 32, ESP32 9; full screen at 80x25 C6 18 (425 KB/s), S3 24
+  (564 KB/s); at 160x50 S3 6 (633 KB/s), ESP32 1 (87 KB/s). On the
+  ESP32 and the S3 every canvas is allocated in PSRAM (Log Viewer: canvas:
+  ... in PSRAM). No restart on any board.
+- Flicker: before, a terminal reading slower than the C6 sent (my reader
+  at 20 and 8 KB/s) caused a screen clear after every dropped frame (10-13
+  in 10 s). Now: none at full speed, 55 KB/s or with pauses of 200-400 ms
+  every second (60 s each); one setup with a clear only when nothing got
+  through for 3 s. Real PuTTY, 25 s recorded at 30 fps: no dark frame.
+  tests/test_link.c (33 checks) fails without each rule.
+- Frame pacing, real PuTTY on the C6 while Pixels animates, a key sent
+  to PuTTY until the picture changed: median 2.4 s (worst 4.7 s) without
+  pacing, 0.11 s (worst 0.2 s) with it; PuTTY shows about 10 pictures a
+  second (86 KB/s).
+- ESP32-S3 port on an ESP32-S3R8 (rev 0.2, 8 MB octal PSRAM, 16 MB
+  flash) over its built-in USB: boots to the desktop (root@esp32s3),
+  joins Wi-Fi, `ota feed` names update-desktop-esp32s3.json, About 199 KB
+  internal + 7373 KB PSRAM free, every app opens one after another (13 of
+  13, then the Task Manager), no restart. Not on hardware: SSH, RS-485,
+  Ethernet, SD card. After moving link_usj.c to ports/esp_idf/app the C6,
+  ESP32 and 4 MB ESP32 still build.
+
 ## Not validated yet
 
 - The Editor's save and reopen on every board.

@@ -1,0 +1,14 @@
+# tinydesk's and TinyDesk Shell's static buffers (screen, terminal, shell
+# session; with PSRAM the screen may be up to 256x96, about 400 KB) go to
+# PSRAM, leaving the ESP32-S3's 512 KB of internal RAM to Wi-Fi, task stacks,
+# DMA buffers and SSH's start check. None of them is used from an ISR or
+# while the flash cache is off.
+[mapping:td_extram_tinydesk]
+archive: libtinydesk.a
+entries:
+    * (extram_bss)
+
+[mapping:td_extram_tdsh]
+archive: libtdsh.a
+entries:
+    * (extram_bss)

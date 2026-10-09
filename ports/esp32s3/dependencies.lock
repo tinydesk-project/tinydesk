@@ -1,0 +1,67 @@
+dependencies:
+  espressif/w6100:
+    component_hash: f0a03e304e5b4cef45b35d6459dff0e98f9652a6a2c77305556b7eefb114fbfe
+    dependencies:
+    - name: espressif/wiznet_common
+      registry_url: https://components.espressif.com
+      require: private
+      version: ^1.0.0
+    - name: idf
+      require: private
+      version: '>=5.3'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.0
+  espressif/wiznet_common:
+    component_hash: 57414f4b8ce11295c03030da7ff3ef90184e07b3ba1e8985b5edb2461e9be780
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.3'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.0.0
+  idf:
+    source:
+      type: idf
+    version: 5.3.1
+  joltwallet/littlefs:
+    component_hash: 34b8c56a14f10b440845fe972ce34ef41d1d205bcb139b3dfc58983a10abf59b
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.19.1
+  sahlberg/libsmb2:
+    component_hash: aafc0c1c742c38a8c382bbf758217a00da2d8ab19d2642731031d6b79c1b87e0
+    dependencies:
+    - name: idf
+      registry_url: https://components.espressif.com
+      require: private
+      version: '>=4.2'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 3.0.1
+  wolfssl/wolfssl:
+    component_hash: 4d619e882c19d967bbaa53302e3bd2bdb8c611b5efb13302171aace809fccfdf
+    dependencies: []
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 5.8.2~1
+direct_dependencies:
+- espressif/w6100
+- espressif/wiznet_common
+- idf
+- joltwallet/littlefs
+- sahlberg/libsmb2
+- wolfssl/wolfssl
+manifest_hash: 01026be2f548fd90b576fb9f052b92ddab4ee67a6f9326cec3d27ac7a44c7771
+target: esp32s3
+version: 2.0.0

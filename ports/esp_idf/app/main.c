@@ -45,8 +45,8 @@
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
 
-#if CONFIG_IDF_TARGET_ESP32
-#define UI_TASK_STACK 8192   /* Xtensa frames are bigger; RAM is plentiful (PSRAM) */
+#if CONFIG_IDF_TARGET_ARCH_XTENSA
+#define UI_TASK_STACK 8192   /* Xtensa (ESP32, ESP32-S3): bigger frames */
 #else
 #define UI_TASK_STACK 5120   /* measured on the C6: about 1.8 KB used */
 #endif
@@ -319,12 +319,27 @@ static char s_chip[48];
 static char s_sdk[32];
 static td_sysinfo_t s_info;
 
+/* The chip's name as Espressif writes it (About). */
+static const char *chip_model(esp_chip_model_t model)
+{
+    switch (model)
+    {
+    case CHIP_ESP32:
+        return "ESP32";
+    case CHIP_ESP32C6:
+        return "ESP32-C6";
+    case CHIP_ESP32S3:
+        return "ESP32-S3";
+    default:
+        return CONFIG_IDF_TARGET;
+    }
+}
+
 static void fill_sysinfo(void)
 {
     esp_chip_info_t chip;
     esp_chip_info(&chip);
-    const char *model = chip.model == CHIP_ESP32 ? "ESP32" : chip.model == CHIP_ESP32C6 ? "ESP32-C6"
-                                                                                        : CONFIG_IDF_TARGET;
+    const char *model = chip_model(chip.model);
     snprintf(s_chip, sizeof(s_chip), "%s rev %d.%d, %d core%s", model, chip.revision / 100, chip.revision % 100,
              chip.cores, chip.cores == 1 ? "" : "s");
     snprintf(s_sdk, sizeof(s_sdk), "ESP-IDF %s", esp_get_idf_version());
