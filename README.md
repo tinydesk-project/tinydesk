@@ -37,8 +37,9 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   the terminal.
 * Apps: Terminal (the shell), Files, Editor, Network, MQTT, Modbus (TCP and
   RTU), Task Manager, System Monitor, Log Viewer, Settings, Software Update
-  (OTA), Pixels, and a small API for writing your own, with a pixel canvas
-  (`td_canvas.h`: two pixels per cell, in any terminal).
+  (OTA), Pixels, Image Viewer (BMP, PPM, PGM), and a small API for writing
+  your own, with a pixel canvas (`td_canvas.h`: two pixels per cell in any
+  terminal, four with a font that has the quadrant characters).
 * Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes
   and redirection, run from the Terminal or with right-click → Run on the
   desktop. Language reference: `docs/SCRIPTING.md` in

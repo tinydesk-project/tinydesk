@@ -1,5 +1,5 @@
 /*
- * canvas.c - pixel surfaces drawn with half-block characters (td_canvas.h).
+ * canvas.c - pixel surfaces drawn with block characters (td_canvas.h).
  */
 #include <stdlib.h>
 #include <string.h>
@@ -141,10 +141,41 @@ void td_canvas_blit(td_canvas_t *c, int x, int y, const uint8_t *src, int w, int
     }
 }
 
+static td_canvas_detail_t s_detail = TD_CANVAS_HALF;
+
+void td_canvas_set_detail(td_canvas_detail_t detail)
+{
+    s_detail = detail == TD_CANVAS_QUAD ? TD_CANVAS_QUAD : TD_CANVAS_HALF;
+}
+
+td_canvas_detail_t td_canvas_detail(void)
+{
+    return s_detail;
+}
+
+/* Quadrants need UTF-8: ASCII mode draws half blocks. */
+static bool quad_on(void)
+{
+    return s_detail == TD_CANVAS_QUAD && !td_get_ascii_mode();
+}
+
+void td_canvas_fit(int cols, int rows, int *w, int *h)
+{
+    *w = cols > 0 ? cols * (quad_on() ? 2 : 1) : 0;
+    *h = rows > 0 ? rows * 2 : 0;
+}
+
+static void draw_quad(const td_canvas_t *c, int x, int y);
+
 void td_canvas_draw(const td_canvas_t *c, int x, int y)
 {
     if (!c)
         return;
+    if (quad_on())
+    {
+        draw_quad(c, x, y);
+        return;
+    }
     for (int row = 0; row < (c->h + 1) / 2; ++row)
     {
         const uint8_t *top = c->px + (2 * row) * c->w;
@@ -185,4 +216,142 @@ uint8_t td_rgb256(uint8_t r, uint8_t g, uint8_t b)
     int gray_d = dist2(r, g, b, gray, gray, gray);
 
     return (uint8_t)(gray_d < cube_d ? 232 + gray_i : cube);
+}
+
+/* Every grey of the palette (the cube's six and the ramp's 24), ascending,
+ * and its index. */
+static const uint8_t s_grey[30] = {0, 8, 18, 28, 38, 48, 58, 68, 78, 88, 95, 98, 108, 118, 128,
+                                   135, 138, 148, 158, 168, 175, 178, 188, 198, 208, 215, 218, 228, 238, 255};
+static const uint8_t s_grey_index[30] = {16, 232, 233, 234, 235, 236, 237, 238, 239, 240,
+                                         59, 241, 242, 243, 244, 102, 245, 246, 247, 248,
+                                         145, 249, 250, 251, 252, 188, 253, 254, 255, 231};
+
+/* The level at or below v, or the one above it when v's distance past the
+ * lower one exceeds the threshold t (0-15) as a share of the gap. */
+static int dither_pick(const uint8_t *levels, int n, int v, int t)
+{
+    int i = 0;
+    while (i + 1 < n && levels[i + 1] <= v)
+        i++;
+    if (i + 1 >= n)
+        return i;
+    int lo = levels[i], hi = levels[i + 1];
+    return (v - lo) * 32 > (2 * t + 1) * (hi - lo) ? i + 1 : i;
+}
+
+uint8_t td_rgb256_dither(uint8_t r, uint8_t g, uint8_t b, int x, int y)
+{
+    static const uint8_t bayer[4][4] = {{0, 8, 2, 10}, {12, 4, 14, 6}, {3, 11, 1, 9}, {15, 7, 13, 5}};
+    int t = bayer[y & 3][x & 3];
+    int lo = r < g ? (r < b ? r : b) : (g < b ? g : b);
+    int hi = r > g ? (r > b ? r : b) : (g > b ? g : b);
+    if (hi - lo <= 12) /* (nearly) grey: the ramp has finer steps */
+        return s_grey_index[dither_pick(s_grey, 30, (r + g + b) / 3, t)];
+    return (uint8_t)(16 + 36 * dither_pick(s_level, 6, r, t) + 6 * dither_pick(s_level, 6, g, t) +
+                     dither_pick(s_level, 6, b, t));
+}
+
+/* The red, green and blue of a palette index (0-15: xterm's defaults). */
+static void palette_rgb(uint8_t i, int rgb[3])
+{
+    static const uint8_t basic[16][3] = {{0, 0, 0}, {205, 0, 0}, {0, 205, 0}, {205, 205, 0}, {0, 0, 238}, {205, 0, 205}, {0, 205, 205}, {229, 229, 229}, {127, 127, 127}, {255, 0, 0}, {0, 255, 0}, {255, 255, 0}, {92, 92, 255}, {255, 0, 255}, {0, 255, 255}, {255, 255, 255}};
+    if (i < 16)
+    {
+        rgb[0] = basic[i][0];
+        rgb[1] = basic[i][1];
+        rgb[2] = basic[i][2];
+    }
+    else if (i >= 232)
+    {
+        rgb[0] = rgb[1] = rgb[2] = 8 + 10 * (i - 232);
+    }
+    else
+    {
+        rgb[0] = s_level[(i - 16) / 36];
+        rgb[1] = s_level[(i - 16) / 6 % 6];
+        rgb[2] = s_level[(i - 16) % 6];
+    }
+}
+
+/* Quadrant characters by the pixels in the foreground colour: bit 3 upper
+ * left, 2 upper right, 1 lower left, 0 lower right. Masks with the upper
+ * left bit set are drawn inverted, so only the first eight are used. */
+static const uint32_t s_quad_glyph[8] = {' ', 0x2597, 0x2596, 0x2584, 0x259D, 0x2590, 0x259E, 0x259F};
+
+void td_canvas_quad_cell(const uint8_t px[4], uint32_t *ch, uint8_t *fg, uint8_t *bg)
+{
+    /* The distinct colours, and which one each pixel has. */
+    uint8_t col[4];
+    int n = 0, idx[4];
+    for (int i = 0; i < 4; ++i)
+    {
+        int k = 0;
+        while (k < n && col[k] != px[i])
+            k++;
+        if (k == n)
+            col[n++] = px[i];
+        idx[i] = k;
+    }
+
+    /* Two colours of them, and each pixel's nearer one; with three or four
+     * colours, the pair that changes the pixels least. */
+    int a = 0, b = n > 1 ? 1 : 0;
+    int d[4][4] = {{0}};
+    if (n > 2)
+    {
+        int rgb[4][3];
+        for (int k = 0; k < n; ++k)
+            palette_rgb(col[k], rgb[k]);
+        for (int k = 0; k < n; ++k)
+            for (int l = 0; l < n; ++l)
+                d[k][l] = dist2(rgb[k][0], rgb[k][1], rgb[k][2], rgb[l][0], rgb[l][1], rgb[l][2]);
+        int best = -1;
+        for (int i = 0; i < n; ++i)
+            for (int j = i + 1; j < n; ++j)
+            {
+                int err = 0;
+                for (int p = 0; p < 4; ++p)
+                    err += d[idx[p]][i] < d[idx[p]][j] ? d[idx[p]][i] : d[idx[p]][j];
+                if (best < 0 || err < best)
+                {
+                    best = err;
+                    a = i;
+                    b = j;
+                }
+            }
+    }
+    int mask = 0;
+    for (int p = 0; p < 4; ++p)
+        if (idx[p] == a || (idx[p] != b && d[idx[p]][a] <= d[idx[p]][b]))
+            mask |= 8 >> p;
+    if (mask & 8)
+    {
+        mask ^= 15;
+        int t = a;
+        a = b;
+        b = t;
+    }
+    *ch = s_quad_glyph[mask];
+    *fg = mask ? col[a] : col[b];
+    *bg = col[b];
+}
+
+/* Two pixels by two in each cell. Pixels past the edge are colour 0. */
+static void draw_quad(const td_canvas_t *c, int x, int y)
+{
+    for (int row = 0; row < (c->h + 1) / 2; ++row)
+    {
+        const uint8_t *top = c->px + (2 * row) * c->w;
+        const uint8_t *bottom = 2 * row + 1 < c->h ? top + c->w : NULL;
+        for (int col = 0; col < (c->w + 1) / 2; ++col)
+        {
+            int x0 = 2 * col, x1 = 2 * col + 1;
+            uint8_t px[4] = {top[x0], x1 < c->w ? top[x1] : 0, bottom ? bottom[x0] : 0,
+                             bottom && x1 < c->w ? bottom[x1] : 0};
+            uint32_t ch;
+            uint8_t fg, bg;
+            td_canvas_quad_cell(px, &ch, &fg, &bg);
+            td_putc(x + col, y + row, ch, fg, bg, 0);
+        }
+    }
 }

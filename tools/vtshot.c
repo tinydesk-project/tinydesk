@@ -79,9 +79,41 @@ static void xml_char(FILE *o, uint16_t ch)
     }
 }
 
-/* One rectangle per run of equal background, one <text> per run of equal
- * foreground; textLength pins every run to its cells, so box drawing
- * characters from a fallback font cannot shift the columns. */
+/* The quarters a block character fills (bit 3 upper left, 2 upper right,
+ * 1 lower left, 0 lower right), or 0 for any other character. */
+static int block_mask(uint32_t ch)
+{
+    static const uint32_t glyph[16] = {0, 0x2597, 0x2596, 0x2584, 0x259D, 0x2590, 0x259E, 0x259F,
+                                       0x2598, 0x259A, 0x258C, 0x2599, 0x2580, 0x259C, 0x259B, 0x2588};
+    for (int m = 1; m < 16; ++m)
+        if (glyph[m] == ch)
+            return m;
+    return 0;
+}
+
+/* The filled quarters of a block character as rectangles: exact, whatever
+ * fonts the viewer of the picture has (canvases use them for pixels). */
+static void block_rects(FILE *o, int mask, int x, int y, int cw, int ch, int fg)
+{
+    double hw = cw / 2.0;
+    int hh = ch / 2;
+    for (int half = 0; half < 2; ++half) /* upper, lower */
+    {
+        int bits = (mask >> (2 - 2 * half)) & 3; /* 2 left, 1 right */
+        if (!bits)
+            continue;
+        double rx = bits == 1 ? x + hw : x, rw = bits == 3 ? cw : hw;
+        fprintf(o, "<rect x=\"%g\" y=\"%d\" width=\"%g\" height=\"%d\" fill=\"", rx, y + half * hh, rw,
+                half ? ch - hh : hh);
+        colour(o, fg);
+        fputs("\"/>\n", o);
+    }
+}
+
+/* One rectangle per run of equal background, block characters as
+ * rectangles, one <text> per run of equal foreground; textLength pins every
+ * run to its cells, so box drawing characters from a fallback font cannot
+ * shift the columns. */
 static int write_svg(const char *path, int y0, int y1, const char *title)
 {
     const int cw = 9, ch = 18, pad = 10;
@@ -123,13 +155,19 @@ static int write_svg(const char *path, int y0, int y1, const char *title)
             fputs("\"/>\n", o);
             x = x2;
         }
+        for (int x = 0; x < cols; x++)
+        {
+            int mask = block_mask(row[x].ch);
+            if (mask)
+                block_rects(o, mask, x * cw, py, cw, ch, row[x].fg);
+        }
         for (int x = 0; x < cols;)
         {
             int x2 = x;
             bool blank = true;
             while (x2 < cols && row[x2].fg == row[x].fg)
             {
-                if (row[x2].ch && row[x2].ch != ' ')
+                if (row[x2].ch && row[x2].ch != ' ' && !block_mask(row[x2].ch))
                     blank = false;
                 x2++;
             }
@@ -141,7 +179,7 @@ static int write_svg(const char *path, int y0, int y1, const char *title)
                 colour(o, row[x].fg);
                 fputs("\">", o);
                 for (int i = x; i < x2; i++)
-                    xml_char(o, row[i].ch);
+                    xml_char(o, block_mask(row[i].ch) ? ' ' : row[i].ch);
                 fputs("</text>\n", o);
             }
             x = x2;

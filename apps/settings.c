@@ -1,6 +1,6 @@
 /*
- * settings.c - theme, ASCII/UTF-8 mode, desktop pattern and icons, and the
- * clock format, per user.
+ * settings.c - theme, ASCII/UTF-8 mode, desktop pattern and icons, sizes,
+ * picture detail and the clock format, per user.
  *
  * Each user's settings are saved in ~/.tinydesk_settings as soon as they
  * change. A user without that file gets the device defaults: the blob the
@@ -30,7 +30,8 @@ typedef struct
     uint8_t icon_size;
     uint8_t menu_size;
     uint8_t bar_size;
-    uint8_t reserved[2];
+    uint8_t picture_detail; /* 0 half blocks (and in older blobs), 1 quadrants */
+    uint8_t reserved[1];
 } settings_blob_t;
 
 #define LEGACY_SIZE 8   /* magic + theme, ascii, pattern, hide_icons */
@@ -43,6 +44,7 @@ static td_clock_prefs_t s_clock;
 static td_window_t *s_win;
 static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_pattern_label, *s_status;
 static td_widget_t *s_size_btn[3];      /* desktop icons, start menu, taskbar */
+static td_widget_t *s_detail_btn;       /* pictures: Normal / Fine */
 
 static uint8_t size_code(td_ui_size_t s)
 {
@@ -120,6 +122,7 @@ void td_settings_apply_saved(void)
     td_wm_set_icon_size(code_size(b.icon_size));
     td_wm_set_start_menu_size(code_size(b.menu_size));
     td_wm_set_taskbar_size(code_size(b.bar_size));
+    td_canvas_set_detail(b.picture_detail == 1 ? TD_CANVAS_QUAD : TD_CANVAS_HALF);
     td_wm_invalidate();
 }
 
@@ -138,6 +141,7 @@ bool td_settings_save(void)
         .icon_size = size_code(td_wm_icon_size()),
         .menu_size = size_code(td_wm_start_menu_size()),
         .bar_size = size_code(td_wm_taskbar_size()),
+        .picture_detail = td_canvas_detail() == TD_CANVAS_QUAD ? 1 : 0,
     };
     if (!si->fs || !si->fs->write || !td_session_home()[0])
         return false;
@@ -156,6 +160,7 @@ static void update_labels(void)
     td_widget_set_text(s_size_btn[0], td_ui_size_name(td_wm_icon_size()));
     td_widget_set_text(s_size_btn[1], td_ui_size_name(td_wm_start_menu_size()));
     td_widget_set_text(s_size_btn[2], td_ui_size_name(td_wm_taskbar_size()));
+    td_widget_set_text(s_detail_btn, td_canvas_detail() == TD_CANVAS_QUAD ? "Fine" : "Normal");
     uint8_t utf8[4];
     int n = td_utf8_encode(td_desktop_pattern(), utf8);
     char ch[5];
@@ -229,6 +234,20 @@ static void on_size(td_widget_t *w, void *user)
     changed();
 }
 
+/* Pictures: Normal (two pixels a cell) <-> Fine (four). Every window is
+ * drawn again, so canvases fit themselves to the new detail. */
+static void on_detail(td_widget_t *w, void *user)
+{
+    (void)w;
+    (void)user;
+    td_canvas_set_detail(td_canvas_detail() == TD_CANVAS_QUAD ? TD_CANVAS_HALF : TD_CANVAS_QUAD);
+    td_wm_invalidate();
+    changed();
+    /* Courier New and Consolas (PuTTY's usual fonts) lack the quadrants. */
+    if (td_canvas_detail() == TD_CANVAS_QUAD)
+        td_widget_set_text(s_status, "Needs a font like Cascadia Mono");
+}
+
 static void on_draw(td_window_t *win, int w, int h)
 {
     (void)win;
@@ -239,6 +258,7 @@ static void on_draw(td_window_t *win, int w, int h)
     td_text(3, 8, "Desktop icons", t->win_fg, t->win_bg, 0);
     td_text(3, 9, "Start menu", t->win_fg, t->win_bg, 0);
     td_text(3, 10, "Taskbar", t->win_fg, t->win_bg, 0);
+    td_text(3, 11, "Pictures", t->win_fg, t->win_bg, 0);
 }
 
 static void on_network(td_widget_t *w, void *user)
@@ -299,6 +319,7 @@ static void launch(void)
     s_icons = td_checkbox(s_win, 1, 5, "Desktop icons", true, on_icons, NULL);
     for (int i = 0; i < 3; i++)
         s_size_btn[i] = td_button(s_win, 18, 8 + i, "Medium", on_size, (void *)(intptr_t)i);
+    s_detail_btn = td_button(s_win, 18, 11, "Normal", on_detail, NULL);
     s_pattern_label = td_label(s_win, 1, 12, 0, "");
     td_button(s_win, 3, 13, "Next pattern", on_pattern, NULL);
     td_button(s_win, 1, 15, "Network...", on_network, NULL);

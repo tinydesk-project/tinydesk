@@ -21,6 +21,8 @@ idf_component_register(
         "${TD_ROOT}/apps/apps.c"
         "${TD_ROOT}/apps/counter.c"
         "${TD_ROOT}/apps/pixels.c"
+        "${TD_ROOT}/apps/imagefile.c"
+        "${TD_ROOT}/apps/imageview.c"
         "${TD_ROOT}/apps/datetime.c"
         "${TD_ROOT}/apps/desktop.c"
         "${TD_ROOT}/apps/editor.c"

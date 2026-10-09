@@ -170,6 +170,8 @@ static const char *prov_icon(int i, void *user)
     (void)user;
     if (s_items[i].is_dir)
         return "[/";
+    if (td_is_image(s_items[i].name))
+        return "\xE2\x96\x93\xE2\x96\x92"; /* the Image Viewer's icon */
     return td_is_script(s_items[i].name) ? "#!" : "\xC2\xB6 ";   /* #! for shell scripts */
 }
 
@@ -187,6 +189,8 @@ static void open_item(int i)
     item_path(path, s_items[i].name);
     if (s_items[i].is_dir)
         td_files_open(path);
+    else if (td_is_image(s_items[i].name))
+        td_imageview_open(path);
     else
         td_editor_open(path);
 }

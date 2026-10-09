@@ -99,6 +99,18 @@ static int fs_read(const char *path_in, char *buf, int cap)
     return n;
 }
 
+static int fs_read_at(const char *path_in, uint32_t offset, char *buf, int cap)
+{
+    char mapped[TD_PATH_MAX + 16];
+    const char *path = map(path_in, mapped, sizeof(mapped));
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return -1;
+    int n = fseek(f, (long)offset, SEEK_SET) == 0 ? (int)fread(buf, 1, (size_t)cap, f) : -1;
+    fclose(f);
+    return n;
+}
+
 /* Delete a directory's contents, then the directory. */
 static int remove_tree(const char *path, int depth)
 {
@@ -182,6 +194,7 @@ const td_fs_ops_t *td_fs_stdio(const char *root)
     s_ops.root = s_root;
     s_ops.list = fs_list;
     s_ops.read = fs_read;
+    s_ops.read_at = fs_read_at;
     s_ops.remove = fs_remove;
     s_ops.mkdir = fs_mkdir;
     s_ops.write = fs_write;

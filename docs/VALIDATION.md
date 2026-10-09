@@ -164,8 +164,8 @@ A successful build alone is not counted as a hardware test.
 
 - Pixel canvas and Pixels: the plasma and the palette on the ESP32-C6
   (built-in USB), the ESP32-S3 (built-in USB) and the ESP32 with PSRAM
-  (UART at 921600), read back with vtshot; tests/test_canvas.c (66
-  checks). Pictures per second, plasma: default window (42x30 pixels) C6
+  (UART at 921600), read back with vtshot; tests/test_canvas.c (90
+  checks, with dithering and Fine detail). Pictures per second, plasma: default window (42x30 pixels) C6
   30, S3 32, ESP32 9; full screen at 80x25 C6 18 (425 KB/s), S3 24
   (564 KB/s); at 160x50 S3 6 (633 KB/s), ESP32 1 (87 KB/s). On the
   ESP32 and the S3 every canvas is allocated in PSRAM (Log Viewer: canvas:
@@ -187,6 +187,24 @@ A successful build alone is not counted as a hardware test.
   13, then the Task Manager), no restart. Not on hardware: SSH, RS-485,
   Ethernet, SD card. After moving link_usj.c to ports/esp_idf/app the C6,
   ESP32 and 4 MB ESP32 still build.
+- Image Viewer: tests/test_image.c (102 checks: every BMP kind, binary
+  and plain PPM/PGM, 16-bit samples, a plain file longer than the 4 KB
+  window, the errors). tdsim on Windows: a 320x200 24-bit BMP on the
+  desktop opens from a double-click, right way up, right colours. ESP32-S3:
+  a 64x40 plain PPM typed in through the Terminal's `write` (53 lines,
+  18,540 bytes, 24 s) and the 2x2 `echo` example from the guide open from
+  the desktop icon; white and pure colours stay solid with dithering on
+  (black too, in the tests). The C6, ESP32 and 4 MB ESP32 build with it; not opened on them.
+- Fine pictures (four pixels per cell) on the ESP32-S3 at 120x40: a
+  160x100 test card full screen shows 1-pixel stripes as stripes (Normal:
+  grey), round circles in both details; the setting survives a restart;
+  Pixels' plasma 29 pictures/s in the default window (Normal 32), 7/s
+  full screen at 240x78 pixels (Normal 10/s at 120x78). Real PuTTY with
+  its default font (Courier New): the picture is right, but the
+  quadrant characters Courier New lacks show as small boxes along edges;
+  Courier New, Consolas and Lucida Console have no quadrants, Cascadia
+  Mono and Cascadia Code have all ten (checked in the font files). Not
+  seen in PuTTY with Cascadia Mono.
 
 ## Not validated yet
 

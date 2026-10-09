@@ -22,6 +22,7 @@ void td_settings_register(void);
 void td_files_register(void);
 void td_counter_register(void);
 void td_pixels_register(void);
+void td_imageview_register(void);
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);
@@ -30,6 +31,57 @@ void td_network_register(void);
 
 /* Open a text file in the Editor (NULL: a new, unnamed file). */
 void td_editor_open(const char *path);
+
+/* Image files: BMP (uncompressed: 1, 4, 8-bit palette, 16, 24, 32-bit,
+ * also with bit-field masks) and PPM/PGM (binary P6/P5, 8 or 16 bits per
+ * sample). Files whose name ends in .bmp, .ppm or .pgm (any case). */
+bool td_is_image(const char *name);
+
+/* Open an image file (a real path, as Files and the Desktop use) in the
+ * Image Viewer; NULL opens the viewer without one. */
+void td_imageview_open(const char *path);
+
+/* Reading an image row by row, in the order the file stores the rows (BMP:
+ * usually bottom to top), with about 4 KB of buffer plus one row: images
+ * larger than the RAM can be shown scaled down. Needs fs->read_at. */
+#define TD_IMAGE_MAX_W 4096
+#define TD_IMAGE_MAX_H 32768
+
+typedef struct
+{
+    int w, h;          /* pixels */
+    char format[16];   /* "BMP 24-bit", "PPM", "PGM 16-bit", "PPM text"... */
+    /* the rest is private */
+    const td_fs_ops_t *fs;
+    char path[TD_PATH_MAX];
+    uint32_t data;     /* offset of the first stored row */
+    uint32_t stride;   /* bytes per stored row (0 for plain PPM/PGM) */
+    int kind, bpp, maxval;
+    bool bottom_up;
+    bool plain;        /* P3/P2: samples as decimal text */
+    uint32_t pos;      /* plain: offset of the next sample */
+    uint32_t mask[3];  /* 16/32-bit BMP: red, green, blue */
+    uint8_t shift[3], bits[3];
+    int next;          /* rows delivered */
+    uint8_t *buf;      /* file bytes buf_off .. buf_off + buf_len */
+    int buf_cap, buf_len;
+    uint32_t buf_off;
+    uint8_t palette[256][3];
+} td_image_t;
+
+/* Read the header. False with a reason in err for files that are not a
+ * supported image, too large, or unreadable. */
+bool td_image_load(td_image_t *img, const td_fs_ops_t *fs, const char *path, char *err, int errcap);
+
+/* The next stored row: its row number y (0 = top) and w RGB triples in
+ * rgb. False after the last row or on a read error. */
+bool td_image_row(td_image_t *img, int *y, uint8_t *rgb);
+
+/* Start again with the first stored row. */
+void td_image_rewind(td_image_t *img);
+
+/* Free the buffer (the struct is the caller's). */
+void td_image_close(td_image_t *img);
 
 /* Open the Files app in a directory. */
 void td_files_open(const char *dir);

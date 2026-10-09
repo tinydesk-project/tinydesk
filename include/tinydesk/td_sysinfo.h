@@ -37,6 +37,11 @@ typedef struct
 
     /* Returns 1 if the path exists (0 otherwise). */
     int (*exists)(const char *path);
+
+    /* Optional: read up to cap bytes starting offset bytes into a file, for
+     * files too large to read at once (the Image Viewer). Returns the bytes
+     * read (0 at the end of the file) or -1. */
+    int (*read_at)(const char *path, uint32_t offset, char *buf, int cap);
 } td_fs_ops_t;
 
 /* ------------------------------------------------------------ network */

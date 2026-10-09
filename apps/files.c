@@ -221,6 +221,10 @@ static void open_selected(void)
         snprintf(s_cwd, sizeof(s_cwd), "%s", path);
         reload();
     }
+    else if (td_is_image(e->name))
+    {
+        td_imageview_open(path);
+    }
     else
     {
         td_editor_open(path);

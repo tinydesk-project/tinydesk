@@ -99,7 +99,8 @@ static void on_draw(td_window_t *win, int cw, int ch)
 {
     (void)win;
     const td_theme_t *th = td_theme();
-    int pw = cw, ph = (ch - 1) * 2; /* the last row is the status line */
+    int pw, ph;
+    td_canvas_fit(cw, ch - 1, &pw, &ph); /* the last row is the status line */
     if (ph < 2 || pw < 2)
         return;
     if (!s_canvas)

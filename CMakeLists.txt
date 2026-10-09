@@ -105,6 +105,8 @@ add_library(tinydesk_apps STATIC
     apps/apps.c
     apps/counter.c
     apps/pixels.c
+    apps/imagefile.c
+    apps/imageview.c
     apps/datetime.c
     apps/desktop.c
     apps/editor.c
@@ -265,4 +267,10 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_columns PROPERTIES C_STANDARD 11)
     target_compile_options(test_columns PRIVATE ${TD_WARNINGS})
     add_test(NAME test_columns COMMAND test_columns)
+    add_executable(test_image tests/test_image.c ports/common/td_fs_stdio.c)
+    target_include_directories(test_image PRIVATE ports/common)
+    target_link_libraries(test_image PRIVATE tinydesk_apps)
+    set_target_properties(test_image PROPERTIES C_STANDARD 11)
+    target_compile_options(test_image PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_image COMMAND test_image)
 endif()

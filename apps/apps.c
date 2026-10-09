@@ -38,6 +38,7 @@ void td_apps_register_all(void)
     td_update_register();
     td_counter_register();
     td_pixels_register();
+    td_imageview_register();
     td_about_register();
     td_datetime_install_clock();
     td_proto_service_start();
