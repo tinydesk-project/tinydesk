@@ -20,6 +20,7 @@
 #include "esp_heap_caps.h"
 #include "esp_idf_version.h"
 #include "esp_log.h"
+#include "esp_memory_utils.h"
 #include "esp_ota_ops.h"
 #include "esp_netif.h"
 #include "esp_rom_sys.h"
@@ -405,6 +406,25 @@ static int log_hook(const char *fmt, va_list ap)
     return s_prev_vprintf ? s_prev_vprintf(fmt, ap) : 0;
 }
 
+/* --------------------------------------------------- canvas memory */
+
+#if CONFIG_SPIRAM
+/* Pixel canvases (td_canvas.h) go to PSRAM, so they never take the internal
+ * RAM that Wi-Fi, SSH and task stacks need; internal RAM only when PSRAM is
+ * full. Each allocation is logged (Log Viewer). */
+static void *canvas_alloc(size_t bytes)
+{
+    void *p = heap_caps_malloc(bytes, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (!p)
+        p = malloc(bytes);
+    const char *where = "no memory";
+    if (p)
+        where = esp_ptr_external_ram(p) ? "PSRAM" : "internal RAM";
+    ESP_LOGI(TAG, "canvas: %u bytes in %s", (unsigned)bytes, where);
+    return p;
+}
+#endif
+
 /* ----------------------------------------------------------- UI task */
 
 static void ui_task(void *arg)
@@ -417,6 +437,9 @@ static void ui_task(void *arg)
         return;
     }
     td_init(hal);
+#if CONFIG_SPIRAM
+    td_canvas_set_allocator(canvas_alloc, heap_caps_free);
+#endif
     td_apps_register_all();
     td_terminal_set_backend(tdsh_bridge_esp_backend());
     ESP_LOGI(TAG, "desktop %dx%d, UI stack free %u bytes", td_stats()->cols, td_stats()->rows,

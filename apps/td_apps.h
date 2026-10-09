@@ -21,6 +21,7 @@ void td_logview_register(void);
 void td_settings_register(void);
 void td_files_register(void);
 void td_counter_register(void);
+void td_pixels_register(void);
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);

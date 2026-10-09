@@ -29,7 +29,9 @@ typedef enum
     TD_EV_MOUSE,
     TD_EV_RESIZE,
     TD_EV_TICK,
-    TD_EV_PASTE
+    TD_EV_PASTE,
+    TD_EV_ACK /* the terminal answered ESC[5n (ESC[0n): it has shown all that
+               * was sent before; the main loop uses it to pace frames */
 } td_ev_type_t;
 
 /* Modifier bits. */

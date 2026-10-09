@@ -26,6 +26,7 @@ endif()
 
 # ---------------------------------------------------------------- core
 add_library(tinydesk_core STATIC
+    src/canvas.c
     src/draw.c
     src/event.c
     src/input.c
@@ -102,6 +103,7 @@ add_library(tinydesk_apps STATIC
     apps/about.c
     apps/apps.c
     apps/counter.c
+    apps/pixels.c
     apps/datetime.c
     apps/desktop.c
     apps/editor.c
@@ -240,7 +242,7 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_console_access PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON)
     target_compile_options(test_console_access PRIVATE ${TD_WARNINGS})
     add_test(NAME test_console_access COMMAND test_console_access)
-    foreach(t test_utf8 test_input test_render test_vterm test_wm test_widgets)
+    foreach(t test_utf8 test_input test_render test_vterm test_wm test_widgets test_canvas test_link)
         add_executable(${t} tests/${t}.c)
         target_link_libraries(${t} PRIVATE tinydesk_core)
         set_target_properties(${t} PROPERTIES C_STANDARD 11)

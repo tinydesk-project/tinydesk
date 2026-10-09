@@ -3,8 +3,10 @@
  * Serial/JTAG port, and Modbus RTU on its two RS-485 channels.
  *
  * The port is owned exclusively by the desktop (the ESP-IDF console is
- * off). Writes use a short timeout: when no terminal is reading, the USB
- * FIFO fills up and frames are dropped instead of stalling the UI.
+ * off). A write waits up to WRITE_TIMEOUT_MS for room: long enough that a
+ * terminal which reads slowly (PuTTY while it draws) paces the desktop
+ * instead of losing frames, short enough that with no terminal reading the
+ * USB FIFO fills up and frames are dropped instead of stalling the UI.
  */
 #include "link.h"
 
@@ -16,7 +18,7 @@
 #define RX_BUFFER        1024
 #define TX_BUFFER        1024
 #define WRITE_CHUNK      256          /* the driver queues whole chunks or nothing */
-#define WRITE_TIMEOUT_MS 20
+#define WRITE_TIMEOUT_MS 150          /* was 20: PuTTY dropped frames at full speed */
 
 static const char *TAG = "link_usj";
 

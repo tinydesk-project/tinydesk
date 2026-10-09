@@ -191,6 +191,20 @@ static void test_cursor_report(void)
     CHECK_EQ(ev.y, 25);
 }
 
+/* The answer to ESC[5n paces frames; other status reports are no keys. */
+static void test_status_report(void)
+{
+    td_event_clear();
+    td_input_init(&s_p);
+    FEED("\x1b[0n", true);
+    td_event_t ev;
+    CHECK(pop(&ev));
+    CHECK_EQ(ev.type, TD_EV_ACK);
+    CHECK(!pop(&ev));
+    FEED("\x1b[3n", false); /* "malfunction": not an answer we asked for */
+    CHECK(!pop(&ev));
+}
+
 static void test_garbage(void)
 {
     /* Unknown / private / overlong sequences are dropped and parsing
@@ -230,6 +244,7 @@ int main(void)
     test_mouse();
     test_drag_merging();
     test_cursor_report();
+    test_status_report();
     test_garbage();
     return TD_TEST_RESULT();
 }

@@ -92,6 +92,24 @@
 #define TD_LINK_RETRY_MS 500
 #endif
 
+/* Frames dropped for less than this are a slow terminal: every cell is sent
+ * again over the picture it still shows, without clearing (no flicker).
+ * Longer means the terminal was gone (closed, unplugged): the next redraw,
+ * or input, sets the terminal up again and clears it. */
+#ifndef TD_LINK_LOST_MS
+#define TD_LINK_LOST_MS 3000
+#endif
+
+/* Frame pacing: after each frame the terminal is asked ESC[5n, and the next
+ * frame waits for its answer, so a terminal that draws slowly (PuTTY) never
+ * has more than one frame queued and input shows up at once. A terminal
+ * that does not answer within this time gets the next frame anyway; after
+ * three such frames without any answer, pacing stays off for it. 0 turns
+ * pacing off (no ESC[5n, no waiting). */
+#ifndef TD_ACK_TIMEOUT_MS
+#define TD_ACK_TIMEOUT_MS 500
+#endif
+
 /* Input after this much silence is treated as a (re)connected terminal. */
 #ifndef TD_RECONNECT_SILENCE_MS
 #define TD_RECONNECT_SILENCE_MS 5000

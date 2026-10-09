@@ -414,6 +414,16 @@ static void finish_csi(td_input_t *p, uint32_t now)
         emit_resize(prm[0], prm[1], now);
         return;
     }
+    if (final == 'n' && n == 1 && prm[0] == 0)
+    {
+        /* Device status report "OK", the answer to ESC[5n. */
+        td_event_t ev;
+        memset(&ev, 0, sizeof(ev));
+        ev.type = TD_EV_ACK;
+        ev.time_ms = now;
+        td_event_push(&ev);
+        return;
+    }
     uint32_t key = letter_key(final);
     if (key)
     {

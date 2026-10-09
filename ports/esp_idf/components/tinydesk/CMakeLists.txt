@@ -4,6 +4,7 @@ get_filename_component(TD_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
 
 idf_component_register(
     SRCS
+        "${TD_ROOT}/src/canvas.c"
         "${TD_ROOT}/src/draw.c"
         "${TD_ROOT}/src/event.c"
         "${TD_ROOT}/src/input.c"
@@ -19,6 +20,7 @@ idf_component_register(
         "${TD_ROOT}/apps/about.c"
         "${TD_ROOT}/apps/apps.c"
         "${TD_ROOT}/apps/counter.c"
+        "${TD_ROOT}/apps/pixels.c"
         "${TD_ROOT}/apps/datetime.c"
         "${TD_ROOT}/apps/desktop.c"
         "${TD_ROOT}/apps/editor.c"

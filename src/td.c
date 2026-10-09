@@ -4,9 +4,10 @@
  *   read input -> parse -> dispatch events -> run timers
  *   -> compose into the back buffer -> diff against the front buffer
  *
- * It also watches the serial link: when writes stop draining (no terminal
- * attached) frames are dropped and a full redraw is retried periodically;
- * when a terminal (re)connects everything is sent again.
+ * It also watches the serial link: when writes stop draining, frames are
+ * dropped and every cell is sent again periodically. A short outage is a
+ * slow terminal, so the cells are sent over the picture it shows; after a
+ * long one (no terminal attached) the terminal is set up and cleared again.
  */
 #include <string.h>
 
@@ -21,10 +22,17 @@ static td_stats_t s_stats;
 static bool s_running;
 static bool s_resync_pending;     /* resend setup + full redraw */
 static bool s_repaint_pending;    /* clear + full redraw (the terminal was resized) */
+static bool s_redraw_pending;     /* every cell again, no clear (frames were dropped) */
 static bool s_have_input;         /* any byte ever received */
 static uint32_t s_last_input_ms;
 static uint32_t s_last_size_query_ms;
 static uint32_t s_last_retry_ms;
+static uint32_t s_link_down_ms;   /* when frames started being dropped */
+static bool s_ack_pending;        /* ESC[5n sent after a frame, no answer yet */
+static uint32_t s_ack_sent_ms;
+static bool s_ack_seen;           /* this terminal has answered at least once */
+static int s_ack_misses;          /* timeouts before its first answer */
+static bool s_pacing_off;         /* it never answers: do not wait for it */
 static uint32_t s_rate_start_ms;
 static uint32_t s_rate_start_bytes;
 static uint32_t s_last_clock_s;
@@ -109,6 +117,20 @@ static void repaint(void)
     s_repaint_pending = false;
 }
 
+/* After frames were dropped on a link that is still open: the terminal still
+ * shows the last good picture, so every cell is sent again over it, without
+ * clearing (a clear would flash the whole screen). CAN ends an escape
+ * sequence that was cut off. */
+static void redraw(void)
+{
+    s_renderer.write_failed = false;
+    td_render_raw(&s_renderer, "\x18\x1b[0m");
+    td_render_reset_state(&s_renderer);
+    td_buffer_invalidate(&s_front);
+    td_wm_invalidate();
+    s_redraw_pending = false;
+}
+
 /* Send the terminal setup and the size query, and force a full redraw. */
 static void resync(void)
 {
@@ -120,7 +142,12 @@ static void resync(void)
     td_wm_invalidate();
     s_resync_pending = false;
     s_repaint_pending = false;
+    s_redraw_pending = false;
     s_last_size_query_ms = td_millis();
+    s_ack_pending = false;
+    s_ack_seen = false;
+    s_ack_misses = 0;
+    s_pacing_off = false;
 }
 
 int td_init(const td_hal_t *hal)
@@ -187,6 +214,11 @@ static void dispatch_events(void)
         {
             apply_size(ev.x, ev.y);
         }
+        else if (ev.type == TD_EV_ACK)
+        {
+            s_ack_pending = false;
+            s_ack_seen = true;
+        }
         else
         {
             td_wm_dispatch(&ev);
@@ -242,7 +274,8 @@ static bool read_input(uint32_t now)
             /* Input after a long silence, or while frames were being
              * dropped, usually means a terminal has just been opened. */
             bool silent = s_have_input && now - s_last_input_ms > TD_RECONNECT_SILENCE_MS;
-            if (silent || !s_stats.link_up)
+            bool lost = !s_stats.link_up && now - s_link_down_ms >= TD_LINK_LOST_MS;
+            if (silent || lost)
                 s_resync_pending = true;
         }
         got = true;
@@ -274,6 +307,7 @@ static void update_rate(uint32_t now)
 static void render_frame(void)
 {
     uint32_t t0 = td_millis();
+    uint32_t sent_before = s_renderer.bytes_sent;
     td_wm_compose(&s_back);
     bool ok = td_render_diff(&s_renderer, &s_front, &s_back);
     s_stats.frames++;
@@ -283,14 +317,48 @@ static void render_frame(void)
         /* Part of the frame never reached the terminal: resend it all
          * later, and stop trying every frame. */
         s_stats.dropped_frames++;
+        /* A terminal that took part of the frame is still there, only slow:
+         * the outage counts from the last frame that got nothing through. */
+        if (s_stats.link_up || s_renderer.bytes_sent != sent_before)
+            s_link_down_ms = td_millis();
         s_stats.link_up = false;
         td_buffer_invalidate(&s_front);
         s_last_retry_ms = td_millis();
     }
     else
     {
+        /* While frames were dropped no size query went out, so the terminal
+         * had nothing to answer: that silence does not mean it was replaced
+         * (a terminal that was gone is caught by TD_LINK_LOST_MS). */
+        if (!s_stats.link_up)
+            s_last_input_ms = td_millis();
         s_stats.link_up = true;
+        if (TD_ACK_TIMEOUT_MS > 0 && !s_pacing_off)
+        {
+            /* Its answer means the terminal has shown this frame. */
+            td_render_raw(&s_renderer, "\x1b[5n");
+            td_render_flush(&s_renderer);
+            s_ack_pending = true;
+            s_ack_sent_ms = td_millis();
+        }
     }
+}
+
+/* True while the last frame is still on its way through the terminal.
+ * Without an answer in TD_ACK_TIMEOUT_MS the next frame goes anyway; a
+ * terminal that never answers stops being waited for after three. */
+static bool waiting_for_terminal(uint32_t now)
+{
+    if (!s_ack_pending)
+        return false;
+#if TD_ACK_TIMEOUT_MS > 0
+    if (now - s_ack_sent_ms < TD_ACK_TIMEOUT_MS)
+        return true;
+#endif
+    s_ack_pending = false;
+    if (!s_ack_seen && ++s_ack_misses >= 3)
+        s_pacing_off = true;
+    return false;
 }
 
 bool td_step(void)
@@ -313,7 +381,12 @@ bool td_step(void)
     if (!s_stats.link_up)
     {
         if (now - s_last_retry_ms >= TD_LINK_RETRY_MS)
-            s_resync_pending = true;
+        {
+            if (now - s_link_down_ms >= TD_LINK_LOST_MS)
+                s_resync_pending = true;
+            else
+                s_redraw_pending = true;
+        }
     }
     else if (TD_SIZE_POLL_MS > 0 && now - s_last_size_query_ms >= TD_SIZE_POLL_MS)
     {
@@ -334,7 +407,12 @@ bool td_step(void)
         repaint();
         render_frame();
     }
-    else if (s_stats.link_up && td_wm_needs_redraw())
+    else if (s_redraw_pending)
+    {
+        redraw();
+        render_frame();
+    }
+    else if (s_stats.link_up && td_wm_needs_redraw() && !waiting_for_terminal(now))
     {
         render_frame();
     }

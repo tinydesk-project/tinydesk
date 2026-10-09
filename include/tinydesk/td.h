@@ -10,6 +10,7 @@
 #ifndef TD_H
 #define TD_H
 
+#include "td_canvas.h"
 #include "td_config.h"
 #include "td_hal.h"
 #include "td_input.h"
