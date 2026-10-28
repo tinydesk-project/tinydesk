@@ -25,6 +25,7 @@ set(TD_ESP_APP_SRCS
 set(TD_ESP_APP_REQUIRES
     tinydesk
     tdsh
+    micropython
     nvs_flash
     esp_driver_uart
     app_update

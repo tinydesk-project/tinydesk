@@ -286,9 +286,11 @@ def main():
 
     licence = [(os.path.join(ROOT, "LICENSE"), "LICENSE")]
     shell_licence = [(os.path.join(ROOT, "third_party", "tdsh", "LICENSE"), "LICENSE-TinyDesk-Shell")]
+    # The desktop programs include MicroPython (the py command).
+    python_licence = [(os.path.join(ROOT, "third_party", "micropython", "LICENSE"), "LICENSE-MicroPython")]
     hosts = []
     if args.host_linux_desktop:
-        hosts.append(("tinydesk-desktop-linux-x86_64", args.host_linux_desktop, "tinydesk", licence + shell_licence, [
+        hosts.append(("tinydesk-desktop-linux-x86_64", args.host_linux_desktop, "tinydesk", licence + shell_licence + python_licence, [
             "TinyDesk Desktop %s for Linux (x86_64)" % version, "",
             "Run it in a terminal window with mouse support (GNOME Terminal, Konsole,",
             "xterm, Windows Terminal over SSH...):", "", "  ./tinydesk", "",
@@ -301,7 +303,7 @@ def main():
             "Its files live in ~/.local/share/tdsh/rootfs (your real home is not used).",
             "Type 'help' for the commands, 'exit' to leave."]))
     if args.host_windows_desktop:
-        hosts.append(("tinydesk-desktop-windows-x64", args.host_windows_desktop, "tinydesk.exe", licence + shell_licence, [
+        hosts.append(("tinydesk-desktop-windows-x64", args.host_windows_desktop, "tinydesk.exe", licence + shell_licence + python_licence, [
             "TinyDesk Desktop %s for Windows (x64)" % version, "",
             "Start tinydesk.exe inside Windows Terminal (it needs a terminal with mouse",
             "and VT support; the old console window works without the mouse).", "",

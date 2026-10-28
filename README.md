@@ -44,6 +44,10 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   and redirection, run from the Terminal or with right-click → Run on the
   desktop. Language reference: `docs/SCRIPTING.md` in
   [TinyDesk Shell](https://github.com/tinydesk-project/tinydesk-shell).
+* Python scripts with [MicroPython](https://micropython.org): `py script.py`
+  in the Terminal, or `py` for the interactive prompt. Scripts read and
+  write TinyDesk's files, and the `tinydesk` module runs shell commands,
+  publishes MQTT messages and reads or writes Modbus registers.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides
   an encrypted shell and SFTP, not the windowed desktop. FTP, SMB mounts,
   Wi-Fi and W6100 Ethernet are available from the shell.
@@ -132,7 +136,8 @@ notably **wolfSSH and wolfSSL (GPLv3)** for the SSH/SFTP server. Firmware
 built with them, including the prebuilt releases, is therefore distributed
 under the terms of the GPLv3 as a whole. The source code in this repository
 stays MIT. See [`third_party/tdsh/THIRD_PARTY_LICENSES.md`](third_party/tdsh/THIRD_PARTY_LICENSES.md)
-for the list.
+for the list. The `py` command is [MicroPython](third_party/micropython/README.md)
+(MIT), in `third_party/micropython`.
 
 ## Contributing
 

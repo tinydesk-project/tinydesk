@@ -38,6 +38,7 @@
 #include "ota_esp.h"
 #include "td_modbus.h"
 #include "td_proto_cmds.h"
+#include "td_py.h"
 #include "td_apps.h"
 #include "telnet.h"
 #include "td_fs_stdio.h"
@@ -488,6 +489,8 @@ void app_main(void)
     {
         td_proto_register_shell_commands();   /* mqtt, modbus */
         td_proto_set_break_check(tdsh_bridge_break_requested);   /* Ctrl+C stops modbus read -i */
+        td_py_register_shell_command();                          /* py (MicroPython) */
+        td_py_set_break_check(tdsh_bridge_break_requested);      /* Ctrl+C stops a script */
         if (esp_ota_get_next_update_partition(NULL))
             ota_esp_register_command();   /* ota (root only) */
     }

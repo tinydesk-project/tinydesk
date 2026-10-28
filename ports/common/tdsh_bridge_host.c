@@ -23,6 +23,9 @@
 
 #include "td_proto_cmds.h"
 #include "tdsh.h"
+#if defined(TD_WITH_PYTHON)
+#include "td_py.h"
+#endif
 #include "tdsh_terminal.h"
 
 #ifdef _WIN32
@@ -151,6 +154,28 @@ static int pipe_try_read(bpipe_t *p, uint8_t *out, int len)
         WAKE(p);
     UNLOCK(p);
     return n;
+}
+
+/* Ctrl+C for long-running commands (modbus read -i, py): true once it was
+ * typed in the Terminal window. Like a terminal, the keys typed before it
+ * are dropped; keys after it stay for the shell. Shell thread only. */
+static bool break_requested(void)
+{
+    bool brk = false;
+    LOCK(&s_in);
+    for (int i = s_in.count - 1; i >= 0; i--)
+    {
+        if (s_in.buf[(s_in.head + i) % s_in.cap] == 0x03)
+        {
+            s_in.head = (s_in.head + i + 1) % s_in.cap;
+            s_in.count -= i + 1;
+            brk = true;
+            WAKE(&s_in);
+            break;
+        }
+    }
+    UNLOCK(&s_in);
+    return brk;
 }
 
 /* ---------------------------------------------------- shell streams */
@@ -307,7 +332,12 @@ static void shell_main(void)
         say(msg);
         return;
     }
-    td_proto_register_shell_commands();   /* mqtt, modbus */
+    td_proto_register_shell_commands();          /* mqtt, modbus */
+    td_proto_set_break_check(break_requested);   /* Ctrl+C stops modbus read -i */
+#if defined(TD_WITH_PYTHON)
+    td_py_register_shell_command();           /* py (MicroPython) */
+    td_py_set_break_check(break_requested);   /* Ctrl+C stops a script */
+#endif
 
     /* Everything the shell prints goes to the Terminal window. */
     FILE *io = open_terminal_stream();
