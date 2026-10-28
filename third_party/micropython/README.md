@@ -13,8 +13,10 @@ that release. Do not edit these files: change the configuration in
 | Path | From MicroPython |
 | --- | --- |
 | `py/` | the core (all of `py/`, as MicroPython's embed port takes it) |
-| `extmod/` | the modules TinyDesk enables: `os`, `time`, `json`, `re`, `random`, `binascii`, `heapq`, the VFS layer and the POSIX file objects (plus all `extmod` headers) |
+| `extmod/` | the modules TinyDesk enables: `os`, `time`, `json`, `re`, `random`, `binascii`, `hashlib`, `heapq`, `select`, `_asyncio`, the VFS layer and the POSIX file objects (plus all `extmod` headers) |
 | `shared/` | the REPL (`pyexec`, `readline`), stdio and timing helpers |
 | `lib/re1.5/` | the regular-expression engine `extmod/modre.c` includes |
+| `lib/crypto-algorithms/` | SHA-256 for `hashlib` where mbedTLS is not built in (`extmod/modhashlib.c` includes it; public domain, by Brad Conte) |
+| `frozen/` | `frozen_content.c`: the Python part of `asyncio` (`extmod/asyncio`), compiled to bytecode by `mpy-cross` |
 | `genhdr/` | headers generated for TinyDesk's configuration: qstrs, the module and root-pointer tables, the version |
 | `sources.cmake` | the list of `.c` files, used by the PC and ESP-IDF builds |

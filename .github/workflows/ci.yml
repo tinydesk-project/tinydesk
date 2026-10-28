@@ -75,8 +75,9 @@ jobs:
           cat tls.txt
           if grep -q "not available in this build" tls.txt; then echo "::error::built without MQTT over TLS"; exit 1; fi
           grep -q "Connecting to mqtts://127.0.0.1:1" tls.txt
-          # MicroPython (py): the command line does not contain the result.
-          ../build/tdsim wait=300 key=Enter wait=1500 'type=py -c "print(6 * 7, 2 ** 70)"\r' wait=3000 shot > py.txt
+          # MicroPython (py): the command line does not contain the result;
+          # the imports check the frozen asyncio and hashlib.
+          ../build/tdsim wait=300 key=Enter wait=1500 'type=py -c "import asyncio, hashlib; print(6 * 7, 2 ** 70)"\r' wait=3000 shot > py.txt
           cat py.txt
           grep -q "42 1180591620717411303424" py.txt
 

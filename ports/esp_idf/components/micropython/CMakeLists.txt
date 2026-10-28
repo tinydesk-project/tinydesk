@@ -16,7 +16,7 @@ idf_component_register(
     SRCS ${TD_MICROPYTHON_SRCS} ${TD_PY_PORT_SRCS}
     INCLUDE_DIRS "${TD_MICROPYTHON_DIR}" "${TD_PY_PORT_DIR}"
     PRIV_INCLUDE_DIRS "include"   # poll.h for extmod/vfs_posix_file.c
-    REQUIRES tdsh tinydesk esp_timer vfs
+    REQUIRES tdsh tinydesk esp_timer vfs mbedtls   # mbedtls: hashlib
 )
 
 target_compile_definitions(${COMPONENT_LIB} PUBLIC TD_WITH_PYTHON)

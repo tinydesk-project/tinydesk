@@ -4,8 +4,8 @@
 #   tools/micropython/gen.sh /path/to/micropython
 #
 # The checkout must be the release named in third_party/micropython/README.md
-# (or the one you are moving to). Needs make, gcc and python3: Linux, or WSL
-# on Windows.
+# (or the one you are moving to). Needs make, gcc and python3: Linux,
+# or WSL on Windows.
 set -e
 if [ $# -ne 1 ] || [ ! -f "$1/py/mkenv.mk" ]; then
     echo "usage: $0 /path/to/micropython" >&2

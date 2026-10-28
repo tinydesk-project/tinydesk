@@ -16,6 +16,10 @@ extern const struct _mp_obj_module_t mp_module_errno;
 #undef MODULE_DEF_ERRNO
 #define MODULE_DEF_ERRNO { MP_ROM_QSTR(MP_QSTR_errno), MP_ROM_PTR(&mp_module_errno) },
 
+extern const struct _mp_obj_module_t mp_module_hashlib;
+#undef MODULE_DEF_HASHLIB
+#define MODULE_DEF_HASHLIB { MP_ROM_QSTR(MP_QSTR_hashlib), MP_ROM_PTR(&mp_module_hashlib) },
+
 extern const struct _mp_obj_module_t mp_module_heapq;
 #undef MODULE_DEF_HEAPQ
 #define MODULE_DEF_HEAPQ { MP_ROM_QSTR(MP_QSTR_heapq), MP_ROM_PTR(&mp_module_heapq) },
@@ -40,6 +44,10 @@ extern const struct _mp_obj_module_t mp_module_re;
 #undef MODULE_DEF_RE
 #define MODULE_DEF_RE { MP_ROM_QSTR(MP_QSTR_re), MP_ROM_PTR(&mp_module_re) },
 
+extern const struct _mp_obj_module_t mp_module_select;
+#undef MODULE_DEF_SELECT
+#define MODULE_DEF_SELECT { MP_ROM_QSTR(MP_QSTR_select), MP_ROM_PTR(&mp_module_select) },
+
 extern const struct _mp_obj_module_t mp_module_struct;
 #undef MODULE_DEF_STRUCT
 #define MODULE_DEF_STRUCT { MP_ROM_QSTR(MP_QSTR_struct), MP_ROM_PTR(&mp_module_struct) },
@@ -51,6 +59,10 @@ extern const struct _mp_obj_module_t mp_module_time;
 extern const struct _mp_obj_module_t mp_module___main__;
 #undef MODULE_DEF___MAIN__
 #define MODULE_DEF___MAIN__ { MP_ROM_QSTR(MP_QSTR___main__), MP_ROM_PTR(&mp_module___main__) },
+
+extern const struct _mp_obj_module_t mp_module_asyncio;
+#undef MODULE_DEF__ASYNCIO
+#define MODULE_DEF__ASYNCIO { MP_ROM_QSTR(MP_QSTR__asyncio), MP_ROM_PTR(&mp_module_asyncio) },
 
 extern const struct _mp_obj_module_t mp_module_builtins;
 #undef MODULE_DEF_BUILTINS
@@ -89,22 +101,25 @@ extern const struct _mp_obj_module_t td_py_module;
     MODULE_DEF_MICROPYTHON \
     MODULE_DEF_SYS \
     MODULE_DEF_TINYDESK \
+    MODULE_DEF__ASYNCIO \
     MODULE_DEF___MAIN__ \
 // MICROPY_REGISTERED_MODULES
 
-#define MICROPY_HAVE_REGISTERED_EXTENSIBLE_MODULES  12
+#define MICROPY_HAVE_REGISTERED_EXTENSIBLE_MODULES  14
 
 #define MICROPY_REGISTERED_EXTENSIBLE_MODULES \
     MODULE_DEF_ARRAY \
     MODULE_DEF_BINASCII \
     MODULE_DEF_COLLECTIONS \
     MODULE_DEF_ERRNO \
+    MODULE_DEF_HASHLIB \
     MODULE_DEF_HEAPQ \
     MODULE_DEF_IO \
     MODULE_DEF_JSON \
     MODULE_DEF_OS \
     MODULE_DEF_RANDOM \
     MODULE_DEF_RE \
+    MODULE_DEF_SELECT \
     MODULE_DEF_STRUCT \
     MODULE_DEF_TIME \
 // MICROPY_REGISTERED_EXTENSIBLE_MODULES

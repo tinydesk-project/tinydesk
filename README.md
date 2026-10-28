@@ -47,7 +47,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 * Python scripts with [MicroPython](https://micropython.org): `py script.py`
   in the Terminal, or `py` for the interactive prompt. Scripts read and
   write TinyDesk's files, and the `tinydesk` module runs shell commands,
-  publishes MQTT messages and reads or writes Modbus registers.
+  publishes MQTT messages and reads or writes Modbus registers. `asyncio`
+  runs several jobs in one script, and precompiled `.mpy` files load too.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides
   an encrypted shell and SFTP, not the windowed desktop. FTP, SMB mounts,
   Wi-Fi and W6100 Ethernet are available from the shell.
@@ -137,7 +138,8 @@ built with them, including the prebuilt releases, is therefore distributed
 under the terms of the GPLv3 as a whole. The source code in this repository
 stays MIT. See [`third_party/tdsh/THIRD_PARTY_LICENSES.md`](third_party/tdsh/THIRD_PARTY_LICENSES.md)
 for the list. The `py` command is [MicroPython](third_party/micropython/README.md)
-(MIT), in `third_party/micropython`.
+(MIT; its SHA-256 code from `lib/crypto-algorithms` is public domain), in
+`third_party/micropython`.
 
 ## Contributing
 

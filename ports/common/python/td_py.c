@@ -2,7 +2,8 @@
  * td_py.c - the `py` command: MicroPython inside TinyDesk Shell.
  *
  *   py                     interactive prompt (Ctrl+D or exit() leaves it)
- *   py FILE [ARG...]       run a script; sys.argv is [FILE, ARG...]
+ *   py FILE [ARG...]       run a script (.py, or .mpy from mpy-cross);
+ *                          sys.argv is [FILE, ARG...]
  *   py -c CODE [ARG...]    run CODE
  *   py -m KB ...           use a KB-kilobyte heap instead of the default
  *
@@ -27,6 +28,7 @@
 #include "py/gc.h"
 #include "py/mperrno.h"
 #include "py/mphal.h"
+#include "py/persistentcode.h"
 #include "py/runtime.h"
 #include "py/stackctrl.h"
 #include "py/stream.h"
@@ -34,6 +36,10 @@
 #include "shared/runtime/gchelper.h"
 #include "shared/runtime/pyexec.h"
 #include "td_py_vfs.h"
+
+#if MICROPY_EMIT_NATIVE && !defined(ESP_PLATFORM)
+#include <sys/mman.h>
+#endif
 
 #if defined(ESP_PLATFORM)
 #include "esp_heap_caps.h"
@@ -68,8 +74,8 @@ const char td_py_help_text[] =
     "Run a script from the shell with:  py FILE [ARG...]\n"
     "Leave this prompt with Ctrl+D or exit(). Ctrl+C stops a running script.\n"
     "\n"
-    "Modules: sys, os, time, json, re, math, random, binascii, heapq,\n"
-    "collections, struct, errno, gc, micropython, and tinydesk:\n"
+    "Modules: sys, os, time, json, re, math, random, binascii, hashlib, heapq,\n"
+    "collections, struct, errno, gc, select, asyncio, micropython, and tinydesk:\n"
     "  tinydesk.shell('ls -l')               run a shell command, get its status\n"
     "  tinydesk.log('text')                  add a line to the Log Viewer\n"
     "  tinydesk.mqtt_publish(topic, payload) publish on the connected broker\n"
@@ -148,6 +154,16 @@ uint64_t mp_hal_time_ns(void)
     return (uint64_t)tv.tv_sec * 1000000000ull + (uint64_t)tv.tv_usec * 1000ull;
 }
 
+/* Waiting for an event that may never come (select.poll, the asyncio loop
+ * with every task asleep): sleep the shell task in slices of up to 10 ms.
+ * The caller has just checked for Ctrl+C and calls again until its own
+ * timeout has passed; -1 means no timeout. */
+void td_py_wait_ms(int timeout_ms)
+{
+    if (timeout_ms != 0)
+        tdsh_sleep_ms(timeout_ms < 0 || timeout_ms > 10 ? 10 : (uint32_t)timeout_ms);
+}
+
 /* Sleep in slices, so Ctrl+C stops time.sleep(60) at once. */
 void mp_hal_delay_ms(mp_uint_t ms)
 {
@@ -175,6 +191,11 @@ void mp_hal_delay_us(mp_uint_t us)
 #endif
 }
 
+void mp_hal_get_random(size_t n, uint8_t *buf)   /* os.urandom() */
+{
+    tdsh_random_bytes(buf, n);
+}
+
 uint32_t td_py_random_seed(void)
 {
     uint32_t seed = 0;
@@ -200,6 +221,66 @@ void nlr_jump_fail(void *val)
     (void)val;
     printf("py: fatal error in the interpreter\n");
     abort();
+}
+
+/* ---------------------------------------------------- machine code */
+
+/* Code from @micropython.native/viper and native .mpy files runs from
+ * executable memory outside the Python heap: IRAM on the ESP32, an mmap()
+ * on Linux. The blocks are freed when the script ends. Machine code can
+ * read and write all of RAM, past the shell's users and file sandbox, so
+ * only root may run it. */
+typedef struct exec_block
+{
+    struct exec_block *next;
+    size_t size;
+    uint8_t code[];
+} exec_block_t;
+
+static exec_block_t *s_exec_blocks;
+
+void *td_py_commit_exec(void *buf, size_t len, void *reloc)
+{
+#if MICROPY_EMIT_NATIVE
+    if (!s_session || strcmp(s_session->username, "root") != 0)
+        mp_raise_msg(&mp_type_RuntimeError, MP_ERROR_TEXT("machine code (native, viper, native .mpy) needs root"));
+    len = (len + 3) & ~(size_t)3;
+    size_t size = sizeof(exec_block_t) + len;
+#if defined(ESP_PLATFORM)
+    exec_block_t *b = heap_caps_malloc(size, MALLOC_CAP_EXEC);
+#else
+    exec_block_t *b = mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    if (b == MAP_FAILED)
+        b = NULL;
+#endif
+    if (!b)
+        m_malloc_fail(size);
+    b->size = size;
+    b->next = s_exec_blocks;
+    s_exec_blocks = b;
+    if (reloc)
+        mp_native_relocate(reloc, buf, (uintptr_t)b->code);
+    memcpy(b->code, buf, len);
+    return b->code;
+#else
+    (void)len;
+    (void)reloc;
+    return buf;   /* not called: no emitter here, and native .mpy files are refused */
+#endif
+}
+
+static void exec_free_all(void)
+{
+    while (s_exec_blocks)
+    {
+        exec_block_t *b = s_exec_blocks;
+        s_exec_blocks = b->next;
+#if defined(ESP_PLATFORM)
+        heap_caps_free(b);
+#elif MICROPY_EMIT_NATIVE
+        munmap(b, b->size);
+#endif
+    }
 }
 
 /* ------------------------------------------------------------ heap */
@@ -266,7 +347,7 @@ static void set_stack(void *top)
 static void usage(void)
 {
     printf("usage: py                    interactive prompt (Ctrl+D leaves)\n"
-           "       py FILE [ARG...]      run a script\n"
+           "       py FILE [ARG...]      run a script (.py or .mpy)\n"
            "       py -c CODE [ARG...]   run CODE\n"
            "       py -m KB ...          heap size in KB\n");
 }
@@ -281,7 +362,8 @@ static void set_argv(const char *first, int argc, char **argv)
         mp_obj_list_append(mp_sys_argv, mp_obj_new_str(argv[i], strlen(argv[i])));
 }
 
-/* sys.path: the script's directory (or '' for the prompt), then /lib. */
+/* sys.path: the script's directory (or '' for the prompt), the frozen
+ * modules (asyncio), then /lib. */
 static void set_path(const char *script)
 {
     mp_obj_list_init(MP_OBJ_TO_PTR(mp_sys_path), 0);
@@ -295,7 +377,51 @@ static void set_path(const char *script)
     {
         mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR_));
     }
+    mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__dot_frozen));   /* asyncio */
     mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__slash_lib));
+}
+
+static bool has_suffix(const char *s, const char *suffix)
+{
+    size_t n = strlen(s), m = strlen(suffix);
+    return n >= m && !strcmp(s + n - m, suffix);
+}
+
+/* py FILE.mpy: load the compiled module and run it as __main__, with the
+ * exit status pyexec_file() gives a .py file. */
+static int run_mpy(const char *file)
+{
+    nlr_buf_t nlr;
+    if (nlr_push(&nlr) == 0)
+    {
+        qstr name = qstr_from_str(file);
+        mp_store_global(MP_QSTR___file__, MP_OBJ_NEW_QSTR(name));
+        mp_module_context_t *ctx = m_new_obj(mp_module_context_t);
+        ctx->module.globals = mp_globals_get();
+        mp_compiled_module_t cm;
+        cm.context = ctx;
+        mp_raw_code_load_file(name, &cm);
+        mp_call_function_0(mp_make_function_from_proto_fun(cm.rc, ctx, NULL));
+        mp_handle_pending(MP_HANDLE_PENDING_CALLBACKS_AND_EXCEPTIONS);
+        nlr_pop();
+        return 0;
+    }
+    mp_obj_t exc = MP_OBJ_FROM_PTR(nlr.ret_val);
+    if (mp_obj_is_subclass_fast(MP_OBJ_FROM_PTR(mp_obj_get_type(exc)), MP_OBJ_FROM_PTR(&mp_type_SystemExit)))
+    {
+        mp_obj_t val = mp_obj_exception_get_value(exc);
+        if (val == mp_const_none)
+            return 0;
+        if (mp_obj_is_int(val))
+            return (int)mp_obj_int_get_truncated(val) & 0xff;
+        mp_obj_print_helper(&mp_plat_print, val, PRINT_STR);
+        mp_print_str(&mp_plat_print, "\n");
+        return 1;
+    }
+    mp_obj_print_exception(&mp_plat_print, exc);
+    if (mp_obj_is_subclass_fast(MP_OBJ_FROM_PTR(mp_obj_get_type(exc)), MP_OBJ_FROM_PTR(&mp_type_KeyboardInterrupt)))
+        return PYEXEC_KEYBOARD_INTERRUPT & 0xff;
+    return 1;
 }
 
 static int repl(void)
@@ -316,6 +442,8 @@ static int run(const char *code, const char *file, int argc, char **argv)
     {
         set_path(file);
         set_argv(file, argc, argv);
+        if (has_suffix(file, ".mpy"))
+            return run_mpy(file);
         return pyexec_file(file) & 0xff;
     }
     set_path(NULL);
@@ -435,6 +563,7 @@ static int cmd_py(tdsh_session_t *session, int argc, char **argv)
 
     gc_sweep_all();   /* runs finalisers: closes files the script left open */
     mp_deinit();
+    exec_free_all();
     heap_free(heap);
     s_session = NULL;
     atomic_flag_clear(&s_busy);

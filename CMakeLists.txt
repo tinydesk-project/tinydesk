@@ -200,6 +200,11 @@ if(TD_WITH_TDSH AND TD_WITH_PYTHON)
         target_link_libraries(td_python PUBLIC m)   # floats: libm is separate on Linux
     endif()
     target_compile_definitions(td_python PUBLIC TD_WITH_PYTHON)
+    if(TD_MBEDTLS_DIR)
+        # hashlib: sha1 and md5 come from mbedTLS (sha256 without it too)
+        target_compile_definitions(td_python PRIVATE TD_PY_MBEDTLS)
+        target_link_libraries(td_python PRIVATE mbedcrypto)
+    endif()
     set_target_properties(td_python PROPERTIES C_STANDARD 11 C_EXTENSIONS ON)
     set_source_files_properties(${TD_MICROPYTHON_SRCS} PROPERTIES COMPILE_OPTIONS -w)   # third-party code
     # vfs_posix_file.c also defines sys.stdin/stdout/stderr on file

@@ -15,6 +15,11 @@
 
 #define mp_hal_ticks_cpu() (0)
 
+/* os.urandom(): TinyDesk Shell's random source (td_py.c). */
+#include <stddef.h>
+#include <stdint.h>
+void mp_hal_get_random(size_t n, uint8_t *buf);
+
 /* For extmod/vfs_posix_file.c (as in MicroPython's Unix port, without its
  * GIL): retry a system call that a signal interrupted, else raise. */
 #define MP_HAL_RETRY_SYSCALL(ret, syscall, raise)                                  \

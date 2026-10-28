@@ -36,18 +36,18 @@
  * single-precision FPU; the same on every target keeps results equal). */
 #define MICROPY_LONGINT_IMPL (MICROPY_LONGINT_IMPL_MPZ)
 #define MICROPY_FLOAT_IMPL   (MICROPY_FLOAT_IMPL_FLOAT)
+/* Big-integer digits as on the boards, also on 64-bit PCs: the frozen
+ * modules (frozen_content.c) are generated for this size. */
+#define MPZ_DIG_SIZE         (16)
 
-/* No native code emitters, no threads, no hardware modules: TinyDesk owns
- * the hardware, and scripts reach it through the tinydesk module. */
+/* No threads, no hardware modules: TinyDesk owns the hardware, and scripts
+ * reach it through the tinydesk module. */
 #define MICROPY_PY_THREAD            (0)
 #define MICROPY_PY_MACHINE           (0)
 #define MICROPY_PY_NETWORK           (0)
 #define MICROPY_PY_SOCKET            (0)
-#define MICROPY_PY_SELECT            (0)
-#define MICROPY_PY_ASYNCIO           (0)
 #define MICROPY_PY_DEFLATE           (0)
 #define MICROPY_PY_FRAMEBUF          (0)
-#define MICROPY_PY_HASHLIB           (0)
 #define MICROPY_PY_CRYPTOLIB         (0)
 #define MICROPY_PY_UCTYPES           (0)
 #define MICROPY_PY_BLUETOOTH         (0)
@@ -61,9 +61,51 @@
 #define MICROPY_PY_SYS_EXIT          (1)
 #define MICROPY_PY_SYS_ARGV          (1)
 #define MICROPY_PY_SYS_PLATFORM      "tinydesk"
-#define MICROPY_PERSISTENT_CODE_LOAD (0)
 #define MICROPY_ENABLE_SCHEDULER     (0)
 #define MICROPY_KBD_EXCEPTION        (1)   /* Ctrl+C raises KeyboardInterrupt */
+
+/* asyncio: the C part (_asyncio) and select.poll, which its loop waits in;
+ * the Python part is frozen into the firmware (manifest.py). The loop's
+ * waits sleep the shell task (MICROPY_INTERNAL_WFE below). */
+#define MICROPY_PY_ASYNCIO                    (1)
+#define MICROPY_PY_SELECT                     (1)
+#define MICROPY_PY_SELECT_POSIX_OPTIMISATIONS (0)
+#ifndef MICROPY_MODULE_FROZEN_MPY
+#define MICROPY_MODULE_FROZEN_MPY (1)
+#endif
+#ifndef MICROPY_QSTR_EXTRA_POOL
+#define MICROPY_QSTR_EXTRA_POOL mp_qstr_frozen_const_pool
+#endif
+
+/* hashlib: sha256, plus sha1 and md5 where mbedTLS is built in (always on
+ * the boards, where it also uses the chip's SHA hardware; on the PC
+ * programs when the build found mbedTLS, as for MQTT over TLS). */
+#define MICROPY_PY_HASHLIB        (1)
+#define MICROPY_PY_HASHLIB_SHA256 (1)
+#if defined(ESP_PLATFORM) || defined(TD_PY_MBEDTLS)
+#define MICROPY_SSL_MBEDTLS     (1)
+#define MICROPY_PY_HASHLIB_SHA1 (1)
+#define MICROPY_PY_HASHLIB_MD5  (1)
+#else
+#define MICROPY_PY_HASHLIB_SHA1 (0)
+#define MICROPY_PY_HASHLIB_MD5  (0)
+#endif
+
+/* Precompiled .mpy files (mpy-cross), and @micropython.native/viper where
+ * MicroPython has an emitter for the chip: the classic ESP32 (Xtensa) and
+ * x86-64 Linux. Not the ESP32-C6, whose firmware keeps RAM non-executable,
+ * nor Windows (no emitter for its x64 calling convention). Machine code can
+ * reach all of RAM, so td_py_commit_exec() lets only root run it. */
+#define MICROPY_PERSISTENT_CODE_LOAD (1)
+#if defined(__XTENSA__) || defined(TD_PY_GENHDR)
+#define MICROPY_EMIT_XTENSAWIN (1)
+#endif
+#if (defined(__x86_64__) && !defined(_WIN32)) || defined(TD_PY_GENHDR)
+#define MICROPY_EMIT_X64 (1)
+#endif
+#define MP_PLAT_COMMIT_EXEC(buf, len, reloc) td_py_commit_exec(buf, len, reloc)
+#include <stddef.h>
+extern void *td_py_commit_exec(void *buf, size_t len, void *reloc);
 
 /* The REPL (shared/runtime/pyexec.c with shared/readline). */
 #define MICROPY_HELPER_REPL                      (1)
@@ -97,7 +139,7 @@
 #define MICROPY_PY_OS                        (1)
 #define MICROPY_PY_OS_STATVFS                (0)
 #define MICROPY_PY_OS_UNAME                  (1)
-#define MICROPY_PY_OS_URANDOM                (0)
+#define MICROPY_PY_OS_URANDOM                (1)   /* mp_hal_get_random() in td_py.c */
 #define MICROPY_PY_OS_DUPTERM                (0)
 #define MICROPY_PY_OS_SYNC                   (0)
 #define MICROPY_PY_OS_GETENV_PUTENV_UNSETENV (0)
@@ -131,6 +173,10 @@ extern uint32_t td_py_random_seed(void);
 #define MICROPY_VM_HOOK_RETURN      MICROPY_VM_HOOK_POLL
 #define MICROPY_INTERNAL_EVENT_HOOK td_py_poll()
 extern void td_py_poll(void);
+/* Waiting for an event (select.poll, so the asyncio loop when every task
+ * sleeps): the shell task sleeps, and Ctrl+C is still seen. */
+#define MICROPY_INTERNAL_WFE(timeout_ms) td_py_wait_ms((int)(timeout_ms))
+extern void td_py_wait_ms(int timeout_ms);
 
 #define MICROPY_MPHALPORT_H "td_py_hal.h"
 #define MP_STATE_PORT       MP_STATE_VM
