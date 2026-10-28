@@ -30,7 +30,8 @@ typedef struct
     uint8_t icon_size;
     uint8_t menu_size;
     uint8_t bar_size;
-    uint8_t reserved[2];
+    uint8_t editor;       /* bit 0: completion pops up in the Editor */
+    uint8_t reserved[1];
 } settings_blob_t;
 
 #define LEGACY_SIZE 8   /* magic + theme, ascii, pattern, hide_icons */
@@ -40,6 +41,7 @@ static const char *const s_pattern_names[] = {"light shade", "medium shade", "da
 #define PATTERN_COUNT ((int)(sizeof(s_patterns) / sizeof(s_patterns[0])))
 
 static td_clock_prefs_t s_clock;
+static td_editor_prefs_t s_editor;
 static td_window_t *s_win;
 static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_pattern_label, *s_status;
 static td_widget_t *s_size_btn[3];      /* desktop icons, start menu, taskbar */
@@ -58,6 +60,11 @@ static td_ui_size_t code_size(uint8_t c)
 td_clock_prefs_t *td_clock_prefs(void)
 {
     return &s_clock;
+}
+
+td_editor_prefs_t *td_editor_prefs(void)
+{
+    return &s_editor;
 }
 
 static int pattern_index(void)
@@ -117,6 +124,7 @@ void td_settings_apply_saved(void)
     s_clock.clock_12h = b.clock_12h ? 1 : 0;
     s_clock.date_format = b.date_format < TD_DATE_FORMATS ? b.date_format : TD_DATE_DMY;
     s_clock.hide_clock = b.hide_clock ? 1 : 0;
+    s_editor.completion = b.editor & 1u;
     td_wm_set_icon_size(code_size(b.icon_size));
     td_wm_set_start_menu_size(code_size(b.menu_size));
     td_wm_set_taskbar_size(code_size(b.bar_size));
@@ -138,6 +146,7 @@ bool td_settings_save(void)
         .icon_size = size_code(td_wm_icon_size()),
         .menu_size = size_code(td_wm_start_menu_size()),
         .bar_size = size_code(td_wm_taskbar_size()),
+        .editor = s_editor.completion ? 1 : 0,
     };
     if (!si->fs || !si->fs->write || !td_session_home()[0])
         return false;

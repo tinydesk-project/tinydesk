@@ -1,27 +1,41 @@
 /*
- * editor.c - a small text editor window.
+ * editor.c - a small text editor window, with extras for Python.
  *
  *   arrows, Home/End, PgUp/PgDn, Ctrl+Home/End,      move (hold Shift to
  *   Ctrl+Left/Right (by word)                          select)
  *   mouse: click places the cursor, drag or Shift+click selects,
  *          double-click selects a word, the wheel scrolls, right-click menu
- *   typing, Enter, Tab (4 spaces), Backspace, Delete   edit (replace or
- *                                                       delete a selection)
+ *   typing, Enter (keeps the indent), Tab / Shift+Tab   edit (replace or
+ *   (indent the selected lines), Backspace, Delete      delete a selection)
  *   Ctrl+A select all, Ctrl+C copy, Ctrl+X cut, Ctrl+V paste
  *   (also Ctrl+Insert, Shift+Delete, Shift+Insert)
  *   Ctrl+Z undo, Ctrl+Y redo
+ *   Ctrl+F find, F3 find again, Ctrl+R replace all, Ctrl+G go to a line,
+ *   Ctrl+/ comment or uncomment the lines (#)
  *   Ctrl+S save, Ctrl+W or Esc close (asks about unsaved changes)
  *
+ * Python files (.py) also get colours, line numbers, an indent after a
+ * line ending in ':', and the matching bracket shown. F5 saves and runs
+ * the file in an output pane at the bottom, which shows the Terminal's
+ * shell session: F7 moves the keyboard there (input(), Ctrl+C) and back.
+ * When the script stops with an error, its line is marked and F8 goes
+ * there. Ctrl+Space suggests names (keywords, built-ins, module names, the
+ * file's own words); they can also pop up while typing (right-click menu,
+ * saved with the user's settings). Shell scripts (.tdsh) run with F5 too.
+ *
  * The text lives in one flat buffer that is allocated while the window is
- * open (TD_EDITOR_MAX bytes), with the undo history next to it. Files larger
- * than that open read-only. Line endings are stored as LF; CR characters are
- * dropped when loading.
+ * open, with the undo history next to it. It is sized to the file and grows
+ * with the text, up to TD_EDITOR_MAX bytes (so a small script leaves RAM
+ * for running it on a board without PSRAM). Files larger than that open
+ * read-only. Line endings are stored as LF; CR characters are dropped when
+ * loading.
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
 
+#include "editor_py.h"
 #include "td_apps.h"
 
 #ifndef TD_EDITOR_MAX
@@ -38,6 +52,11 @@
 #endif
 #define PATH_LEN        TD_PATH_MAX
 #define DOUBLE_CLICK_MS 400
+#define OUT_CAP         2048   /* output kept to find an error in */
+#define COMP_MAX        24     /* suggestions */
+#define COMP_ROWS       6      /* of them shown at once */
+#define CLS_MAX         256    /* bytes of a line that get colours */
+#define GROW            1024   /* the buffer grows by at least this much */
 
 /* One recorded change. Undo walks back one group (a user action: a typed
  * word, a paste, a cut...) at a time. */
@@ -75,8 +94,9 @@ typedef struct
 
 typedef struct
 {
-    char *buf;
+    char *buf;          /* cap + 1 bytes of text, then CLS_MAX of colours */
     int len;
+    int cap;
     int cur;            /* cursor as a byte offset */
     int anchor;         /* other end of the selection, -1 for none */
     int top;            /* first visible line */
@@ -94,10 +114,44 @@ typedef struct
     uint32_t status_ms;
     int view_rows;      /* text rows in the window at the last draw */
     undo_t *undo;
+
+    bool python;        /* a .py file: colours, indent rules, completion */
+    bool script;        /* a .tdsh file: F5 runs it */
+    bool numbers;       /* line numbers */
+    int gutter;         /* their width at the last draw */
+    char find[TD_TEXT_MAX];
+
+    /* Output pane: the Terminal's session, below the text. */
+    bool pane;
+    bool pane_focus;    /* keys go to the program */
+    bool pane_drag;     /* resizing it with the mouse */
+    int pane_h;         /* rows; 0: a third of the window */
+    int pane_y;         /* row of its title bar at the last draw */
+    int pane_scroll;
+    int rows_all;       /* rows above the status bar at the last draw */
+    bool run_after_save;
+    char *out;          /* output since Run, escapes removed (OUT_CAP) */
+    int out_len;
+    uint8_t out_esc;    /* inside an escape sequence */
+    bool err_done;      /* the error of this run was found */
+
+    /* The error the last run stopped with. */
+    int err_line;       /* 1-based; 0: none */
+    bool err_here;      /* in this file */
+    char err_msg[64];
+    char err_file[PATH_LEN];   /* as the shell names it */
+
+    /* Completion popup. */
+    bool comp_open;
+    int comp_n, comp_sel, comp_top, comp_start;
+    pyed_word_t comp[COMP_MAX];
 } editor_t;
 
 static editor_t E;
 static td_window_t *s_win;
+
+static void update_mode(void);
+static void run_file(void);
 
 static const td_fs_ops_t *fs(void)
 {
@@ -514,6 +568,30 @@ static void erase_selection(void)
     E.anchor = -1;
 }
 
+/* Room for `extra` more bytes of text, growing the buffer (up to
+ * TD_EDITOR_MAX); false, with a note, when there is none. */
+static bool room_for(int extra)
+{
+    int need = E.len + extra;
+    if (need > TD_EDITOR_MAX)
+    {
+        set_status("The file is full");
+        return false;
+    }
+    if (need <= E.cap)
+        return true;
+    int cap = need + GROW < TD_EDITOR_MAX ? need + GROW : TD_EDITOR_MAX;
+    char *b = realloc(E.buf, (size_t)cap + 1 + CLS_MAX);
+    if (!b)
+    {
+        set_status("Not enough memory");
+        return false;
+    }
+    E.buf = b;
+    E.cap = cap;
+    return true;
+}
+
 /* Type or paste text, replacing the selection. */
 static void insert_text(const char *text, int n, edit_kind_t kind)
 {
@@ -522,11 +600,8 @@ static void insert_text(const char *text, int n, edit_kind_t kind)
     int a = E.cur, b = E.cur;
     if (has_sel())
         sel_range(&a, &b);
-    if (E.len - (b - a) + n > TD_EDITOR_MAX)
-    {
-        set_status("The file is full");
+    if (!room_for(n - (b - a)))
         return;
-    }
     bool space = n == 1 && (text[0] == ' ' || text[0] == '\n');
     bool replace = has_sel();
     undo_begin(replace ? K_OTHER : kind, space);
@@ -667,6 +742,388 @@ static void move_lines(int delta)
     E.cur = at_col(nth_line(line), E.goal_col);
 }
 
+
+/* ------------------------------------------------- lines and indents */
+
+static bool blank(char c)
+{
+    return c == ' ' || c == '\t';
+}
+
+/* Starts of the first and last line of the selection (or the cursor's
+ * line); a selection that ends at the start of a line leaves it out. */
+static void line_range(int *first, int *last)
+{
+    int a = E.cur, b = E.cur;
+    if (has_sel())
+    {
+        sel_range(&a, &b);
+        if (b > a && b == line_start(b))
+            b--;
+    }
+    *first = line_start(a);
+    *last = line_start(b);
+}
+
+/* Change each line of line_range() with fn, the last one first, as one
+ * undo step. fn returns how much the line grew (negative: shrank). Selected
+ * lines stay selected. */
+static void edit_lines(int (*fn)(int ls, void *arg), void *arg)
+{
+    if (!writable())
+        return;
+    int first, last;
+    line_range(&first, &last);
+    int l0 = line_of(first), l1 = line_of(last);
+    bool sel = has_sel();
+    int cur_ls = line_start(E.cur), cur_off = E.cur - cur_ls, cur_d = 0;
+    undo_begin(K_OTHER, false);
+    for (int ls = last;; ls = line_start(ls - 1))
+    {
+        int d = fn(ls, arg);
+        if (ls == cur_ls)
+            cur_d = d;
+        if (ls <= first)
+            break;
+    }
+    if (sel)
+    {
+        E.anchor = nth_line(l0);
+        E.cur = line_end(nth_line(l1));
+    }
+    else
+    {
+        int ls = nth_line(l0), off = cur_off + cur_d;
+        E.cur = ls + (off < 0 ? 0 : off);
+        if (E.cur > line_end(ls))
+            E.cur = line_end(ls);
+    }
+    after_change();
+}
+
+/* arg: +1 indents by 4 spaces, -1 takes up to 4 (or a tab) away. */
+static int indent_line(int ls, void *arg)
+{
+    if (*(const int *)arg > 0)
+    {
+        if (ls >= E.len || E.buf[ls] == '\n' || !room_for(4))
+            return 0;
+        undo_record(true, ls, "    ", 4, E.cur);
+        raw_insert(ls, "    ", 4);
+        return 4;
+    }
+    int k = 0;
+    while (k < 4 && ls + k < E.len && E.buf[ls + k] == ' ')
+        k++;
+    if (k == 0 && ls < E.len && E.buf[ls] == '\t')
+        k = 1;
+    if (k)
+    {
+        undo_record(false, ls, E.buf + ls, k, E.cur);
+        raw_erase(ls, ls + k);
+    }
+    return -k;
+}
+
+typedef struct
+{
+    bool remove;
+    int indent;    /* "# " goes after this many bytes */
+} comment_t;
+
+static int comment_line(int ls, void *arg)
+{
+    const comment_t *c = arg;
+    int e = line_end(ls), i = ls;
+    while (i < e && blank(E.buf[i]))
+        i++;
+    if (i == e)
+        return 0;   /* blank lines stay as they are */
+    if (c->remove)
+    {
+        int k = E.buf[i] != '#' ? 0 : i + 1 < e && E.buf[i + 1] == ' ' ? 2
+                                                                       : 1;
+        if (k)
+        {
+            undo_record(false, i, E.buf + i, k, E.cur);
+            raw_erase(i, i + k);
+        }
+        return -k;
+    }
+    if (!room_for(2))
+        return 0;
+    undo_record(true, ls + c->indent, "# ", 2, E.cur);
+    raw_insert(ls + c->indent, "# ", 2);
+    return 2;
+}
+
+/* Ctrl+/: uncomment the lines when all of them are comments, else comment
+ * them out at the smallest indent. */
+static void toggle_comment(void)
+{
+    comment_t c = {true, INT_MAX};
+    int first, last;
+    line_range(&first, &last);
+    for (int ls = first;; ls = line_end(ls) + 1)
+    {
+        int e = line_end(ls), i = ls;
+        while (i < e && blank(E.buf[i]))
+            i++;
+        if (i < e)
+        {
+            if (E.buf[i] != '#')
+                c.remove = false;
+            if (i - ls < c.indent)
+                c.indent = i - ls;
+        }
+        if (ls >= last || e >= E.len)
+            break;
+    }
+    if (c.indent == INT_MAX)
+        return;   /* only blank lines */
+    edit_lines(comment_line, &c);
+}
+
+static bool starts_word(int p, int end, const char *word)
+{
+    int n = (int)strlen(word);
+    return end - p >= n && memcmp(E.buf + p, word, (size_t)n) == 0 && (p + n == end || !word_char(E.buf[p + n]));
+}
+
+/* Enter keeps the line's indent; in Python one more after a ':' and one
+ * less after return, pass, break, continue or raise. */
+static void newline(void)
+{
+    char text[80];
+    int n = 0, ls = line_start(E.cur), i = ls;
+    text[n++] = '\n';
+    while (i < E.cur && blank(E.buf[i]) && n < 72)
+        text[n++] = E.buf[i++];
+    if (E.python)
+    {
+        int j = E.cur;
+        while (j > i && blank(E.buf[j - 1]))
+            j--;
+        if (j > i && E.buf[j - 1] == ':')
+        {
+            memcpy(text + n, "    ", 4);
+            n += 4;
+        }
+        else if (starts_word(i, j, "return") || starts_word(i, j, "pass") || starts_word(i, j, "break") ||
+                 starts_word(i, j, "continue") || starts_word(i, j, "raise"))
+        {
+            for (int k = 0; k < 4 && n > 1 && text[n - 1] == ' '; k++)
+                n--;
+        }
+    }
+    insert_text(text, n, K_TYPE);
+}
+
+/* Tab: indent the selected lines, or spaces to the next multiple of 4. */
+static void tab_key(bool shift)
+{
+    static const int in = 1, out = -1;
+    int a = 0, b = 0;
+    if (has_sel())
+        sel_range(&a, &b);
+    if (shift)
+        edit_lines(indent_line, (void *)&out);
+    else if (has_sel() && memchr(E.buf + a, '\n', (size_t)(b - a)))
+        edit_lines(indent_line, (void *)&in);
+    else
+        insert_text("    ", 4 - col_of(has_sel() ? a : E.cur) % 4, K_TYPE);
+}
+
+/* Backspace in a Python line's indent takes it back to a multiple of 4. */
+static void backspace(void)
+{
+    if (E.python && !has_sel() && !E.readonly)
+    {
+        int ls = line_start(E.cur), i = ls;
+        while (i < E.cur && E.buf[i] == ' ')
+            i++;
+        if (i == E.cur && E.cur > ls)
+        {
+            int k = (E.cur - ls - 1) % 4 + 1;
+            undo_begin(K_BACKSPACE, false);
+            erase_recorded(E.cur - k, E.cur);
+            after_change();
+            return;
+        }
+    }
+    delete_key(true);
+}
+
+/* ------------------------------------------------------ find & go to */
+
+static int find_at(const char *needle, int from, int to)
+{
+    int n = (int)strlen(needle);
+    for (int i = from; i + n <= E.len && i < to; i++)
+        if (memcmp(E.buf + i, needle, (size_t)n) == 0)
+            return i;
+    return -1;
+}
+
+static void select_range(int a, int b)
+{
+    E.anchor = a;
+    E.cur = b;
+    E.goal_col = col_of(E.cur);
+    if (E.undo)
+        E.undo->merge = false;
+    E.follow = true;
+    td_wm_invalidate();
+}
+
+static void find_box(void);
+
+/* F3: the next match after the cursor, starting again at the top. */
+static void find_next(void)
+{
+    if (!E.find[0])
+    {
+        find_box();
+        return;
+    }
+    int from = E.cur, p = find_at(E.find, from, E.len);
+    if (p < 0)
+    {
+        p = find_at(E.find, 0, from);
+        if (p < 0)
+        {
+            set_status("Not found");
+            return;
+        }
+        set_status("From the top");
+    }
+    select_range(p, p + (int)strlen(E.find));
+}
+
+static void find_answer(const char *text, void *user)
+{
+    (void)user;
+    if (!td_win_is_open(s_win) || !text[0])
+        return;
+    snprintf(E.find, sizeof(E.find), "%s", text);
+    if (has_sel())
+    {     /* search from the start of the selection: it may be the match */
+        int a, b;
+        sel_range(&a, &b);
+        E.cur = a;
+    }
+    find_next();
+}
+
+/* The selection (one short line) is the suggested text. */
+static void find_initial(char *out, size_t cap)
+{
+    snprintf(out, cap, "%s", E.find);
+    if (has_sel())
+    {
+        int a, b;
+        sel_range(&a, &b);
+        if (b - a < (int)cap && !memchr(E.buf + a, '\n', (size_t)(b - a)))
+        {
+            memcpy(out, E.buf + a, (size_t)(b - a));
+            out[b - a] = '\0';
+        }
+    }
+}
+
+static void find_box(void)
+{
+    char init[TD_TEXT_MAX];
+    find_initial(init, sizeof(init));
+    td_inputbox("Find", "Find:", init, find_answer, NULL);
+}
+
+static void replace_with(const char *with, void *user)
+{
+    (void)user;
+    if (!td_win_is_open(s_win) || !writable() || !E.find[0])
+        return;
+    int fn = (int)strlen(E.find), wn = (int)strlen(with), count = 0, p = 0;
+    bool full = false;
+    undo_begin(K_OTHER, false);
+    while ((p = find_at(E.find, p, E.len)) >= 0)
+    {
+        if (!room_for(wn - fn))
+        {
+            full = true;
+            break;
+        }
+        undo_record(false, p, E.buf + p, fn, E.cur);
+        raw_erase(p, p + fn);
+        undo_record(true, p, with, wn, E.cur);
+        raw_insert(p, with, wn);
+        if (E.cur > p)
+            E.cur = E.cur >= p + fn ? E.cur - fn + wn : p;
+        p += wn;
+        count++;
+    }
+    E.anchor = -1;
+    if (count)
+        after_change();
+    char msg[48];
+    if (count)
+        snprintf(msg, sizeof(msg), "Replaced %d%s", count, full ? " (the file is full)" : "");
+    else
+        snprintf(msg, sizeof(msg), "%s", full ? "The file is full" : "Not found");
+    set_status(msg);
+}
+
+static void replace_answer(const char *text, void *user)
+{
+    (void)user;
+    if (!td_win_is_open(s_win) || !text[0])
+        return;
+    snprintf(E.find, sizeof(E.find), "%s", text);
+    td_inputbox("Replace all", "Replace with:", "", replace_with, NULL);
+}
+
+static void replace_box(void)
+{
+    if (!writable())
+        return;
+    char init[TD_TEXT_MAX];
+    find_initial(init, sizeof(init));
+    td_inputbox("Replace all", "Find:", init, replace_answer, NULL);
+}
+
+/* The cursor to the first character (after the indent) of line n. */
+static void go_to_line(int n)
+{
+    if (n < 1)
+        n = 1;
+    if (n > line_count())
+        n = line_count();
+    int p = nth_line(n - 1), e = line_end(p);
+    while (p < e && blank(E.buf[p]))
+        p++;
+    E.anchor = -1;
+    E.cur = p;
+    E.goal_col = col_of(p);
+    E.follow = true;
+    E.pane_focus = false;
+    if (E.undo)
+        E.undo->merge = false;
+    td_wm_invalidate();
+}
+
+static void line_answer(const char *text, void *user)
+{
+    (void)user;
+    if (td_win_is_open(s_win) && text[0])
+        go_to_line(atoi(text));
+}
+
+static void line_box(void)
+{
+    char prompt[40];
+    snprintf(prompt, sizeof(prompt), "Line number (1-%d):", line_count());
+    td_inputbox("Go to line", prompt, "", line_answer, NULL);
+}
 /* ------------------------------------------------------ load & save */
 
 static bool load(const char *path)
@@ -693,6 +1150,22 @@ static bool load(const char *path)
     return true;
 }
 
+/* After loading: keep what the text needs and some room to grow. */
+static void fit_buffer(void)
+{
+    int cap = E.readonly ? E.len : E.len + GROW < TD_EDITOR_MAX ? E.len + GROW
+                                                                : TD_EDITOR_MAX;
+    if (cap < E.cap)
+    {
+        char *b = realloc(E.buf, (size_t)cap + 1 + CLS_MAX);
+        if (b)
+        {
+            E.buf = b;
+            E.cap = cap;
+        }
+    }
+}
+
 static void close_now(void)
 {
     E.modified = false;
@@ -704,6 +1177,7 @@ static bool save_to(const char *path)
     if (fs()->write(path, E.buf, E.len) != 0)
     {
         set_status("Save failed");
+        E.run_after_save = false;
         return false;
     }
     /* save() passes E.path itself; copying a string onto itself is
@@ -716,11 +1190,19 @@ static bool save_to(const char *path)
         E.undo->merge = false;       /* typing after a save is a new step */
     }
     E.modified = false;
+    update_mode();
     update_title();
     set_status("Saved");
     td_desktop_refresh();
     if (E.close_after_save)
+    {
         close_now();
+    }
+    else if (E.run_after_save)
+    {
+        E.run_after_save = false;
+        run_file();
+    }
     return true;
 }
 
@@ -728,10 +1210,13 @@ static void save_as_answer(const char *name, void *user)
 {
     (void)user;
     char path[PATH_LEN];
+    if (!td_win_is_open(s_win))
+        return;
     if (!td_valid_name(name))
     {
         set_status("Invalid file name");
         E.close_after_save = false;
+        E.run_after_save = false;
         return;
     }
     snprintf(path, sizeof(path), "%s/%s", td_desktop_dir(), name);
@@ -739,6 +1224,7 @@ static void save_as_answer(const char *name, void *user)
     {
         set_status("A file with that name already exists");
         E.close_after_save = false;
+        E.run_after_save = false;
         return;
     }
     save_to(path);
@@ -754,7 +1240,8 @@ static void save(void)
     if (E.path[0])
         save_to(E.path);
     else
-        td_inputbox("Save as", "File name (saved on the Desktop):", "untitled.txt", save_as_answer, NULL);
+        td_inputbox("Save as", "File name (saved on the Desktop):", E.run_after_save ? "untitled.py" : "untitled.txt",
+                    save_as_answer, NULL);
 }
 
 static void unsaved_answer(int button, void *user)
@@ -784,13 +1271,390 @@ static bool on_close_request(td_window_t *win)
     return false;
 }
 
+/* ----------------------------------------------------- run & output */
+
+/* The file type decides the extras (again after Save as). */
+static void update_mode(void)
+{
+    bool was = E.python;
+    E.python = td_is_python(file_name());
+    E.script = td_is_script(file_name());
+    if (E.python && !was)
+        E.numbers = true;
+}
+
+/* The error at the end of a traceback in the output:
+ *   Traceback (most recent call last):
+ *     File "/home/root/x.py", line 3, in <module>
+ *   NameError: name 'y' isn't defined
+ * The deepest frame in this file is the one shown. */
+static void find_error(void)
+{
+    static const char tb[] = "Traceback (most recent call last):\n";
+    const char *o = E.out, *end = E.out + E.out_len, *t = NULL;
+    for (const char *p = o; (p = memchr(p, 'T', (size_t)(end - p))) != NULL; p++)
+        if (end - p >= (int)sizeof(tb) - 1 && memcmp(p, tb, sizeof(tb) - 1) == 0)
+            t = p;
+    if (!t)
+        return;
+    const char *me = td_shell_path(E.path), *my_name = file_name();
+    char file[PATH_LEN] = "";
+    int line = 0;
+    bool here = false;
+    const char *p = t + sizeof(tb) - 1;
+    for (;;)
+    {
+        const char *nl = memchr(p, '\n', (size_t)(end - p));
+        if (!nl)
+            return;   /* the rest has not arrived yet */
+        if (*p != ' ')
+            break;    /* the message */
+        static const char fl[] = "  File \"";
+        const char *q = p + sizeof(fl) - 1;
+        const char *close = q < nl ? memchr(q, '"', (size_t)(nl - q)) : NULL;
+        if (memcmp(p, fl, sizeof(fl) - 1) == 0 && close && nl - close > 7 && memcmp(close, "\", line ", 8) == 0)
+        {
+            char name[PATH_LEN];
+            int n = (int)(close - q) < PATH_LEN - 1 ? (int)(close - q) : PATH_LEN - 1;
+            memcpy(name, q, (size_t)n);
+            name[n] = '\0';
+            const char *base = strrchr(name, '/');
+            bool mine = !strcmp(name, me) || !strcmp(base ? base + 1 : name, my_name);
+            if (mine || !here)
+            {    /* the deepest frame of this file, else the deepest of all */
+                snprintf(file, sizeof(file), "%s", name);
+                line = atoi(close + 8);
+                here = mine;
+            }
+        }
+        p = nl + 1;
+    }
+    if (!line)
+        return;
+    const char *nl = memchr(p, '\n', (size_t)(end - p));
+    int n = (int)(nl - p);
+    if (n >= (int)sizeof(E.err_msg))
+        n = (int)sizeof(E.err_msg) - 1;
+    memcpy(E.err_msg, p, (size_t)n);
+    E.err_msg[n] = '\0';
+    snprintf(E.err_file, sizeof(E.err_file), "%s", file);
+    E.err_line = line;
+    E.err_here = here;
+    E.err_done = true;
+    td_wm_invalidate();
+}
+
+/* Every byte the program prints: kept (without escape sequences) to find
+ * the error in. */
+static void output_tap(const uint8_t *data, int len)
+{
+    if (!E.out)
+        return;
+    bool line = false;
+    for (int i = 0; i < len; i++)
+    {
+        uint8_t c = data[i];
+        switch (E.out_esc)
+        {
+        case 1:   /* after ESC */
+            E.out_esc = c == '[' ? 2 : c == ']' ? 3
+                                                : 0;
+            continue;
+        case 2:   /* CSI: up to the final byte */
+            if (c >= 0x40 && c <= 0x7E)
+                E.out_esc = 0;
+            continue;
+        case 3:   /* OSC: up to BEL or ESC */
+            if (c == 7)
+                E.out_esc = 0;
+            else if (c == 0x1B)
+                E.out_esc = 1;
+            continue;
+        default:
+            break;
+        }
+        if (c == 0x1B)
+        {
+            E.out_esc = 1;
+            continue;
+        }
+        if (c == '\r' || (c < 0x20 && c != '\n' && c != '\t'))
+            continue;
+        if (E.out_len == OUT_CAP)
+        {   /* keep the newer half */
+            memmove(E.out, E.out + OUT_CAP / 2, OUT_CAP / 2);
+            E.out_len = OUT_CAP / 2;
+        }
+        E.out[E.out_len++] = (char)c;
+        line |= c == '\n';
+    }
+    if (line && !E.err_done)
+        find_error();
+}
+
+static void show_pane(bool focus)
+{
+    E.pane = true;
+    E.pane_focus = focus;
+    td_terminal_set_viewer(s_win, output_tap);
+    td_wm_invalidate();
+}
+
+static void save(void);
+
+/* F5: save, then run the file in the shell, its output in the pane. */
+static void run_file(void)
+{
+    if (!E.python && !E.script && E.path[0])
+    {
+        set_status("F5 runs .py and " TD_SCRIPT_EXT " files");
+        return;
+    }
+    if (!td_terminal_backend())
+    {
+        set_status("No shell in this build");
+        return;
+    }
+    if (E.modified || !E.path[0])
+    {
+        E.run_after_save = true;
+        save();
+        return;
+    }
+    const char *p = td_shell_path(E.path);
+    char cmd[PATH_LEN + 16];
+    if (strchr(p, '"') || snprintf(cmd, sizeof(cmd), E.python ? "py \"%s\"" : "tdsh run \"%s\"", p) >= (int)sizeof(cmd))
+    {
+        set_status("This file name cannot be passed to the shell");
+        return;
+    }
+    if (!E.out)
+        E.out = malloc(OUT_CAP);
+    E.out_len = 0;
+    E.out_esc = 0;
+    E.err_done = !E.python;
+    E.err_line = 0;
+    E.pane_scroll = 0;
+    show_pane(false);
+    td_terminal_command(cmd);
+}
+
+/* Shift+F5 or the menu: Ctrl+C for the program. */
+static void stop_program(void)
+{
+    td_terminal_send("\x03", 1);
+    set_status("Ctrl+C sent");
+}
+
+/* F8: to the line the last run stopped at (opening its file if it is
+ * another one). */
+static void go_to_error(void)
+{
+    if (!E.err_line)
+    {
+        set_status("No error from the last run");
+        return;
+    }
+    if (E.err_here)
+    {
+        go_to_line(E.err_line);
+        return;
+    }
+    const char *root = fs()->root ? fs()->root : "";
+    char path[PATH_LEN], msg[sizeof(E.err_msg)];
+    int line = E.err_line;
+    snprintf(msg, sizeof(msg), "%s", E.err_msg);
+    if (E.err_file[0] != '/' || snprintf(path, sizeof(path), "%s%s", root, E.err_file) >= (int)sizeof(path))
+        return;
+    td_editor_open(path);
+    if (td_win_is_open(s_win) && strcmp(E.path, path) == 0)
+    {
+        E.err_line = line;
+        E.err_here = true;
+        snprintf(E.err_msg, sizeof(E.err_msg), "%s", msg);
+        snprintf(E.err_file, sizeof(E.err_file), "%s", td_shell_path(path));
+        go_to_line(line);
+    }
+}
+
+/* ------------------------------------------------------- completion */
+
+static void comp_close(void)
+{
+    if (E.comp_open)
+        td_wm_invalidate();
+    E.comp_open = false;
+}
+
+/* Look for suggestions at the cursor; `asked` (Ctrl+Space) also shows
+ * them for one letter and says when there are none. */
+static void comp_update(bool asked)
+{
+    if (!asked && (!E.comp_open && (!E.python || !td_editor_prefs()->completion)))
+        return;
+    E.comp_n = has_sel() ? 0
+                         : pyed_complete(E.buf, E.len, E.cur, asked || E.comp_open ? 1 : 2, E.comp, COMP_MAX,
+                                         &E.comp_start);
+    E.comp_open = E.comp_n > 0;
+    E.comp_sel = 0;
+    E.comp_top = 0;
+    if (asked && !E.comp_open)
+        set_status("No suggestions");
+    td_wm_invalidate();
+}
+
+static void comp_accept(void)
+{
+    const pyed_word_t *w = &E.comp[E.comp_sel];
+    int typed = E.cur - E.comp_start;
+    char text[48];
+    int n = w->n - typed < (int)sizeof(text) ? w->n - typed : (int)sizeof(text);
+    memcpy(text, w->s + typed, (size_t)n);   /* w may point into the text */
+    E.comp_open = false;
+    if (n > 0)
+        insert_text(text, n, K_OTHER);
+    td_wm_invalidate();
+}
+
+/* Keys for the open popup; false: not one of them (the popup closes). */
+static bool comp_key(uint32_t k)
+{
+    switch (k)
+    {
+    case TD_KEY_UP:
+        E.comp_sel = E.comp_sel > 0 ? E.comp_sel - 1 : E.comp_n - 1;
+        break;
+    case TD_KEY_DOWN:
+        E.comp_sel = E.comp_sel < E.comp_n - 1 ? E.comp_sel + 1 : 0;
+        break;
+    case TD_KEY_ENTER:
+    case TD_KEY_TAB:
+        comp_accept();
+        return true;
+    case TD_KEY_ESC:
+        comp_close();
+        return true;
+    default:
+        return false;
+    }
+    if (E.comp_sel < E.comp_top)
+        E.comp_top = E.comp_sel;
+    if (E.comp_sel >= E.comp_top + COMP_ROWS)
+        E.comp_top = E.comp_sel - COMP_ROWS + 1;
+    td_wm_invalidate();
+    return true;
+}
+
 /* ---------------------------------------------------------- drawing */
+
+/* Colours for Python text and the line numbers, per theme (0 is Classic,
+ * white on red; the others are dark). */
+static uint8_t syntax_colour(int kind)
+{
+    static const uint8_t classic[PYED_KINDS] = {15, 11, 14, 10, 7, 13, 15, 13};
+    static const uint8_t dark[PYED_KINDS] = {252, 75, 80, 114, 244, 180, 221, 176};
+    if (kind <= PYED_TEXT || kind >= PYED_KINDS)
+        return td_theme()->input_fg;
+    return td_theme_index() == 0 ? classic[kind] : dark[kind];
+}
+
+/* The bracket matching the one at or just before the cursor, or -1. */
+static int matching_bracket(int *at)
+{
+    static const char open[] = "([{", close[] = ")]}";
+    for (int k = 0; k < 2; k++)
+    {
+        int p = E.cur - k;
+        if (p < 0 || p >= E.len)
+            continue;
+        const char *o = strchr(open, E.buf[p]), *c = strchr(close, E.buf[p]);
+        if (!E.buf[p] || (!o && !c))
+            continue;
+        char want = o ? close[o - open] : open[c - close];
+        int step = o ? 1 : -1, depth = 0;
+        for (int i = p, n = 0; i >= 0 && i < E.len && n < 8000; i += step, n++)
+        {
+            if (E.buf[i] == E.buf[p])
+                depth++;
+            else if (E.buf[i] == want && --depth == 0)
+            {
+                *at = p;
+                return i;
+            }
+        }
+        return -1;
+    }
+    return -1;
+}
+
+static int digits(int n)
+{
+    int d = 1;
+    while (n >= 10)
+    {
+        n /= 10;
+        d++;
+    }
+    return d;
+}
+
+/* The suggestions, under the cursor (or above it near the bottom). */
+static void draw_completion(int cx, int cy, int w)
+{
+    const td_theme_t *t = td_theme();
+    int rows = E.comp_n < COMP_ROWS ? E.comp_n : COMP_ROWS, width = 8;
+    for (int i = 0; i < E.comp_n; i++)
+        if (E.comp[i].n + 2 > width)
+            width = E.comp[i].n + 2;
+    if (width > 30)
+        width = 30;
+    int x = cx - (E.cur - E.comp_start);
+    if (x + width > w)
+        x = w - width;
+    if (x < 0)
+        x = 0;
+    int y = cy + 1 + rows <= E.view_rows ? cy + 1 : cy - rows;
+    if (y < 0)
+        y = 0;
+    for (int r = 0; r < rows; r++)
+    {
+        int i = E.comp_top + r;
+        bool sel = i == E.comp_sel;
+        uint8_t fg = sel ? t->menu_select_fg : t->menu_fg, bg = sel ? t->menu_select_bg : t->menu_bg;
+        char word[40];
+        int n = E.comp[i].n < (int)sizeof(word) - 1 ? E.comp[i].n : (int)sizeof(word) - 1;
+        memcpy(word, E.comp[i].s, (size_t)n);
+        word[n] = '\0';
+        td_fill(td_rect(x, y + r, width, 1), ' ', fg, bg);
+        td_textn(x + 1, y + r, word, width - 2, fg, bg, 0);
+    }
+    if (E.comp_n > rows)
+    {
+        char more[24];
+        snprintf(more, sizeof(more), "%d/%d", E.comp_sel + 1, E.comp_n);
+        td_textn(x + width - (int)strlen(more), y + rows - 1, more, width, t->dim, t->menu_bg, 0);
+    }
+}
 
 static void on_draw(td_window_t *win, int w, int h)
 {
     const td_theme_t *t = td_theme();
-    int rows = h - 1;               /* the last row is the status bar */
+    bool focused = win == td_win_focused();
+    E.rows_all = h - 1;           /* the last row is the status bar */
+    int rows = E.rows_all, pane_rows = 0;
+    if (E.pane && E.rows_all >= 6)
+    {
+        pane_rows = E.pane_h ? E.pane_h : E.rows_all / 3;
+        if (pane_rows > E.rows_all - 4)
+            pane_rows = E.rows_all - 4;
+        if (pane_rows < 2)
+            pane_rows = 2;
+        rows = E.rows_all - pane_rows - 1;
+    }
     E.view_rows = rows > 1 ? rows : 1;
+    E.pane_y = pane_rows ? rows : -1;
+    E.gutter = E.numbers ? (digits(line_count()) > 2 ? digits(line_count()) : 2) + 2 : 0;
+    int tw = w - E.gutter > 1 ? w - E.gutter : 1;   /* text columns */
     int cl = line_of(E.cur), cc = col_of(E.cur);
 
     if (E.follow)
@@ -801,22 +1665,49 @@ static void on_draw(td_window_t *win, int w, int h)
             E.top = cl - E.view_rows + 1;
         if (cc < E.left)
             E.left = cc;
-        if (cc >= E.left + w)
-            E.left = cc - w + 1;
+        if (cc >= E.left + tw)
+            E.left = cc - tw + 1;
         E.follow = false;
     }
 
-    int sa = 0, sb = 0;
+    int sa = 0, sb = 0, ba = -1, bb = -1;
     if (has_sel())
         sel_range(&sa, &sb);
+    else
+        bb = matching_bracket(&ba);
+
+    /* Lines above the view only matter for a string that runs over. */
+    int state = 0, p = 0;
+    for (int line = 0; line < E.top; line++)
+    {
+        int e = line_end(p);
+        if (E.python)
+            state = pyed_lex_line(E.buf + p, e - p, state, NULL, 0);
+        if (e >= E.len)
+            break;
+        p = e + 1;
+    }
 
     td_fill(td_rect(0, 0, w, rows), ' ', t->input_fg, t->input_bg);
-    int p = nth_line(E.top);
+    uint8_t *cls = (uint8_t *)E.buf + E.cap + 1;   /* CLS_MAX bytes after the text */
     for (int row = 0; row < rows; row++)
     {
-        if (E.top + row >= line_count())
+        int line = E.top + row;
+        if (line >= line_count())
             break;
         int e = line_end(p);
+        if (E.python)
+            state = pyed_lex_line(E.buf + p, e - p, state, cls, CLS_MAX);
+        if (E.gutter)
+        {
+            bool err = E.err_here && line + 1 == E.err_line;
+            uint8_t fg = err ? 231 : line == cl ? syntax_colour(PYED_TEXT)
+                                                : syntax_colour(PYED_COMMENT);
+            uint8_t bg = err ? (td_theme_index() == 0 ? 9 : 124) : t->input_bg;
+            char num[28];
+            snprintf(num, sizeof(num), "%*d ", E.gutter - 1 < 12 ? E.gutter - 1 : 12, line + 1);
+            td_text(0, row, num, fg, bg, 0);
+        }
         const char *s = E.buf + p;
         int col = 0;
         while (s < E.buf + e)
@@ -835,17 +1726,23 @@ static void on_draw(td_window_t *win, int w, int h)
             else if (cp < 0x20u)
                 cp = '?';
             bool sel = at >= sa && at < sb;
-            if (col >= E.left && col - E.left < w)
-                td_putc(col - E.left, row, cp, sel ? t->select_fg : t->input_fg, sel ? t->select_bg : t->input_bg, 0);
+            if (col >= E.left && col - E.left < tw)
+            {
+                uint8_t fg = E.python && at - p < CLS_MAX ? syntax_colour(cls[at - p]) : t->input_fg;
+                uint8_t attr = at == ba || at == bb ? TD_BOLD | TD_UNDERLINE : 0;
+                td_putc(E.gutter + col - E.left, row, cp, sel ? t->select_fg : fg, sel ? t->select_bg : t->input_bg, attr);
+            }
             col++;
         }
         /* A selected line break shows as one highlighted cell. */
-        if (e < E.len && e >= sa && e < sb && col >= E.left && col - E.left < w)
-            td_putc(col - E.left, row, ' ', t->select_fg, t->select_bg, 0);
+        if (e < E.len && e >= sa && e < sb && col >= E.left && col - E.left < tw)
+            td_putc(E.gutter + col - E.left, row, ' ', t->select_fg, t->select_bg, 0);
         p = e + 1;
     }
 
-    if (win == td_win_focused() && cl >= E.top && cl < E.top + rows && cc >= E.left && cc - E.left < w)
+    bool text_focus = focused && !E.pane_focus;
+    int cx = E.gutter + cc - E.left, cy = cl - E.top;
+    if (text_focus && cy >= 0 && cy < rows && cc >= E.left && cc - E.left < tw)
     {
         uint32_t ch = ' ';
         if (E.cur < E.len && E.buf[E.cur] != '\n')
@@ -855,21 +1752,96 @@ static void on_draw(td_window_t *win, int w, int h)
             if (ch < 0x20u)
                 ch = ' ';
         }
-        td_putc(cc - E.left, cl - E.top, ch, t->input_fg, t->input_bg, TD_REVERSE);
+        td_putc(cx, cy, ch, t->input_fg, t->input_bg, TD_REVERSE);
+    }
+
+    /* Output pane: a title row, then the shell session. */
+    if (pane_rows)
+    {
+        bool hot = focused && E.pane_focus;
+        uint8_t fg = hot ? t->title_fg : t->title_inactive_fg, bg = hot ? t->title_bg : t->title_inactive_bg;
+        td_fill(td_rect(0, rows, w, 1), ' ', fg, bg);
+        td_textn(1, rows, hot ? "Output - keys go to the program; F7 or Esc: back to the text" : "Output - F7: type here (input, Ctrl+C)  F5: run again",
+                 w - 2, fg, bg, 0);
+        E.pane_scroll = td_terminal_draw_view(win, 0, rows + 1, w, pane_rows, E.pane_scroll, hot);
     }
 
     /* Status bar. */
-    char bar[176], sel[24] = "";
+    char bar[200];
     bool recent = E.status[0] && td_millis() - E.status_ms < 4000;
+    int n = snprintf(bar, sizeof(bar), " Ln %d, Col %d", cl + 1, cc + 1);
     if (has_sel())
-        snprintf(sel, sizeof(sel), "  %d selected", sel_chars());
-    snprintf(bar, sizeof(bar), " Ln %d, Col %d%s%s  %s", cl + 1, cc + 1, sel, E.readonly ? "  [read-only]" : "",
-             recent ? E.status : "^S Save  ^Z Undo  ^Y Redo  ^C Copy  ^X Cut  ^V Paste");
-    td_fill(td_rect(0, rows, w, 1), ' ', t->title_inactive_fg, t->title_inactive_bg);
-    td_textn(0, rows, bar, w, t->title_inactive_fg, t->title_inactive_bg, 0);
+        n += snprintf(bar + n, sizeof(bar) - (size_t)n, "  %d selected", sel_chars());
+    if (E.readonly)
+        n += snprintf(bar + n, sizeof(bar) - (size_t)n, "  [read-only]");
+    char *info = bar + n;
+    size_t room = sizeof(bar) - (size_t)n;
+    if (recent)
+        snprintf(info, room, "  %s", E.status);
+    else if (E.err_line && E.err_here)
+        snprintf(info, room, "  Line %d: %s  (F8)", E.err_line, E.err_msg);
+    else if (E.err_line)
+        snprintf(info, room, "  %.40s line %d: %s  (F8)", E.err_file, E.err_line, E.err_msg);
+    else if (E.python || E.script)
+        snprintf(info, room, "  F5 Run  F7 Output  ^F Find  ^G Line  ^/ Comment%s", E.python ? "  ^Space Complete" : "");
+    else
+        snprintf(info, room, "  ^S Save  ^Z Undo  ^Y Redo  ^F Find  ^G Line  ^C Copy  ^V Paste");
+    bool err_bar = !recent && E.err_line;
+    uint8_t bfg = err_bar ? 231 : t->title_inactive_fg, bbg = err_bar ? (td_theme_index() == 0 ? 1 : 52) : t->title_inactive_bg;
+    td_fill(td_rect(0, E.rows_all, w, 1), ' ', bfg, bbg);
+    td_textn(0, E.rows_all, bar, w, bfg, bbg, 0);
+
+    if (E.comp_open && text_focus && cy >= 0 && cy < rows)
+        draw_completion(cx, cy, w);
 }
 
 /* ------------------------------------------------------------ input */
+
+static void settings_changed(void)
+{
+    if (!td_settings_save())
+        set_status("Not saved: no settings file here");
+}
+
+static void toggle_completion(void)
+{
+    td_editor_prefs()->completion = !td_editor_prefs()->completion;
+    settings_changed();
+    set_status(td_editor_prefs()->completion ? "Suggestions pop up while typing" : "Suggestions only with Ctrl+Space");
+}
+
+/* Keys while the output pane has the keyboard: the program gets them. */
+static bool pane_key(const td_event_t *ev)
+{
+    uint32_t k = ev->key;
+    if (k == TD_KEY_F7 || k == TD_KEY_ESC)
+    {
+        E.pane_focus = false;
+        td_wm_invalidate();
+    }
+    else if (k == TD_KEY_F5 && !(ev->mods & TD_MOD_SHIFT))
+    {
+        run_file();
+    }
+    else if (k == TD_KEY_F8)
+    {
+        go_to_error();
+    }
+    else if ((ev->mods & TD_MOD_SHIFT) && (k == TD_KEY_PGUP || k == TD_KEY_PGDN))
+    {
+        int page = E.rows_all - E.pane_y - 1;
+        E.pane_scroll += k == TD_KEY_PGUP ? page : -page;
+        if (E.pane_scroll < 0)
+            E.pane_scroll = 0;
+        td_wm_invalidate();
+    }
+    else
+    {
+        E.pane_scroll = 0;
+        td_terminal_key(ev);
+    }
+    return true;
+}
 
 static bool on_key(const td_event_t *ev)
 {
@@ -877,11 +1849,49 @@ static bool on_key(const td_event_t *ev)
     bool ctrl = (ev->mods & TD_MOD_CTRL) != 0;
     bool shift = (ev->mods & TD_MOD_SHIFT) != 0;
 
+    if (E.pane_focus && E.pane)
+        return pane_key(ev);
+    if (E.comp_open && !ctrl && comp_key(k))
+        return true;
+
+    switch (k)
+    {
+    case TD_KEY_F3:
+        find_next();
+        return true;
+    case TD_KEY_F5:
+        comp_close();
+        if (shift)
+            stop_program();
+        else
+            run_file();
+        return true;
+    case TD_KEY_F7:
+        comp_close();
+        show_pane(true);
+        return true;
+    case TD_KEY_F8:
+        go_to_error();
+        return true;
+    default:
+        break;
+    }
+
+    if (ctrl && (k == ' ' || k == '_' || k == '/'))
+    {
+        if (k == ' ')
+            comp_update(true);
+        else
+            toggle_comment();
+        return true;
+    }
     if (ctrl && k >= 'a' && k <= 'z')
     {
+        comp_close();
         switch (k)
         {
         case 's':
+            E.run_after_save = false;
             save();
             return true;
         case 'w':
@@ -908,6 +1918,15 @@ static bool on_key(const td_event_t *ev)
             return true;
         case 'y':
             redo();
+            return true;
+        case 'f':
+            find_box();
+            return true;
+        case 'r':
+            replace_box();
+            return true;
+        case 'g':
+            line_box();
             return true;
         default:
             break;
@@ -981,6 +2000,7 @@ static bool on_key(const td_event_t *ev)
     }
     if (moved)
     {
+        comp_close();
         if (shift)
         {
             if (E.anchor < 0 || !sel)
@@ -999,16 +2019,18 @@ static bool on_key(const td_event_t *ev)
         return true;
     }
 
+    bool suggest = false;
     switch (k)
     {
     case TD_KEY_ENTER:
-        insert_text("\n", 1, K_TYPE);
+        newline();
         break;
     case TD_KEY_TAB:
-        insert_text("    ", 4, K_TYPE);
+        tab_key(shift);
         break;
     case TD_KEY_BACKSPACE:
-        delete_key(true);
+        backspace();
+        suggest = E.comp_open;
         break;
     case TD_KEY_DELETE:
         delete_key(false);
@@ -1020,8 +2042,13 @@ static bool on_key(const td_event_t *ev)
             uint8_t u[4];
             insert_text((const char *)u, td_utf8_encode(k, u), K_TYPE);
         }
+        suggest = k == '.' || k == '_' || (k < 0x80 && word_char((char)k));
         break;
     }
+    if (suggest)
+        comp_update(false);
+    else
+        comp_close();
     E.goal_col = col_of(E.cur);
     E.follow = true;
     td_wm_invalidate();
@@ -1034,21 +2061,31 @@ enum
 {
     M_UNDO,
     M_REDO,
-    M_SEP1,
     M_CUT,
     M_COPY,
     M_PASTE,
-    M_DELETE,
-    M_SEP2,
-    M_ALL
+    M_ALL,
+    M_FIND,
+    M_REPLACE,
+    M_LINE,
+    M_COMMENT,
+    M_RUN,
+    M_STOP,
+    M_ERROR,
+    M_PANE,
+    M_NUMBERS,
+    M_COMPLETE,
+    M_SEP
 };
+
+static int s_menu_ids[20];
 
 static void menu_chosen(int item, void *user)
 {
     (void)user;
-    if (!td_win_is_open(s_win))
+    if (!td_win_is_open(s_win) || item < 0 || item >= (int)(sizeof(s_menu_ids) / sizeof(s_menu_ids[0])))
         return;
-    switch (item)
+    switch (s_menu_ids[item])
     {
     case M_UNDO:
         undo();
@@ -1065,12 +2102,47 @@ static void menu_chosen(int item, void *user)
     case M_PASTE:
         paste();
         break;
-    case M_DELETE:
-        if (has_sel())
-            delete_key(false);
-        break;
     case M_ALL:
         select_all();
+        break;
+    case M_FIND:
+        find_box();
+        break;
+    case M_REPLACE:
+        replace_box();
+        break;
+    case M_LINE:
+        line_box();
+        break;
+    case M_COMMENT:
+        toggle_comment();
+        break;
+    case M_RUN:
+        run_file();
+        break;
+    case M_STOP:
+        stop_program();
+        break;
+    case M_ERROR:
+        go_to_error();
+        break;
+    case M_PANE:
+        if (E.pane)
+        {
+            E.pane = E.pane_focus = false;
+            td_wm_invalidate();
+        }
+        else
+        {
+            show_pane(false);
+        }
+        break;
+    case M_NUMBERS:
+        E.numbers = !E.numbers;
+        td_wm_invalidate();
+        break;
+    case M_COMPLETE:
+        toggle_completion();
         break;
     default:
         break;
@@ -1079,19 +2151,37 @@ static void menu_chosen(int item, void *user)
 
 static void context_menu(int x, int y)
 {
-    static const char *const items[] = {
-        "Undo       Ctrl+Z",
-        "Redo       Ctrl+Y",
-        "-",
-        "Cut        Ctrl+X",
-        "Copy       Ctrl+C",
-        "Paste      Ctrl+V",
-        "Delete     Del",
-        "-",
-        "Select all Ctrl+A",
-    };
+    const char *items[20];
+    int n = 0;
+#define ITEM(id, label) (s_menu_ids[n] = (id), items[n++] = (label))
+    bool code = E.python || E.script;
+    ITEM(M_UNDO, "Undo         Ctrl+Z");
+    ITEM(M_REDO, "Redo         Ctrl+Y");
+    ITEM(M_SEP, "-");
+    ITEM(M_CUT, "Cut          Ctrl+X");
+    ITEM(M_COPY, "Copy         Ctrl+C");
+    ITEM(M_PASTE, "Paste        Ctrl+V");
+    ITEM(M_ALL, "Select all   Ctrl+A");
+    ITEM(M_SEP, "-");
+    ITEM(M_FIND, "Find...      Ctrl+F");
+    ITEM(M_REPLACE, "Replace all  Ctrl+R");
+    ITEM(M_LINE, "Go to line   Ctrl+G");
+    ITEM(M_COMMENT, "Comment      Ctrl+/");
+    if (code)
+    {
+        ITEM(M_SEP, "-");
+        ITEM(M_RUN, "Run          F5");
+        ITEM(M_STOP, "Stop (Ctrl+C)");
+        ITEM(M_ERROR, "Go to error  F8");
+        ITEM(M_PANE, E.pane ? "Hide output" : "Show output  F7");
+    }
+    ITEM(M_SEP, "-");
+    ITEM(M_NUMBERS, E.numbers ? "Line numbers   [x]" : "Line numbers   [ ]");
+    if (E.python)
+        ITEM(M_COMPLETE, td_editor_prefs()->completion ? "Auto-complete  [x]" : "Auto-complete  [ ]");
+#undef ITEM
     td_rect_t c = td_win_client(s_win);
-    td_menu_popup(c.x + x, c.y + y, items, (int)(sizeof(items) / sizeof(items[0])), menu_chosen, NULL);
+    td_menu_popup(c.x + x, c.y + y, items, n, menu_chosen, NULL);
 }
 
 /* ------------------------------------------------------------- mouse */
@@ -1116,20 +2206,55 @@ static int pos_at(int x, int y)
     int line = E.top + y;
     if (line >= line_count())
         line = line_count() - 1;
+    x -= E.gutter;
     return at_col(nth_line(line), E.left + (x < 0 ? 0 : x));
 }
 
 static bool on_mouse(const td_event_t *ev)
 {
+    bool in_pane = E.pane_y >= 0 && ev->y > E.pane_y && ev->y < E.rows_all;
     if (ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN)
     {
-        E.top += ev->button == TD_BUTTON_WHEEL_UP ? -3 : 3;
+        int d = ev->button == TD_BUTTON_WHEEL_UP ? 3 : -3;
+        if (in_pane)
+        {
+            E.pane_scroll = E.pane_scroll + d > 0 ? E.pane_scroll + d : 0;
+            td_wm_invalidate();
+            return true;
+        }
+        E.top -= d;
         if (E.top > line_count() - 1)
             E.top = line_count() - 1;
         if (E.top < 0)
             E.top = 0;
         td_wm_invalidate();
         return true;
+    }
+    if (E.pane_drag)
+    {
+        if (ev->action == TD_MOUSE_RELEASE)
+            E.pane_drag = false;
+        else
+            E.pane_h = E.rows_all - ev->y - 1 > 2 ? E.rows_all - ev->y - 1 : 2;
+        td_wm_invalidate();
+        return true;
+    }
+    if (ev->action == TD_MOUSE_PRESS && E.pane_y >= 0 && ev->y >= E.pane_y && ev->y < E.rows_all)
+    {
+        comp_close();
+        if (ev->y == E.pane_y && ev->button == TD_BUTTON_LEFT)
+            E.pane_drag = true;    /* its title row: drag to resize */
+        else if (ev->button == TD_BUTTON_RIGHT)
+            context_menu(ev->x, ev->y);
+        else
+            E.pane_focus = true;
+        td_wm_invalidate();
+        return true;
+    }
+    if (ev->action == TD_MOUSE_PRESS)
+    {
+        E.pane_focus = false;
+        comp_close();
     }
     if (ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_RIGHT)
     {
@@ -1203,7 +2328,18 @@ static bool on_event(td_window_t *win, const td_event_t *ev)
         return on_key(ev);
     if (ev->type == TD_EV_PASTE)
     {
-        paste_from_terminal(ev);
+        if (E.pane && E.pane_focus)
+        {
+            int n = 0;
+            const char *text = td_paste_text(&n);
+            if (text && n > 0)
+                td_terminal_send(text, n);
+        }
+        else
+        {
+            comp_close();
+            paste_from_terminal(ev);
+        }
         return true;
     }
     if (ev->type == TD_EV_MOUSE)
@@ -1222,13 +2358,24 @@ static bool on_drop(td_window_t *win, int x, int y, const td_drag_item_t *item)
     return true;
 }
 
+/* Output shows up quickly while the pane is open. */
+static void on_tick(td_window_t *win)
+{
+    (void)win;
+    if (E.pane)
+        td_terminal_pump();
+}
+
 static void on_close(td_window_t *win)
 {
     (void)win;
+    td_terminal_set_viewer(NULL, NULL);
     free(E.buf);
     free(E.undo);
+    free(E.out);
     E.buf = NULL;
     E.undo = NULL;
+    E.out = NULL;
     s_win = NULL;
 }
 
@@ -1260,7 +2407,9 @@ void td_editor_open(const char *path)
     memset(&E, 0, sizeof(E));
     E.anchor = -1;
     E.click_pos = -1;
-    E.buf = malloc(TD_EDITOR_MAX + 1);
+    E.pane_y = -1;
+    E.buf = malloc(TD_EDITOR_MAX + 1 + CLS_MAX);   /* to load; fit_buffer() shrinks it */
+    E.cap = TD_EDITOR_MAX;
     E.undo = calloc(1, sizeof(undo_t));   /* without it: no undo, still edits */
     if (!E.buf)
     {
@@ -1278,8 +2427,10 @@ void td_editor_open(const char *path)
         td_msgbox("Editor", "The file could not be read.", "OK", NULL, NULL);
         return;
     }
+    fit_buffer();
     if (path)
         snprintf(E.path, sizeof(E.path), "%s", path);
+    update_mode();
 
     td_window_desc_t d = {
         .title = "Editor",
@@ -1292,6 +2443,8 @@ void td_editor_open(const char *path)
         .on_close = on_close,
         .on_close_request = on_close_request,
         .on_drop = on_drop,
+        .on_tick = on_tick,
+        .tick_ms = 30,
     };
     s_win = td_win_create(&d);
     if (!s_win)

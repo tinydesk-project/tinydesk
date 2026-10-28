@@ -170,7 +170,9 @@ static const char *prov_icon(int i, void *user)
     (void)user;
     if (s_items[i].is_dir)
         return "[/";
-    return td_is_script(s_items[i].name) ? "#!" : "\xC2\xB6 ";   /* #! for shell scripts */
+    if (td_is_script(s_items[i].name))
+        return "#!";   /* shell scripts */
+    return td_is_python(s_items[i].name) ? "py" : "\xC2\xB6 ";
 }
 
 static int prov_icon_fg(int i, void *user)
@@ -284,7 +286,7 @@ static void item_menu_chosen(int item, void *user)
     (void)user;
     if (s_target < 0 || s_target >= s_count || strcmp(s_items[s_target].name, s_target_name) != 0)
         return;
-    if (!s_items[s_target].is_dir && td_is_script(s_target_name))
+    if (!s_items[s_target].is_dir && td_is_runnable(s_target_name))
     {
         if (item == 0)
         {
@@ -346,7 +348,7 @@ static void prov_context(int i, int x, int y, void *user)
     if (i >= 0 && i < s_count)
     {
         static const char *const items[] = {"Run", "Open", "Rename", "Delete"};
-        bool script = !s_items[i].is_dir && td_is_script(s_items[i].name);
+        bool script = !s_items[i].is_dir && td_is_runnable(s_items[i].name);
         s_target = i;
         snprintf(s_target_name, sizeof(s_target_name), "%s", s_items[i].name);
         td_menu_popup(x, y, script ? items : items + 1, script ? 4 : 3, item_menu_chosen, NULL);

@@ -22,6 +22,7 @@ idf_component_register(
         "${TD_ROOT}/apps/datetime.c"
         "${TD_ROOT}/apps/desktop.c"
         "${TD_ROOT}/apps/editor.c"
+        "${TD_ROOT}/apps/editor_py.c"
         "${TD_ROOT}/apps/files.c"
         "${TD_ROOT}/apps/logview.c"
         "${TD_ROOT}/apps/modbus.c"

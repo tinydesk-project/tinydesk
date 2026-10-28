@@ -106,6 +106,7 @@ add_library(tinydesk_apps STATIC
     apps/datetime.c
     apps/desktop.c
     apps/editor.c
+    apps/editor_py.c
     apps/files.c
     apps/logview.c
     apps/modbus.c

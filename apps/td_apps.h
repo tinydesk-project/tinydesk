@@ -103,6 +103,13 @@ typedef struct
 } td_clock_prefs_t;
 td_clock_prefs_t *td_clock_prefs(void);
 
+/* Editor preferences (saved with the other settings: td_settings_save()). */
+typedef struct
+{
+    uint8_t completion;     /* 1: suggestions pop up while typing Python */
+} td_editor_prefs_t;
+td_editor_prefs_t *td_editor_prefs(void);
+
 /* ------------------------------------------------------ clipboard */
 
 /* A text clipboard shared by the apps (the Editor's copy, cut and paste).
@@ -178,12 +185,41 @@ void td_terminal_reset(void);
  * shell. */
 bool td_terminal_run(const char *command);
 
+/* The same session shown somewhere else (the Editor's output pane). */
+
+/* Type `command` and Enter (after Ctrl+U) without opening the Terminal. */
+bool td_terminal_command(const char *command);
+
+/* Draw the session into the cells (x, y, w, h) of `win`'s client area.
+ * While the Terminal window is closed the session takes that size;
+ * otherwise the rows around the cursor are shown. scroll_back > 0 shows
+ * older lines (clamped; the value used is returned). */
+int td_terminal_draw_view(td_window_t *win, int x, int y, int w, int h, int scroll_back, bool cursor);
+
+/* Send a key (as the Terminal window would) or text to the program. */
+void td_terminal_key(const td_event_t *ev);
+void td_terminal_send(const char *text, int len);
+
+/* `win` is redrawn whenever the session prints, and `tap` (optional) sees
+ * every byte of output; NULL stops both. One viewer at a time. */
+void td_terminal_set_viewer(td_window_t *win, void (*tap)(const uint8_t *data, int len));
+
+/* Read pending output now (the viewer's own tick, for a quick display). */
+void td_terminal_pump(void);
+
 /* Shell scripts: files ending in TD_SCRIPT_EXT. */
 #define TD_SCRIPT_EXT ".tdsh"
 bool td_is_script(const char *name);
 
+/* Python scripts: files ending in .py. */
+bool td_is_python(const char *name);
+
+/* Files with a Run command: shell and Python scripts. */
+bool td_is_runnable(const char *name);
+
 /* Run the script at `path` (a real path, as the Files app and the Desktop
- * use) in the Terminal: `tdsh run "<shell path>"`. */
+ * use) in the Terminal: `tdsh run "<shell path>"`, or `py "<shell path>"`
+ * for a .py file. */
 bool td_script_run(const char *path);
 
 /* A colour for script names and icons that reads well on background `bg`
