@@ -200,6 +200,7 @@ enum {
     MP_QSTR_flags,
     MP_QSTR_fn,
     MP_QSTR_focus,
+    MP_QSTR_fullscreen,
     MP_QSTR_funcs,
     MP_QSTR_future,
     MP_QSTR_future_colon_,
@@ -227,9 +228,12 @@ enum {
     MP_QSTR_locked,
     MP_QSTR_loop,
     MP_QSTR_main_task,
+    MP_QSTR_maximize,
     MP_QSTR_menu,
     MP_QSTR_message,
+    MP_QSTR_minimize,
     MP_QSTR_mods,
+    MP_QSTR_move,
     MP_QSTR_ms,
     MP_QSTR_msgbox,
     MP_QSTR_n,
@@ -243,6 +247,7 @@ enum {
     MP_QSTR_on_enter,
     MP_QSTR_on_key,
     MP_QSTR_on_mouse,
+    MP_QSTR_on_resize,
     MP_QSTR_on_select,
     MP_QSTR_op,
     MP_QSTR_open_connection,
@@ -263,6 +268,8 @@ enum {
     MP_QSTR_repeat,
     MP_QSTR_req,
     MP_QSTR_resizable,
+    MP_QSTR_resize,
+    MP_QSTR_restore,
     MP_QSTR_return_exceptions,
     MP_QSTR_right,
     MP_QSTR_run,
@@ -478,6 +485,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     36858,
     28237,
     60745,
+    42202,
     27400,
     14592,
     22842,
@@ -505,9 +513,12 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     47631,
     9273,
     31740,
+    19395,
     51446,
     48238,
+    22173,
     49200,
+    49780,
     28347,
     61225,
     46539,
@@ -521,6 +532,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     35219,
     25548,
     3770,
+    55753,
     63283,
     28538,
     25560,
@@ -541,6 +553,8 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     2546,
     35683,
     35832,
+    34487,
+    40749,
     47572,
     47845,
     35180,
@@ -756,6 +770,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     5,
     2,
     5,
+    10,
     5,
     6,
     7,
@@ -783,8 +798,11 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     6,
     4,
     9,
+    8,
     4,
     7,
+    8,
+    4,
     4,
     2,
     6,
@@ -799,6 +817,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     6,
     8,
+    9,
     9,
     2,
     15,
@@ -819,6 +838,8 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     6,
     3,
     9,
+    6,
+    7,
     17,
     5,
     3,
@@ -881,7 +902,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
     MP_QSTRnumber_of, // previous pool size
     true, // is_sorted
     10, // allocated entries
-    275, // used entries
+    282, // used entries
     (qstr_hash_t *)mp_qstr_frozen_const_hashes,
     (qstr_len_t *)mp_qstr_frozen_const_lengths,
     {
@@ -1043,6 +1064,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "flags",
         "fn",
         "focus",
+        "fullscreen",
         "funcs",
         "future",
         "future:",
@@ -1070,9 +1092,12 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "locked",
         "loop",
         "main_task",
+        "maximize",
         "menu",
         "message",
+        "minimize",
         "mods",
+        "move",
         "ms",
         "msgbox",
         "n",
@@ -1086,6 +1111,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "on_enter",
         "on_key",
         "on_mouse",
+        "on_resize",
         "on_select",
         "op",
         "open_connection",
@@ -1106,6 +1132,8 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "repeat",
         "req",
         "resizable",
+        "resize",
+        "restore",
         "return_exceptions",
         "right",
         "run",
@@ -8486,7 +8514,7 @@ static const mp_frozen_module_t frozen_module_neopixel = {
 // - .mpy header: 4d:06:00:1f
 
 // frozen bytecode for file tdui.py, scope tdui__lt_module_gt_
-static const byte fun_data_tdui__lt_module_gt_[268] = {
+static const byte fun_data_tdui__lt_module_gt_[274] = {
     0x40,0x02, // prelude
     0x01, // names: <module>
      // code info
@@ -8506,27 +8534,27 @@ static const byte fun_data_tdui__lt_module_gt_[268] = {
     0x16,0x04, // STORE_NAME 'const'
     0x59, // POP_TOP
     0x84, // LOAD_CONST_SMALL_INT 4
-    0x16,0x75, // STORE_NAME 'MAX_WINDOWS'
+    0x16,0x7c, // STORE_NAME 'MAX_WINDOWS'
     0x22,0x30, // LOAD_CONST_SMALL_INT 48
-    0x16,0x76, // STORE_NAME 'MAX_WIDGETS'
+    0x16,0x7d, // STORE_NAME 'MAX_WIDGETS'
     0x22,0x8f,0x50, // LOAD_CONST_SMALL_INT 2000
-    0x16,0x77, // STORE_NAME 'MAX_CELLS'
+    0x16,0x7e, // STORE_NAME 'MAX_CELLS'
     0x23,0x00, // LOAD_CONST_OBJ 0
-    0x16,0x78, // STORE_NAME '_KEYS'
+    0x16,0x7f, // STORE_NAME '_KEYS'
     0x2c,0x00, // BUILD_MAP 0
-    0x16,0x79, // STORE_NAME '_objs'
+    0x16,0x81,0x00, // STORE_NAME '_objs'
     0x2c,0x00, // BUILD_MAP 0
-    0x16,0x7a, // STORE_NAME '_results'
+    0x16,0x81,0x01, // STORE_NAME '_results'
     0x2b,0x00, // BUILD_LIST 0
-    0x16,0x7b, // STORE_NAME '_timers'
+    0x16,0x81,0x02, // STORE_NAME '_timers'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x17,0x7c, // STORE_GLOBAL '_next'
+    0x17,0x81,0x03, // STORE_GLOBAL '_next'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x17,0x7d, // STORE_GLOBAL '_windows'
+    0x17,0x81,0x04, // STORE_GLOBAL '_windows'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x17,0x7e, // STORE_GLOBAL '_widgets'
+    0x17,0x81,0x05, // STORE_GLOBAL '_widgets'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x17,0x50, // STORE_GLOBAL '_cells'
+    0x17,0x57, // STORE_GLOBAL '_cells'
     0x32,0x00, // MAKE_FUNCTION 0
     0x16,0x12, // STORE_NAME '_new_id'
     0x80, // LOAD_CONST_SMALL_INT 0
@@ -8645,29 +8673,29 @@ static const byte fun_data_tdui__lt_module_gt_[268] = {
 };
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui__new_id
-static const byte fun_data_tdui__new_id[37] = {
+static const byte fun_data_tdui__new_id[44] = {
     0x08,0x02, // prelude
     0x12, // names: _new_id
      // code info
-    0x12,0x7c, // LOAD_GLOBAL '_next'
+    0x12,0x81,0x03, // LOAD_GLOBAL '_next'
     0x22,0x83,0xff,0x7f, // LOAD_CONST_SMALL_INT 65535
     0xf8, // BINARY_OP 33 __mod__
     0x81, // LOAD_CONST_SMALL_INT 1
     0xf2, // BINARY_OP 27 __add__
-    0x17,0x7c, // STORE_GLOBAL '_next'
-    0x12,0x7c, // LOAD_GLOBAL '_next'
-    0x12,0x79, // LOAD_GLOBAL '_objs'
+    0x17,0x81,0x03, // STORE_GLOBAL '_next'
+    0x12,0x81,0x03, // LOAD_GLOBAL '_next'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
     0xdd, // BINARY_OP 6 <in>
     0xd3, // UNARY_OP 3 <not>
-    0x44,0x4b, // POP_JUMP_IF_FALSE 11
-    0x12,0x7c, // LOAD_GLOBAL '_next'
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x44,0x4e, // POP_JUMP_IF_FALSE 14
+    0x12,0x81,0x03, // LOAD_GLOBAL '_next'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xdd, // BINARY_OP 6 <in>
     0xd3, // UNARY_OP 3 <not>
-    0x44,0x43, // POP_JUMP_IF_FALSE 3
-    0x12,0x7c, // LOAD_GLOBAL '_next'
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x12,0x81,0x03, // LOAD_GLOBAL '_next'
     0x63, // RETURN_VALUE
-    0x42,0x20, // JUMP -32
+    0x42,0x19, // JUMP -39
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -8680,7 +8708,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__new_id = {
     .fun_data = fun_data_tdui__new_id,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 37,
+    .fun_data_len = 44,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -8708,9 +8736,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__new_id = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui__send
-static const byte fun_data_tdui__send[45] = {
-    0xbb,0x91,0x84,0x80,0x01,0x26, // prelude
-    0x13,0x7f,0x43,0x40,0x81,0x00,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x05,0x81,0x06,0x36, // names: _send, op, id, win, flags, a, b, c, d, e, f, text
+static const byte fun_data_tdui__send[46] = {
+    0xbb,0x91,0x84,0x80,0x01,0x28, // prelude
+    0x13,0x81,0x06,0x43,0x40,0x81,0x07,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x0c,0x81,0x0d,0x36, // names: _send, op, id, win, flags, a, b, c, d, e, f, text
      // code info
     0x12,0x02, // LOAD_GLOBAL '_tdui'
     0x14,0x14, // LOAD_METHOD 'send'
@@ -8739,7 +8767,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__send = {
     .fun_data = fun_data_tdui__send,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 45,
+    .fun_data_len = 46,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -8754,9 +8782,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__send = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 9,
         .qstr_block_name_idx = 19,
-        .line_info = fun_data_tdui__send + 25,
-        .line_info_top = fun_data_tdui__send + 25,
-        .opcodes = fun_data_tdui__send + 25,
+        .line_info = fun_data_tdui__send + 26,
+        .line_info_top = fun_data_tdui__send + 26,
+        .opcodes = fun_data_tdui__send + 26,
     },
     #endif
     #endif
@@ -8769,7 +8797,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__send = {
 // frozen bytecode for file tdui.py, scope tdui__key_name
 static const byte fun_data_tdui__key_name[85] = {
     0x2a,0x0a, // prelude
-    0x15,0x81,0x07,0x81,0x08, // names: _key_name, key, mods
+    0x15,0x81,0x0e,0x81,0x0f, // names: _key_name, key, mods
      // code info
     0xb0, // LOAD_FAST 0
     0x22,0x80,0xc4,0x80,0x00, // LOAD_CONST_SMALL_INT 1114112
@@ -8778,12 +8806,12 @@ static const byte fun_data_tdui__key_name[85] = {
     0xb0, // LOAD_FAST 0
     0x22,0x80,0xc4,0x80,0x01, // LOAD_CONST_SMALL_INT 1114113
     0xf3, // BINARY_OP 28 __sub__
-    0x12,0x81,0x09, // LOAD_GLOBAL 'len'
-    0x12,0x78, // LOAD_GLOBAL '_KEYS'
+    0x12,0x81,0x10, // LOAD_GLOBAL 'len'
+    0x12,0x7f, // LOAD_GLOBAL '_KEYS'
     0x34,0x01, // CALL_FUNCTION 1
     0xd7, // BINARY_OP 0 __lt__
     0x44,0x57, // POP_JUMP_IF_FALSE 23
-    0x12,0x78, // LOAD_GLOBAL '_KEYS'
+    0x12,0x7f, // LOAD_GLOBAL '_KEYS'
     0xb0, // LOAD_FAST 0
     0x22,0x80,0xc4,0x80,0x01, // LOAD_CONST_SMALL_INT 1114113
     0xf3, // BINARY_OP 28 __sub__
@@ -8798,7 +8826,7 @@ static const byte fun_data_tdui__key_name[85] = {
     0xf2, // BINARY_OP 27 __add__
     0xc2, // STORE_FAST 2
     0x42,0x47, // JUMP 7
-    0x12,0x81,0x0a, // LOAD_GLOBAL 'chr'
+    0x12,0x81,0x11, // LOAD_GLOBAL 'chr'
     0xb0, // LOAD_FAST 0
     0x34,0x01, // CALL_FUNCTION 1
     0xc2, // STORE_FAST 2
@@ -8862,10 +8890,10 @@ static const byte fun_data_tdui_Timer[28] = {
     0x08,0x02, // prelude
     0x06, // names: Timer
      // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x06, // LOAD_CONST_STRING 'Timer'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0x51, // LOAD_CONST_NONE
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
@@ -8878,9 +8906,9 @@ static const byte fun_data_tdui_Timer[28] = {
 };
 // child of tdui_Timer
 // frozen bytecode for file tdui.py, scope tdui_Timer___init__
-static const byte fun_data_tdui_Timer___init__[52] = {
+static const byte fun_data_tdui_Timer___init__[53] = {
     0xc1,0x05,0x0e, // prelude
-    0x3f,0x81,0x18,0x23,0x25,0x21,0x40, // names: __init__, self, ms, fn, repeat, win
+    0x3f,0x81,0x1f,0x23,0x25,0x21,0x40, // names: __init__, self, ms, fn, repeat, win
      // code info
     0xb1, // LOAD_FAST 1
     0xb0, // LOAD_FAST 0
@@ -8903,7 +8931,7 @@ static const byte fun_data_tdui_Timer___init__[52] = {
     0x36,0x02, // CALL_METHOD 2
     0xb0, // LOAD_FAST 0
     0x18,0x20, // STORE_ATTR 'due'
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x14,0x41, // LOAD_METHOD 'append'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
@@ -8920,7 +8948,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Timer___init__ = {
     .fun_data = fun_data_tdui_Timer___init__,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 52,
+    .fun_data_len = 53,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -8948,15 +8976,15 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Timer___init__ = {
 
 // child of tdui_Timer
 // frozen bytecode for file tdui.py, scope tdui_Timer_cancel
-static const byte fun_data_tdui_Timer_cancel[21] = {
+static const byte fun_data_tdui_Timer_cancel[23] = {
     0x19,0x06, // prelude
-    0x42,0x81,0x18, // names: cancel, self
+    0x42,0x81,0x1f, // names: cancel, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0xdd, // BINARY_OP 6 <in>
-    0x44,0x48, // POP_JUMP_IF_FALSE 8
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x14,0x24, // LOAD_METHOD 'remove'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
@@ -8973,7 +9001,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Timer_cancel = {
     .fun_data = fun_data_tdui_Timer_cancel,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 21,
+    .fun_data_len = 23,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -9133,14 +9161,14 @@ static const mp_raw_code_truncated_t proto_fun_tdui_after = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui_Window
-static const byte fun_data_tdui_Window[135] = {
+static const byte fun_data_tdui_Window[159] = {
     0x18,0x02, // prelude
     0x07, // names: Window
      // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x07, // LOAD_CONST_STRING 'Window'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x50, // LOAD_CONST_FALSE
@@ -9148,87 +9176,99 @@ static const byte fun_data_tdui_Window[135] = {
     0x53, // LOAD_NULL
     0x33,0x00, // MAKE_FUNCTION_DEFARGS 0
     0x16,0x3f, // STORE_NAME '__init__'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x01, // MAKE_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x4b, // STORE_NAME 'title'
-    0x11,0x4b, // LOAD_NAME 'title'
+    0x16,0x4c, // STORE_NAME 'title'
+    0x11,0x4c, // LOAD_NAME 'title'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x02, // MAKE_FUNCTION 2
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x4b, // STORE_NAME 'title'
+    0x16,0x4c, // STORE_NAME 'title'
     0x32,0x03, // MAKE_FUNCTION 3
-    0x16,0x4c, // STORE_NAME 'focus'
+    0x16,0x4d, // STORE_NAME 'focus'
     0x32,0x04, // MAKE_FUNCTION 4
-    0x16,0x33, // STORE_NAME 'close'
+    0x16,0x4e, // STORE_NAME 'resize'
     0x32,0x05, // MAKE_FUNCTION 5
-    0x16,0x4d, // STORE_NAME '_gone'
+    0x16,0x4f, // STORE_NAME 'move'
     0x32,0x06, // MAKE_FUNCTION 6
-    0x16,0x2a, // STORE_NAME '_event'
+    0x16,0x50, // STORE_NAME 'restore'
     0x32,0x07, // MAKE_FUNCTION 7
-    0x16,0x19, // STORE_NAME 'every'
+    0x16,0x51, // STORE_NAME 'maximize'
     0x32,0x08, // MAKE_FUNCTION 8
+    0x16,0x52, // STORE_NAME 'minimize'
+    0x32,0x09, // MAKE_FUNCTION 9
+    0x16,0x53, // STORE_NAME 'fullscreen'
+    0x32,0x0a, // MAKE_FUNCTION 10
+    0x16,0x33, // STORE_NAME 'close'
+    0x32,0x0b, // MAKE_FUNCTION 11
+    0x16,0x54, // STORE_NAME '_gone'
+    0x32,0x0c, // MAKE_FUNCTION 12
+    0x16,0x2a, // STORE_NAME '_event'
+    0x32,0x0d, // MAKE_FUNCTION 13
+    0x16,0x19, // STORE_NAME 'every'
+    0x32,0x0e, // MAKE_FUNCTION 14
     0x16,0x1a, // STORE_NAME 'after'
     0x10,0x11, // LOAD_CONST_STRING ''
     0x80, // LOAD_CONST_SMALL_INT 0
     0x2a,0x02, // BUILD_TUPLE 2
     0x53, // LOAD_NULL
-    0x33,0x09, // MAKE_FUNCTION_DEFARGS 9
-    0x16,0x51, // STORE_NAME 'label'
+    0x33,0x0f, // MAKE_FUNCTION_DEFARGS 15
+    0x16,0x58, // STORE_NAME 'label'
     0x51, // LOAD_CONST_NONE
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
-    0x33,0x0a, // MAKE_FUNCTION_DEFARGS 10
-    0x16,0x52, // STORE_NAME 'button'
+    0x33,0x10, // MAKE_FUNCTION_DEFARGS 16
+    0x16,0x59, // STORE_NAME 'button'
     0x50, // LOAD_CONST_FALSE
     0x51, // LOAD_CONST_NONE
     0x2a,0x02, // BUILD_TUPLE 2
     0x53, // LOAD_NULL
-    0x33,0x0b, // MAKE_FUNCTION_DEFARGS 11
-    0x16,0x53, // STORE_NAME 'checkbox'
+    0x33,0x11, // MAKE_FUNCTION_DEFARGS 17
+    0x16,0x5a, // STORE_NAME 'checkbox'
     0x10,0x11, // LOAD_CONST_STRING ''
     0x50, // LOAD_CONST_FALSE
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x2a,0x04, // BUILD_TUPLE 4
     0x53, // LOAD_NULL
-    0x33,0x0c, // MAKE_FUNCTION_DEFARGS 12
-    0x16,0x54, // STORE_NAME 'textbox'
+    0x33,0x12, // MAKE_FUNCTION_DEFARGS 18
+    0x16,0x5b, // STORE_NAME 'textbox'
     0x80, // LOAD_CONST_SMALL_INT 0
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
-    0x33,0x0d, // MAKE_FUNCTION_DEFARGS 13
-    0x16,0x55, // STORE_NAME 'progress'
+    0x33,0x13, // MAKE_FUNCTION_DEFARGS 19
+    0x16,0x5c, // STORE_NAME 'progress'
     0x2a,0x00, // BUILD_TUPLE 0
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x2a,0x03, // BUILD_TUPLE 3
     0x53, // LOAD_NULL
-    0x33,0x0e, // MAKE_FUNCTION_DEFARGS 14
-    0x16,0x56, // STORE_NAME 'list'
+    0x33,0x14, // MAKE_FUNCTION_DEFARGS 20
+    0x16,0x5d, // STORE_NAME 'list'
     0x51, // LOAD_CONST_NONE
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
-    0x33,0x0f, // MAKE_FUNCTION_DEFARGS 15
-    0x16,0x57, // STORE_NAME 'canvas'
+    0x33,0x15, // MAKE_FUNCTION_DEFARGS 21
+    0x16,0x5e, // STORE_NAME 'canvas'
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
 // child of tdui_Window
 // frozen bytecode for file tdui.py, scope tdui_Window___init__
-static const byte fun_data_tdui_Window___init__[182] = {
+static const byte fun_data_tdui_Window___init__[190] = {
     0x8b,0x95,0x01,0x1c, // prelude
-    0x3f,0x81,0x18,0x4b,0x81,0x19,0x81,0x1a,0x81,0x1b,0x81,0x1c,0x81,0x1d, // names: __init__, self, title, w, h, x, y, resizable
+    0x3f,0x81,0x1f,0x4c,0x81,0x20,0x81,0x21,0x81,0x22,0x81,0x23,0x81,0x24, // names: __init__, self, title, w, h, x, y, resizable
      // code info
     0x12,0x02, // LOAD_GLOBAL '_tdui'
     0x14,0x35, // LOAD_METHOD 'open'
     0x36,0x00, // CALL_METHOD 0
     0x59, // POP_TOP
-    0x12,0x7d, // LOAD_GLOBAL '_windows'
+    0x12,0x81,0x04, // LOAD_GLOBAL '_windows'
     0x84, // LOAD_CONST_SMALL_INT 4
     0xdb, // BINARY_OP 4 __ge__
     0x44,0x4a, // POP_JUMP_IF_FALSE 10
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x23,0x01, // LOAD_CONST_OBJ 1
     0x84, // LOAD_CONST_SMALL_INT 4
     0xf8, // BINARY_OP 33 __mod__
@@ -9258,7 +9298,7 @@ static const byte fun_data_tdui_Window___init__[182] = {
     0x5a, // ROT_TWO
     0x59, // POP_TOP
     0x43,0x48, // POP_JUMP_IF_TRUE 8
-    0x12,0x81,0x1e, // LOAD_GLOBAL 'ValueError'
+    0x12,0x81,0x25, // LOAD_GLOBAL 'ValueError'
     0x23,0x02, // LOAD_CONST_OBJ 2
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
@@ -9266,7 +9306,7 @@ static const byte fun_data_tdui_Window___init__[182] = {
     0x34,0x00, // CALL_FUNCTION 0
     0xb0, // LOAD_FAST 0
     0x18,0x43, // STORE_ATTR 'id'
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
@@ -9286,18 +9326,21 @@ static const byte fun_data_tdui_Window___init__[182] = {
     0x51, // LOAD_CONST_NONE
     0xb0, // LOAD_FAST 0
     0x18,0x49, // STORE_ATTR 'on_key'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x4a, // STORE_ATTR 'on_resize'
     0x2b,0x00, // BUILD_LIST 0
     0xb0, // LOAD_FAST 0
-    0x18,0x4a, // STORE_ATTR '_kids'
+    0x18,0x4b, // STORE_ATTR '_kids'
     0xb0, // LOAD_FAST 0
-    0x12,0x79, // LOAD_GLOBAL '_objs'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
     0xb0, // LOAD_FAST 0
     0x13,0x43, // LOAD_ATTR 'id'
     0x56, // STORE_SUBSCR
-    0x12,0x7d, // LOAD_GLOBAL '_windows'
+    0x12,0x81,0x04, // LOAD_GLOBAL '_windows'
     0x81, // LOAD_CONST_SMALL_INT 1
     0xe5, // BINARY_OP 14 __iadd__
-    0x17,0x7d, // STORE_GLOBAL '_windows'
+    0x17,0x81,0x04, // STORE_GLOBAL '_windows'
     0x12,0x13, // LOAD_GLOBAL '_send'
     0x81, // LOAD_CONST_SMALL_INT 1
     0xb0, // LOAD_FAST 0
@@ -9341,7 +9384,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window___init__ = {
     .fun_data = fun_data_tdui_Window___init__,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 182,
+    .fun_data_len = 190,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -9371,7 +9414,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window___init__ = {
 // frozen bytecode for file tdui.py, scope tdui_Window_title
 static const byte fun_data_tdui_Window_title[9] = {
     0x09,0x06, // prelude
-    0x4b,0x81,0x18, // names: title, self
+    0x4c,0x81,0x1f, // names: title, self
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x44, // LOAD_ATTR '_title'
@@ -9400,7 +9443,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_title = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 75,
+        .qstr_block_name_idx = 76,
         .line_info = fun_data_tdui_Window_title + 5,
         .line_info_top = fun_data_tdui_Window_title + 5,
         .opcodes = fun_data_tdui_Window_title + 5,
@@ -9416,9 +9459,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_title = {
 // frozen bytecode for file tdui.py, scope tdui_Window_title2
 static const byte fun_data_tdui_Window_title2[38] = {
     0x32,0x0a, // prelude
-    0x4b,0x81,0x18,0x81,0x20, // names: title, self, t
+    0x4c,0x81,0x1f,0x81,0x27, // names: title, self, t
      // code info
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
@@ -9461,7 +9504,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_title2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 75,
+        .qstr_block_name_idx = 76,
         .line_info = fun_data_tdui_Window_title2 + 7,
         .line_info_top = fun_data_tdui_Window_title2 + 7,
         .opcodes = fun_data_tdui_Window_title2 + 7,
@@ -9477,7 +9520,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_title2 = {
 // frozen bytecode for file tdui.py, scope tdui_Window_focus
 static const byte fun_data_tdui_Window_focus[21] = {
     0x19,0x06, // prelude
-    0x4c,0x81,0x18, // names: focus, self
+    0x4d,0x81,0x1f, // names: focus, self
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x47, // LOAD_ATTR 'is_open'
@@ -9514,7 +9557,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_focus = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 76,
+        .qstr_block_name_idx = 77,
         .line_info = fun_data_tdui_Window_focus + 5,
         .line_info_top = fun_data_tdui_Window_focus + 5,
         .opcodes = fun_data_tdui_Window_focus + 5,
@@ -9527,10 +9570,348 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_focus = {
 #endif
 
 // child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_resize
+static const byte fun_data_tdui_Window_resize[29] = {
+    0x4b,0x0e, // prelude
+    0x4e,0x81,0x1f,0x81,0x20,0x81,0x21, // names: resize, self, w, h
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x34,0x06, // CALL_FUNCTION 6
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_resize = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_resize,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 29,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 78,
+        .line_info = fun_data_tdui_Window_resize + 9,
+        .line_info_top = fun_data_tdui_Window_resize + 9,
+        .opcodes = fun_data_tdui_Window_resize + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_resize fun_data_tdui_Window_resize[0]
+#endif
+
+// child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_move
+static const byte fun_data_tdui_Window_move[29] = {
+    0x4b,0x0e, // prelude
+    0x4f,0x81,0x1f,0x81,0x22,0x81,0x23, // names: move, self, x, y
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x91, // LOAD_CONST_SMALL_INT 17
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x34,0x06, // CALL_FUNCTION 6
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_move = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_move,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 29,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 79,
+        .line_info = fun_data_tdui_Window_move + 9,
+        .line_info_top = fun_data_tdui_Window_move + 9,
+        .opcodes = fun_data_tdui_Window_move + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_move fun_data_tdui_Window_move[0]
+#endif
+
+// child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_restore
+static const byte fun_data_tdui_Window_restore[24] = {
+    0x31,0x06, // prelude
+    0x50,0x81,0x1f, // names: restore, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x92, // LOAD_CONST_SMALL_INT 18
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x34,0x05, // CALL_FUNCTION 5
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_restore = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_restore,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 24,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 80,
+        .line_info = fun_data_tdui_Window_restore + 5,
+        .line_info_top = fun_data_tdui_Window_restore + 5,
+        .opcodes = fun_data_tdui_Window_restore + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_restore fun_data_tdui_Window_restore[0]
+#endif
+
+// child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_maximize
+static const byte fun_data_tdui_Window_maximize[24] = {
+    0x31,0x06, // prelude
+    0x51,0x81,0x1f, // names: maximize, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x92, // LOAD_CONST_SMALL_INT 18
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x34,0x05, // CALL_FUNCTION 5
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_maximize = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_maximize,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 24,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 81,
+        .line_info = fun_data_tdui_Window_maximize + 5,
+        .line_info_top = fun_data_tdui_Window_maximize + 5,
+        .opcodes = fun_data_tdui_Window_maximize + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_maximize fun_data_tdui_Window_maximize[0]
+#endif
+
+// child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_minimize
+static const byte fun_data_tdui_Window_minimize[24] = {
+    0x31,0x06, // prelude
+    0x52,0x81,0x1f, // names: minimize, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x92, // LOAD_CONST_SMALL_INT 18
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x34,0x05, // CALL_FUNCTION 5
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_minimize = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_minimize,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 24,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 82,
+        .line_info = fun_data_tdui_Window_minimize + 5,
+        .line_info_top = fun_data_tdui_Window_minimize + 5,
+        .opcodes = fun_data_tdui_Window_minimize + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_minimize fun_data_tdui_Window_minimize[0]
+#endif
+
+// child of tdui_Window
+// frozen bytecode for file tdui.py, scope tdui_Window_fullscreen
+static const byte fun_data_tdui_Window_fullscreen[24] = {
+    0x31,0x06, // prelude
+    0x53,0x81,0x1f, // names: fullscreen, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x47, // LOAD_ATTR 'is_open'
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x13, // LOAD_GLOBAL '_send'
+    0x92, // LOAD_CONST_SMALL_INT 18
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR 'id'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x34,0x05, // CALL_FUNCTION 5
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Window_fullscreen = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Window_fullscreen,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 24,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 83,
+        .line_info = fun_data_tdui_Window_fullscreen + 5,
+        .line_info_top = fun_data_tdui_Window_fullscreen + 5,
+        .opcodes = fun_data_tdui_Window_fullscreen + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Window_fullscreen fun_data_tdui_Window_fullscreen[0]
+#endif
+
+// child of tdui_Window
 // frozen bytecode for file tdui.py, scope tdui_Window_close
 static const byte fun_data_tdui_Window_close[27] = {
     0x19,0x06, // prelude
-    0x33,0x81,0x18, // names: close, self
+    0x33,0x81,0x1f, // names: close, self
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x47, // LOAD_ATTR 'is_open'
@@ -9542,7 +9923,7 @@ static const byte fun_data_tdui_Window_close[27] = {
     0x34,0x02, // CALL_FUNCTION 2
     0x59, // POP_TOP
     0xb0, // LOAD_FAST 0
-    0x14,0x4d, // LOAD_METHOD '_gone'
+    0x14,0x54, // LOAD_METHOD '_gone'
     0x36,0x00, // CALL_METHOD 0
     0x59, // POP_TOP
     0x51, // LOAD_CONST_NONE
@@ -9585,69 +9966,69 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_close = {
 
 // child of tdui_Window
 // frozen bytecode for file tdui.py, scope tdui_Window__gone
-static const byte fun_data_tdui_Window__gone[97] = {
+static const byte fun_data_tdui_Window__gone[105] = {
     0x51,0x06, // prelude
-    0x4d,0x81,0x18, // names: _gone, self
+    0x54,0x81,0x1f, // names: _gone, self
      // code info
     0x50, // LOAD_CONST_FALSE
     0xb0, // LOAD_FAST 0
     0x18,0x47, // STORE_ATTR 'is_open'
-    0x12,0x7d, // LOAD_GLOBAL '_windows'
+    0x12,0x81,0x04, // LOAD_GLOBAL '_windows'
     0x81, // LOAD_CONST_SMALL_INT 1
     0xe6, // BINARY_OP 15 __isub__
-    0x17,0x7d, // STORE_GLOBAL '_windows'
-    0x12,0x79, // LOAD_GLOBAL '_objs'
-    0x14,0x4e, // LOAD_METHOD 'pop'
+    0x17,0x81,0x04, // STORE_GLOBAL '_windows'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
+    0x14,0x55, // LOAD_METHOD 'pop'
     0xb0, // LOAD_FAST 0
     0x13,0x43, // LOAD_ATTR 'id'
     0x51, // LOAD_CONST_NONE
     0x36,0x02, // CALL_METHOD 2
     0x59, // POP_TOP
     0xb0, // LOAD_FAST 0
-    0x13,0x4a, // LOAD_ATTR '_kids'
+    0x13,0x4b, // LOAD_ATTR '_kids'
     0x5f, // GET_ITER_STACK
-    0x4b,0x1e, // FOR_ITER 30
+    0x4b,0x21, // FOR_ITER 33
     0xc1, // STORE_FAST 1
-    0x12,0x79, // LOAD_GLOBAL '_objs'
-    0x14,0x4e, // LOAD_METHOD 'pop'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
+    0x14,0x55, // LOAD_METHOD 'pop'
     0xb1, // LOAD_FAST 1
     0x13,0x43, // LOAD_ATTR 'id'
     0x51, // LOAD_CONST_NONE
     0x36,0x02, // CALL_METHOD 2
     0x59, // POP_TOP
-    0x12,0x7e, // LOAD_GLOBAL '_widgets'
+    0x12,0x81,0x05, // LOAD_GLOBAL '_widgets'
     0xb1, // LOAD_FAST 1
-    0x13,0x4f, // LOAD_ATTR '_n'
+    0x13,0x56, // LOAD_ATTR '_n'
     0xe6, // BINARY_OP 15 __isub__
-    0x17,0x7e, // STORE_GLOBAL '_widgets'
-    0x12,0x50, // LOAD_GLOBAL '_cells'
+    0x17,0x81,0x05, // STORE_GLOBAL '_widgets'
+    0x12,0x57, // LOAD_GLOBAL '_cells'
     0xb1, // LOAD_FAST 1
-    0x13,0x50, // LOAD_ATTR '_cells'
+    0x13,0x57, // LOAD_ATTR '_cells'
     0xe6, // BINARY_OP 15 __isub__
-    0x17,0x50, // STORE_GLOBAL '_cells'
-    0x42,0x20, // JUMP -32
+    0x17,0x57, // STORE_GLOBAL '_cells'
+    0x42,0x1d, // JUMP -35
     0x2b,0x00, // BUILD_LIST 0
     0xb0, // LOAD_FAST 0
-    0x18,0x4a, // STORE_ATTR '_kids'
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x18,0x4b, // STORE_ATTR '_kids'
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x2e,0x02, // BUILD_SLICE 2
     0x55, // LOAD_SUBSCR
     0x5f, // GET_ITER_STACK
-    0x4b,0x12, // FOR_ITER 18
+    0x4b,0x13, // FOR_ITER 19
     0xc2, // STORE_FAST 2
     0xb2, // LOAD_FAST 2
     0x13,0x40, // LOAD_ATTR 'win'
     0xb0, // LOAD_FAST 0
     0xde, // BINARY_OP 7 <is>
-    0x44,0x48, // POP_JUMP_IF_FALSE 8
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x14,0x24, // LOAD_METHOD 'remove'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
-    0x42,0x2c, // JUMP -20
+    0x42,0x2b, // JUMP -21
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -9660,7 +10041,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__gone = {
     .fun_data = fun_data_tdui_Window__gone,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 97,
+    .fun_data_len = 105,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -9674,7 +10055,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__gone = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 77,
+        .qstr_block_name_idx = 84,
         .line_info = fun_data_tdui_Window__gone + 5,
         .line_info_top = fun_data_tdui_Window__gone + 5,
         .opcodes = fun_data_tdui_Window__gone + 5,
@@ -9688,16 +10069,16 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__gone = {
 
 // child of tdui_Window
 // frozen bytecode for file tdui.py, scope tdui_Window__event
-static const byte fun_data_tdui_Window__event[78] = {
-    0xeb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_Window__event[109] = {
+    0xeb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x83, // LOAD_CONST_SMALL_INT 3
     0xd9, // BINARY_OP 2 __eq__
-    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0x44,0x55, // POP_JUMP_IF_FALSE 21
     0xb0, // LOAD_FAST 0
-    0x14,0x4d, // LOAD_METHOD '_gone'
+    0x14,0x54, // LOAD_METHOD '_gone'
     0x36,0x00, // CALL_METHOD 0
     0x59, // POP_TOP
     0xb0, // LOAD_FAST 0
@@ -9708,7 +10089,7 @@ static const byte fun_data_tdui_Window__event[78] = {
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
-    0x42,0x62, // JUMP 34
+    0x42,0xbf,0x80, // JUMP 63
     0xb1, // LOAD_FAST 1
     0x84, // LOAD_CONST_SMALL_INT 4
     0xd9, // BINARY_OP 2 __eq__
@@ -9731,6 +10112,27 @@ static const byte fun_data_tdui_Window__event[78] = {
     0x34,0x02, // CALL_FUNCTION 2
     0x36,0x02, // CALL_METHOD 2
     0x59, // POP_TOP
+    0x42,0x5d, // JUMP 29
+    0xb1, // LOAD_FAST 1
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x58, // POP_JUMP_IF_FALSE 24
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x45, // STORE_ATTR 'width'
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x18,0x46, // STORE_ATTR 'height'
+    0xb0, // LOAD_FAST 0
+    0x13,0x4a, // LOAD_ATTR 'on_resize'
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0xb0, // LOAD_FAST 0
+    0x14,0x4a, // LOAD_METHOD 'on_resize'
+    0xb0, // LOAD_FAST 0
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x36,0x03, // CALL_METHOD 3
+    0x59, // POP_TOP
     0x42,0x40, // JUMP 0
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
@@ -9744,7 +10146,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__event = {
     .fun_data = fun_data_tdui_Window__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 78,
+    .fun_data_len = 109,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -9759,9 +10161,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_Window__event + 17,
-        .line_info_top = fun_data_tdui_Window__event + 17,
-        .opcodes = fun_data_tdui_Window__event + 17,
+        .line_info = fun_data_tdui_Window__event + 18,
+        .line_info_top = fun_data_tdui_Window__event + 18,
+        .opcodes = fun_data_tdui_Window__event + 18,
     },
     #endif
     #endif
@@ -9774,7 +10176,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window__event = {
 // frozen bytecode for file tdui.py, scope tdui_Window_every
 static const byte fun_data_tdui_Window_every[16] = {
     0x3b,0x0a, // prelude
-    0x19,0x81,0x18,0x23,0x25, // names: every, self, ms, fn
+    0x19,0x81,0x1f,0x23,0x25, // names: every, self, ms, fn
      // code info
     0x12,0x06, // LOAD_GLOBAL 'Timer'
     0xb1, // LOAD_FAST 1
@@ -9823,7 +10225,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_every = {
 // frozen bytecode for file tdui.py, scope tdui_Window_after
 static const byte fun_data_tdui_Window_after[16] = {
     0x3b,0x0a, // prelude
-    0x1a,0x81,0x18,0x23,0x25, // names: after, self, ms, fn
+    0x1a,0x81,0x1f,0x23,0x25, // names: after, self, ms, fn
      // code info
     0x12,0x06, // LOAD_GLOBAL 'Timer'
     0xb1, // LOAD_FAST 1
@@ -9872,7 +10274,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_after = {
 // frozen bytecode for file tdui.py, scope tdui_Window_label
 static const byte fun_data_tdui_Window_label[23] = {
     0xd1,0x84,0x01,0x12, // prelude
-    0x51,0x81,0x18,0x81,0x1b,0x81,0x1c,0x36,0x45, // names: label, self, x, y, text, width
+    0x58,0x81,0x1f,0x81,0x22,0x81,0x23,0x36,0x45, // names: label, self, x, y, text, width
      // code info
     0x12,0x09, // LOAD_GLOBAL 'Label'
     0xb0, // LOAD_FAST 0
@@ -9906,7 +10308,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_label = {
         .n_pos_args = 5,
         .n_kwonly_args = 0,
         .n_def_pos_args = 2,
-        .qstr_block_name_idx = 81,
+        .qstr_block_name_idx = 88,
         .line_info = fun_data_tdui_Window_label + 13,
         .line_info_top = fun_data_tdui_Window_label + 13,
         .opcodes = fun_data_tdui_Window_label + 13,
@@ -9922,7 +10324,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_label = {
 // frozen bytecode for file tdui.py, scope tdui_Window_button
 static const byte fun_data_tdui_Window_button[22] = {
     0xd1,0x05,0x12, // prelude
-    0x52,0x81,0x18,0x81,0x1b,0x81,0x1c,0x36,0x5d, // names: button, self, x, y, text, on_click
+    0x59,0x81,0x1f,0x81,0x22,0x81,0x23,0x36,0x64, // names: button, self, x, y, text, on_click
      // code info
     0x12,0x0a, // LOAD_GLOBAL 'Button'
     0xb0, // LOAD_FAST 0
@@ -9956,7 +10358,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_button = {
         .n_pos_args = 5,
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
-        .qstr_block_name_idx = 82,
+        .qstr_block_name_idx = 89,
         .line_info = fun_data_tdui_Window_button + 12,
         .line_info_top = fun_data_tdui_Window_button + 12,
         .opcodes = fun_data_tdui_Window_button + 12,
@@ -9972,7 +10374,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_button = {
 // frozen bytecode for file tdui.py, scope tdui_Window_checkbox
 static const byte fun_data_tdui_Window_checkbox[25] = {
     0xe2,0x84,0x01,0x14, // prelude
-    0x53,0x81,0x18,0x81,0x1b,0x81,0x1c,0x36,0x60,0x5f, // names: checkbox, self, x, y, text, checked, on_change
+    0x5a,0x81,0x1f,0x81,0x22,0x81,0x23,0x36,0x67,0x66, // names: checkbox, self, x, y, text, checked, on_change
      // code info
     0x12,0x0b, // LOAD_GLOBAL 'Checkbox'
     0xb0, // LOAD_FAST 0
@@ -10007,7 +10409,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_checkbox = {
         .n_pos_args = 6,
         .n_kwonly_args = 0,
         .n_def_pos_args = 2,
-        .qstr_block_name_idx = 83,
+        .qstr_block_name_idx = 90,
         .line_info = fun_data_tdui_Window_checkbox + 14,
         .line_info_top = fun_data_tdui_Window_checkbox + 14,
         .opcodes = fun_data_tdui_Window_checkbox + 14,
@@ -10023,7 +10425,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_checkbox = {
 // frozen bytecode for file tdui.py, scope tdui_Window_textbox
 static const byte fun_data_tdui_Window_textbox[31] = {
     0x80,0x90,0x84,0x01,0x1a, // prelude
-    0x54,0x81,0x18,0x81,0x1b,0x81,0x1c,0x45,0x36,0x81,0x17,0x61,0x5f, // names: textbox, self, x, y, width, text, secret, on_enter, on_change
+    0x5b,0x81,0x1f,0x81,0x22,0x81,0x23,0x45,0x36,0x81,0x1e,0x68,0x66, // names: textbox, self, x, y, width, text, secret, on_enter, on_change
      // code info
     0x12,0x0c, // LOAD_GLOBAL 'Textbox'
     0xb0, // LOAD_FAST 0
@@ -10060,7 +10462,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_textbox = {
         .n_pos_args = 8,
         .n_kwonly_args = 0,
         .n_def_pos_args = 4,
-        .qstr_block_name_idx = 84,
+        .qstr_block_name_idx = 91,
         .line_info = fun_data_tdui_Window_textbox + 18,
         .line_info_top = fun_data_tdui_Window_textbox + 18,
         .opcodes = fun_data_tdui_Window_textbox + 18,
@@ -10076,7 +10478,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_textbox = {
 // frozen bytecode for file tdui.py, scope tdui_Window_progress
 static const byte fun_data_tdui_Window_progress[22] = {
     0xd1,0x05,0x12, // prelude
-    0x55,0x81,0x18,0x81,0x1b,0x81,0x1c,0x45,0x63, // names: progress, self, x, y, width, value
+    0x5c,0x81,0x1f,0x81,0x22,0x81,0x23,0x45,0x6a, // names: progress, self, x, y, width, value
      // code info
     0x12,0x0d, // LOAD_GLOBAL 'Progress'
     0xb0, // LOAD_FAST 0
@@ -10110,7 +10512,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_progress = {
         .n_pos_args = 5,
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
-        .qstr_block_name_idx = 85,
+        .qstr_block_name_idx = 92,
         .line_info = fun_data_tdui_Window_progress + 12,
         .line_info_top = fun_data_tdui_Window_progress + 12,
         .opcodes = fun_data_tdui_Window_progress + 12,
@@ -10126,7 +10528,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_progress = {
 // frozen bytecode for file tdui.py, scope tdui_Window_list
 static const byte fun_data_tdui_Window_list[31] = {
     0x80,0x91,0x05,0x1c, // prelude
-    0x56,0x81,0x18,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x69,0x65,0x66, // names: list, self, x, y, w, h, items, on_select, on_activate
+    0x5d,0x81,0x1f,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x70,0x6c,0x6d, // names: list, self, x, y, w, h, items, on_select, on_activate
      // code info
     0x12,0x0e, // LOAD_GLOBAL 'List'
     0xb0, // LOAD_FAST 0
@@ -10163,7 +10565,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_list = {
         .n_pos_args = 8,
         .n_kwonly_args = 0,
         .n_def_pos_args = 3,
-        .qstr_block_name_idx = 86,
+        .qstr_block_name_idx = 93,
         .line_info = fun_data_tdui_Window_list + 18,
         .line_info_top = fun_data_tdui_Window_list + 18,
         .opcodes = fun_data_tdui_Window_list + 18,
@@ -10179,7 +10581,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_list = {
 // frozen bytecode for file tdui.py, scope tdui_Window_canvas
 static const byte fun_data_tdui_Window_canvas[26] = {
     0xe2,0x05,0x18, // prelude
-    0x57,0x81,0x18,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x6e, // names: canvas, self, x, y, w, h, on_mouse
+    0x5e,0x81,0x1f,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x75, // names: canvas, self, x, y, w, h, on_mouse
      // code info
     0x12,0x0f, // LOAD_GLOBAL 'Canvas'
     0xb0, // LOAD_FAST 0
@@ -10214,7 +10616,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window_canvas = {
         .n_pos_args = 6,
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
-        .qstr_block_name_idx = 87,
+        .qstr_block_name_idx = 94,
         .line_info = fun_data_tdui_Window_canvas + 15,
         .line_info_top = fun_data_tdui_Window_canvas + 15,
         .opcodes = fun_data_tdui_Window_canvas + 15,
@@ -10231,6 +10633,12 @@ static const mp_raw_code_t *const children_tdui_Window[] = {
     (const mp_raw_code_t *)&proto_fun_tdui_Window_title,
     (const mp_raw_code_t *)&proto_fun_tdui_Window_title2,
     (const mp_raw_code_t *)&proto_fun_tdui_Window_focus,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_resize,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_move,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_restore,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_maximize,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_minimize,
+    (const mp_raw_code_t *)&proto_fun_tdui_Window_fullscreen,
     (const mp_raw_code_t *)&proto_fun_tdui_Window_close,
     (const mp_raw_code_t *)&proto_fun_tdui_Window__gone,
     (const mp_raw_code_t *)&proto_fun_tdui_Window__event,
@@ -10253,8 +10661,8 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Window = {
     .fun_data = fun_data_tdui_Window,
     .children = (void *)&children_tdui_Window,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 135,
-    .n_children = 16,
+    .fun_data_len = 159,
+    .n_children = 22,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
     #endif
@@ -10282,14 +10690,14 @@ static const byte fun_data_tdui__Widget[91] = {
     0x10,0x02, // prelude
     0x08, // names: _Widget
      // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x08, // LOAD_CONST_STRING '_Widget'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0x81, // LOAD_CONST_SMALL_INT 1
-    0x16,0x4f, // STORE_NAME '_n'
+    0x16,0x56, // STORE_NAME '_n'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x16,0x50, // STORE_NAME '_cells'
+    0x16,0x57, // STORE_NAME '_cells'
     0x32,0x00, // MAKE_FUNCTION 0
     0x16,0x3f, // STORE_NAME '__init__'
     0x80, // LOAD_CONST_SMALL_INT 0
@@ -10298,8 +10706,8 @@ static const byte fun_data_tdui__Widget[91] = {
     0x2a,0x03, // BUILD_TUPLE 3
     0x53, // LOAD_NULL
     0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
-    0x16,0x5a, // STORE_NAME '_req'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x16,0x61, // STORE_NAME '_req'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x02, // MAKE_FUNCTION 2
     0x34,0x01, // CALL_FUNCTION 1
     0x16,0x36, // STORE_NAME 'text'
@@ -10308,23 +10716,23 @@ static const byte fun_data_tdui__Widget[91] = {
     0x32,0x03, // MAKE_FUNCTION 3
     0x34,0x01, // CALL_FUNCTION 1
     0x16,0x36, // STORE_NAME 'text'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x04, // MAKE_FUNCTION 4
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x5b, // STORE_NAME 'visible'
-    0x11,0x5b, // LOAD_NAME 'visible'
+    0x16,0x62, // STORE_NAME 'visible'
+    0x11,0x62, // LOAD_NAME 'visible'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x05, // MAKE_FUNCTION 5
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x5b, // STORE_NAME 'visible'
+    0x16,0x62, // STORE_NAME 'visible'
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x2a,0x02, // BUILD_TUPLE 2
     0x53, // LOAD_NULL
     0x33,0x06, // MAKE_FUNCTION_DEFARGS 6
-    0x16,0x5c, // STORE_NAME 'color'
+    0x16,0x63, // STORE_NAME 'color'
     0x32,0x07, // MAKE_FUNCTION 7
-    0x16,0x4c, // STORE_NAME 'focus'
+    0x16,0x4d, // STORE_NAME 'focus'
     0x32,0x08, // MAKE_FUNCTION 8
     0x16,0x2a, // STORE_NAME '_event'
     0x51, // LOAD_CONST_NONE
@@ -10332,35 +10740,35 @@ static const byte fun_data_tdui__Widget[91] = {
 };
 // child of tdui__Widget
 // frozen bytecode for file tdui.py, scope tdui__Widget___init__
-static const byte fun_data_tdui__Widget___init__[121] = {
+static const byte fun_data_tdui__Widget___init__[125] = {
     0xa1,0x90,0x04,0x22, // prelude
-    0x3f,0x81,0x18,0x40,0x81,0x21,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x81,0x05,0x36, // names: __init__, self, win, kind, x, y, w, h, e, text
+    0x3f,0x81,0x1f,0x40,0x81,0x28,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x81,0x0c,0x36, // names: __init__, self, win, kind, x, y, w, h, e, text
      // code info
     0xb1, // LOAD_FAST 1
     0x13,0x47, // LOAD_ATTR 'is_open'
     0x43,0x48, // POP_JUMP_IF_TRUE 8
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x23,0x03, // LOAD_CONST_OBJ 3
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
-    0x12,0x7e, // LOAD_GLOBAL '_widgets'
+    0x12,0x81,0x05, // LOAD_GLOBAL '_widgets'
     0xb0, // LOAD_FAST 0
-    0x13,0x4f, // LOAD_ATTR '_n'
+    0x13,0x56, // LOAD_ATTR '_n'
     0xf2, // BINARY_OP 27 __add__
     0x22,0x30, // LOAD_CONST_SMALL_INT 48
     0xd8, // BINARY_OP 1 __gt__
     0x44,0x4b, // POP_JUMP_IF_FALSE 11
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x23,0x04, // LOAD_CONST_OBJ 4
     0x22,0x30, // LOAD_CONST_SMALL_INT 48
     0xf8, // BINARY_OP 33 __mod__
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
-    0x12,0x7e, // LOAD_GLOBAL '_widgets'
+    0x12,0x81,0x05, // LOAD_GLOBAL '_widgets'
     0xb0, // LOAD_FAST 0
-    0x13,0x4f, // LOAD_ATTR '_n'
+    0x13,0x56, // LOAD_ATTR '_n'
     0xe5, // BINARY_OP 14 __iadd__
-    0x17,0x7e, // STORE_GLOBAL '_widgets'
+    0x17,0x81,0x05, // STORE_GLOBAL '_widgets'
     0xb1, // LOAD_FAST 1
     0xb0, // LOAD_FAST 0
     0x18,0x40, // STORE_ATTR 'win'
@@ -10370,17 +10778,17 @@ static const byte fun_data_tdui__Widget___init__[121] = {
     0x18,0x43, // STORE_ATTR 'id'
     0xb8, // LOAD_FAST 8
     0xb0, // LOAD_FAST 0
-    0x18,0x58, // STORE_ATTR '_text'
+    0x18,0x5f, // STORE_ATTR '_text'
     0x52, // LOAD_CONST_TRUE
     0xb0, // LOAD_FAST 0
-    0x18,0x59, // STORE_ATTR '_visible'
+    0x18,0x60, // STORE_ATTR '_visible'
     0xb0, // LOAD_FAST 0
-    0x12,0x79, // LOAD_GLOBAL '_objs'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
     0xb0, // LOAD_FAST 0
     0x13,0x43, // LOAD_ATTR 'id'
     0x56, // STORE_SUBSCR
     0xb1, // LOAD_FAST 1
-    0x13,0x4a, // LOAD_ATTR '_kids'
+    0x13,0x4b, // LOAD_ATTR '_kids'
     0x14,0x41, // LOAD_METHOD 'append'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
@@ -10413,7 +10821,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget___init__ = {
     .fun_data = fun_data_tdui__Widget___init__,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 121,
+    .fun_data_len = 125,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -10441,9 +10849,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget___init__ = {
 
 // child of tdui__Widget
 // frozen bytecode for file tdui.py, scope tdui__Widget__req
-static const byte fun_data_tdui__Widget__req[39] = {
-    0xe9,0x85,0x01,0x12, // prelude
-    0x5a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x36, // names: _req, self, op, a, b, text
+static const byte fun_data_tdui__Widget__req[40] = {
+    0xe9,0x85,0x01,0x14, // prelude
+    0x61,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x36, // names: _req, self, op, a, b, text
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x40, // LOAD_ATTR 'win'
@@ -10473,7 +10881,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget__req = {
     .fun_data = fun_data_tdui__Widget__req,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 39,
+    .fun_data_len = 40,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -10487,10 +10895,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget__req = {
         .n_pos_args = 5,
         .n_kwonly_args = 0,
         .n_def_pos_args = 3,
-        .qstr_block_name_idx = 90,
-        .line_info = fun_data_tdui__Widget__req + 13,
-        .line_info_top = fun_data_tdui__Widget__req + 13,
-        .opcodes = fun_data_tdui__Widget__req + 13,
+        .qstr_block_name_idx = 97,
+        .line_info = fun_data_tdui__Widget__req + 14,
+        .line_info_top = fun_data_tdui__Widget__req + 14,
+        .opcodes = fun_data_tdui__Widget__req + 14,
     },
     #endif
     #endif
@@ -10503,10 +10911,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget__req = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_text
 static const byte fun_data_tdui__Widget_text[9] = {
     0x09,0x06, // prelude
-    0x36,0x81,0x18, // names: text, self
+    0x36,0x81,0x1f, // names: text, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x58, // LOAD_ATTR '_text'
+    0x13,0x5f, // LOAD_ATTR '_text'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -10548,19 +10956,19 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_text = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_text2
 static const byte fun_data_tdui__Widget_text2[31] = {
     0x32,0x0a, // prelude
-    0x36,0x81,0x18,0x81,0x20, // names: text, self, t
+    0x36,0x81,0x1f,0x81,0x27, // names: text, self, t
      // code info
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x58, // STORE_ATTR '_text'
+    0x18,0x5f, // STORE_ATTR '_text'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x84, // LOAD_CONST_SMALL_INT 4
     0x10,0x36, // LOAD_CONST_STRING 'text'
     0xb0, // LOAD_FAST 0
-    0x13,0x58, // LOAD_ATTR '_text'
+    0x13,0x5f, // LOAD_ATTR '_text'
     0x36,0x82,0x01, // CALL_METHOD 257
     0x59, // POP_TOP
     0x51, // LOAD_CONST_NONE
@@ -10605,10 +11013,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_text2 = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_visible
 static const byte fun_data_tdui__Widget_visible[9] = {
     0x09,0x06, // prelude
-    0x5b,0x81,0x18, // names: visible, self
+    0x62,0x81,0x1f, // names: visible, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x59, // LOAD_ATTR '_visible'
+    0x13,0x60, // LOAD_ATTR '_visible'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -10634,7 +11042,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_visible = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 91,
+        .qstr_block_name_idx = 98,
         .line_info = fun_data_tdui__Widget_visible + 5,
         .line_info_top = fun_data_tdui__Widget_visible + 5,
         .opcodes = fun_data_tdui__Widget_visible + 5,
@@ -10650,15 +11058,15 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_visible = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_visible2
 static const byte fun_data_tdui__Widget_visible2[32] = {
     0x2a,0x0a, // prelude
-    0x5b,0x81,0x18,0x81,0x22, // names: visible, self, v
+    0x62,0x81,0x1f,0x81,0x29, // names: visible, self, v
      // code info
-    0x12,0x81,0x23, // LOAD_GLOBAL 'bool'
+    0x12,0x81,0x2a, // LOAD_GLOBAL 'bool'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x59, // STORE_ATTR '_visible'
+    0x18,0x60, // STORE_ATTR '_visible'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x86, // LOAD_CONST_SMALL_INT 6
     0xb1, // LOAD_FAST 1
     0x44,0x43, // POP_JUMP_IF_FALSE 3
@@ -10693,7 +11101,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_visible2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 91,
+        .qstr_block_name_idx = 98,
         .line_info = fun_data_tdui__Widget_visible2 + 7,
         .line_info_top = fun_data_tdui__Widget_visible2 + 7,
         .opcodes = fun_data_tdui__Widget_visible2 + 7,
@@ -10709,10 +11117,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_visible2 = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_color
 static const byte fun_data_tdui__Widget_color[22] = {
     0xbb,0x80,0x01,0x0e, // prelude
-    0x5c,0x81,0x18,0x81,0x24,0x81,0x25, // names: color, self, fg, bg
+    0x63,0x81,0x1f,0x81,0x2b,0x81,0x2c, // names: color, self, fg, bg
      // code info
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x87, // LOAD_CONST_SMALL_INT 7
     0xb1, // LOAD_FAST 1
     0xb2, // LOAD_FAST 2
@@ -10744,7 +11152,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_color = {
         .n_pos_args = 3,
         .n_kwonly_args = 0,
         .n_def_pos_args = 2,
-        .qstr_block_name_idx = 92,
+        .qstr_block_name_idx = 99,
         .line_info = fun_data_tdui__Widget_color + 11,
         .line_info_top = fun_data_tdui__Widget_color + 11,
         .opcodes = fun_data_tdui__Widget_color + 11,
@@ -10760,10 +11168,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_color = {
 // frozen bytecode for file tdui.py, scope tdui__Widget_focus
 static const byte fun_data_tdui__Widget_focus[14] = {
     0x19,0x06, // prelude
-    0x4c,0x81,0x18, // names: focus, self
+    0x4d,0x81,0x1f, // names: focus, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x88, // LOAD_CONST_SMALL_INT 8
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -10793,7 +11201,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_focus = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 76,
+        .qstr_block_name_idx = 77,
         .line_info = fun_data_tdui__Widget_focus + 5,
         .line_info_top = fun_data_tdui__Widget_focus + 5,
         .opcodes = fun_data_tdui__Widget_focus + 5,
@@ -10807,9 +11215,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget_focus = {
 
 // child of tdui__Widget
 // frozen bytecode for file tdui.py, scope tdui__Widget__event
-static const byte fun_data_tdui__Widget__event[19] = {
-    0xbb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui__Widget__event[20] = {
+    0xbb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
@@ -10823,7 +11231,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget__event = {
     .fun_data = fun_data_tdui__Widget__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 19,
+    .fun_data_len = 20,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -10838,9 +11246,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__Widget__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui__Widget__event + 17,
-        .line_info_top = fun_data_tdui__Widget__event + 17,
-        .opcodes = fun_data_tdui__Widget__event + 17,
+        .line_info = fun_data_tdui__Widget__event + 18,
+        .line_info_top = fun_data_tdui__Widget__event + 18,
+        .opcodes = fun_data_tdui__Widget__event + 18,
     },
     #endif
     #endif
@@ -10898,10 +11306,10 @@ static const byte fun_data_tdui_Label[23] = {
     0x08,0x03, // prelude
     0x09, // names: Label
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x09, // LOAD_CONST_STRING 'Label'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
@@ -10912,9 +11320,9 @@ static const byte fun_data_tdui_Label[23] = {
 // frozen bytecode for file tdui.py, scope tdui_Label___init__
 static const byte fun_data_tdui_Label___init__[41] = {
     0x8b,0x14,0x18, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x36,0x45, // names: __init__, *, self, win, x, y, text, width
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x36,0x45, // names: __init__, *, self, win, x, y, text, width
      // code info
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -10925,7 +11333,7 @@ static const byte fun_data_tdui_Label___init__[41] = {
     0xb6, // LOAD_FAST 6
     0x80, // LOAD_CONST_SMALL_INT 0
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb5, // LOAD_FAST 5
     0x34,0x01, // CALL_FUNCTION 1
     0x36,0x08, // CALL_METHOD 8
@@ -11009,10 +11417,10 @@ static const byte fun_data_tdui_Button[27] = {
     0x08,0x03, // prelude
     0x0a, // names: Button
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0a, // LOAD_CONST_STRING 'Button'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
@@ -11025,12 +11433,12 @@ static const byte fun_data_tdui_Button[27] = {
 // frozen bytecode for file tdui.py, scope tdui_Button___init__
 static const byte fun_data_tdui_Button___init__[45] = {
     0x8b,0x14,0x18, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x36,0x5d, // names: __init__, *, self, win, x, y, text, on_click
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x36,0x64, // names: __init__, *, self, win, x, y, text, on_click
      // code info
     0xb6, // LOAD_FAST 6
     0xb1, // LOAD_FAST 1
-    0x18,0x5d, // STORE_ATTR 'on_click'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x64, // STORE_ATTR 'on_click'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -11041,7 +11449,7 @@ static const byte fun_data_tdui_Button___init__[45] = {
     0x80, // LOAD_CONST_SMALL_INT 0
     0x80, // LOAD_CONST_SMALL_INT 0
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb5, // LOAD_FAST 5
     0x34,0x01, // CALL_FUNCTION 1
     0x36,0x08, // CALL_METHOD 8
@@ -11086,19 +11494,19 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Button___init__ = {
 
 // child of tdui_Button
 // frozen bytecode for file tdui.py, scope tdui_Button__event
-static const byte fun_data_tdui_Button__event[36] = {
-    0xcb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_Button__event[37] = {
+    0xcb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x81, // LOAD_CONST_SMALL_INT 1
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x4c, // POP_JUMP_IF_FALSE 12
     0xb0, // LOAD_FAST 0
-    0x13,0x5d, // LOAD_ATTR 'on_click'
+    0x13,0x64, // LOAD_ATTR 'on_click'
     0x44,0x47, // POP_JUMP_IF_FALSE 7
     0xb0, // LOAD_FAST 0
-    0x14,0x5d, // LOAD_METHOD 'on_click'
+    0x14,0x64, // LOAD_METHOD 'on_click'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -11114,7 +11522,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Button__event = {
     .fun_data = fun_data_tdui_Button__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 36,
+    .fun_data_len = 37,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -11129,9 +11537,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Button__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_Button__event + 17,
-        .line_info_top = fun_data_tdui_Button__event + 17,
-        .opcodes = fun_data_tdui_Button__event + 17,
+        .line_info = fun_data_tdui_Button__event + 18,
+        .line_info_top = fun_data_tdui_Button__event + 18,
+        .opcodes = fun_data_tdui_Button__event + 18,
     },
     #endif
     #endif
@@ -11182,22 +11590,22 @@ static const byte fun_data_tdui_Checkbox[46] = {
     0x10,0x03, // prelude
     0x0b, // names: Checkbox
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0b, // LOAD_CONST_STRING 'Checkbox'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x01, // MAKE_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x60, // STORE_NAME 'checked'
-    0x11,0x60, // LOAD_NAME 'checked'
+    0x16,0x67, // STORE_NAME 'checked'
+    0x11,0x67, // LOAD_NAME 'checked'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x02, // MAKE_FUNCTION 2
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x60, // STORE_NAME 'checked'
+    0x16,0x67, // STORE_NAME 'checked'
     0x32,0x03, // MAKE_FUNCTION 3
     0x16,0x2a, // STORE_NAME '_event'
     0xb0, // LOAD_FAST 0
@@ -11207,17 +11615,17 @@ static const byte fun_data_tdui_Checkbox[46] = {
 // frozen bytecode for file tdui.py, scope tdui_Checkbox___init__
 static const byte fun_data_tdui_Checkbox___init__[62] = {
     0x90,0x90,0x04,0x1a, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x36,0x60,0x5f, // names: __init__, *, self, win, x, y, text, checked, on_change
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x36,0x67,0x66, // names: __init__, *, self, win, x, y, text, checked, on_change
      // code info
-    0x12,0x81,0x23, // LOAD_GLOBAL 'bool'
+    0x12,0x81,0x2a, // LOAD_GLOBAL 'bool'
     0xb6, // LOAD_FAST 6
     0x34,0x01, // CALL_FUNCTION 1
     0xb1, // LOAD_FAST 1
-    0x18,0x5e, // STORE_ATTR '_checked'
+    0x18,0x65, // STORE_ATTR '_checked'
     0xb7, // LOAD_FAST 7
     0xb1, // LOAD_FAST 1
-    0x18,0x5f, // STORE_ATTR 'on_change'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x66, // STORE_ATTR 'on_change'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -11232,7 +11640,7 @@ static const byte fun_data_tdui_Checkbox___init__[62] = {
     0x81, // LOAD_CONST_SMALL_INT 1
     0x42,0x41, // JUMP 1
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb5, // LOAD_FAST 5
     0x34,0x01, // CALL_FUNCTION 1
     0x36,0x08, // CALL_METHOD 8
@@ -11279,10 +11687,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox___init__ = {
 // frozen bytecode for file tdui.py, scope tdui_Checkbox_checked
 static const byte fun_data_tdui_Checkbox_checked[9] = {
     0x09,0x06, // prelude
-    0x60,0x81,0x18, // names: checked, self
+    0x67,0x81,0x1f, // names: checked, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x5e, // LOAD_ATTR '_checked'
+    0x13,0x65, // LOAD_ATTR '_checked'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -11308,7 +11716,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox_checked = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 96,
+        .qstr_block_name_idx = 103,
         .line_info = fun_data_tdui_Checkbox_checked + 5,
         .line_info_top = fun_data_tdui_Checkbox_checked + 5,
         .opcodes = fun_data_tdui_Checkbox_checked + 5,
@@ -11324,15 +11732,15 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox_checked = {
 // frozen bytecode for file tdui.py, scope tdui_Checkbox_checked2
 static const byte fun_data_tdui_Checkbox_checked2[32] = {
     0x2a,0x0a, // prelude
-    0x60,0x81,0x18,0x81,0x22, // names: checked, self, v
+    0x67,0x81,0x1f,0x81,0x29, // names: checked, self, v
      // code info
-    0x12,0x81,0x23, // LOAD_GLOBAL 'bool'
+    0x12,0x81,0x2a, // LOAD_GLOBAL 'bool'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x5e, // STORE_ATTR '_checked'
+    0x18,0x65, // STORE_ATTR '_checked'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x85, // LOAD_CONST_SMALL_INT 5
     0xb1, // LOAD_FAST 1
     0x44,0x43, // POP_JUMP_IF_FALSE 3
@@ -11367,7 +11775,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox_checked2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 96,
+        .qstr_block_name_idx = 103,
         .line_info = fun_data_tdui_Checkbox_checked2 + 7,
         .line_info_top = fun_data_tdui_Checkbox_checked2 + 7,
         .opcodes = fun_data_tdui_Checkbox_checked2 + 7,
@@ -11381,24 +11789,24 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox_checked2 = {
 
 // child of tdui_Checkbox
 // frozen bytecode for file tdui.py, scope tdui_Checkbox__event
-static const byte fun_data_tdui_Checkbox__event[45] = {
-    0xcb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_Checkbox__event[46] = {
+    0xcb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x82, // LOAD_CONST_SMALL_INT 2
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x55, // POP_JUMP_IF_FALSE 21
-    0x12,0x81,0x23, // LOAD_GLOBAL 'bool'
+    0x12,0x81,0x2a, // LOAD_GLOBAL 'bool'
     0xb2, // LOAD_FAST 2
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x5e, // STORE_ATTR '_checked'
+    0x18,0x65, // STORE_ATTR '_checked'
     0xb0, // LOAD_FAST 0
-    0x13,0x5f, // LOAD_ATTR 'on_change'
+    0x13,0x66, // LOAD_ATTR 'on_change'
     0x44,0x47, // POP_JUMP_IF_FALSE 7
     0xb0, // LOAD_FAST 0
-    0x14,0x5f, // LOAD_METHOD 'on_change'
+    0x14,0x66, // LOAD_METHOD 'on_change'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -11414,7 +11822,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox__event = {
     .fun_data = fun_data_tdui_Checkbox__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 45,
+    .fun_data_len = 46,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -11429,9 +11837,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Checkbox__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_Checkbox__event + 17,
-        .line_info_top = fun_data_tdui_Checkbox__event + 17,
-        .opcodes = fun_data_tdui_Checkbox__event + 17,
+        .line_info = fun_data_tdui_Checkbox__event + 18,
+        .line_info_top = fun_data_tdui_Checkbox__event + 18,
+        .opcodes = fun_data_tdui_Checkbox__event + 18,
     },
     #endif
     #endif
@@ -11484,10 +11892,10 @@ static const byte fun_data_tdui_Textbox[27] = {
     0x08,0x03, // prelude
     0x0c, // names: Textbox
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0c, // LOAD_CONST_STRING 'Textbox'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
@@ -11500,15 +11908,15 @@ static const byte fun_data_tdui_Textbox[27] = {
 // frozen bytecode for file tdui.py, scope tdui_Textbox___init__
 static const byte fun_data_tdui_Textbox___init__[60] = {
     0xa2,0x90,0x04,0x20, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x45,0x36,0x81,0x17,0x61,0x5f, // names: __init__, *, self, win, x, y, width, text, secret, on_enter, on_change
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x45,0x36,0x81,0x1e,0x68,0x66, // names: __init__, *, self, win, x, y, width, text, secret, on_enter, on_change
      // code info
     0xb8, // LOAD_FAST 8
     0xb1, // LOAD_FAST 1
-    0x18,0x61, // STORE_ATTR 'on_enter'
+    0x18,0x68, // STORE_ATTR 'on_enter'
     0xb9, // LOAD_FAST 9
     0xb1, // LOAD_FAST 1
-    0x18,0x5f, // STORE_ATTR 'on_change'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x66, // STORE_ATTR 'on_change'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -11523,7 +11931,7 @@ static const byte fun_data_tdui_Textbox___init__[60] = {
     0x81, // LOAD_CONST_SMALL_INT 1
     0x42,0x41, // JUMP 1
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb6, // LOAD_FAST 6
     0x34,0x01, // CALL_FUNCTION 1
     0x36,0x08, // CALL_METHOD 8
@@ -11568,9 +11976,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Textbox___init__ = {
 
 // child of tdui_Textbox
 // frozen bytecode for file tdui.py, scope tdui_Textbox__event
-static const byte fun_data_tdui_Textbox__event[65] = {
-    0xcb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_Textbox__event[66] = {
+    0xcb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x82, // LOAD_CONST_SMALL_INT 2
@@ -11580,12 +11988,12 @@ static const byte fun_data_tdui_Textbox__event[65] = {
     0x45,0x02, // JUMP_IF_TRUE_OR_POP 2
     0x10,0x11, // LOAD_CONST_STRING ''
     0xb0, // LOAD_FAST 0
-    0x18,0x58, // STORE_ATTR '_text'
+    0x18,0x5f, // STORE_ATTR '_text'
     0xb0, // LOAD_FAST 0
-    0x13,0x5f, // LOAD_ATTR 'on_change'
+    0x13,0x66, // LOAD_ATTR 'on_change'
     0x44,0x47, // POP_JUMP_IF_FALSE 7
     0xb0, // LOAD_FAST 0
-    0x14,0x5f, // LOAD_METHOD 'on_change'
+    0x14,0x66, // LOAD_METHOD 'on_change'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -11595,10 +12003,10 @@ static const byte fun_data_tdui_Textbox__event[65] = {
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x4e, // POP_JUMP_IF_FALSE 14
     0xb0, // LOAD_FAST 0
-    0x13,0x61, // LOAD_ATTR 'on_enter'
+    0x13,0x68, // LOAD_ATTR 'on_enter'
     0x44,0x49, // POP_JUMP_IF_FALSE 9
     0xb0, // LOAD_FAST 0
-    0x14,0x61, // LOAD_METHOD 'on_enter'
+    0x14,0x68, // LOAD_METHOD 'on_enter'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -11615,7 +12023,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Textbox__event = {
     .fun_data = fun_data_tdui_Textbox__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 65,
+    .fun_data_len = 66,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -11630,9 +12038,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Textbox__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_Textbox__event + 17,
-        .line_info_top = fun_data_tdui_Textbox__event + 17,
-        .opcodes = fun_data_tdui_Textbox__event + 17,
+        .line_info = fun_data_tdui_Textbox__event + 18,
+        .line_info_top = fun_data_tdui_Textbox__event + 18,
+        .opcodes = fun_data_tdui_Textbox__event + 18,
     },
     #endif
     #endif
@@ -11683,22 +12091,22 @@ static const byte fun_data_tdui_Progress[42] = {
     0x10,0x03, // prelude
     0x0d, // names: Progress
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0d, // LOAD_CONST_STRING 'Progress'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x01, // MAKE_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x63, // STORE_NAME 'value'
-    0x11,0x63, // LOAD_NAME 'value'
+    0x16,0x6a, // STORE_NAME 'value'
+    0x11,0x6a, // LOAD_NAME 'value'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x02, // MAKE_FUNCTION 2
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x63, // STORE_NAME 'value'
+    0x16,0x6a, // STORE_NAME 'value'
     0xb0, // LOAD_FAST 0
     0x63, // RETURN_VALUE
 };
@@ -11706,12 +12114,12 @@ static const byte fun_data_tdui_Progress[42] = {
 // frozen bytecode for file tdui.py, scope tdui_Progress___init__
 static const byte fun_data_tdui_Progress___init__[41] = {
     0x83,0x14,0x18, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x45,0x63, // names: __init__, *, self, win, x, y, width, value
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x45,0x6a, // names: __init__, *, self, win, x, y, width, value
      // code info
     0xb6, // LOAD_FAST 6
     0xb1, // LOAD_FAST 1
-    0x18,0x62, // STORE_ATTR '_value'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x69, // STORE_ATTR '_value'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -11767,10 +12175,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Progress___init__ = {
 // frozen bytecode for file tdui.py, scope tdui_Progress_value
 static const byte fun_data_tdui_Progress_value[9] = {
     0x09,0x06, // prelude
-    0x63,0x81,0x18, // names: value, self
+    0x6a,0x81,0x1f, // names: value, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x62, // LOAD_ATTR '_value'
+    0x13,0x69, // LOAD_ATTR '_value'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -11796,7 +12204,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Progress_value = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 99,
+        .qstr_block_name_idx = 106,
         .line_info = fun_data_tdui_Progress_value + 5,
         .line_info_top = fun_data_tdui_Progress_value + 5,
         .opcodes = fun_data_tdui_Progress_value + 5,
@@ -11812,24 +12220,24 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Progress_value = {
 // frozen bytecode for file tdui.py, scope tdui_Progress_value2
 static const byte fun_data_tdui_Progress_value2[42] = {
     0x3a,0x0a, // prelude
-    0x63,0x81,0x18,0x81,0x22, // names: value, self, v
+    0x6a,0x81,0x1f,0x81,0x29, // names: value, self, v
      // code info
-    0x12,0x81,0x11, // LOAD_GLOBAL 'max'
+    0x12,0x81,0x18, // LOAD_GLOBAL 'max'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x10, // LOAD_GLOBAL 'min'
+    0x12,0x81,0x17, // LOAD_GLOBAL 'min'
     0x22,0x80,0x64, // LOAD_CONST_SMALL_INT 100
-    0x12,0x81,0x28, // LOAD_GLOBAL 'int'
+    0x12,0x81,0x2f, // LOAD_GLOBAL 'int'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0x34,0x02, // CALL_FUNCTION 2
     0x34,0x02, // CALL_FUNCTION 2
     0xb0, // LOAD_FAST 0
-    0x18,0x62, // STORE_ATTR '_value'
+    0x18,0x69, // STORE_ATTR '_value'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x85, // LOAD_CONST_SMALL_INT 5
     0xb0, // LOAD_FAST 0
-    0x13,0x62, // LOAD_ATTR '_value'
+    0x13,0x69, // LOAD_ATTR '_value'
     0x36,0x02, // CALL_METHOD 2
     0x59, // POP_TOP
     0x51, // LOAD_CONST_NONE
@@ -11858,7 +12266,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Progress_value2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 99,
+        .qstr_block_name_idx = 106,
         .line_info = fun_data_tdui_Progress_value2 + 7,
         .line_info_top = fun_data_tdui_Progress_value2 + 7,
         .opcodes = fun_data_tdui_Progress_value2 + 7,
@@ -11913,37 +12321,37 @@ static const byte fun_data_tdui_List[76] = {
     0x10,0x03, // prelude
     0x0e, // names: List
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0e, // LOAD_CONST_STRING 'List'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0x82, // LOAD_CONST_SMALL_INT 2
-    0x16,0x4f, // STORE_NAME '_n'
+    0x16,0x56, // STORE_NAME '_n'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x01, // MAKE_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x69, // STORE_NAME 'items'
-    0x11,0x69, // LOAD_NAME 'items'
+    0x16,0x70, // STORE_NAME 'items'
+    0x11,0x70, // LOAD_NAME 'items'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x02, // MAKE_FUNCTION 2
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x69, // STORE_NAME 'items'
+    0x16,0x70, // STORE_NAME 'items'
     0x32,0x03, // MAKE_FUNCTION 3
     0x16,0x41, // STORE_NAME 'append'
     0x32,0x04, // MAKE_FUNCTION 4
-    0x16,0x6a, // STORE_NAME '_add'
-    0x11,0x81,0x0e, // LOAD_NAME 'property'
+    0x16,0x71, // STORE_NAME '_add'
+    0x11,0x81,0x15, // LOAD_NAME 'property'
     0x32,0x05, // MAKE_FUNCTION 5
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x6d, // STORE_NAME 'selected'
-    0x11,0x6d, // LOAD_NAME 'selected'
+    0x16,0x74, // STORE_NAME 'selected'
+    0x11,0x74, // LOAD_NAME 'selected'
     0x13,0x1b, // LOAD_ATTR 'setter'
     0x32,0x06, // MAKE_FUNCTION 6
     0x34,0x01, // CALL_FUNCTION 1
-    0x16,0x6d, // STORE_NAME 'selected'
+    0x16,0x74, // STORE_NAME 'selected'
     0x32,0x07, // MAKE_FUNCTION 7
     0x16,0x2a, // STORE_NAME '_event'
     0xb0, // LOAD_FAST 0
@@ -11951,32 +12359,28 @@ static const byte fun_data_tdui_List[76] = {
 };
 // child of tdui_List
 // frozen bytecode for file tdui.py, scope tdui_List___init__
-static const byte fun_data_tdui_List___init__[82] = {
+static const byte fun_data_tdui_List___init__[77] = {
     0x9a,0x90,0x04,0x22, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x69,0x65,0x66, // names: __init__, *, self, win, x, y, w, h, items, on_select, on_activate
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x70,0x6c,0x6d, // names: __init__, *, self, win, x, y, w, h, items, on_select, on_activate
      // code info
     0xb5, // LOAD_FAST 5
-    0x82, // LOAD_CONST_SMALL_INT 2
-    0xd7, // BINARY_OP 0 __lt__
-    0x43,0x45, // POP_JUMP_IF_TRUE 5
-    0xb6, // LOAD_FAST 6
     0x81, // LOAD_CONST_SMALL_INT 1
-    0xd7, // BINARY_OP 0 __lt__
+    0xd9, // BINARY_OP 2 __eq__
     0x44,0x48, // POP_JUMP_IF_FALSE 8
-    0x12,0x81,0x1e, // LOAD_GLOBAL 'ValueError'
-    0x10,0x64, // LOAD_CONST_STRING 'list size'
+    0x12,0x81,0x25, // LOAD_GLOBAL 'ValueError'
+    0x10,0x6b, // LOAD_CONST_STRING 'list size'
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
     0xb8, // LOAD_FAST 8
     0xb1, // LOAD_FAST 1
-    0x18,0x65, // STORE_ATTR 'on_select'
+    0x18,0x6c, // STORE_ATTR 'on_select'
     0xb9, // LOAD_FAST 9
     0xb1, // LOAD_FAST 1
-    0x18,0x66, // STORE_ATTR 'on_activate'
+    0x18,0x6d, // STORE_ATTR 'on_activate'
     0x80, // LOAD_CONST_SMALL_INT 0
     0xb1, // LOAD_FAST 1
-    0x18,0x67, // STORE_ATTR '_selected'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x6e, // STORE_ATTR '_selected'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -11992,10 +12396,10 @@ static const byte fun_data_tdui_List___init__[82] = {
     0x59, // POP_TOP
     0x2b,0x00, // BUILD_LIST 0
     0xb1, // LOAD_FAST 1
-    0x18,0x68, // STORE_ATTR '_items'
+    0x18,0x6f, // STORE_ATTR '_items'
     0xb7, // LOAD_FAST 7
     0xb1, // LOAD_FAST 1
-    0x18,0x69, // STORE_ATTR 'items'
+    0x18,0x70, // STORE_ATTR 'items'
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -12008,7 +12412,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List___init__ = {
     .fun_data = fun_data_tdui_List___init__,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 82,
+    .fun_data_len = 77,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -12038,10 +12442,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List___init__ = {
 // frozen bytecode for file tdui.py, scope tdui_List_items
 static const byte fun_data_tdui_List_items[9] = {
     0x09,0x06, // prelude
-    0x69,0x81,0x18, // names: items, self
+    0x70,0x81,0x1f, // names: items, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x68, // LOAD_ATTR '_items'
+    0x13,0x6f, // LOAD_ATTR '_items'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -12067,7 +12471,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_items = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 105,
+        .qstr_block_name_idx = 112,
         .line_info = fun_data_tdui_List_items + 5,
         .line_info_top = fun_data_tdui_List_items + 5,
         .opcodes = fun_data_tdui_List_items + 5,
@@ -12083,22 +12487,22 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_items = {
 // frozen bytecode for file tdui.py, scope tdui_List_items2
 static const byte fun_data_tdui_List_items2[32] = {
     0x22,0x08, // prelude
-    0x69,0x81,0x18,0x69, // names: items, self, items
+    0x70,0x81,0x1f,0x70, // names: items, self, items
      // code info
     0x32,0x00, // MAKE_FUNCTION 0
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x68, // STORE_ATTR '_items'
+    0x18,0x6f, // STORE_ATTR '_items'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x89, // LOAD_CONST_SMALL_INT 9
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
     0xb0, // LOAD_FAST 0
-    0x14,0x6a, // LOAD_METHOD '_add'
+    0x14,0x71, // LOAD_METHOD '_add'
     0xb0, // LOAD_FAST 0
-    0x13,0x68, // LOAD_ATTR '_items'
+    0x13,0x6f, // LOAD_ATTR '_items'
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
     0x51, // LOAD_CONST_NONE
@@ -12108,14 +12512,14 @@ static const byte fun_data_tdui_List_items2[32] = {
 // frozen bytecode for file tdui.py, scope tdui_List_items2__lt_listcomp_gt_
 static const byte fun_data_tdui_List_items2__lt_listcomp_gt_[23] = {
     0x41,0x06, // prelude
-    0x74,0x81,0x26, // names: <listcomp>, *
+    0x7b,0x81,0x2d, // names: <listcomp>, *
      // code info
     0x2b,0x00, // BUILD_LIST 0
     0xb0, // LOAD_FAST 0
     0x5f, // GET_ITER_STACK
     0x4b,0x0b, // FOR_ITER 11
     0xc1, // STORE_FAST 1
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0x2f,0x14, // STORE_COMP 20
@@ -12145,7 +12549,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_items2__lt_listcomp_gt_
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 116,
+        .qstr_block_name_idx = 123,
         .line_info = fun_data_tdui_List_items2__lt_listcomp_gt_ + 5,
         .line_info_top = fun_data_tdui_List_items2__lt_listcomp_gt_ + 5,
         .opcodes = fun_data_tdui_List_items2__lt_listcomp_gt_ + 5,
@@ -12183,7 +12587,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_items2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 105,
+        .qstr_block_name_idx = 112,
         .line_info = fun_data_tdui_List_items2 + 6,
         .line_info_top = fun_data_tdui_List_items2 + 6,
         .opcodes = fun_data_tdui_List_items2 + 6,
@@ -12196,20 +12600,20 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_items2 = {
 // frozen bytecode for file tdui.py, scope tdui_List_append
 static const byte fun_data_tdui_List_append[34] = {
     0x22,0x0a, // prelude
-    0x41,0x81,0x18,0x81,0x29, // names: append, self, item
+    0x41,0x81,0x1f,0x81,0x30, // names: append, self, item
      // code info
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xc1, // STORE_FAST 1
     0xb0, // LOAD_FAST 0
-    0x13,0x68, // LOAD_ATTR '_items'
+    0x13,0x6f, // LOAD_ATTR '_items'
     0x14,0x41, // LOAD_METHOD 'append'
     0xb1, // LOAD_FAST 1
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
     0xb0, // LOAD_FAST 0
-    0x14,0x6a, // LOAD_METHOD '_add'
+    0x14,0x71, // LOAD_METHOD '_add'
     0xb1, // LOAD_FAST 1
     0x2b,0x01, // BUILD_LIST 1
     0x36,0x01, // CALL_METHOD 1
@@ -12256,7 +12660,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_append = {
 // frozen bytecode for file tdui.py, scope tdui_List__add
 static const byte fun_data_tdui_List__add[108] = {
     0x7a,0x08, // prelude
-    0x6a,0x81,0x18,0x69, // names: _add, self, items
+    0x71,0x81,0x1f,0x70, // names: _add, self, items
      // code info
     0x2b,0x00, // BUILD_LIST 0
     0xc2, // STORE_FAST 2
@@ -12267,15 +12671,15 @@ static const byte fun_data_tdui_List__add[108] = {
     0x4b,0x47, // FOR_ITER 71
     0xc4, // STORE_FAST 4
     0xb4, // LOAD_FAST 4
-    0x14,0x6b, // LOAD_METHOD 'replace'
-    0x10,0x6c, // LOAD_CONST_STRING '\n'
+    0x14,0x72, // LOAD_METHOD 'replace'
+    0x10,0x73, // LOAD_CONST_STRING '\n'
     0x10,0x1c, // LOAD_CONST_STRING ' '
     0x36,0x02, // CALL_METHOD 2
     0xc4, // STORE_FAST 4
     0xb2, // LOAD_FAST 2
     0x44,0x64, // POP_JUMP_IF_FALSE 36
     0xb3, // LOAD_FAST 3
-    0x12,0x81,0x09, // LOAD_GLOBAL 'len'
+    0x12,0x81,0x10, // LOAD_GLOBAL 'len'
     0xb4, // LOAD_FAST 4
     0x34,0x01, // CALL_FUNCTION 1
     0xf2, // BINARY_OP 27 __add__
@@ -12283,10 +12687,10 @@ static const byte fun_data_tdui_List__add[108] = {
     0xd8, // BINARY_OP 1 __gt__
     0x44,0x56, // POP_JUMP_IF_FALSE 22
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x8a, // LOAD_CONST_SMALL_INT 10
     0x10,0x36, // LOAD_CONST_STRING 'text'
-    0x10,0x6c, // LOAD_CONST_STRING '\n'
+    0x10,0x73, // LOAD_CONST_STRING '\n'
     0x14,0x3e, // LOAD_METHOD 'join'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
@@ -12302,7 +12706,7 @@ static const byte fun_data_tdui_List__add[108] = {
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
     0xb3, // LOAD_FAST 3
-    0x12,0x81,0x09, // LOAD_GLOBAL 'len'
+    0x12,0x81,0x10, // LOAD_GLOBAL 'len'
     0xb4, // LOAD_FAST 4
     0x34,0x01, // CALL_FUNCTION 1
     0x81, // LOAD_CONST_SMALL_INT 1
@@ -12313,10 +12717,10 @@ static const byte fun_data_tdui_List__add[108] = {
     0xb2, // LOAD_FAST 2
     0x44,0x51, // POP_JUMP_IF_FALSE 17
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x8a, // LOAD_CONST_SMALL_INT 10
     0x10,0x36, // LOAD_CONST_STRING 'text'
-    0x10,0x6c, // LOAD_CONST_STRING '\n'
+    0x10,0x73, // LOAD_CONST_STRING '\n'
     0x14,0x3e, // LOAD_METHOD 'join'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
@@ -12348,7 +12752,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List__add = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 106,
+        .qstr_block_name_idx = 113,
         .line_info = fun_data_tdui_List__add + 6,
         .line_info_top = fun_data_tdui_List__add + 6,
         .opcodes = fun_data_tdui_List__add + 6,
@@ -12364,10 +12768,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List__add = {
 // frozen bytecode for file tdui.py, scope tdui_List_selected
 static const byte fun_data_tdui_List_selected[9] = {
     0x09,0x06, // prelude
-    0x6d,0x81,0x18, // names: selected, self
+    0x74,0x81,0x1f, // names: selected, self
      // code info
     0xb0, // LOAD_FAST 0
-    0x13,0x67, // LOAD_ATTR '_selected'
+    0x13,0x6e, // LOAD_ATTR '_selected'
     0x63, // RETURN_VALUE
 };
 #if MICROPY_PERSISTENT_CODE_SAVE
@@ -12393,7 +12797,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_selected = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 109,
+        .qstr_block_name_idx = 116,
         .line_info = fun_data_tdui_List_selected + 5,
         .line_info_top = fun_data_tdui_List_selected + 5,
         .opcodes = fun_data_tdui_List_selected + 5,
@@ -12409,18 +12813,18 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_selected = {
 // frozen bytecode for file tdui.py, scope tdui_List_selected2
 static const byte fun_data_tdui_List_selected2[28] = {
     0x2a,0x0a, // prelude
-    0x6d,0x81,0x18,0x81,0x2a, // names: selected, self, i
+    0x74,0x81,0x1f,0x81,0x31, // names: selected, self, i
      // code info
-    0x12,0x81,0x28, // LOAD_GLOBAL 'int'
+    0x12,0x81,0x2f, // LOAD_GLOBAL 'int'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xb0, // LOAD_FAST 0
-    0x18,0x67, // STORE_ATTR '_selected'
+    0x18,0x6e, // STORE_ATTR '_selected'
     0xb0, // LOAD_FAST 0
-    0x14,0x5a, // LOAD_METHOD '_req'
+    0x14,0x61, // LOAD_METHOD '_req'
     0x85, // LOAD_CONST_SMALL_INT 5
     0xb0, // LOAD_FAST 0
-    0x13,0x67, // LOAD_ATTR '_selected'
+    0x13,0x6e, // LOAD_ATTR '_selected'
     0x36,0x02, // CALL_METHOD 2
     0x59, // POP_TOP
     0x51, // LOAD_CONST_NONE
@@ -12449,7 +12853,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_selected2 = {
         .n_pos_args = 2,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 109,
+        .qstr_block_name_idx = 116,
         .line_info = fun_data_tdui_List_selected2 + 7,
         .line_info_top = fun_data_tdui_List_selected2 + 7,
         .opcodes = fun_data_tdui_List_selected2 + 7,
@@ -12463,9 +12867,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List_selected2 = {
 
 // child of tdui_List
 // frozen bytecode for file tdui.py, scope tdui_List__event
-static const byte fun_data_tdui_List__event[65] = {
-    0xcb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_List__event[66] = {
+    0xcb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x82, // LOAD_CONST_SMALL_INT 2
@@ -12473,12 +12877,12 @@ static const byte fun_data_tdui_List__event[65] = {
     0x44,0x52, // POP_JUMP_IF_FALSE 18
     0xb2, // LOAD_FAST 2
     0xb0, // LOAD_FAST 0
-    0x18,0x67, // STORE_ATTR '_selected'
+    0x18,0x6e, // STORE_ATTR '_selected'
     0xb0, // LOAD_FAST 0
-    0x13,0x65, // LOAD_ATTR 'on_select'
+    0x13,0x6c, // LOAD_ATTR 'on_select'
     0x44,0x47, // POP_JUMP_IF_FALSE 7
     0xb0, // LOAD_FAST 0
-    0x14,0x65, // LOAD_METHOD 'on_select'
+    0x14,0x6c, // LOAD_METHOD 'on_select'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -12489,12 +12893,12 @@ static const byte fun_data_tdui_List__event[65] = {
     0x44,0x52, // POP_JUMP_IF_FALSE 18
     0xb2, // LOAD_FAST 2
     0xb0, // LOAD_FAST 0
-    0x18,0x67, // STORE_ATTR '_selected'
+    0x18,0x6e, // STORE_ATTR '_selected'
     0xb0, // LOAD_FAST 0
-    0x13,0x66, // LOAD_ATTR 'on_activate'
+    0x13,0x6d, // LOAD_ATTR 'on_activate'
     0x44,0x47, // POP_JUMP_IF_FALSE 7
     0xb0, // LOAD_FAST 0
-    0x14,0x66, // LOAD_METHOD 'on_activate'
+    0x14,0x6d, // LOAD_METHOD 'on_activate'
     0xb0, // LOAD_FAST 0
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -12511,7 +12915,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List__event = {
     .fun_data = fun_data_tdui_List__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 65,
+    .fun_data_len = 66,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -12526,9 +12930,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_List__event + 17,
-        .line_info_top = fun_data_tdui_List__event + 17,
-        .opcodes = fun_data_tdui_List__event + 17,
+        .line_info = fun_data_tdui_List__event + 18,
+        .line_info_top = fun_data_tdui_List__event + 18,
+        .opcodes = fun_data_tdui_List__event + 18,
     },
     #endif
     #endif
@@ -12581,16 +12985,16 @@ static const mp_raw_code_truncated_t proto_fun_tdui_List = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui_Canvas
-static const byte fun_data_tdui_Canvas[63] = {
+static const byte fun_data_tdui_Canvas[71] = {
     0x18,0x03, // prelude
     0x0f, // names: Canvas
     0x00, // code info
-    0x11,0x81,0x0b, // LOAD_NAME '__name__'
-    0x16,0x81,0x0c, // STORE_NAME '__module__'
+    0x11,0x81,0x12, // LOAD_NAME '__name__'
+    0x16,0x81,0x13, // STORE_NAME '__module__'
     0x10,0x0f, // LOAD_CONST_STRING 'Canvas'
-    0x16,0x81,0x0d, // STORE_NAME '__qualname__'
+    0x16,0x81,0x14, // STORE_NAME '__qualname__'
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x16,0x4f, // STORE_NAME '_n'
+    0x16,0x56, // STORE_NAME '_n'
     0xb0, // LOAD_FAST 0
     0x20,0x00,0x01, // MAKE_CLOSURE 0
     0x16,0x3f, // STORE_NAME '__init__'
@@ -12599,23 +13003,27 @@ static const byte fun_data_tdui_Canvas[63] = {
     0x2a,0x02, // BUILD_TUPLE 2
     0x53, // LOAD_NULL
     0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
-    0x16,0x6f, // STORE_NAME 'put'
+    0x16,0x76, // STORE_NAME 'put'
     0x10,0x1c, // LOAD_CONST_STRING ' '
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x2a,0x03, // BUILD_TUPLE 3
     0x53, // LOAD_NULL
     0x33,0x02, // MAKE_FUNCTION_DEFARGS 2
-    0x16,0x71, // STORE_NAME 'fill'
+    0x16,0x78, // STORE_NAME 'fill'
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x7f, // LOAD_CONST_SMALL_INT -1
     0x2a,0x02, // BUILD_TUPLE 2
     0x53, // LOAD_NULL
     0x33,0x03, // MAKE_FUNCTION_DEFARGS 3
-    0x16,0x72, // STORE_NAME 'clear'
+    0x16,0x79, // STORE_NAME 'clear'
     0x32,0x04, // MAKE_FUNCTION 4
-    0x16,0x70, // STORE_NAME '_req2'
+    0x16,0x4e, // STORE_NAME 'resize'
     0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x4f, // STORE_NAME 'move'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x77, // STORE_NAME '_req2'
+    0x32,0x07, // MAKE_FUNCTION 7
     0x16,0x2a, // STORE_NAME '_event'
     0xb0, // LOAD_FAST 0
     0x63, // RETURN_VALUE
@@ -12624,12 +13032,12 @@ static const byte fun_data_tdui_Canvas[63] = {
 // frozen bytecode for file tdui.py, scope tdui_Canvas___init__
 static const byte fun_data_tdui_Canvas___init__[132] = {
     0x88,0x90,0x04,0x1e, // prelude
-    0x3f,0x81,0x26,0x81,0x18,0x40,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x6e, // names: __init__, *, self, win, x, y, w, h, on_mouse
+    0x3f,0x81,0x2d,0x81,0x1f,0x40,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x75, // names: __init__, *, self, win, x, y, w, h, on_mouse
      // code info
     0xb2, // LOAD_FAST 2
     0x13,0x47, // LOAD_ATTR 'is_open'
     0x43,0x48, // POP_JUMP_IF_TRUE 8
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x23,0x03, // LOAD_CONST_OBJ 3
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
@@ -12649,11 +13057,11 @@ static const byte fun_data_tdui_Canvas___init__[132] = {
     0x81, // LOAD_CONST_SMALL_INT 1
     0xd7, // BINARY_OP 0 __lt__
     0x44,0x48, // POP_JUMP_IF_FALSE 8
-    0x12,0x81,0x1e, // LOAD_GLOBAL 'ValueError'
+    0x12,0x81,0x25, // LOAD_GLOBAL 'ValueError'
     0x23,0x05, // LOAD_CONST_OBJ 5
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
-    0x12,0x50, // LOAD_GLOBAL '_cells'
+    0x12,0x57, // LOAD_GLOBAL '_cells'
     0xb5, // LOAD_FAST 5
     0xb6, // LOAD_FAST 6
     0xf4, // BINARY_OP 29 __mul__
@@ -12661,23 +13069,23 @@ static const byte fun_data_tdui_Canvas___init__[132] = {
     0x22,0x8f,0x50, // LOAD_CONST_SMALL_INT 2000
     0xd8, // BINARY_OP 1 __gt__
     0x44,0x4c, // POP_JUMP_IF_FALSE 12
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x23,0x06, // LOAD_CONST_OBJ 6
     0x22,0x8f,0x50, // LOAD_CONST_SMALL_INT 2000
     0xf8, // BINARY_OP 33 __mod__
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
-    0x12,0x50, // LOAD_GLOBAL '_cells'
+    0x12,0x57, // LOAD_GLOBAL '_cells'
     0xb5, // LOAD_FAST 5
     0xb6, // LOAD_FAST 6
     0xf4, // BINARY_OP 29 __mul__
     0xe5, // BINARY_OP 14 __iadd__
-    0x17,0x50, // STORE_GLOBAL '_cells'
+    0x17,0x57, // STORE_GLOBAL '_cells'
     0xb5, // LOAD_FAST 5
     0xb6, // LOAD_FAST 6
     0xf4, // BINARY_OP 29 __mul__
     0xb1, // LOAD_FAST 1
-    0x18,0x50, // STORE_ATTR '_cells'
+    0x18,0x57, // STORE_ATTR '_cells'
     0xb5, // LOAD_FAST 5
     0xb1, // LOAD_FAST 1
     0x18,0x45, // STORE_ATTR 'width'
@@ -12686,8 +13094,8 @@ static const byte fun_data_tdui_Canvas___init__[132] = {
     0x18,0x46, // STORE_ATTR 'height'
     0xb7, // LOAD_FAST 7
     0xb1, // LOAD_FAST 1
-    0x18,0x6e, // STORE_ATTR 'on_mouse'
-    0x12,0x81,0x27, // LOAD_GLOBAL 'super'
+    0x18,0x75, // STORE_ATTR 'on_mouse'
+    0x12,0x81,0x2e, // LOAD_GLOBAL 'super'
     0x25,0x00, // LOAD_DEREF 0
     0xb1, // LOAD_FAST 1
     0x15,0x3f, // LOAD_SUPER_METHOD '__init__'
@@ -12743,10 +13151,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas___init__ = {
 // frozen bytecode for file tdui.py, scope tdui_Canvas_put
 static const byte fun_data_tdui_Canvas_put[37] = {
     0x82,0x94,0x01,0x18, // prelude
-    0x6f,0x81,0x18,0x81,0x1b,0x81,0x1c,0x36,0x81,0x24,0x81,0x25, // names: put, self, x, y, text, fg, bg
+    0x76,0x81,0x1f,0x81,0x22,0x81,0x23,0x36,0x81,0x2b,0x81,0x2c, // names: put, self, x, y, text, fg, bg
      // code info
     0xb0, // LOAD_FAST 0
-    0x14,0x70, // LOAD_METHOD '_req2'
+    0x14,0x77, // LOAD_METHOD '_req2'
     0x8b, // LOAD_CONST_SMALL_INT 11
     0xb1, // LOAD_FAST 1
     0xb2, // LOAD_FAST 2
@@ -12754,7 +13162,7 @@ static const byte fun_data_tdui_Canvas_put[37] = {
     0xb5, // LOAD_FAST 5
     0x80, // LOAD_CONST_SMALL_INT 0
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb3, // LOAD_FAST 3
     0x34,0x01, // CALL_FUNCTION 1
     0x36,0x08, // CALL_METHOD 8
@@ -12785,7 +13193,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_put = {
         .n_pos_args = 6,
         .n_kwonly_args = 0,
         .n_def_pos_args = 2,
-        .qstr_block_name_idx = 111,
+        .qstr_block_name_idx = 118,
         .line_info = fun_data_tdui_Canvas_put + 16,
         .line_info_top = fun_data_tdui_Canvas_put + 16,
         .opcodes = fun_data_tdui_Canvas_put + 16,
@@ -12801,10 +13209,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_put = {
 // frozen bytecode for file tdui.py, scope tdui_Canvas_fill
 static const byte fun_data_tdui_Canvas_fill[37] = {
     0x88,0x91,0x05,0x22, // prelude
-    0x71,0x81,0x18,0x81,0x1b,0x81,0x1c,0x81,0x19,0x81,0x1a,0x81,0x2b,0x81,0x24,0x81,0x25, // names: fill, self, x, y, w, h, ch, fg, bg
+    0x78,0x81,0x1f,0x81,0x22,0x81,0x23,0x81,0x20,0x81,0x21,0x81,0x32,0x81,0x2b,0x81,0x2c, // names: fill, self, x, y, w, h, ch, fg, bg
      // code info
     0xb0, // LOAD_FAST 0
-    0x14,0x70, // LOAD_METHOD '_req2'
+    0x14,0x77, // LOAD_METHOD '_req2'
     0x8c, // LOAD_CONST_SMALL_INT 12
     0xb1, // LOAD_FAST 1
     0xb2, // LOAD_FAST 2
@@ -12841,7 +13249,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_fill = {
         .n_pos_args = 8,
         .n_kwonly_args = 0,
         .n_def_pos_args = 3,
-        .qstr_block_name_idx = 113,
+        .qstr_block_name_idx = 120,
         .line_info = fun_data_tdui_Canvas_fill + 21,
         .line_info_top = fun_data_tdui_Canvas_fill + 21,
         .opcodes = fun_data_tdui_Canvas_fill + 21,
@@ -12857,10 +13265,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_fill = {
 // frozen bytecode for file tdui.py, scope tdui_Canvas_clear
 static const byte fun_data_tdui_Canvas_clear[31] = {
     0xdb,0x80,0x01,0x0e, // prelude
-    0x72,0x81,0x18,0x81,0x24,0x81,0x25, // names: clear, self, fg, bg
+    0x79,0x81,0x1f,0x81,0x2b,0x81,0x2c, // names: clear, self, fg, bg
      // code info
     0xb0, // LOAD_FAST 0
-    0x14,0x71, // LOAD_METHOD 'fill'
+    0x14,0x78, // LOAD_METHOD 'fill'
     0x80, // LOAD_CONST_SMALL_INT 0
     0x80, // LOAD_CONST_SMALL_INT 0
     0xb0, // LOAD_FAST 0
@@ -12898,7 +13306,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_clear = {
         .n_pos_args = 3,
         .n_kwonly_args = 0,
         .n_def_pos_args = 2,
-        .qstr_block_name_idx = 114,
+        .qstr_block_name_idx = 121,
         .line_info = fun_data_tdui_Canvas_clear + 11,
         .line_info_top = fun_data_tdui_Canvas_clear + 11,
         .opcodes = fun_data_tdui_Canvas_clear + 11,
@@ -12911,10 +13319,171 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_clear = {
 #endif
 
 // child of tdui_Canvas
+// frozen bytecode for file tdui.py, scope tdui_Canvas_resize
+static const byte fun_data_tdui_Canvas_resize[97] = {
+    0x63,0x0e, // prelude
+    0x4e,0x81,0x1f,0x81,0x20,0x81,0x21, // names: resize, self, w, h
+     // code info
+    0xb1, // LOAD_FAST 1
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x45, // POP_JUMP_IF_TRUE 5
+    0xb2, // LOAD_FAST 2
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x81,0x25, // LOAD_GLOBAL 'ValueError'
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x12,0x57, // LOAD_GLOBAL '_cells'
+    0xb0, // LOAD_FAST 0
+    0x13,0x57, // LOAD_ATTR '_cells'
+    0xf3, // BINARY_OP 28 __sub__
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0xf4, // BINARY_OP 29 __mul__
+    0xf2, // BINARY_OP 27 __add__
+    0x22,0x8f,0x50, // LOAD_CONST_SMALL_INT 2000
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x22,0x8f,0x50, // LOAD_CONST_SMALL_INT 2000
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x12,0x57, // LOAD_GLOBAL '_cells'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0xf4, // BINARY_OP 29 __mul__
+    0xb0, // LOAD_FAST 0
+    0x13,0x57, // LOAD_ATTR '_cells'
+    0xf3, // BINARY_OP 28 __sub__
+    0xe5, // BINARY_OP 14 __iadd__
+    0x17,0x57, // STORE_GLOBAL '_cells'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0xf4, // BINARY_OP 29 __mul__
+    0xb0, // LOAD_FAST 0
+    0x18,0x57, // STORE_ATTR '_cells'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x45, // STORE_ATTR 'width'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x46, // STORE_ATTR 'height'
+    0xb0, // LOAD_FAST 0
+    0x14,0x77, // LOAD_METHOD '_req2'
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x36,0x08, // CALL_METHOD 8
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_resize = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Canvas_resize,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 97,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 13,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 78,
+        .line_info = fun_data_tdui_Canvas_resize + 9,
+        .line_info_top = fun_data_tdui_Canvas_resize + 9,
+        .opcodes = fun_data_tdui_Canvas_resize + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Canvas_resize fun_data_tdui_Canvas_resize[0]
+#endif
+
+// child of tdui_Canvas
+// frozen bytecode for file tdui.py, scope tdui_Canvas_move
+static const byte fun_data_tdui_Canvas_move[25] = {
+    0x63,0x0e, // prelude
+    0x4f,0x81,0x1f,0x81,0x22,0x81,0x23, // names: move, self, x, y
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x77, // LOAD_METHOD '_req2'
+    0x91, // LOAD_CONST_SMALL_INT 17
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x36,0x08, // CALL_METHOD 8
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_tdui_Canvas_move = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_tdui_Canvas_move,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 25,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 13,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 79,
+        .line_info = fun_data_tdui_Canvas_move + 9,
+        .line_info_top = fun_data_tdui_Canvas_move + 9,
+        .opcodes = fun_data_tdui_Canvas_move + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_tdui_Canvas_move fun_data_tdui_Canvas_move[0]
+#endif
+
+// child of tdui_Canvas
 // frozen bytecode for file tdui.py, scope tdui_Canvas__req2
-static const byte fun_data_tdui_Canvas__req2[48] = {
-    0xa1,0x90,0x04,0x22, // prelude
-    0x70,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x05,0x81,0x06,0x36, // names: _req2, self, op, a, b, c, d, e, f, text
+static const byte fun_data_tdui_Canvas__req2[49] = {
+    0xa1,0x90,0x04,0x24, // prelude
+    0x77,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x0c,0x81,0x0d,0x36, // names: _req2, self, op, a, b, c, d, e, f, text
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x40, // LOAD_ATTR 'win'
@@ -12947,7 +13516,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas__req2 = {
     .fun_data = fun_data_tdui_Canvas__req2,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 48,
+    .fun_data_len = 49,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -12961,10 +13530,10 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas__req2 = {
         .n_pos_args = 9,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 112,
-        .line_info = fun_data_tdui_Canvas__req2 + 21,
-        .line_info_top = fun_data_tdui_Canvas__req2 + 21,
-        .opcodes = fun_data_tdui_Canvas__req2 + 21,
+        .qstr_block_name_idx = 119,
+        .line_info = fun_data_tdui_Canvas__req2 + 22,
+        .line_info_top = fun_data_tdui_Canvas__req2 + 22,
+        .opcodes = fun_data_tdui_Canvas__req2 + 22,
     },
     #endif
     #endif
@@ -12975,19 +13544,19 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas__req2 = {
 
 // child of tdui_Canvas
 // frozen bytecode for file tdui.py, scope tdui_Canvas__event
-static const byte fun_data_tdui_Canvas__event[40] = {
-    0xeb,0x04,0x1c, // prelude
-    0x2a,0x81,0x18,0x7f,0x81,0x01,0x81,0x02,0x81,0x03,0x81,0x04,0x81,0x20, // names: _event, self, op, a, b, c, d, t
+static const byte fun_data_tdui_Canvas__event[41] = {
+    0xeb,0x04,0x1e, // prelude
+    0x2a,0x81,0x1f,0x81,0x06,0x81,0x08,0x81,0x09,0x81,0x0a,0x81,0x0b,0x81,0x27, // names: _event, self, op, a, b, c, d, t
      // code info
     0xb1, // LOAD_FAST 1
     0x85, // LOAD_CONST_SMALL_INT 5
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x50, // POP_JUMP_IF_FALSE 16
     0xb0, // LOAD_FAST 0
-    0x13,0x6e, // LOAD_ATTR 'on_mouse'
+    0x13,0x75, // LOAD_ATTR 'on_mouse'
     0x44,0x4b, // POP_JUMP_IF_FALSE 11
     0xb0, // LOAD_FAST 0
-    0x14,0x6e, // LOAD_METHOD 'on_mouse'
+    0x14,0x75, // LOAD_METHOD 'on_mouse'
     0xb0, // LOAD_FAST 0
     0xb2, // LOAD_FAST 2
     0xb3, // LOAD_FAST 3
@@ -13007,7 +13576,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas__event = {
     .fun_data = fun_data_tdui_Canvas__event,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 40,
+    .fun_data_len = 41,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13022,9 +13591,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas__event = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
         .qstr_block_name_idx = 42,
-        .line_info = fun_data_tdui_Canvas__event + 17,
-        .line_info_top = fun_data_tdui_Canvas__event + 17,
-        .opcodes = fun_data_tdui_Canvas__event + 17,
+        .line_info = fun_data_tdui_Canvas__event + 18,
+        .line_info_top = fun_data_tdui_Canvas__event + 18,
+        .opcodes = fun_data_tdui_Canvas__event + 18,
     },
     #endif
     #endif
@@ -13038,6 +13607,8 @@ static const mp_raw_code_t *const children_tdui_Canvas[] = {
     (const mp_raw_code_t *)&proto_fun_tdui_Canvas_put,
     (const mp_raw_code_t *)&proto_fun_tdui_Canvas_fill,
     (const mp_raw_code_t *)&proto_fun_tdui_Canvas_clear,
+    (const mp_raw_code_t *)&proto_fun_tdui_Canvas_resize,
+    (const mp_raw_code_t *)&proto_fun_tdui_Canvas_move,
     (const mp_raw_code_t *)&proto_fun_tdui_Canvas__req2,
     (const mp_raw_code_t *)&proto_fun_tdui_Canvas__event,
 };
@@ -13050,8 +13621,8 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas = {
     .fun_data = fun_data_tdui_Canvas,
     .children = (void *)&children_tdui_Canvas,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 63,
-    .n_children = 6,
+    .fun_data_len = 71,
+    .n_children = 8,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
     #endif
@@ -13075,21 +13646,21 @@ static const mp_raw_code_truncated_t proto_fun_tdui_Canvas = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui__run_timers
-static const byte fun_data_tdui__run_timers[113] = {
+static const byte fun_data_tdui__run_timers[116] = {
     0x61,0x06, // prelude
-    0x1d,0x81,0x0f, // names: _run_timers, left
+    0x1d,0x81,0x16, // names: _run_timers, left
      // code info
     0x12,0x03, // LOAD_GLOBAL 'time'
     0x14,0x1e, // LOAD_METHOD 'ticks_ms'
     0x36,0x00, // CALL_METHOD 0
     0xc1, // STORE_FAST 1
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x2e,0x02, // BUILD_SLICE 2
     0x55, // LOAD_SUBSCR
     0x5f, // GET_ITER_STACK
-    0x4b,0x33, // FOR_ITER 51
+    0x4b,0x34, // FOR_ITER 52
     0xc2, // STORE_FAST 2
     0x12,0x03, // LOAD_GLOBAL 'time'
     0x14,0x1f, // LOAD_METHOD 'ticks_diff'
@@ -13099,7 +13670,7 @@ static const byte fun_data_tdui__run_timers[113] = {
     0x36,0x02, // CALL_METHOD 2
     0x80, // LOAD_CONST_SMALL_INT 0
     0xda, // BINARY_OP 3 __le__
-    0x44,0x62, // POP_JUMP_IF_FALSE 34
+    0x44,0x63, // POP_JUMP_IF_FALSE 35
     0xb2, // LOAD_FAST 2
     0x13,0x21, // LOAD_ATTR 'repeat'
     0x44,0x4f, // POP_JUMP_IF_FALSE 15
@@ -13111,8 +13682,8 @@ static const byte fun_data_tdui__run_timers[113] = {
     0x36,0x02, // CALL_METHOD 2
     0xb2, // LOAD_FAST 2
     0x18,0x20, // STORE_ATTR 'due'
-    0x42,0x48, // JUMP 8
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x42,0x49, // JUMP 9
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x14,0x24, // LOAD_METHOD 'remove'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
@@ -13121,16 +13692,16 @@ static const byte fun_data_tdui__run_timers[113] = {
     0x14,0x25, // LOAD_METHOD 'fn'
     0x36,0x00, // CALL_METHOD 0
     0x59, // POP_TOP
-    0x42,0x0b, // JUMP -53
+    0x42,0x0a, // JUMP -54
     0x12,0x03, // LOAD_GLOBAL 'time'
     0x14,0x1e, // LOAD_METHOD 'ticks_ms'
     0x36,0x00, // CALL_METHOD 0
     0xc1, // STORE_FAST 1
-    0x12,0x7b, // LOAD_GLOBAL '_timers'
+    0x12,0x81,0x02, // LOAD_GLOBAL '_timers'
     0x5f, // GET_ITER_STACK
     0x4b,0x14, // FOR_ITER 20
     0xc2, // STORE_FAST 2
-    0x12,0x81,0x10, // LOAD_GLOBAL 'min'
+    0x12,0x81,0x17, // LOAD_GLOBAL 'min'
     0xb0, // LOAD_FAST 0
     0x12,0x03, // LOAD_GLOBAL 'time'
     0x14,0x1f, // LOAD_METHOD 'ticks_diff'
@@ -13141,7 +13712,7 @@ static const byte fun_data_tdui__run_timers[113] = {
     0x34,0x02, // CALL_FUNCTION 2
     0xc0, // STORE_FAST 0
     0x42,0x2a, // JUMP -22
-    0x12,0x81,0x11, // LOAD_GLOBAL 'max'
+    0x12,0x81,0x18, // LOAD_GLOBAL 'max'
     0xb0, // LOAD_FAST 0
     0x80, // LOAD_CONST_SMALL_INT 0
     0x34,0x02, // CALL_FUNCTION 2
@@ -13156,7 +13727,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__run_timers = {
     .fun_data = fun_data_tdui__run_timers,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 113,
+    .fun_data_len = 116,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13184,9 +13755,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__run_timers = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui__dispatch
-static const byte fun_data_tdui__dispatch[84] = {
+static const byte fun_data_tdui__dispatch[87] = {
     0x81,0x10,0x06, // prelude
-    0x26,0x81,0x12, // names: _dispatch, ev
+    0x26,0x81,0x19, // names: _dispatch, ev
      // code info
     0xb0, // LOAD_FAST 0
     0x30,0x07, // UNPACK_SEQUENCE 7
@@ -13200,23 +13771,23 @@ static const byte fun_data_tdui__dispatch[84] = {
     0xb1, // LOAD_FAST 1
     0x86, // LOAD_CONST_SMALL_INT 6
     0xd9, // BINARY_OP 2 __eq__
-    0x44,0x50, // POP_JUMP_IF_FALSE 16
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
     0xb2, // LOAD_FAST 2
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xdd, // BINARY_OP 6 <in>
-    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
     0xb3, // LOAD_FAST 3
     0xb7, // LOAD_FAST 7
     0x2a,0x02, // BUILD_TUPLE 2
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xb2, // LOAD_FAST 2
     0x56, // STORE_SUBSCR
-    0x42,0x6d, // JUMP 45
+    0x42,0x6e, // JUMP 46
     0xb1, // LOAD_FAST 1
     0x87, // LOAD_CONST_SMALL_INT 7
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x4e, // POP_JUMP_IF_FALSE 14
-    0x12,0x81,0x13, // LOAD_GLOBAL 'OSError'
+    0x12,0x81,0x1a, // LOAD_GLOBAL 'OSError'
     0x10,0x27, // LOAD_CONST_STRING 'tdui: '
     0xb7, // LOAD_FAST 7
     0x45,0x02, // JUMP_IF_TRUE_OR_POP 2
@@ -13224,7 +13795,7 @@ static const byte fun_data_tdui__dispatch[84] = {
     0xf2, // BINARY_OP 27 __add__
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
-    0x12,0x79, // LOAD_GLOBAL '_objs'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
     0x14,0x29, // LOAD_METHOD 'get'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
@@ -13256,7 +13827,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__dispatch = {
     .fun_data = fun_data_tdui__dispatch,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 84,
+    .fun_data_len = 87,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13374,7 +13945,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_poll = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui_run
-static const byte fun_data_tdui_run[21] = {
+static const byte fun_data_tdui_run[22] = {
     0x08,0x02, // prelude
     0x2d, // names: run
      // code info
@@ -13383,10 +13954,10 @@ static const byte fun_data_tdui_run[21] = {
     0x22,0x80,0x64, // LOAD_CONST_SMALL_INT 100
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
-    0x12,0x7d, // LOAD_GLOBAL '_windows'
+    0x12,0x81,0x04, // LOAD_GLOBAL '_windows'
     0x80, // LOAD_CONST_SMALL_INT 0
     0xd8, // BINARY_OP 1 __gt__
-    0x43,0x32, // POP_JUMP_IF_TRUE -14
+    0x43,0x31, // POP_JUMP_IF_TRUE -15
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -13399,7 +13970,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_run = {
     .fun_data = fun_data_tdui_run,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 21,
+    .fun_data_len = 22,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13427,7 +13998,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_run = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui_run_async
-static const byte fun_data_tdui_run_async[35] = {
+static const byte fun_data_tdui_run_async[36] = {
     0x98,0x40,0x02, // prelude
     0x2e, // names: run_async
      // code info
@@ -13448,10 +14019,10 @@ static const byte fun_data_tdui_run_async[35] = {
     0x51, // LOAD_CONST_NONE
     0x68, // YIELD_FROM
     0x59, // POP_TOP
-    0x12,0x7d, // LOAD_GLOBAL '_windows'
+    0x12,0x81,0x04, // LOAD_GLOBAL '_windows'
     0x80, // LOAD_CONST_SMALL_INT 0
     0xd8, // BINARY_OP 1 __gt__
-    0x43,0x2a, // POP_JUMP_IF_TRUE -22
+    0x43,0x29, // POP_JUMP_IF_TRUE -23
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -13464,7 +14035,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_run_async = {
     .fun_data = fun_data_tdui_run_async,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 35,
+    .fun_data_len = 36,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13492,19 +14063,19 @@ static const mp_raw_code_truncated_t proto_fun_tdui_run_async = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui_quit
-static const byte fun_data_tdui_quit[37] = {
+static const byte fun_data_tdui_quit[38] = {
     0x38,0x02, // prelude
     0x31, // names: quit
      // code info
-    0x12,0x56, // LOAD_GLOBAL 'list'
-    0x12,0x79, // LOAD_GLOBAL '_objs'
+    0x12,0x5d, // LOAD_GLOBAL 'list'
+    0x12,0x81,0x00, // LOAD_GLOBAL '_objs'
     0x14,0x32, // LOAD_METHOD 'values'
     0x36,0x00, // CALL_METHOD 0
     0x34,0x01, // CALL_FUNCTION 1
     0x5f, // GET_ITER_STACK
     0x4b,0x13, // FOR_ITER 19
     0xc0, // STORE_FAST 0
-    0x12,0x81,0x14, // LOAD_GLOBAL 'isinstance'
+    0x12,0x81,0x1b, // LOAD_GLOBAL 'isinstance'
     0xb0, // LOAD_FAST 0
     0x12,0x07, // LOAD_GLOBAL 'Window'
     0x34,0x02, // CALL_FUNCTION 2
@@ -13526,7 +14097,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_quit = {
     .fun_data = fun_data_tdui_quit,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 37,
+    .fun_data_len = 38,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13554,9 +14125,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui_quit = {
 
 // child of tdui__lt_module_gt_
 // frozen bytecode for file tdui.py, scope tdui__request
-static const byte fun_data_tdui__request[70] = {
-    0xef,0x01,0x0a, // prelude
-    0x34,0x7f,0x36,0x81,0x00, // names: _request, op, text, flags
+static const byte fun_data_tdui__request[75] = {
+    0xef,0x01,0x0c, // prelude
+    0x34,0x81,0x06,0x36,0x81,0x07, // names: _request, op, text, flags
      // code info
     0x12,0x02, // LOAD_GLOBAL '_tdui'
     0x14,0x35, // LOAD_METHOD 'open'
@@ -13566,10 +14137,10 @@ static const byte fun_data_tdui__request[70] = {
     0x34,0x00, // CALL_FUNCTION 0
     0xc3, // STORE_FAST 3
     0x51, // LOAD_CONST_NONE
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xb3, // LOAD_FAST 3
     0x56, // STORE_SUBSCR
-    0x49,0x22, // SETUP_FINALLY 34
+    0x49,0x24, // SETUP_FINALLY 36
     0x12,0x13, // LOAD_GLOBAL '_send'
     0xb0, // LOAD_FAST 0
     0xb3, // LOAD_FAST 3
@@ -13584,17 +14155,17 @@ static const byte fun_data_tdui__request[70] = {
     0x94, // LOAD_CONST_SMALL_INT 20
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xb3, // LOAD_FAST 3
     0x55, // LOAD_SUBSCR
     0x51, // LOAD_CONST_NONE
     0xde, // BINARY_OP 7 <is>
-    0x43,0x32, // POP_JUMP_IF_TRUE -14
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x43,0x31, // POP_JUMP_IF_TRUE -15
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xb3, // LOAD_FAST 3
     0x55, // LOAD_SUBSCR
     0x63, // RETURN_VALUE
-    0x12,0x7a, // LOAD_GLOBAL '_results'
+    0x12,0x81,0x01, // LOAD_GLOBAL '_results'
     0xb3, // LOAD_FAST 3
     0x53, // LOAD_NULL
     0x5b, // ROT_THREE
@@ -13612,7 +14183,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__request = {
     .fun_data = fun_data_tdui__request,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 70,
+    .fun_data_len = 75,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13627,9 +14198,9 @@ static const mp_raw_code_truncated_t proto_fun_tdui__request = {
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
         .qstr_block_name_idx = 52,
-        .line_info = fun_data_tdui__request + 8,
-        .line_info_top = fun_data_tdui__request + 8,
-        .opcodes = fun_data_tdui__request + 8,
+        .line_info = fun_data_tdui__request + 9,
+        .line_info_top = fun_data_tdui__request + 9,
+        .opcodes = fun_data_tdui__request + 9,
     },
     #endif
     #endif
@@ -13642,7 +14213,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__request = {
 // frozen bytecode for file tdui.py, scope tdui_msgbox
 static const byte fun_data_tdui_msgbox[24] = {
     0xc3,0x01,0x0a, // prelude
-    0x37,0x4b,0x36,0x81,0x15, // names: msgbox, title, text, buttons
+    0x37,0x4c,0x36,0x81,0x1c, // names: msgbox, title, text, buttons
      // code info
     0x12,0x34, // LOAD_GLOBAL '_request'
     0x8d, // LOAD_CONST_SMALL_INT 13
@@ -13696,7 +14267,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_msgbox = {
 // frozen bytecode for file tdui.py, scope tdui_confirm
 static const byte fun_data_tdui_confirm[16] = {
     0x2a,0x06, // prelude
-    0x39,0x4b,0x36, // names: confirm, title, text
+    0x39,0x4c,0x36, // names: confirm, title, text
      // code info
     0x12,0x37, // LOAD_GLOBAL 'msgbox'
     0xb0, // LOAD_FAST 0
@@ -13746,7 +14317,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_confirm = {
 // frozen bytecode for file tdui.py, scope tdui_inputbox
 static const byte fun_data_tdui_inputbox[48] = {
     0xd8,0x84,0x01,0x0e, // prelude
-    0x3b,0x4b,0x81,0x16,0x36,0x81,0x17, // names: inputbox, title, prompt, text, secret
+    0x3b,0x4c,0x81,0x1d,0x36,0x81,0x1e, // names: inputbox, title, prompt, text, secret
      // code info
     0x12,0x34, // LOAD_GLOBAL '_request'
     0x8e, // LOAD_CONST_SMALL_INT 14
@@ -13815,7 +14386,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_inputbox = {
 // frozen bytecode for file tdui.py, scope tdui_menu
 static const byte fun_data_tdui_menu[29] = {
     0x41,0x04, // prelude
-    0x3c,0x69, // names: menu, items
+    0x3c,0x70, // names: menu, items
      // code info
     0x12,0x34, // LOAD_GLOBAL '_request'
     0x8f, // LOAD_CONST_SMALL_INT 15
@@ -13839,7 +14410,7 @@ static const byte fun_data_tdui_menu[29] = {
 // frozen bytecode for file tdui.py, scope tdui_menu__lt_genexpr_gt_
 static const byte fun_data_tdui_menu__lt_genexpr_gt_[25] = {
     0xb9,0x40,0x06, // prelude
-    0x73,0x81,0x26, // names: <genexpr>, *
+    0x7a,0x81,0x2d, // names: <genexpr>, *
      // code info
     0x53, // LOAD_NULL
     0xb0, // LOAD_FAST 0
@@ -13847,7 +14418,7 @@ static const byte fun_data_tdui_menu__lt_genexpr_gt_[25] = {
     0x53, // LOAD_NULL
     0x4b,0x0b, // FOR_ITER 11
     0xc1, // STORE_FAST 1
-    0x12,0x81,0x1f, // LOAD_GLOBAL 'str'
+    0x12,0x81,0x26, // LOAD_GLOBAL 'str'
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0x67, // YIELD_VALUE
@@ -13879,7 +14450,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui_menu__lt_genexpr_gt_ = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 115,
+        .qstr_block_name_idx = 122,
         .line_info = fun_data_tdui_menu__lt_genexpr_gt_ + 6,
         .line_info_top = fun_data_tdui_menu__lt_genexpr_gt_ + 6,
         .opcodes = fun_data_tdui_menu__lt_genexpr_gt_ + 6,
@@ -13963,7 +14534,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__lt_module_gt_ = {
     .fun_data = fun_data_tdui__lt_module_gt_,
     .children = (void *)&children_tdui__lt_module_gt_,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 268,
+    .fun_data_len = 274,
     .n_children = 26,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13986,7 +14557,7 @@ static const mp_raw_code_truncated_t proto_fun_tdui__lt_module_gt_ = {
     #endif
 };
 
-static const qstr_short_t const_qstr_table_data_tdui[172] = {
+static const qstr_short_t const_qstr_table_data_tdui[179] = {
     MP_QSTR_tdui_dot_py,
     MP_QSTR__lt_module_gt_,
     MP_QSTR__tdui,
@@ -14061,9 +14632,16 @@ static const qstr_short_t const_qstr_table_data_tdui[172] = {
     MP_QSTR_is_open,
     MP_QSTR_on_close,
     MP_QSTR_on_key,
+    MP_QSTR_on_resize,
     MP_QSTR__kids,
     MP_QSTR_title,
     MP_QSTR_focus,
+    MP_QSTR_resize,
+    MP_QSTR_move,
+    MP_QSTR_restore,
+    MP_QSTR_maximize,
+    MP_QSTR_minimize,
+    MP_QSTR_fullscreen,
     MP_QSTR__gone,
     MP_QSTR_pop,
     MP_QSTR__n,
@@ -14254,15 +14832,15 @@ MICROPY_FROZEN_LIST_ITEM("tdui", "tdui.py")
 
 /*
 byte sizes:
-qstr content: 275 unique, 3066 bytes
-bc content: 8276
+qstr content: 282 unique, 3146 bytes
+bc content: 8669
 const str content: 102
 const int content: 0
 const obj content: 48
 const table qstr content: 0 entries, 0 bytes
 const table ptr content: 23 entries, 92 bytes
-raw code content: 179 * 4 = 2864
+raw code content: 187 * 4 = 2992
 mp_frozen_mpy_names_content: 125
 mp_frozen_mpy_content_size: 32
-total: 14605
+total: 15206
 */

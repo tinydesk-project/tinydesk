@@ -73,7 +73,7 @@ typedef struct
     int items_len, items_cap;
     uint16_t *offs;
     int nitems, offs_cap;
-    /* canvas */
+    /* canvas: its place in the window; window: the client size last reported */
     td_rect_t rect;
     cell_t *cells;
 } obj_t;
@@ -260,6 +260,25 @@ static uint32_t hash(const char *s)
     while (*s)
         h = (h ^ (uint8_t)*s++) * 16777619u;
     return h;
+}
+
+/* Windows the user (or the script) resized, maximised or restored: the
+ * desktop has no callback for it, so compare the client size each tick. */
+static void check_sizes(void)
+{
+    for (int i = 0; i < MAX_OBJS; i++)
+    {
+        obj_t *o = &s_link->objs[i];
+        if (o->kind != K_WINDOW)
+            continue;
+        td_rect_t c = td_win_client(o->w);
+        if (c.w != o->rect.w || c.h != o->rect.h)
+        {
+            o->rect.w = c.w;
+            o->rect.h = c.h;
+            post(TD_PYUI_EV_RESIZE, o->id, c.w, c.h, 0, 0, NULL);
+        }
+    }
 }
 
 /* Text box and list changes the script has not heard of yet: sent before
@@ -510,6 +529,74 @@ static void canvas_fill(obj_t *o, int x0, int y0, int w, int h, uint32_t cp, int
     }
 }
 
+/* A new size for a canvas: what fits of the old picture stays. */
+static void canvas_resize(obj_t *o, int w, int h)
+{
+    int cells = w * h;
+    if (w <= 0 || h <= 0 || s_link->cells - o->rect.w * o->rect.h + cells > TD_PYUI_MAX_CELLS)
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "canvases are limited to 2000 cells in all");
+        return;
+    }
+    cell_t *nc = malloc((size_t)cells * sizeof(cell_t));
+    if (!nc)
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "out of memory");
+        return;
+    }
+    for (int y = 0; y < h; y++)
+    {
+        for (int x = 0; x < w; x++)
+        {
+            cell_t *c = &nc[y * w + x];
+            if (x < o->rect.w && y < o->rect.h)
+                *c = o->cells[y * o->rect.w + x];
+            else
+                *c = (cell_t){' ', -1, -1};
+        }
+    }
+    free(o->cells);
+    o->cells = nc;
+    s_link->cells += cells - o->rect.w * o->rect.h;
+    o->rect.w = w;
+    o->rect.h = h;
+}
+
+/* Back to a normal window, so a move or resize is not undone by maximise. */
+static void unmaximize(td_window_t *w)
+{
+    if (w->flags & TD_WIN_FULLSCREEN)
+        td_win_set_fullscreen(w, false);
+    if (w->flags & TD_WIN_MAXIMIZED)
+        td_win_toggle_maximize(w);
+}
+
+static void show_window(td_window_t *w, int how)
+{
+    switch (how)
+    {
+    case TD_PYUI_SHOW_RESTORE:
+        unmaximize(w);
+        td_win_focus(w);   /* also brings it back from the taskbar */
+        break;
+    case TD_PYUI_SHOW_MAXIMIZE:
+        if (!(w->flags & TD_WIN_MAXIMIZED))
+        {
+            unmaximize(w);
+            td_win_toggle_maximize(w);
+        }
+        break;
+    case TD_PYUI_SHOW_MINIMIZE:
+        td_win_minimize(w);
+        break;
+    case TD_PYUI_SHOW_FULLSCREEN:
+        td_win_set_fullscreen(w, true);
+        break;
+    default:
+        break;
+    }
+}
+
 static void open_window(const td_pyui_msg_t *m, const char *text)
 {
     obj_t *o = new_obj(K_WINDOW, m->id);
@@ -530,7 +617,11 @@ static void open_window(const td_pyui_msg_t *m, const char *text)
         post(TD_PYUI_EV_CLOSE, m->id, 0, 0, 0, 0, NULL);
         post(TD_PYUI_EV_ERROR, m->id, 0, 0, 0, 0, "the desktop has no room for another window");
         free_obj(o);
+        return;
     }
+    /* The size asked for; a smaller screen gives less, which check_sizes()
+     * then reports. */
+    o->rect = td_rect(0, 0, m->a, m->b);
 }
 
 static void add_widget(const td_pyui_msg_t *m, const char *text)
@@ -595,10 +686,13 @@ static void add_widget(const td_pyui_msg_t *m, const char *text)
             td_progress_set(o->wd, m->e);
         break;
     case TD_PYUI_W_LIST:
+        /* The scrollbar takes the last column. A width <= 0 reaches to that
+         * many cells before the right edge, and the widgets keep following
+         * the window when it is resized. */
         o->wd = td_list(win, td_rect(m->a, m->b, m->c - 1, m->d), list_item, on_click, o);
         if (o->wd)
         {
-            o->bar = td_scrollbar(win, m->a + m->c - 1, m->b, m->d, o->wd);
+            o->bar = td_scrollbar(win, m->c > 0 ? m->a + m->c - 1 : m->c - 1, m->b, m->d, o->wd);
             o->seen = (uint32_t)td_list_selected(o->wd);
         }
         break;
@@ -751,6 +845,35 @@ static void run_request(const td_pyui_msg_t *m, char *text)
         }
         td_win_invalidate(NULL);
         break;
+    case TD_PYUI_RESIZE:
+        if (o->kind == K_WINDOW)
+        {
+            unmaximize(o->w);
+            td_win_resize(o->w, m->a + 2, m->b + 2);
+        }
+        else if (o->kind == K_CANVAS)
+        {
+            canvas_resize(o, m->a, m->b);
+            td_win_invalidate(NULL);
+        }
+        break;
+    case TD_PYUI_MOVE:
+        if (o->kind == K_WINDOW)
+        {
+            unmaximize(o->w);
+            td_win_move(o->w, m->a, m->b);
+        }
+        else if (o->kind == K_CANVAS)
+        {
+            o->rect.x = m->a;
+            o->rect.y = m->b;
+            td_win_invalidate(NULL);
+        }
+        break;
+    case TD_PYUI_SHOW:
+        if (o->kind == K_WINDOW)
+            show_window(o->w, m->a);
+        break;
     default:
         break;
     }
@@ -793,6 +916,7 @@ static void tick(void *user)
     for (int n = 0; n < TICK_BUDGET && ring_get(&l->req, &m, l->text, sizeof(l->text)); n++)
         run_request(&m, l->text);
     poll_values();
+    check_sizes();
 }
 
 void td_pyui_start(void)

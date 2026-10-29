@@ -33,6 +33,9 @@ _FILL = const(12)
 _MSGBOX = const(13)
 _INPUT = const(14)
 _MENU = const(15)
+_RESIZE = const(16)
+_MOVE = const(17)
+_SHOW = const(18)
 
 _W_LABEL = const(1)
 _W_BUTTON = const(2)
@@ -49,6 +52,7 @@ _EV_KEY = const(4)
 _EV_MOUSE = const(5)
 _EV_RESULT = const(6)
 _EV_ERROR = const(7)
+_EV_RESIZE = const(8)
 
 MAX_WINDOWS = const(4)
 MAX_WIDGETS = const(48)
@@ -131,6 +135,7 @@ class Window:
         self.is_open = True
         self.on_close = None
         self.on_key = None
+        self.on_resize = None
         self._kids = []
         _objs[self.id] = self
         _windows += 1
@@ -150,6 +155,33 @@ class Window:
     def focus(self):
         if self.is_open:
             _send(_FOCUS, self.id)
+
+    # Size and place. width and height follow what the desktop really gave
+    # (the screen may be smaller); on_resize(win, w, h) hears every change,
+    # also the user's.
+    def resize(self, w, h):
+        if self.is_open:
+            _send(_RESIZE, self.id, 0, 0, w, h)
+
+    def move(self, x, y):
+        if self.is_open:
+            _send(_MOVE, self.id, 0, 0, x, y)
+
+    def restore(self):
+        if self.is_open:
+            _send(_SHOW, self.id, 0, 0, 0)
+
+    def maximize(self):
+        if self.is_open:
+            _send(_SHOW, self.id, 0, 0, 1)
+
+    def minimize(self):
+        if self.is_open:
+            _send(_SHOW, self.id, 0, 0, 2)
+
+    def fullscreen(self):
+        if self.is_open:
+            _send(_SHOW, self.id, 0, 0, 3)
 
     def close(self):
         if self.is_open:
@@ -177,6 +209,11 @@ class Window:
                 self.on_close(self)
         elif op == _EV_KEY and self.on_key:
             self.on_key(self, _key_name((a & 0xFFFF) | (b << 16), c))
+        elif op == _EV_RESIZE:
+            self.width = a
+            self.height = b
+            if self.on_resize:
+                self.on_resize(self, a, b)
 
     def every(self, ms, fn):
         return Timer(ms, fn, True, self)
@@ -328,7 +365,7 @@ class List(_Widget):
     _n = 2        # the list and its scrollbar
 
     def __init__(self, win, x, y, w, h, items, on_select, on_activate):
-        if w < 2 or h < 1:
+        if w == 1:                     # <= 0: to the edge, following resizes
             raise ValueError("list size")
         self.on_select = on_select
         self.on_activate = on_activate
@@ -414,6 +451,22 @@ class Canvas(_Widget):
 
     def clear(self, fg=-1, bg=-1):
         self.fill(0, 0, self.width, self.height, " ", fg, bg)
+
+    def resize(self, w, h):
+        # What fits of the picture stays; new cells are blank.
+        global _cells
+        if w < 1 or h < 1:
+            raise ValueError("canvas size")
+        if _cells - self._cells + w * h > MAX_CELLS:
+            raise OSError("tdui: canvases are limited to %d cells in all" % MAX_CELLS)
+        _cells += w * h - self._cells
+        self._cells = w * h
+        self.width = w
+        self.height = h
+        self._req2(_RESIZE, w, h, 0, 0, 0, 0, None)
+
+    def move(self, x, y):
+        self._req2(_MOVE, x, y, 0, 0, 0, 0, None)
 
     def _req2(self, op, a, b, c, d, e, f, text):
         if self.win.is_open:

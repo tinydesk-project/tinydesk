@@ -255,6 +255,18 @@ enum
     TD_PYUI_MSGBOX,       /* request id: text is "title\0message\0buttons" */
     TD_PYUI_INPUT,        /* request id: text is "title\0prompt\0initial"; flags 1 secret */
     TD_PYUI_MENU,         /* request id: text is the items separated by '\0' */
+    TD_PYUI_RESIZE,       /* window id: a, b client size; canvas id: a, b size */
+    TD_PYUI_MOVE,         /* window id: a, b position on the screen; canvas id: in the window */
+    TD_PYUI_SHOW,         /* window id: a is TD_PYUI_SHOW_* */
+};
+
+/* TD_PYUI_SHOW states. */
+enum
+{
+    TD_PYUI_SHOW_RESTORE,     /* from maximised, full screen or minimised */
+    TD_PYUI_SHOW_MAXIMIZE,
+    TD_PYUI_SHOW_MINIMIZE,
+    TD_PYUI_SHOW_FULLSCREEN,
 };
 
 /* Widget kinds (TD_PYUI_ADD flags). */
@@ -265,7 +277,7 @@ enum
     TD_PYUI_W_CHECKBOX,   /* e checked */
     TD_PYUI_W_TEXTBOX,    /* c width; e 1 secret */
     TD_PYUI_W_PROGRESS,   /* c width; e percent */
-    TD_PYUI_W_LIST,       /* c, d size, the scrollbar included */
+    TD_PYUI_W_LIST,       /* c, d size, the scrollbar included (<= 0: to the edge) */
     TD_PYUI_W_CANVAS,     /* c, d size */
 };
 
@@ -279,6 +291,7 @@ enum
     TD_PYUI_EV_MOUSE,     /* canvas id: a, b cell, c button, d action */
     TD_PYUI_EV_RESULT,    /* request id: a button or item (-1 cancelled), text typed */
     TD_PYUI_EV_ERROR,     /* id: text says what could not be done */
+    TD_PYUI_EV_RESIZE,    /* window id: a, b its new client size */
 };
 
 typedef struct
