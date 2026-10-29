@@ -427,6 +427,59 @@ static int run_mpy(const char *file)
     return 1;
 }
 
+/* The REPL's history (Up/Down) lives on the heap of one run: keep it in
+ * ~/.py_history between runs, as the shell keeps ~/.tdsh_history. One
+ * entry per line, oldest first. */
+#define HISTORY_FILE "~/.py_history"
+#define HISTORY_LINE 256
+
+static FILE *history_open(const char *mode)
+{
+    char real[TDSH_MAX_REAL_PATH];
+    if (!s_session || tdsh_path_to_real(s_session, HISTORY_FILE, real, sizeof(real), NULL, 0) != 0)
+        return NULL;
+    return fopen(real, mode);
+}
+
+static void history_load(void)
+{
+    FILE *f = history_open("rb");
+    if (!f)
+        return;
+    char line[HISTORY_LINE];
+    while (fgets(line, sizeof(line), f))
+    {
+        size_t n = strcspn(line, "\r\n");
+        if (line[n] == '\0' && !feof(f))
+        {
+            /* Longer than HISTORY_LINE: skip the rest of it. */
+            int c;
+            while ((c = fgetc(f)) != EOF && c != '\n')
+                ;
+            continue;
+        }
+        line[n] = '\0';
+        readline_push_history(line);
+    }
+    fclose(f);
+}
+
+static void history_save(void)
+{
+    if (!MP_STATE_PORT(readline_hist)[0])
+        return;
+    FILE *f = history_open("wb");
+    if (!f)
+        return;
+    for (int i = MICROPY_READLINE_HISTORY_SIZE - 1; i >= 0; i--)
+    {
+        const char *line = MP_STATE_PORT(readline_hist)[i];
+        if (line && strlen(line) < HISTORY_LINE)
+            fprintf(f, "%s\n", line);
+    }
+    fclose(f);
+}
+
 static int repl(void)
 {
     for (;;)
@@ -460,7 +513,10 @@ static int run(const char *code, const char *file, int argc, char **argv)
     }
     set_argv("", 0, NULL);
     readline_init0();
-    return repl();
+    history_load();
+    int status = repl();
+    history_save();
+    return status;
 }
 
 /* run() inside an nlr frame (kept out of cmd_py so its locals are not live
