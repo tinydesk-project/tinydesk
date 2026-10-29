@@ -9,7 +9,7 @@ revision when reporting a problem.
 3. Build the firmware you touched: `idf.py build` in `ports/esp32c6`, `ports/esp32` or `ports/esp32-4mb`
    (ESP-IDF 5.3.1). Code in `ports/esp_idf` is shared by all three.
 4. Describe what changed for users (and the API) in the pull request, so the documentation
-   and the changelog can follow.
+   and the changelog can follow. Add yourself to [CONTRIBUTORS.md](CONTRIBUTORS.md).
 5. Set up formatting once:
 
    ```bash
