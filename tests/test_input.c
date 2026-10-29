@@ -191,6 +191,59 @@ static void test_cursor_report(void)
     CHECK_EQ(ev.y, 25);
 }
 
+/* Feed a whole paste and check the text that arrives with TD_EV_PASTE. */
+static void expect_paste(const char *seq, int len, bool split, const char *text)
+{
+    feed(seq, len, split);
+    td_event_t ev;
+    bool got = false;
+    while (pop(&ev))
+    {
+        if (ev.type != TD_EV_PASTE)
+            continue;
+        got = true;
+        int n;
+        const char *s = td_paste_text(&n);
+        CHECK(s != NULL);
+        CHECK_EQ(n, (int)strlen(text));
+        if (s && (n != (int)strlen(text) || memcmp(s, text, (size_t)n) != 0))
+            printf("  paste gave \"%.*s\" (split=%d)\n", n, s, split);
+        CHECK(s && memcmp(s, text, strlen(text)) == 0);
+        td_input_paste_done(&s_p);
+    }
+    CHECK(got);
+}
+
+#define PASTE(lit, split, text) expect_paste(lit, (int)sizeof(lit) - 1, split, text)
+
+static void test_paste(void)
+{
+    for (int split = 0; split < 2; split++)
+    {
+        td_event_clear();
+        td_input_init(&s_p);
+        PASTE("[200~gr[25;80Row[201~", split != 0, "grow");
+
+        /* The size reply in the middle of the paste still takes effect. */
+        td_event_clear();
+        td_input_init(&s_p);
+        FEED("[200~gr[25;80Row", split != 0);
+        td_event_t ev;
+        CHECK(pop(&ev));
+        CHECK_EQ(ev.type, TD_EV_RESIZE);
+        CHECK_EQ(ev.x, 80);
+        CHECK_EQ(ev.y, 25);
+        CHECK(!pop(&ev));
+        PASTE("[201~", split != 0, "grow");
+
+        /* Things that only look like the end marker or a report are text. */
+        td_event_clear();
+        td_input_init(&s_p);
+        PASTE("[200~a[20x[25;8[201~", split != 0,
+              "a[20x[25;8");
+    }
+}
+
 static void test_garbage(void)
 {
     /* Unknown / private / overlong sequences are dropped and parsing
@@ -230,6 +283,7 @@ int main(void)
     test_mouse();
     test_drag_merging();
     test_cursor_report();
+    test_paste();
     test_garbage();
     return TD_TEST_RESULT();
 }

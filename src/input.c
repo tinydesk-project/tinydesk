@@ -7,6 +7,7 @@
  *   CSI     after ESC [ ; collecting parameters until a final byte
  *   SS3     after ESC O ; one more byte selects the key
  *   X10     legacy mouse: three raw bytes after ESC [ M
+ *   PASTE   inside a bracketed paste, until ESC [ 2 0 1 ~
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,29 +106,86 @@ static void paste_finish(td_input_t *p, uint32_t now)
     td_event_push(&ev);
 }
 
-/* A byte inside a bracketed paste: text until ESC [ 2 0 1 ~. */
+static void emit_resize(int rows, int cols, uint32_t now);
+static int parse_params(const uint8_t *s, int len, int *out, int max);
+
+/* What the bytes held back during a paste (in p->seq) amount to. */
+enum
+{
+    HELD_TEXT,        /* neither of the below: plain text after all */
+    HELD_PARTIAL,     /* the start of one of the below */
+    HELD_END,         /* ESC [ 2 0 1 ~ */
+    HELD_REPORT       /* ESC [ rows ; cols R */
+};
+
+static int paste_held(const uint8_t *h, int n)
+{
+    if (n <= PASTE_END_LEN && memcmp(h, PASTE_END, (size_t)n) == 0)
+        return n == PASTE_END_LEN ? HELD_END : HELD_PARTIAL;
+    /* A cursor position report: the reply to the periodic size query can
+     * arrive in the middle of a paste. Up to 4 digits per number. */
+    if (n < 2 || h[0] != 0x1B || h[1] != '[')
+        return HELD_TEXT;
+    int i = 2;
+    for (int part = 0; part < 2; part++)
+    {
+        int digits = 0;
+        while (i < n && h[i] >= '0' && h[i] <= '9' && digits < 4)
+        {
+            i++;
+            digits++;
+        }
+        if (i == n)
+            return HELD_PARTIAL;
+        if (digits == 0 || h[i] != (part == 0 ? ';' : 'R'))
+            return HELD_TEXT;
+        i++;
+    }
+    return i == n ? HELD_REPORT : HELD_TEXT;
+}
+
+/* A byte inside a bracketed paste: text until ESC [ 2 0 1 ~. A cursor
+ * position report inside it is taken out and handled as usual; text pasted
+ * from a terminal does not contain raw escape sequences. */
 static void paste_byte(td_input_t *p, uint8_t b, uint32_t now)
 {
-    if ((char)b == PASTE_END[p->paste_match])
+    if (p->paste_match == 0 && b != 0x1B)
     {
-        if (++p->paste_match == PASTE_END_LEN)
-        {
-            p->paste_match = 0;
-            paste_finish(p, now);
-        }
+        char c = (char)b;
+        paste_add(p, &c, 1);
         return;
     }
-    /* Not the marker after all: the bytes held back were text. */
-    if (p->paste_match)
-        paste_add(p, PASTE_END, p->paste_match);
+    p->seq[p->paste_match++] = b;
+    switch (paste_held(p->seq, p->paste_match))
+    {
+    case HELD_PARTIAL:
+        return;
+    case HELD_END:
+        p->paste_match = 0;
+        paste_finish(p, now);
+        return;
+    case HELD_REPORT:
+    {
+        int prm[2];
+        int n = parse_params(p->seq + 2, p->paste_match - 3, prm, 2);
+        p->paste_match = 0;
+        if (n == 2 && prm[0] > 1)
+            emit_resize(prm[0], prm[1], now);
+        return;
+    }
+    default:
+        break;
+    }
+    /* Not a marker or report after all: the bytes held back were text, and
+     * the last one is looked at again (it may be a new ESC). */
+    paste_add(p, (const char *)p->seq, p->paste_match - 1);
     p->paste_match = 0;
-    if ((char)b == PASTE_END[0])
-    {
-        p->paste_match = 1;
-        return;
-    }
-    char c = (char)b;
-    paste_add(p, &c, 1);
+    paste_byte(p, b, now);
+}
+
+bool td_input_pasting(const td_input_t *p)
+{
+    return p->state == ST_PASTE;
 }
 
 /* ---------------------------------------------------------- emitting */
@@ -532,7 +590,12 @@ void td_input_poll_timeouts(td_input_t *p, uint32_t now)
     if (p->state == ST_PASTE)
     {
         if (now - p->last_byte_ms >= TD_PASTE_TIMEOUT_MS)
+        {
+            /* Bytes held back as a possible sequence were text. */
+            paste_add(p, (const char *)p->seq, p->paste_match);
+            p->paste_match = 0;
             paste_finish(p, now);
+        }
         return;
     }
     uint32_t age = now - p->seq_start;
