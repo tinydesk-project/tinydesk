@@ -48,7 +48,8 @@ static MP_DEFINE_CONST_FUN_OBJ_0(tdui_open_obj, tdui_open);
 static int16_t arg16(mp_obj_t o)
 {
     mp_int_t v = mp_obj_get_int(o);
-    return (int16_t)(v < -32768 ? -32768 : v > 32767 ? 32767 : v);
+    return (int16_t)(v < -32768 ? -32768 : v > 32767 ? 32767
+                                                     : v);
 }
 
 /* A full queue (the desktop is busy) is waited out; Ctrl+C still works. */

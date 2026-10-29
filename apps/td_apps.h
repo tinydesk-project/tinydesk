@@ -304,8 +304,8 @@ typedef struct
     int16_t a, b, c, d, e, f;
 } td_pyui_msg_t;
 
-#define TD_PYUI_TEXT_MAX   1024   /* text in one message */
-#define TD_PYUI_MAX_CELLS  2000   /* all canvases of a script together */
+#define TD_PYUI_TEXT_MAX  1024   /* text in one message */
+#define TD_PYUI_MAX_CELLS 2000   /* all canvases of a script together */
 
 /* The desktop side: start serving scripts (td_apps_register_all does). */
 void td_pyui_start(void);
