@@ -491,6 +491,7 @@ void app_main(void)
         td_proto_set_break_check(tdsh_bridge_break_requested);   /* Ctrl+C stops modbus read -i */
         td_py_register_shell_command();                          /* py (MicroPython) */
         td_py_set_break_check(tdsh_bridge_break_requested);      /* Ctrl+C stops a script */
+        td_py_set_desktop_check(tdsh_is_local_console_task);     /* tdui windows from the Terminal */
         if (esp_ota_get_next_update_partition(NULL))
             ota_esp_register_command();   /* ota (root only) */
     }

@@ -28,6 +28,7 @@ idf_component_register(
         "${TD_ROOT}/apps/modbus.c"
         "${TD_ROOT}/apps/mqtt.c"
         "${TD_ROOT}/apps/network.c"
+        "${TD_ROOT}/apps/pyui.c"
         "${TD_ROOT}/apps/session.c"
         "${TD_ROOT}/apps/settings.c"
         "${TD_ROOT}/apps/sysmon.c"

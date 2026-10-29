@@ -10,6 +10,7 @@ set(TD_PY_PORT_SRCS
     "${TD_PY_PORT_DIR}/td_py.c"
     "${TD_PY_PORT_DIR}/td_py_machine.c"
     "${TD_PY_PORT_DIR}/td_py_mod.c"
+    "${TD_PY_PORT_DIR}/td_py_tdui.c"
     "${TD_PY_PORT_DIR}/td_py_vfs.c"
     "${TD_PY_PORT_DIR}/hw/td_py_hw_esp.c"   # machine: the chip's drivers
     "${TD_PY_PORT_DIR}/hw/td_py_hw_pins.c"

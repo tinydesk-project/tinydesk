@@ -11,3 +11,6 @@ package(
 
 # neopixel: RGB LED strips through machine.bitstream (TinyDesk's own).
 module("neopixel.py", base_path="$(PORT_DIR)/modules", opt=3)
+
+# tdui: windows on the desktop, over the _tdui module (TinyDesk's own).
+module("tdui.py", base_path="$(PORT_DIR)/modules", opt=3)

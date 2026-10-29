@@ -48,6 +48,7 @@ static const char *const s_modules[][2] = {
     {"select", "poll POLLIN POLLOUT POLLERR POLLHUP"},
     {"machine", "Pin ADC PWM I2C SoftI2C SPI SoftSPI UART time_pulse_us bitstream unique_id freq idle"},
     {"neopixel", "NeoPixel"},
+    {"tdui", "Window run poll run_async quit every after msgbox confirm inputbox menu Timer"},
 };
 #define MODULE_COUNT ((int)(sizeof(s_modules) / sizeof(s_modules[0])))
 

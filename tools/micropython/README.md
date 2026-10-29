@@ -4,8 +4,8 @@ TinyDesk builds MicroPython from the sources in
 [`third_party/micropython`](../../third_party/micropython/README.md). Some
 of them are generated from the configuration: the qstr table (every name
 the interpreter knows), the list of built-in modules, the root pointers,
-and the frozen Python modules (`asyncio` and `neopixel`, compiled to
-bytecode).
+and the frozen Python modules (`asyncio`, `neopixel` and `tdui`, compiled
+to bytecode).
 Regenerate them after changing any of these:
 
 * [`ports/common/python/mpconfigport.h`](../../ports/common/python/mpconfigport.h)

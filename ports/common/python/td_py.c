@@ -77,7 +77,8 @@ const char td_py_help_text[] =
     "\n"
     "Modules: sys, os, time, json, re, math, random, binascii, hashlib, heapq,\n"
     "collections, struct, errno, gc, select, asyncio, micropython, machine and\n"
-    "neopixel (pins and buses, for root), and tinydesk:\n"
+    "neopixel (pins and buses, for root), tdui (windows on the desktop) and\n"
+    "tinydesk:\n"
     "  tinydesk.shell('ls -l')               run a shell command, get its status\n"
     "  tinydesk.log('text')                  add a line to the Log Viewer\n"
     "  tinydesk.mqtt_publish(topic, payload) publish on the connected broker\n"
@@ -564,6 +565,7 @@ static int cmd_py(tdsh_session_t *session, int argc, char **argv)
         status = run_protected(session->cwd, NULL, NULL, 0, NULL);
 
     td_machine_release();   /* pins, buses and interrupts the script opened */
+    td_tdui_release();      /* its windows */
     gc_sweep_all();         /* runs finalisers: closes files the script left open */
     mp_deinit();
     exec_free_all();

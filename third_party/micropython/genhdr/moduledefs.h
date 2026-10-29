@@ -68,6 +68,10 @@ extern const struct _mp_obj_module_t mp_module_asyncio;
 #undef MODULE_DEF__ASYNCIO
 #define MODULE_DEF__ASYNCIO { MP_ROM_QSTR(MP_QSTR__asyncio), MP_ROM_PTR(&mp_module_asyncio) },
 
+extern const struct _mp_obj_module_t td_tdui_module;
+#undef MODULE_DEF__TDUI
+#define MODULE_DEF__TDUI { MP_ROM_QSTR(MP_QSTR__tdui), MP_ROM_PTR(&td_tdui_module) },
+
 extern const struct _mp_obj_module_t mp_module_builtins;
 #undef MODULE_DEF_BUILTINS
 #define MODULE_DEF_BUILTINS { MP_ROM_QSTR(MP_QSTR_builtins), MP_ROM_PTR(&mp_module_builtins) },
@@ -106,6 +110,7 @@ extern const struct _mp_obj_module_t td_py_module;
     MODULE_DEF_SYS \
     MODULE_DEF_TINYDESK \
     MODULE_DEF__ASYNCIO \
+    MODULE_DEF__TDUI \
     MODULE_DEF___MAIN__ \
 // MICROPY_REGISTERED_MODULES
 

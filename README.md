@@ -51,6 +51,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   runs several jobs in one script, and precompiled `.mpy` files load too.
   On the boards, root's scripts drive pins and buses with `machine` (Pin,
   ADC, PWM, I2C, SPI, UART, NeoPixel LEDs); pins TinyDesk uses are refused.
+  With `tdui` a script opens windows of its own (buttons, text boxes,
+  lists, canvases, dialogs) and handles them in Python.
   The Editor colours Python, runs the file with F5 (output underneath),
   goes to the line of an error and suggests names.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides

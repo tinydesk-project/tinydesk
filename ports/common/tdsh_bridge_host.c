@@ -178,6 +178,14 @@ static bool break_requested(void)
     return brk;
 }
 
+#if defined(TD_WITH_PYTHON)
+/* Every shell here is the Terminal window's: its scripts may open windows. */
+static bool on_desktop(void)
+{
+    return true;
+}
+#endif
+
 /* ---------------------------------------------------- shell streams */
 
 static int stream_read(void *cookie, char *buf, int len)
@@ -337,6 +345,7 @@ static void shell_main(void)
 #if defined(TD_WITH_PYTHON)
     td_py_register_shell_command();           /* py (MicroPython) */
     td_py_set_break_check(break_requested);   /* Ctrl+C stops a script */
+    td_py_set_desktop_check(on_desktop);      /* tdui windows */
 #endif
 
     /* Everything the shell prints goes to the Terminal window. */

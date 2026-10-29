@@ -18,6 +18,6 @@ that release. Do not edit these files: change the configuration in
 | `drivers/bus/` | software SPI, for `machine.SoftSPI` |
 | `lib/re1.5/` | the regular-expression engine `extmod/modre.c` includes |
 | `lib/crypto-algorithms/` | SHA-256 for `hashlib` where mbedTLS is not built in (`extmod/modhashlib.c` includes it; public domain, by Brad Conte) |
-| `frozen/` | `frozen_content.c`: the Python part of `asyncio` (`extmod/asyncio`) and TinyDesk's `neopixel` (`ports/common/python/modules`), compiled to bytecode by `mpy-cross` |
+| `frozen/` | `frozen_content.c`: the Python part of `asyncio` (`extmod/asyncio`) and TinyDesk's `neopixel` and `tdui` (`ports/common/python/modules`), compiled to bytecode by `mpy-cross` |
 | `genhdr/` | headers generated for TinyDesk's configuration: qstrs, the module and root-pointer tables, the version |
 | `sources.cmake` | the list of `.c` files, used by the PC and ESP-IDF builds |

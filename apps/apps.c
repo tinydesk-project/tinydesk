@@ -40,6 +40,7 @@ void td_apps_register_all(void)
     td_about_register();
     td_datetime_install_clock();
     td_proto_service_start();
+    td_pyui_start();     /* windows for Python scripts (tdui) */
     td_session_init();   /* root until a shell reports its user; ~/Desktop icons,
                           * that user's settings */
 }

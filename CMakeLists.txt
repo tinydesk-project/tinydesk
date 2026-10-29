@@ -112,6 +112,7 @@ add_library(tinydesk_apps STATIC
     apps/modbus.c
     apps/mqtt.c
     apps/network.c
+    apps/pyui.c
     apps/session.c
     apps/settings.c
     apps/sysmon.c
@@ -191,6 +192,7 @@ if(TD_WITH_TDSH AND TD_WITH_PYTHON)
         ports/common/python/td_py.c
         ports/common/python/td_py_machine.c
         ports/common/python/td_py_mod.c
+        ports/common/python/td_py_tdui.c
         ports/common/python/td_py_vfs.c
         ports/common/python/hw/td_py_hw_host.c   # machine: no hardware on a PC
     )

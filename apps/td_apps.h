@@ -226,6 +226,89 @@ bool td_script_run(const char *path);
  * (a 256-colour palette index): green, bright on dark backgrounds. */
 uint8_t td_script_colour(uint8_t bg);
 
+/* ------------------------------------------------ windows for Python */
+
+/* The tdui module puts windows on the desktop for a Python script. The
+ * script runs on the shell's task and never touches the window manager: it
+ * sends requests through a queue, the desktop carries them out every 10 ms
+ * on its own loop, and sends back what the user did through another queue.
+ * Each message is a td_pyui_msg_t followed by `len` bytes of text. */
+
+/* Requests (script -> desktop). */
+enum
+{
+    TD_PYUI_OPEN = 1,     /* window id: a, b client size, c, d position (-1: centred);
+                           * flags 1 resizable; text the title */
+    TD_PYUI_CLOSE,        /* window id */
+    TD_PYUI_ADD,          /* widget id in window win; flags TD_PYUI_W_*; a, b position,
+                           * c, d size, e initial value; text */
+    TD_PYUI_TEXT,         /* id: new text (window: its title) */
+    TD_PYUI_VALUE,        /* id: a is the checkbox state, progress percent or list selection */
+    TD_PYUI_VISIBLE,      /* id: a 0 or 1 */
+    TD_PYUI_COLOR,        /* id: a fg, b bg (palette index, -1 the theme's) */
+    TD_PYUI_FOCUS,        /* window or widget id */
+    TD_PYUI_LIST_CLEAR,   /* list id */
+    TD_PYUI_LIST_ADD,     /* list id: text is items separated by '\n' */
+    TD_PYUI_PUT,          /* canvas id: text at a, b in colours c, d */
+    TD_PYUI_FILL,         /* canvas id: rectangle a, b, c, d of the first character
+                           * of text (' ' if none) in colours e, f */
+    TD_PYUI_MSGBOX,       /* request id: text is "title\0message\0buttons" */
+    TD_PYUI_INPUT,        /* request id: text is "title\0prompt\0initial"; flags 1 secret */
+    TD_PYUI_MENU,         /* request id: text is the items separated by '\0' */
+};
+
+/* Widget kinds (TD_PYUI_ADD flags). */
+enum
+{
+    TD_PYUI_W_LABEL = 1,  /* c width (0: to the edge) */
+    TD_PYUI_W_BUTTON,
+    TD_PYUI_W_CHECKBOX,   /* e checked */
+    TD_PYUI_W_TEXTBOX,    /* c width; e 1 secret */
+    TD_PYUI_W_PROGRESS,   /* c width; e percent */
+    TD_PYUI_W_LIST,       /* c, d size, the scrollbar included */
+    TD_PYUI_W_CANVAS,     /* c, d size */
+};
+
+/* Events (desktop -> script). */
+enum
+{
+    TD_PYUI_EV_CLICK = 1, /* button pressed, Enter in a text box or list (a: item) */
+    TD_PYUI_EV_CHANGE,    /* checkbox a, list selection a, text box text */
+    TD_PYUI_EV_CLOSE,     /* window closed by the user or the desktop */
+    TD_PYUI_EV_KEY,       /* window id: a, b low and high 16 bits of the key, c mods */
+    TD_PYUI_EV_MOUSE,     /* canvas id: a, b cell, c button, d action */
+    TD_PYUI_EV_RESULT,    /* request id: a button or item (-1 cancelled), text typed */
+    TD_PYUI_EV_ERROR,     /* id: text says what could not be done */
+};
+
+typedef struct
+{
+    uint8_t op;
+    uint8_t flags;
+    uint16_t len;   /* bytes of text after the header */
+    uint16_t id;    /* the object, numbered by the script */
+    uint16_t win;   /* TD_PYUI_ADD: the widget's window */
+    int16_t a, b, c, d, e, f;
+} td_pyui_msg_t;
+
+#define TD_PYUI_TEXT_MAX   1024   /* text in one message */
+#define TD_PYUI_MAX_CELLS  2000   /* all canvases of a script together */
+
+/* The desktop side: start serving scripts (td_apps_register_all does). */
+void td_pyui_start(void);
+
+/* The script side, from the script's task. attach() is false when the
+ * desktop is not running or memory is short. send() is false while the
+ * queue is full (try again after a short sleep); recv() returns 1 and the
+ * message, or 0 if there is none; text longer than cap is cut. A script
+ * that ends calls detach_begin() (its windows close) and then frees the
+ * queues with detach_done(), which is false until the desktop has let go. */
+bool td_pyui_attach(void);
+bool td_pyui_send(const td_pyui_msg_t *m, const char *text);
+int td_pyui_recv(td_pyui_msg_t *m, char *text, int cap);
+void td_pyui_detach_begin(void);
+bool td_pyui_detach_done(void);
+
 /* ------------------------------------------------------- sessions */
 
 /* The desktop belongs to one user at a time, mirroring TinyDesk Shell: root sees
