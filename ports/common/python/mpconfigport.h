@@ -40,10 +40,9 @@
  * modules (frozen_content.c) are generated for this size. */
 #define MPZ_DIG_SIZE         (16)
 
-/* No threads, no hardware modules: TinyDesk owns the hardware, and scripts
- * reach it through the tinydesk module. */
+/* No threads, no network modules: scripts reach the network through the
+ * tinydesk module. */
 #define MICROPY_PY_THREAD            (0)
-#define MICROPY_PY_MACHINE           (0)
 #define MICROPY_PY_NETWORK           (0)
 #define MICROPY_PY_SOCKET            (0)
 #define MICROPY_PY_DEFLATE           (0)
@@ -61,8 +60,42 @@
 #define MICROPY_PY_SYS_EXIT          (1)
 #define MICROPY_PY_SYS_ARGV          (1)
 #define MICROPY_PY_SYS_PLATFORM      "tinydesk"
-#define MICROPY_ENABLE_SCHEDULER     (0)
 #define MICROPY_KBD_EXCEPTION        (1)   /* Ctrl+C raises KeyboardInterrupt */
+
+/* machine: pins and buses for root (td_py_machine.c; the chip side is
+ * td_py_hw.h). Pins TinyDesk uses are refused, and what a script opened is
+ * closed when it ends. No reset, sleep, clock setting, timers, watchdog or
+ * raw memory: those belong to TinyDesk. Pin interrupts run their handler
+ * through the scheduler. */
+#define MICROPY_PY_MACHINE             (1)
+#define MICROPY_PY_MACHINE_INCLUDEFILE "td_py_modmachine.h"
+#define MICROPY_PY_MACHINE_EXTRA_GLOBALS                                         \
+    {MP_ROM_QSTR(MP_QSTR_Pin), MP_ROM_PTR(&machine_pin_type)},                   \
+        {MP_ROM_QSTR(MP_QSTR_unique_id), MP_ROM_PTR(&td_machine_unique_id_obj)}, \
+        {MP_ROM_QSTR(MP_QSTR_freq), MP_ROM_PTR(&td_machine_freq_obj)},
+#define MICROPY_PY_MACHINE_BARE_METAL_FUNCS    (0)
+#define MICROPY_PY_MACHINE_RESET               (0)
+#define MICROPY_PY_MACHINE_MEMX                (0)
+#define MICROPY_PY_MACHINE_SIGNAL              (0)
+#define MICROPY_PY_MACHINE_PULSE               (1)
+#define MICROPY_PY_MACHINE_BITSTREAM           (1)
+#define MICROPY_PY_MACHINE_ADC                 (1)
+#define MICROPY_PY_MACHINE_ADC_INCLUDEFILE     "td_py_machine_adc.h"
+#define MICROPY_PY_MACHINE_ADC_READ_UV         (1)
+#define MICROPY_PY_MACHINE_PWM                 (1)
+#define MICROPY_PY_MACHINE_PWM_INCLUDEFILE     "td_py_machine_pwm.h"
+#define MICROPY_PY_MACHINE_I2C                 (1)
+#define MICROPY_PY_MACHINE_I2C_TRANSFER_WRITE1 (1)
+#define MICROPY_PY_MACHINE_SOFTI2C             (1)
+#define MICROPY_PY_MACHINE_SPI                 (1)
+#define MICROPY_PY_MACHINE_SOFTSPI             (1)
+#define MICROPY_PY_MACHINE_UART                (1)
+#define MICROPY_PY_MACHINE_UART_INCLUDEFILE    "td_py_machine_uart.h"
+#define MICROPY_ENABLE_SCHEDULER               (1)
+#define MICROPY_BEGIN_ATOMIC_SECTION()         td_hw_atomic_begin()
+#define MICROPY_END_ATOMIC_SECTION(state)      td_hw_atomic_end(state)
+extern uint32_t td_hw_atomic_begin(void);
+extern void td_hw_atomic_end(uint32_t state);
 
 /* asyncio: the C part (_asyncio) and select.poll, which its loop waits in;
  * the Python part is frozen into the firmware (manifest.py). The loop's

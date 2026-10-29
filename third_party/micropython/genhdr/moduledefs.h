@@ -32,6 +32,10 @@ extern const struct _mp_obj_module_t mp_module_json;
 #undef MODULE_DEF_JSON
 #define MODULE_DEF_JSON { MP_ROM_QSTR(MP_QSTR_json), MP_ROM_PTR(&mp_module_json) },
 
+extern const struct _mp_obj_module_t mp_module_machine;
+#undef MODULE_DEF_MACHINE
+#define MODULE_DEF_MACHINE { MP_ROM_QSTR(MP_QSTR_machine), MP_ROM_PTR(&mp_module_machine) },
+
 extern const struct _mp_obj_module_t mp_module_os;
 #undef MODULE_DEF_OS
 #define MODULE_DEF_OS { MP_ROM_QSTR(MP_QSTR_os), MP_ROM_PTR(&mp_module_os) },
@@ -105,7 +109,7 @@ extern const struct _mp_obj_module_t td_py_module;
     MODULE_DEF___MAIN__ \
 // MICROPY_REGISTERED_MODULES
 
-#define MICROPY_HAVE_REGISTERED_EXTENSIBLE_MODULES  14
+#define MICROPY_HAVE_REGISTERED_EXTENSIBLE_MODULES  15
 
 #define MICROPY_REGISTERED_EXTENSIBLE_MODULES \
     MODULE_DEF_ARRAY \
@@ -116,6 +120,7 @@ extern const struct _mp_obj_module_t td_py_module;
     MODULE_DEF_HEAPQ \
     MODULE_DEF_IO \
     MODULE_DEF_JSON \
+    MODULE_DEF_MACHINE \
     MODULE_DEF_OS \
     MODULE_DEF_RANDOM \
     MODULE_DEF_RE \

@@ -3,7 +3,7 @@
 # from them (qstrs, module and root-pointer tables, version). Based on
 # MicroPython's ports/embed/embed.mk, plus the extmod modules and shared
 # code the `py` command uses, TinyDesk's own port files, and the frozen
-# Python modules of ports/common/python/manifest.py (asyncio).
+# Python modules of ports/common/python/manifest.py (asyncio, neopixel).
 #
 # Run it through gen.sh (Linux or WSL: needs make, gcc and python3).
 
@@ -40,6 +40,7 @@ EXTMOD_C := \
 	extmod/modhashlib.c \
 	extmod/modheapq.c \
 	extmod/modjson.c \
+	extmod/modmachine.c \
 	extmod/modos.c \
 	extmod/modrandom.c \
 	extmod/modre.c \
@@ -47,7 +48,17 @@ EXTMOD_C := \
 	extmod/modtime.c \
 	extmod/vfs.c \
 	extmod/vfs_posix_file.c \
-	extmod/vfs_reader.c
+	extmod/vfs_reader.c \
+	extmod/machine_adc.c \
+	extmod/machine_bitstream.c \
+	extmod/machine_i2c.c \
+	extmod/machine_pulse.c \
+	extmod/machine_pwm.c \
+	extmod/machine_spi.c \
+	extmod/machine_uart.c
+
+# Software SPI for machine.SoftSPI.
+DRIVERS_C := drivers/bus/softspi.c
 
 SHARED_C := \
 	shared/readline/readline.c \
@@ -60,7 +71,7 @@ SHARED_C := \
 
 PORT_C := $(wildcard $(PORT_DIR)/*.c)
 
-SRC_QSTR += $(EXTMOD_C) $(SHARED_C) $(PORT_C)
+SRC_QSTR += $(EXTMOD_C) $(DRIVERS_C) $(SHARED_C) $(PORT_C)
 
 GENHDR_OUTPUT := $(addprefix $(HEADER_BUILD)/, \
 	moduledefs.h \
@@ -89,16 +100,18 @@ all: package
 package: $(GENHDR_OUTPUT) $(FROZEN_C)
 	$(ECHO) "Package into $(PACKAGE_DIR)"
 	$(Q)$(RM) -rf $(PACKAGE_DIR)/py $(PACKAGE_DIR)/extmod $(PACKAGE_DIR)/shared $(PACKAGE_DIR)/lib $(PACKAGE_DIR)/genhdr \
-		$(PACKAGE_DIR)/frozen
+		$(PACKAGE_DIR)/frozen $(PACKAGE_DIR)/drivers
 	$(Q)$(MKDIR) -p $(PACKAGE_DIR)/py $(PACKAGE_DIR)/extmod $(PACKAGE_DIR)/genhdr \
 		$(PACKAGE_DIR)/shared/readline $(PACKAGE_DIR)/shared/runtime $(PACKAGE_DIR)/shared/timeutils \
-		$(PACKAGE_DIR)/lib/re1.5 $(PACKAGE_DIR)/lib/crypto-algorithms $(PACKAGE_DIR)/frozen
+		$(PACKAGE_DIR)/lib/re1.5 $(PACKAGE_DIR)/lib/crypto-algorithms $(PACKAGE_DIR)/frozen \
+		$(PACKAGE_DIR)/drivers/bus
 	$(Q)$(CP) $(TOP)/py/*.[ch] $(PACKAGE_DIR)/py
 	$(Q)$(CP) $(addprefix $(TOP)/,$(EXTMOD_C)) $(TOP)/extmod/*.h $(PACKAGE_DIR)/extmod
+	$(Q)$(CP) $(addprefix $(TOP)/,$(DRIVERS_C)) $(TOP)/drivers/bus/spi.h $(PACKAGE_DIR)/drivers/bus
 	$(Q)$(CP) $(TOP)/shared/readline/readline.[ch] $(PACKAGE_DIR)/shared/readline
 	$(Q)$(CP) $(addprefix $(TOP)/,$(filter shared/runtime/%,$(SHARED_C))) \
 		$(TOP)/shared/runtime/gchelper.h $(TOP)/shared/runtime/interrupt_char.h \
-		$(TOP)/shared/runtime/pyexec.h $(PACKAGE_DIR)/shared/runtime
+		$(TOP)/shared/runtime/pyexec.h $(TOP)/shared/runtime/mpirq.h $(PACKAGE_DIR)/shared/runtime
 	$(Q)$(CP) $(TOP)/shared/timeutils/timeutils.[ch] $(PACKAGE_DIR)/shared/timeutils
 	$(Q)$(CP) $(TOP)/lib/re1.5/*.[ch] $(PACKAGE_DIR)/lib/re1.5
 	$(Q)$(CP) $(TOP)/lib/crypto-algorithms/sha256.[ch] $(PACKAGE_DIR)/lib/crypto-algorithms
@@ -110,7 +123,7 @@ package: $(GENHDR_OUTPUT) $(FROZEN_C)
 		echo "# lib/re1.5 and lib/crypto-algorithms are #included by extmod/modre.c"; \
 		echo "# and extmod/modhashlib.c, not built on their own."; \
 		echo "set(TD_MICROPYTHON_SRCS"; \
-		find py extmod shared frozen -name '*.c' | LC_ALL=C sort | sed 's|^|    $${TD_MICROPYTHON_DIR}/|'; \
+		find py extmod shared frozen drivers -name '*.c' | LC_ALL=C sort | sed 's|^|    $${TD_MICROPYTHON_DIR}/|'; \
 		echo ")"; \
 	} > sources.cmake
 

@@ -47,6 +47,8 @@ enum {
     MP_QSTR_Lock,
     MP_QSTR_Lock_space_not_space_acquired,
     MP_QSTR_Loop,
+    MP_QSTR_NeoPixel,
+    MP_QSTR_ORDER,
     MP_QSTR_PROTOCOL_TLS_CLIENT,
     MP_QSTR_SOCK_STREAM,
     MP_QSTR_SOL_SOCKET,
@@ -87,6 +89,7 @@ enum {
     MP_QSTR_awritestr,
     MP_QSTR_backlog,
     MP_QSTR_bind,
+    MP_QSTR_bpp,
     MP_QSTR_buf,
     MP_QSTR_call_exception_handler,
     MP_QSTR_can_squot_t_space_gather,
@@ -107,6 +110,7 @@ enum {
     MP_QSTR_exc,
     MP_QSTR_exc_type,
     MP_QSTR_exception,
+    MP_QSTR_fill,
     MP_QSTR_flags,
     MP_QSTR_funcs,
     MP_QSTR_future,
@@ -116,8 +120,8 @@ enum {
     MP_QSTR_get_exception_handler,
     MP_QSTR_get_extra_info,
     MP_QSTR_getaddrinfo,
-    MP_QSTR_handler,
     MP_QSTR_host,
+    MP_QSTR_i,
     MP_QSTR_idx,
     MP_QSTR_is_set,
     MP_QSTR_listen,
@@ -127,12 +131,13 @@ enum {
     MP_QSTR_main_task,
     MP_QSTR_message,
     MP_QSTR_n,
+    MP_QSTR_neopixel_dot_py,
     MP_QSTR_new_event_loop,
     MP_QSTR_no_space_running_space_event_space_loop,
-    MP_QSTR_off,
     MP_QSTR_open_connection,
     MP_QSTR_out_buf,
     MP_QSTR_peername,
+    MP_QSTR_pin,
     MP_QSTR_poller,
     MP_QSTR_port,
     MP_QSTR_queue_read,
@@ -161,7 +166,7 @@ enum {
     MP_QSTR_task,
     MP_QSTR_tb,
     MP_QSTR_ticks,
-    MP_QSTR_timeout,
+    MP_QSTR_timing,
     MP_QSTR_v,
     MP_QSTR_wait,
     MP_QSTR_wait_closed,
@@ -180,6 +185,8 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     59534,
     43943,
     59673,
+    33641,
+    26955,
     10465,
     48690,
     57103,
@@ -220,6 +227,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     2796,
     43370,
     25732,
+    18887,
     18804,
     19688,
     4535,
@@ -240,6 +248,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     9435,
     52220,
     60370,
+    13514,
     36858,
     27400,
     14592,
@@ -249,8 +258,8 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     60604,
     16583,
     6254,
-    24029,
     13605,
+    46540,
     21584,
     58562,
     3788,
@@ -260,12 +269,13 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     31740,
     48238,
     46539,
+    49582,
     3209,
     49107,
-    23690,
     25560,
     30085,
     8320,
+    29682,
     42221,
     55388,
     52601,
@@ -294,7 +304,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     40488,
     28563,
     2115,
-    21566,
+    9013,
     46547,
     21902,
     29411,
@@ -313,6 +323,8 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     4,
     17,
     4,
+    8,
+    5,
     19,
     11,
     10,
@@ -353,6 +365,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     7,
     4,
+    3,
     3,
     22,
     12,
@@ -373,6 +386,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     3,
     8,
     9,
+    4,
     5,
     5,
     6,
@@ -382,8 +396,8 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     21,
     14,
     11,
-    7,
     4,
+    1,
     3,
     6,
     6,
@@ -393,12 +407,13 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     7,
     1,
+    11,
     14,
     21,
-    3,
     15,
     7,
     8,
+    3,
     6,
     4,
     10,
@@ -427,7 +442,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     4,
     2,
     5,
-    7,
+    6,
     1,
     4,
     11,
@@ -446,7 +461,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
     MP_QSTRnumber_of, // previous pool size
     true, // is_sorted
     10, // allocated entries
-    130, // used entries
+    135, // used entries
     (qstr_hash_t *)mp_qstr_frozen_const_hashes,
     (qstr_len_t *)mp_qstr_frozen_const_lengths,
     {
@@ -455,6 +470,8 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "Lock",
         "Lock not acquired",
         "Loop",
+        "NeoPixel",
+        "ORDER",
         "PROTOCOL_TLS_CLIENT",
         "SOCK_STREAM",
         "SOL_SOCKET",
@@ -495,6 +512,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "awritestr",
         "backlog",
         "bind",
+        "bpp",
         "buf",
         "call_exception_handler",
         "can't gather",
@@ -515,6 +533,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "exc",
         "exc_type",
         "exception",
+        "fill",
         "flags",
         "funcs",
         "future",
@@ -524,8 +543,8 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "get_exception_handler",
         "get_extra_info",
         "getaddrinfo",
-        "handler",
         "host",
+        "i",
         "idx",
         "is_set",
         "listen",
@@ -535,12 +554,13 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "main_task",
         "message",
         "n",
+        "neopixel.py",
         "new_event_loop",
         "no running event loop",
-        "off",
         "open_connection",
         "out_buf",
         "peername",
+        "pin",
         "poller",
         "port",
         "queue_read",
@@ -569,7 +589,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "task",
         "tb",
         "ticks",
-        "timeout",
+        "timing",
         "v",
         "wait",
         "wait_closed",
@@ -7233,6 +7253,673 @@ static const mp_frozen_module_t frozen_module_asyncio_stream = {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// frozen module neopixel
+// - original source file: build/frozen_mpy/neopixel.mpy
+// - frozen file name: neopixel.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file neopixel.py, scope neopixel__lt_module_gt_
+static const byte fun_data_neopixel__lt_module_gt_[26] = {
+    0x10,0x02, // prelude
+    0x01, // names: <module>
+     // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x10,0x02, // LOAD_CONST_STRING 'bitstream'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x03, // IMPORT_NAME 'machine'
+    0x1c,0x02, // IMPORT_FROM 'bitstream'
+    0x16,0x02, // STORE_NAME 'bitstream'
+    0x59, // POP_TOP
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x04, // LOAD_CONST_STRING 'NeoPixel'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x04, // STORE_NAME 'NeoPixel'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of neopixel__lt_module_gt_
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel
+static const byte fun_data_neopixel_NeoPixel[46] = {
+    0x08,0x02, // prelude
+    0x04, // names: NeoPixel
+     // code info
+    0x11,0x14, // LOAD_NAME '__name__'
+    0x16,0x15, // STORE_NAME '__module__'
+    0x10,0x04, // LOAD_CONST_STRING 'NeoPixel'
+    0x16,0x16, // STORE_NAME '__qualname__'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x16,0x0f, // STORE_NAME 'ORDER'
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x00, // MAKE_FUNCTION_DEFARGS 0
+    0x16,0x05, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x0d, // STORE_NAME '__len__'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x0e, // STORE_NAME '__setitem__'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x10, // STORE_NAME '__getitem__'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x16,0x11, // STORE_NAME 'fill'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x12, // STORE_NAME 'write'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel___init__
+static const byte fun_data_neopixel_NeoPixel___init__[72] = {
+    0xb9,0x84,0x01,0x0c, // prelude
+    0x05,0x17,0x06,0x07,0x08,0x0c, // names: __init__, self, pin, n, bpp, timing
+     // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x06, // STORE_ATTR 'pin'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x07, // STORE_ATTR 'n'
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x18,0x08, // STORE_ATTR 'bpp'
+    0x12,0x18, // LOAD_GLOBAL 'bytearray'
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xf4, // BINARY_OP 29 __mul__
+    0x34,0x01, // CALL_FUNCTION 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x09, // STORE_ATTR 'buf'
+    0xb0, // LOAD_FAST 0
+    0x13,0x06, // LOAD_ATTR 'pin'
+    0x14,0x0a, // LOAD_METHOD 'init'
+    0xb1, // LOAD_FAST 1
+    0x13,0x0b, // LOAD_ATTR 'OUT'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x12,0x19, // LOAD_GLOBAL 'isinstance'
+    0xb4, // LOAD_FAST 4
+    0x12,0x1a, // LOAD_GLOBAL 'int'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x4e, // POP_JUMP_IF_FALSE 14
+    0xb4, // LOAD_FAST 4
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x42,0x42, // JUMP 2
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'timing'
+    0x42,0x44, // JUMP 4
+    0xb4, // LOAD_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'timing'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 72,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 5,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 5,
+        .line_info = fun_data_neopixel_NeoPixel___init__ + 10,
+        .line_info_top = fun_data_neopixel_NeoPixel___init__ + 10,
+        .opcodes = fun_data_neopixel_NeoPixel___init__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel___init__ fun_data_neopixel_NeoPixel___init__[0]
+#endif
+
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel___len__
+static const byte fun_data_neopixel_NeoPixel___len__[8] = {
+    0x09,0x04, // prelude
+    0x0d,0x17, // names: __len__, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x07, // LOAD_ATTR 'n'
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel___len__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel___len__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 8,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 13,
+        .line_info = fun_data_neopixel_NeoPixel___len__ + 4,
+        .line_info_top = fun_data_neopixel_NeoPixel___len__ + 4,
+        .opcodes = fun_data_neopixel_NeoPixel___len__ + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel___len__ fun_data_neopixel_NeoPixel___len__[0]
+#endif
+
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel___setitem__
+static const byte fun_data_neopixel_NeoPixel___setitem__[45] = {
+    0x5b,0x08, // prelude
+    0x0e,0x17,0x1b,0x1c, // names: __setitem__, self, i, v
+     // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0xf4, // BINARY_OP 29 __mul__
+    0xc3, // STORE_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x42,0x52, // JUMP 18
+    0x57, // DUP_TOP
+    0xc4, // STORE_FAST 4
+    0xb2, // LOAD_FAST 2
+    0xb4, // LOAD_FAST 4
+    0x55, // LOAD_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x09, // LOAD_ATTR 'buf'
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x0f, // LOAD_ATTR 'ORDER'
+    0xb4, // LOAD_FAST 4
+    0x55, // LOAD_SUBSCR
+    0xf2, // BINARY_OP 27 __add__
+    0x56, // STORE_SUBSCR
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x58, // DUP_TOP_TWO
+    0x5a, // ROT_TWO
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x29, // POP_JUMP_IF_TRUE -23
+    0x59, // POP_TOP
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel___setitem__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel___setitem__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 45,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 14,
+        .line_info = fun_data_neopixel_NeoPixel___setitem__ + 6,
+        .line_info_top = fun_data_neopixel_NeoPixel___setitem__ + 6,
+        .opcodes = fun_data_neopixel_NeoPixel___setitem__ + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel___setitem__ fun_data_neopixel_NeoPixel___setitem__[0]
+#endif
+
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel___getitem__
+static const byte fun_data_neopixel_NeoPixel___getitem__[37] = {
+    0x32,0x86,0x01, // prelude
+    0x10,0x17,0x1b, // names: __getitem__, self, i
+    0x00,0x02, // code info
+    0xb1, // LOAD_FAST 1
+    0x25,0x00, // LOAD_DEREF 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0xf4, // BINARY_OP 29 __mul__
+    0x27,0x02, // STORE_DEREF 2
+    0x12,0x1d, // LOAD_GLOBAL 'tuple'
+    0xb0, // LOAD_FAST 0
+    0xb2, // LOAD_FAST 2
+    0x20,0x00,0x02, // MAKE_CLOSURE 0
+    0x12,0x1e, // LOAD_GLOBAL 'range'
+    0x25,0x00, // LOAD_DEREF 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x63, // RETURN_VALUE
+};
+// child of neopixel_NeoPixel___getitem__
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel___getitem____lt_genexpr_gt_
+static const byte fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_[34] = {
+    0xdb,0x40,0x08, // prelude
+    0x13,0x20,0x20,0x20, // names: <genexpr>, *, *, *
+     // code info
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x13, // FOR_ITER 19
+    0xc3, // STORE_FAST 3
+    0x25,0x00, // LOAD_DEREF 0
+    0x13,0x09, // LOAD_ATTR 'buf'
+    0x25,0x01, // LOAD_DEREF 1
+    0x25,0x00, // LOAD_DEREF 0
+    0x13,0x0f, // LOAD_ATTR 'ORDER'
+    0xb3, // LOAD_FAST 3
+    0x55, // LOAD_SUBSCR
+    0xf2, // BINARY_OP 27 __add__
+    0x55, // LOAD_SUBSCR
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2b, // JUMP -21
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel___getitem____lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 19,
+        .line_info = fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_ + 7,
+        .line_info_top = fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_ + 7,
+        .opcodes = fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel___getitem____lt_genexpr_gt_ fun_data_neopixel_NeoPixel___getitem____lt_genexpr_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_neopixel_NeoPixel___getitem__[] = {
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel___getitem____lt_genexpr_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel___getitem__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel___getitem__,
+    .children = (void *)&children_neopixel_NeoPixel___getitem__,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 37,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 16,
+        .line_info = fun_data_neopixel_NeoPixel___getitem__ + 6,
+        .line_info_top = fun_data_neopixel_NeoPixel___getitem__ + 6,
+        .opcodes = fun_data_neopixel_NeoPixel___getitem__ + 8,
+    },
+    #endif
+    #endif
+};
+
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel_fill
+static const byte fun_data_neopixel_NeoPixel_fill[61] = {
+    0x7a,0x06, // prelude
+    0x11,0x17,0x1c, // names: fill, self, v
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x09, // LOAD_ATTR 'buf'
+    0xc2, // STORE_FAST 2
+    0x12,0x1f, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x42,0x5f, // JUMP 31
+    0x57, // DUP_TOP
+    0xc4, // STORE_FAST 4
+    0xb1, // LOAD_FAST 1
+    0xb4, // LOAD_FAST 4
+    0x55, // LOAD_SUBSCR
+    0xc5, // STORE_FAST 5
+    0x12,0x1e, // LOAD_GLOBAL 'range'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0f, // LOAD_ATTR 'ORDER'
+    0xb4, // LOAD_FAST 4
+    0x55, // LOAD_SUBSCR
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x08, // LOAD_ATTR 'bpp'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x5f, // GET_ITER_STACK
+    0x4b,0x07, // FOR_ITER 7
+    0xc6, // STORE_FAST 6
+    0xb5, // LOAD_FAST 5
+    0xb2, // LOAD_FAST 2
+    0xb6, // LOAD_FAST 6
+    0x56, // STORE_SUBSCR
+    0x42,0x37, // JUMP -9
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x58, // DUP_TOP_TWO
+    0x5a, // ROT_TWO
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x1c, // POP_JUMP_IF_TRUE -36
+    0x59, // POP_TOP
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel_fill = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel_fill,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 61,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 16,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 17,
+        .line_info = fun_data_neopixel_NeoPixel_fill + 5,
+        .line_info_top = fun_data_neopixel_NeoPixel_fill + 5,
+        .opcodes = fun_data_neopixel_NeoPixel_fill + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel_fill fun_data_neopixel_NeoPixel_fill[0]
+#endif
+
+// child of neopixel_NeoPixel
+// frozen bytecode for file neopixel.py, scope neopixel_NeoPixel_write
+static const byte fun_data_neopixel_NeoPixel_write[21] = {
+    0x29,0x04, // prelude
+    0x12,0x17, // names: write, self
+     // code info
+    0x12,0x02, // LOAD_GLOBAL 'bitstream'
+    0xb0, // LOAD_FAST 0
+    0x13,0x06, // LOAD_ATTR 'pin'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'timing'
+    0xb0, // LOAD_FAST 0
+    0x13,0x09, // LOAD_ATTR 'buf'
+    0x34,0x04, // CALL_FUNCTION 4
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel_write = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel_write,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 21,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_neopixel_NeoPixel_write + 4,
+        .line_info_top = fun_data_neopixel_NeoPixel_write + 4,
+        .opcodes = fun_data_neopixel_NeoPixel_write + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_neopixel_NeoPixel_write fun_data_neopixel_NeoPixel_write[0]
+#endif
+
+static const mp_raw_code_t *const children_neopixel_NeoPixel[] = {
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel___init__,
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel___len__,
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel___setitem__,
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel___getitem__,
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel_fill,
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel_write,
+};
+
+static const mp_raw_code_truncated_t proto_fun_neopixel_NeoPixel = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel_NeoPixel,
+    .children = (void *)&children_neopixel_NeoPixel,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 46,
+    .n_children = 6,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 4,
+        .line_info = fun_data_neopixel_NeoPixel + 3,
+        .line_info_top = fun_data_neopixel_NeoPixel + 3,
+        .opcodes = fun_data_neopixel_NeoPixel + 3,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_neopixel__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_neopixel_NeoPixel,
+};
+
+static const mp_raw_code_truncated_t proto_fun_neopixel__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_neopixel__lt_module_gt_,
+    .children = (void *)&children_neopixel__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 26,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_neopixel__lt_module_gt_ + 3,
+        .line_info_top = fun_data_neopixel__lt_module_gt_ + 3,
+        .opcodes = fun_data_neopixel__lt_module_gt_ + 3,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_neopixel[33] = {
+    MP_QSTR_neopixel_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_bitstream,
+    MP_QSTR_machine,
+    MP_QSTR_NeoPixel,
+    MP_QSTR___init__,
+    MP_QSTR_pin,
+    MP_QSTR_n,
+    MP_QSTR_bpp,
+    MP_QSTR_buf,
+    MP_QSTR_init,
+    MP_QSTR_OUT,
+    MP_QSTR_timing,
+    MP_QSTR___len__,
+    MP_QSTR___setitem__,
+    MP_QSTR_ORDER,
+    MP_QSTR___getitem__,
+    MP_QSTR_fill,
+    MP_QSTR_write,
+    MP_QSTR__lt_genexpr_gt_,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_self,
+    MP_QSTR_bytearray,
+    MP_QSTR_isinstance,
+    MP_QSTR_int,
+    MP_QSTR_i,
+    MP_QSTR_v,
+    MP_QSTR_tuple,
+    MP_QSTR_range,
+    MP_QSTR_len,
+    MP_QSTR__star_,
+};
+
+// constants
+static const mp_rom_obj_tuple_t const_obj_neopixel_0 = {{&mp_type_tuple}, 4, {
+    MP_ROM_INT(1),
+    MP_ROM_INT(0),
+    MP_ROM_INT(2),
+    MP_ROM_INT(3),
+}};
+static const mp_rom_obj_tuple_t const_obj_neopixel_1 = {{&mp_type_tuple}, 4, {
+    MP_ROM_INT(400),
+    MP_ROM_INT(850),
+    MP_ROM_INT(800),
+    MP_ROM_INT(450),
+}};
+static const mp_rom_obj_tuple_t const_obj_neopixel_2 = {{&mp_type_tuple}, 4, {
+    MP_ROM_INT(800),
+    MP_ROM_INT(1700),
+    MP_ROM_INT(1600),
+    MP_ROM_INT(900),
+}};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_neopixel[3] = {
+    MP_ROM_PTR(&const_obj_neopixel_0),
+    MP_ROM_PTR(&const_obj_neopixel_1),
+    MP_ROM_PTR(&const_obj_neopixel_2),
+};
+
+static const mp_frozen_module_t frozen_module_neopixel = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_neopixel,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_neopixel,
+    },
+    .proto_fun = &proto_fun_neopixel__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // collection of all frozen modules
 
 const char mp_frozen_names[] = {
@@ -7245,6 +7932,7 @@ const char mp_frozen_names[] = {
     "asyncio/funcs.py\0"
     "asyncio/lock.py\0"
     "asyncio/stream.py\0"
+    "neopixel.py\0"
     "\0"
 };
 
@@ -7255,6 +7943,7 @@ const mp_frozen_module_t *const mp_frozen_mpy_content[] = {
     &frozen_module_asyncio_funcs,
     &frozen_module_asyncio_lock,
     &frozen_module_asyncio_stream,
+    &frozen_module_neopixel,
 };
 
 #ifdef MICROPY_FROZEN_LIST_ITEM
@@ -7264,19 +7953,20 @@ MICROPY_FROZEN_LIST_ITEM("asyncio/event", "asyncio/event.py")
 MICROPY_FROZEN_LIST_ITEM("asyncio/funcs", "asyncio/funcs.py")
 MICROPY_FROZEN_LIST_ITEM("asyncio/lock", "asyncio/lock.py")
 MICROPY_FROZEN_LIST_ITEM("asyncio/stream", "asyncio/stream.py")
+MICROPY_FROZEN_LIST_ITEM("neopixel", "neopixel.py")
 #endif
 
 /*
 byte sizes:
-qstr content: 130 unique, 1681 bytes
-bc content: 4085
+qstr content: 135 unique, 1725 bytes
+bc content: 4435
 const str content: 31
 const int content: 0
 const obj content: 16
 const table qstr content: 0 entries, 0 bytes
-const table ptr content: 13 entries, 52 bytes
-raw code content: 88 * 4 = 1408
-mp_frozen_mpy_names_content: 105
-mp_frozen_mpy_content_size: 24
-total: 7402
+const table ptr content: 16 entries, 64 bytes
+raw code content: 97 * 4 = 1552
+mp_frozen_mpy_names_content: 117
+mp_frozen_mpy_content_size: 28
+total: 7968
 */

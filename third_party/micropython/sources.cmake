@@ -2,11 +2,20 @@
 # lib/re1.5 and lib/crypto-algorithms are #included by extmod/modre.c
 # and extmod/modhashlib.c, not built on their own.
 set(TD_MICROPYTHON_SRCS
+    ${TD_MICROPYTHON_DIR}/drivers/bus/softspi.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_adc.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_bitstream.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_i2c.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_pulse.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_pwm.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_spi.c
+    ${TD_MICROPYTHON_DIR}/extmod/machine_uart.c
     ${TD_MICROPYTHON_DIR}/extmod/modasyncio.c
     ${TD_MICROPYTHON_DIR}/extmod/modbinascii.c
     ${TD_MICROPYTHON_DIR}/extmod/modhashlib.c
     ${TD_MICROPYTHON_DIR}/extmod/modheapq.c
     ${TD_MICROPYTHON_DIR}/extmod/modjson.c
+    ${TD_MICROPYTHON_DIR}/extmod/modmachine.c
     ${TD_MICROPYTHON_DIR}/extmod/modos.c
     ${TD_MICROPYTHON_DIR}/extmod/modrandom.c
     ${TD_MICROPYTHON_DIR}/extmod/modre.c

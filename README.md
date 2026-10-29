@@ -49,6 +49,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   write TinyDesk's files, and the `tinydesk` module runs shell commands,
   publishes MQTT messages and reads or writes Modbus registers. `asyncio`
   runs several jobs in one script, and precompiled `.mpy` files load too.
+  On the boards, root's scripts drive pins and buses with `machine` (Pin,
+  ADC, PWM, I2C, SPI, UART, NeoPixel LEDs); pins TinyDesk uses are refused.
   The Editor colours Python, runs the file with F5 (output underneath),
   goes to the line of an error and suggests names.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides

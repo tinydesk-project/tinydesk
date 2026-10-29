@@ -8,15 +8,20 @@ include("${TD_MICROPYTHON_DIR}/sources.cmake")
 
 set(TD_PY_PORT_SRCS
     "${TD_PY_PORT_DIR}/td_py.c"
+    "${TD_PY_PORT_DIR}/td_py_machine.c"
     "${TD_PY_PORT_DIR}/td_py_mod.c"
     "${TD_PY_PORT_DIR}/td_py_vfs.c"
+    "${TD_PY_PORT_DIR}/hw/td_py_hw_esp.c"   # machine: the chip's drivers
+    "${TD_PY_PORT_DIR}/hw/td_py_hw_pins.c"
 )
 
 idf_component_register(
     SRCS ${TD_MICROPYTHON_SRCS} ${TD_PY_PORT_SRCS}
     INCLUDE_DIRS "${TD_MICROPYTHON_DIR}" "${TD_PY_PORT_DIR}"
     PRIV_INCLUDE_DIRS "include"   # poll.h for extmod/vfs_posix_file.c
-    REQUIRES tdsh tinydesk esp_timer vfs mbedtls   # mbedtls: hashlib
+    # mbedtls: hashlib; the drivers and esp_adc: machine
+    REQUIRES tdsh tinydesk esp_timer vfs mbedtls esp_driver_gpio esp_driver_ledc esp_driver_i2c
+             esp_driver_spi esp_driver_uart esp_driver_rmt esp_adc
 )
 
 target_compile_definitions(${COMPONENT_LIB} PUBLIC TD_WITH_PYTHON)

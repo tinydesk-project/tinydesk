@@ -4,7 +4,8 @@ TinyDesk builds MicroPython from the sources in
 [`third_party/micropython`](../../third_party/micropython/README.md). Some
 of them are generated from the configuration: the qstr table (every name
 the interpreter knows), the list of built-in modules, the root pointers,
-and the frozen Python modules (`asyncio`, compiled to bytecode).
+and the frozen Python modules (`asyncio` and `neopixel`, compiled to
+bytecode).
 Regenerate them after changing any of these:
 
 * [`ports/common/python/mpconfigport.h`](../../ports/common/python/mpconfigport.h)
@@ -42,3 +43,11 @@ names with escaped characters such as `MP_QSTR__slash_lib` ("/lib").
 The native-code emitters are per chip; the `Makefile` defines
 `TD_PY_GENHDR`, which turns on both that TinyDesk uses (Xtensa and x64),
 so the tables have the names of each.
+
+The generator reads `ports/common/python/*.c` (and the `td_py_machine_*.h`
+files that MicroPython's `extmod/machine_*.c` include), so those must not
+include ESP-IDF headers: the `machine` module's Python side calls the
+plain-C interface `td_py_hw.h`, whose implementations live in
+`ports/common/python/hw/` (`td_py_hw_esp.c` with ESP-IDF's drivers,
+`td_py_hw_host.c` for the PC programs), which the generator does not read.
+`drivers/bus/softspi.c` (for `SoftSPI`) is packaged too.

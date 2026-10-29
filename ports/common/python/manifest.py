@@ -8,3 +8,6 @@ package(
     base_path="$(MPY_DIR)/extmod",
     opt=3,
 )
+
+# neopixel: RGB LED strips through machine.bitstream (TinyDesk's own).
+module("neopixel.py", base_path="$(PORT_DIR)/modules", opt=3)

@@ -35,6 +35,7 @@
 #include "shared/readline/readline.h"
 #include "shared/runtime/gchelper.h"
 #include "shared/runtime/pyexec.h"
+#include "td_py_machine.h"
 #include "td_py_vfs.h"
 
 #if MICROPY_EMIT_NATIVE && !defined(ESP_PLATFORM)
@@ -75,7 +76,8 @@ const char td_py_help_text[] =
     "Leave this prompt with Ctrl+D or exit(). Ctrl+C stops a running script.\n"
     "\n"
     "Modules: sys, os, time, json, re, math, random, binascii, hashlib, heapq,\n"
-    "collections, struct, errno, gc, select, asyncio, micropython, and tinydesk:\n"
+    "collections, struct, errno, gc, select, asyncio, micropython, machine and\n"
+    "neopixel (pins and buses, for root), and tinydesk:\n"
     "  tinydesk.shell('ls -l')               run a shell command, get its status\n"
     "  tinydesk.log('text')                  add a line to the Log Viewer\n"
     "  tinydesk.mqtt_publish(topic, payload) publish on the connected broker\n"
@@ -561,7 +563,8 @@ static int cmd_py(tdsh_session_t *session, int argc, char **argv)
     else
         status = run_protected(session->cwd, NULL, NULL, 0, NULL);
 
-    gc_sweep_all();   /* runs finalisers: closes files the script left open */
+    td_machine_release();   /* pins, buses and interrupts the script opened */
+    gc_sweep_all();         /* runs finalisers: closes files the script left open */
     mp_deinit();
     exec_free_all();
     heap_free(heap);

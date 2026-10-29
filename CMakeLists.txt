@@ -189,8 +189,10 @@ if(TD_WITH_TDSH AND TD_WITH_PYTHON)
     include(${TD_MICROPYTHON_DIR}/sources.cmake)
     set(TD_PY_PORT_SRCS
         ports/common/python/td_py.c
+        ports/common/python/td_py_machine.c
         ports/common/python/td_py_mod.c
         ports/common/python/td_py_vfs.c
+        ports/common/python/hw/td_py_hw_host.c   # machine: no hardware on a PC
     )
     # One library: the interpreter's module table refers to the tinydesk
     # module in the port files.
@@ -313,4 +315,12 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_columns PROPERTIES C_STANDARD 11)
     target_compile_options(test_columns PRIVATE ${TD_WARNINGS})
     add_test(NAME test_columns COMMAND test_columns)
+    if(TD_WITH_TDSH AND TD_WITH_PYTHON)
+        add_executable(test_py_pins tests/test_py_pins.c ports/common/python/hw/td_py_hw_pins.c)
+        target_include_directories(test_py_pins PRIVATE ports/common/python/hw)
+        target_link_libraries(test_py_pins PRIVATE tdsh)
+        set_target_properties(test_py_pins PROPERTIES C_STANDARD 11)
+        target_compile_options(test_py_pins PRIVATE ${TD_WARNINGS})
+        add_test(NAME test_py_pins COMMAND test_py_pins)
+    endif()
 endif()

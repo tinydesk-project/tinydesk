@@ -46,6 +46,8 @@ static const char *const s_modules[][2] = {
     {"heapq", "heappush heappop heapify"},
     {"errno", "errorcode ENOENT EEXIST EINVAL EIO EACCES EBADF ENOMEM ETIMEDOUT"},
     {"select", "poll POLLIN POLLOUT POLLERR POLLHUP"},
+    {"machine", "Pin ADC PWM I2C SoftI2C SPI SoftSPI UART time_pulse_us bitstream unique_id freq idle"},
+    {"neopixel", "NeoPixel"},
 };
 #define MODULE_COUNT ((int)(sizeof(s_modules) / sizeof(s_modules[0])))
 
