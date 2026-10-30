@@ -38,31 +38,39 @@ int main(void)
     CHECK(owner_is(20, TD_HW_CHIP_ESP32, NULL));   /* eth.spi_mhz */
     CHECK(owner_is(25, TD_HW_CHIP_ESP32, NULL));
 
-    /* The desktop's link: UART0 on the classic ESP32, USB on the C6. */
+    /* The desktop's link: UART0 on the classic ESP32 and the ESP32-S3, USB on the C6. */
     CHECK(owner_is(1, TD_HW_CHIP_ESP32, "the desktop's serial link"));
     CHECK(owner_is(3, TD_HW_CHIP_ESP32, "the desktop's serial link"));
     CHECK(owner_is(1, TD_HW_CHIP_ESP32C6, NULL));
     CHECK(owner_is(12, TD_HW_CHIP_ESP32C6, "USB, the desktop's link"));
     CHECK(owner_is(13, TD_HW_CHIP_ESP32C6, "USB, the desktop's link"));
     CHECK(owner_is(12, TD_HW_CHIP_ESP32, NULL));
+    CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, "the desktop's serial link"));
+    CHECK(owner_is(44, TD_HW_CHIP_ESP32S3, "the desktop's serial link"));
+    CHECK(owner_is(1, TD_HW_CHIP_ESP32S3, NULL));
 
     /* UARTs: RS-485's, and UART0 as the classic ESP32's console. */
     CHECK(td_hw_uart_kept(1, TD_HW_CHIP_ESP32C6));
     CHECK(!td_hw_uart_kept(2, TD_HW_CHIP_ESP32));
     CHECK(td_hw_uart_kept(0, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32C6));
+    CHECK(td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
 
     /* A console on other pins frees UART0's usual ones. */
     CHECK_EQ(tdsh_board_load("console.uart = 2\nconsole.tx = 22\nconsole.rx = 21\n", NULL), 0);
     CHECK(owner_is(1, TD_HW_CHIP_ESP32, NULL));
+    CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, NULL));
     CHECK(owner_is(22, TD_HW_CHIP_ESP32, "console.tx"));
     CHECK(td_hw_uart_kept(2, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32));
+    CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
 
     CHECK(td_hw_pin_strapping(0, TD_HW_CHIP_ESP32));
     CHECK(td_hw_pin_strapping(12, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_pin_strapping(25, TD_HW_CHIP_ESP32));
     CHECK(td_hw_pin_strapping(9, TD_HW_CHIP_ESP32C6));
     CHECK(!td_hw_pin_strapping(0, TD_HW_CHIP_ESP32C6));
+    CHECK(td_hw_pin_strapping(46, TD_HW_CHIP_ESP32S3));
+    CHECK(!td_hw_pin_strapping(2, TD_HW_CHIP_ESP32S3));
     return TD_TEST_RESULT();
 }

@@ -26,6 +26,9 @@ idf_component_register(
 )
 
 target_compile_definitions(${COMPONENT_LIB} PUBLIC TD_WITH_PYTHON)
+if(IDF_TARGET STREQUAL "esp32s3")
+    target_compile_definitions(${COMPONENT_LIB} PUBLIC TD_PY_ESP32S3)   # the banner's chip name
+endif()
 set_source_files_properties(${TD_MICROPYTHON_SRCS} PROPERTIES COMPILE_OPTIONS "-w")   # third-party code
 # vfs_posix_file.c also defines sys.stdin/stdout/stderr on file descriptors
 # 0-2 (the UART console). Rename them, so sys_stdio_mphal.c's, which go

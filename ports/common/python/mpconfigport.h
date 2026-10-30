@@ -1,8 +1,8 @@
 /*
  * mpconfigport.h - MicroPython configuration for TinyDesk's `py` command.
  *
- * One configuration for every TinyDesk target (ESP32-C6, ESP32, Linux,
- * Windows), so a script behaves the same on a board and on a PC, and the
+ * One configuration for every TinyDesk target (ESP32-C6, ESP32, ESP32-S3,
+ * Linux, Windows), so a script behaves the same on a board and on a PC, and the
  * generated headers in third_party/micropython/genhdr fit all of them.
  * After changing anything here, or a MP_QSTR_ / MP_REGISTER_ in this
  * directory, regenerate them: see tools/micropython/README.md.
@@ -125,13 +125,17 @@ extern void td_hw_atomic_end(uint32_t state);
 #endif
 
 /* Precompiled .mpy files (mpy-cross), and @micropython.native/viper where
- * MicroPython has an emitter for the chip: the classic ESP32 (Xtensa) and
- * x86-64 Linux. Not the ESP32-C6, whose firmware keeps RAM non-executable,
- * nor Windows (no emitter for its x64 calling convention). Machine code can
+ * MicroPython has an emitter for the chip: the ESP32 and the ESP32-S3
+ * (Xtensa), the ESP32-C6 (RISC-V) and x86-64 Linux. The S3's and the C6's
+ * firmware turn their memory protection off for it (sdkconfig.defaults).
+ * Not Windows: no emitter for its x64 calling convention. Machine code can
  * reach all of RAM, so td_py_commit_exec() lets only root run it. */
 #define MICROPY_PERSISTENT_CODE_LOAD (1)
 #if defined(__XTENSA__) || defined(TD_PY_GENHDR)
 #define MICROPY_EMIT_XTENSAWIN (1)
+#endif
+#if defined(__riscv) || defined(TD_PY_GENHDR)
+#define MICROPY_EMIT_RV32 (1)
 #endif
 #if (defined(__x86_64__) && !defined(_WIN32)) || defined(TD_PY_GENHDR)
 #define MICROPY_EMIT_X64 (1)
@@ -152,7 +156,9 @@ extern void *td_py_commit_exec(void *buf, size_t len, void *reloc);
 #define MICROPY_PY_MICROPYTHON_MEM_INFO          (1)
 #define MICROPY_HW_BOARD_NAME                    "TinyDesk"
 /* A string literal (the banner pastes it): the chip TinyDesk runs on. */
-#if defined(__XTENSA__)
+#if defined(TD_PY_ESP32S3)
+#define MICROPY_HW_MCU_NAME "ESP32-S3"
+#elif defined(__XTENSA__)
 #define MICROPY_HW_MCU_NAME "ESP32"
 #elif defined(__riscv)
 #define MICROPY_HW_MCU_NAME "ESP32-C6"

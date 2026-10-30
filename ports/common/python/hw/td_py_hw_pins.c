@@ -35,9 +35,10 @@ const char *td_hw_pin_owner(int pin, td_hw_chip_t chip)
         if (pin_key(key) && end && end != value && !*end && v == pin)
             return key;
     }
-    if (chip == TD_HW_CHIP_ESP32)
+    if (chip == TD_HW_CHIP_ESP32 || chip == TD_HW_CHIP_ESP32S3)
     {   /* the desktop's UART0 on its default pins */
-        if ((pin == 1 && !tdsh_board_get("console.tx")) || (pin == 3 && !tdsh_board_get("console.rx")))
+        int tx = chip == TD_HW_CHIP_ESP32 ? 1 : 43, rx = chip == TD_HW_CHIP_ESP32 ? 3 : 44;
+        if ((pin == tx && !tdsh_board_get("console.tx")) || (pin == rx && !tdsh_board_get("console.rx")))
             return "the desktop's serial link";
     }
     else if (chip == TD_HW_CHIP_ESP32C6)
@@ -54,6 +55,8 @@ bool td_hw_pin_strapping(int pin, td_hw_chip_t chip)
         return pin == 0 || pin == 2 || pin == 5 || pin == 12 || pin == 15;
     if (chip == TD_HW_CHIP_ESP32C6)
         return pin == 8 || pin == 9 || pin == 15;
+    if (chip == TD_HW_CHIP_ESP32S3)
+        return pin == 0 || pin == 3 || pin == 45 || pin == 46;
     return false;
 }
 
@@ -63,5 +66,6 @@ bool td_hw_uart_kept(int id, td_hw_chip_t chip)
     for (size_t i = 0; i < sizeof(keys) / sizeof(keys[0]); i++)
         if (tdsh_board_get(keys[i]) && tdsh_board_int(keys[i], -1) == id)
             return true;
-    return chip == TD_HW_CHIP_ESP32 && id == 0 && !tdsh_board_get("console.uart");   /* the console */
+    return (chip == TD_HW_CHIP_ESP32 || chip == TD_HW_CHIP_ESP32S3) && id == 0 &&
+           !tdsh_board_get("console.uart");   /* the console */
 }

@@ -2,9 +2,9 @@
  * td_py_hw_esp.c - td_py_hw.h on the ESP32 boards (ESP-IDF drivers).
  *
  * The rules for pins: a script may not use a pin the chip reserved (flash,
- * PSRAM, a driver's), the desktop's link (UART0 on the classic ESP32, USB
- * on the ESP32-C6), or any pin of the board configuration (console.*,
- * rs485.*, eth.*, sd.*). Strapping pins get a warning. Peripherals the
+ * PSRAM, a driver's), the desktop's link (UART0 on the classic ESP32 and the
+ * ESP32-S3, USB on the ESP32-C6), or any pin of the board configuration
+ * (console.*, rs485.*, eth.*, sd.*). Strapping pins get a warning. Peripherals the
  * firmware has open (a UART with a driver, an initialised SPI bus) are
  * refused too. Everything is undone by td_hw_release_all().
  *
@@ -59,6 +59,8 @@ static const char *esp_fail(const char *what, esp_err_t err)
 #define CHIP TD_HW_CHIP_ESP32
 #elif CONFIG_IDF_TARGET_ESP32C6
 #define CHIP TD_HW_CHIP_ESP32C6
+#elif CONFIG_IDF_TARGET_ESP32S3
+#define CHIP TD_HW_CHIP_ESP32S3
 #else
 #define CHIP TD_HW_CHIP_OTHER
 #endif

@@ -46,6 +46,11 @@ CONFIG_MBEDTLS_DYNAMIC_BUFFER=y
 # Static buffers of tinydesk and TinyDesk Shell go to PSRAM (main/extram.lf).
 CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
 
+# Memory protection off, as on the classic ESP32 (which has none): py runs
+# @micropython.native/viper code and native .mpy files (root only) from
+# internal RAM, which the protection keeps non-executable.
+CONFIG_ESP_SYSTEM_MEMPROT_FEATURE=n
+
 # Task Manager: task list and CPU shares (a few bytes per task).
 CONFIG_FREERTOS_USE_TRACE_FACILITY=y
 CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y

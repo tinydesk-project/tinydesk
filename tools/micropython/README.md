@@ -41,8 +41,8 @@ Names the generator cannot see in use go in `qstrdefsport.h` instead:
 the ones from code that needs mbedTLS (`hashlib.sha1`, `hashlib.md5`), and
 names with escaped characters such as `MP_QSTR__slash_lib` ("/lib").
 The native-code emitters are per chip; the `Makefile` defines
-`TD_PY_GENHDR`, which turns on both that TinyDesk uses (Xtensa and x64),
-so the tables have the names of each.
+`TD_PY_GENHDR`, which turns on all that TinyDesk uses (Xtensa, RISC-V and
+x64), so the tables have the names of each.
 
 The generator reads `ports/common/python/*.c` (and the `td_py_machine_*.h`
 files that MicroPython's `extmod/machine_*.c` include), so those must not

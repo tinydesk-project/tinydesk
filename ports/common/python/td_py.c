@@ -52,9 +52,9 @@
 #endif
 #endif
 
-/* Default heap sizes. With PSRAM (ESP32-WROVER) the heap goes there and
- * can be large; without it (ESP32-C6, 4 MB ESP32) it comes out of internal
- * RAM, and RAM_RESERVE is left for Wi-Fi, SSH and the desktop. */
+/* Default heap sizes. With PSRAM (ESP32-WROVER, ESP32-S3) the heap goes
+ * there and can be large; without it (ESP32-C6, 4 MB ESP32) it comes out
+ * of internal RAM, and RAM_RESERVE is left for Wi-Fi, SSH and the desktop. */
 #define HEAP_PSRAM_KB  512
 #define HEAP_RAM_KB    64
 #define HEAP_MIN_KB    16
