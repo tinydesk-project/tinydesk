@@ -7,8 +7,8 @@ Two editions, like a desktop and a server install of an operating system:
     TinyDesk Shell     the shell on its own, on the board's console
 
 Run it after building the ESP-IDF projects (ports/esp32c6, ports/esp32,
-ports/esp32-4mb, and for the shell edition third_party/tdsh and
-third_party/tdsh/projects/esp32). For each board it merges what
+ports/esp32-4mb, ports/esp32s3, and for the shell edition third_party/tdsh,
+third_party/tdsh/projects/esp32 and third_party/tdsh/projects/esp32s3). For each board it merges what
 `idf.py flash` writes (read from build/flash_args) into one "factory"
 image, and writes a flat set of files, as they are attached to a GitHub
 release:
@@ -57,10 +57,12 @@ EDITIONS = [
         ("esp32c6", "ports/esp32c6", "esp32c6", "ESP32-C6", "ESP32-C6 with 8 MB flash (e.g. ESP32-C6-DevKitC-1-N8)"),
         ("esp32", "ports/esp32", "esp32", "ESP32", "ESP32 with 16 MB flash and PSRAM (e.g. ESP32-WROVER-IE N16R8)"),
         ("esp32-4mb", "ports/esp32-4mb", "esp32", "ESP32", "ESP32 with 4 MB flash, no PSRAM (e.g. ESP32-WROOM-32 DevKitC)"),
+        ("esp32s3", "ports/esp32s3", "esp32s3", "ESP32-S3", "ESP32-S3 with 16 MB flash and 8 MB Octal PSRAM (e.g. ESP32-S3-DevKitC-1-N16R8)"),
     ]),
     ("shell", "TinyDesk Shell", False, [
         ("esp32c6", "third_party/tdsh", "esp32c6", "ESP32-C6", "ESP32-C6 with 8 MB flash"),
         ("esp32", "third_party/tdsh/projects/esp32", "esp32", "ESP32", "any ESP32 with 4 MB flash or more (PSRAM optional)"),
+        ("esp32s3", "third_party/tdsh/projects/esp32s3", "esp32s3", "ESP32-S3", "any ESP32-S3 with 4 MB flash or more (Octal PSRAM optional)"),
     ]),
 ]
 
@@ -273,8 +275,8 @@ def main():
         "To update a desktop board that is set up, use Software Update / `ota install`.",
         "",
         "After installing: open the board's serial port in a terminal (UTF-8; the",
-        "desktop needs 921600 baud on the ESP32, the shell 115200; any speed on the",
-        "ESP32-C6's USB port) and press a key. You start as root; the factory root",
+        "desktop needs 921600 baud on the ESP32 and the ESP32-S3's USB-UART port, the",
+        "shell 115200; any speed on the ESP32-C6's USB port) and press a key. You start as root; the factory root",
         "password is TinyDesk. Change it locally with passwd before remote access.",
         "Telnet starts disabled; enable it explicitly in Network (root login only).",
         "SSH provides a separate encrypted shell, not the windowed desktop (the",

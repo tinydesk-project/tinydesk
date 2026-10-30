@@ -52,8 +52,8 @@ Factory flashing can erase user data: back up an existing board first.
 
 Use a UTF-8 terminal with ANSI/VT cursor control and xterm mouse reporting,
 or the web terminal above. ESP32-C6 uses its built-in USB port (any speed);
-the classic ESP32 Desktop edition uses 921600 baud, the Shell edition
-115200. On the local console, run `passwd` as root (initial password:
+the classic ESP32 and the ESP32-S3 (its USB-UART port) use 921600 baud in
+the Desktop edition and 115200 in the Shell edition. On the local console, run `passwd` as root (initial password:
 `TinyDesk`). Remote access is blocked until that password changes. Telnet
 starts disabled; enable it explicitly in Network only on a trusted network.
 It is unencrypted and root-only because it takes over the existing desktop.
@@ -70,6 +70,7 @@ board reboots. Remote takeover is refused while physical recovery is active.
 | ESP32-C6 | 8 MB flash, built-in USB Serial/JTAG | up to 80×25 | |
 | ESP32 with PSRAM | 16 MB flash plus PSRAM (e.g. WROVER-IE N16R8) | up to 256×96 | |
 | ESP32 4 MB | 4 MB flash, no PSRAM needed (e.g. WROOM-32) | up to 80×25 | no SSH server, no over-the-air updates |
+| ESP32-S3 | 16 MB flash plus 8 MB Octal PSRAM (e.g. ESP32-S3-DevKitC-1 N16R8) | up to 256×96 | |
 | Windows, Linux | x86_64 PC | up to 400×150 | no Wi-Fi, OTA or users (the PC's network is used) |
 
 Measured on our boards with this firmware (About → Free RAM, idle desktop
@@ -80,6 +81,7 @@ after start-up, Wi-Fi connected unless noted):
 | ESP32-C6 | 1.83 MB (2.5 MB slot, 27 % free) | about 167 KB |
 | ESP32 with PSRAM | 1.73 MB (3 MB slot, 42 % free) | about 155 KB internal + 3.2 MB PSRAM |
 | ESP32 4 MB | 1.66 MB (2.5 MB slot, 34 % free) | about 96 KB, Wi-Fi not connected |
+| ESP32-S3 | 1.67 MB (3 MB slot, 44 % free) | about 203 KB internal + 7.2 MB PSRAM, Wi-Fi not connected |
 
 ## What is in this preview
 

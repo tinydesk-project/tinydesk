@@ -71,7 +71,7 @@ Maintained by their authors, not built or tested here:
 ## First connection
 
 Open the board's serial port (any speed on the ESP32-C6; 921600 baud for
-the desktop on the ESP32, 115200 for the shell) and press a key. You start
+the desktop on the ESP32 and ESP32-S3, 115200 for the shell) and press a key. You start
 as root. Run `passwd` locally (old password: **`TinyDesk`**) before enabling
 remote access. Telnet starts **disabled** and requires an explicit Network
 setting. Telnet, SSH and FTP refuse remote authentication while the factory

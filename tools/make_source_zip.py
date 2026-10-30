@@ -59,8 +59,8 @@ terminal with ANSI/VT cursor control and xterm mouse reporting.
 
 | Folder | What it is | Where it lives |
 | --- | --- | --- |
-| `tinydesk/` | the desktop: portable C11 core (`src/`, `include/`), apps (`apps/`), protocols (`proto/`), ports (`ports/esp_idf` shared by `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb`; host), tools, tests | the `tinydesk` git repository |
-| `tinydesk/third_party/tdsh/` | TinyDesk Shell (`tdsh`), the shell inside the desktop's Terminal and a standalone firmware of its own (`projects/esp32` for the classic ESP32) | the `tinydesk-shell` repository, a git submodule of `tinydesk` |
+| `tinydesk/` | the desktop: portable C11 core (`src/`, `include/`), apps (`apps/`), protocols (`proto/`), ports (`ports/esp_idf` shared by `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb`, `ports/esp32s3`; host), tools, tests | the `tinydesk` git repository |
+| `tinydesk/third_party/tdsh/` | TinyDesk Shell (`tdsh`), the shell inside the desktop's Terminal and a standalone firmware of its own (`projects/esp32` for the classic ESP32, `projects/esp32s3` for the ESP32-S3) | the `tinydesk-shell` repository, a git submodule of `tinydesk` |
 
 Good starting points:
 
