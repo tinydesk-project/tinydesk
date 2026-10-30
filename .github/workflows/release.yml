@@ -3,9 +3,9 @@
 # and its web installer are hosted separately: the site's
 # tools/fetch_release.py copies a release into it.
 #
-#   TinyDesk Desktop: ESP32-C6, ESP32 (PSRAM), ESP32 (4 MB) firmware;
+#   TinyDesk Desktop: ESP32-C6, ESP32 (PSRAM), ESP32 (4 MB), ESP32-S3 firmware;
 #                     Linux and Windows programs
-#   TinyDesk Shell:   ESP32-C6, ESP32 firmware; Linux and Windows programs
+#   TinyDesk Shell:   ESP32-C6, ESP32, ESP32-S3 firmware; Linux and Windows programs
 name: release
 
 on:
@@ -129,8 +129,10 @@ jobs:
           (cd ports/esp32c6 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd ports/esp32 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd ports/esp32-4mb && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
+          (cd ports/esp32s3 && idf.py set-target esp32s3 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd third_party/tdsh && idf.py build)
           (cd third_party/tdsh/projects/esp32 && idf.py build)
+          (cd third_party/tdsh/projects/esp32s3 && idf.py set-target esp32s3 && idf.py build)
       - name: Package
         shell: bash
         run: |
