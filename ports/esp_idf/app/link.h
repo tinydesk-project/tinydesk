@@ -4,7 +4,7 @@
  *
  *   ESP32-C6: ports/esp32c6/main/link_usj.c  (built-in USB Serial/JTAG)
  *   ESP32:    link_uart.c in this folder  (UART0 through the USB-UART chip;
- *             ports/esp32 and ports/esp32-4mb)
+ *             ports/esp32, ports/esp32-4mb and ports/esp32s3)
  *
  * hal_mux.c builds the tinydesk HAL on top of it (and hands the desktop to
  * a Telnet client while one is logged in).

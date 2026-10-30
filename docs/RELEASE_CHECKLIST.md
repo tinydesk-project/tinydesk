@@ -8,8 +8,9 @@ https://tinydesk-project.github.io/.
 ## Tests before a release
 
 - Host CMake/CTest on Linux and Windows, and all POSIX shell tests.
-- Builds: Desktop for ESP32-C6 8 MB, ESP32 16 MB with PSRAM, and ESP32 4 MB;
-  the Shell edition for ESP32-C6 and ESP32; the Windows and Linux programs
+- Builds: Desktop for ESP32-C6 8 MB, ESP32 16 MB with PSRAM, ESP32 4 MB and
+  ESP32-S3 16 MB with Octal PSRAM; the Shell edition for ESP32-C6, ESP32 and
+  ESP32-S3; the Windows and Linux programs
   of both editions (`tinydesk.exe`, `tdsh.exe`, and their Linux builds).
 - The source revision and SHA-256 of every tested image are recorded. An
   older dist folder does not count for changed source.
@@ -39,13 +40,13 @@ https://tinydesk-project.github.io/.
 2. Record the tested submodule revision in the desktop repository and push.
    CI must succeed from a clean recursive checkout.
 3. Set the version: `include/tinydesk/td.h` (`TD_VERSION`), `PROJECT_VER`
-   in `ports/esp32c6`, `ports/esp32` and `ports/esp32-4mb`, the README line,
+   in `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb` and `ports/esp32s3`, the README line,
    `RELEASE_NOTES.md`, and the docs site's changelog and `api/core.md`. The
    site's cover and installer take theirs from the release when the Pages
    workflow runs. Then tag the tested revision. The release workflow calls
    CI, tests its release host binaries (MQTT over TLS must be built in),
    builds firmware, and creates a **draft prerelease**.
-4. Review the draft: version, all five board/edition images, the app images
+4. Review the draft: version, all seven board/edition images, the app images
    and update feeds of the boards that update over the air, manifests, the
    four PC downloads, checksums, source and licence material, and the
    release text.

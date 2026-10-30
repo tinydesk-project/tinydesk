@@ -1,0 +1,12 @@
+# tinydesk's and TinyDesk Shell's static buffers (screen, terminal,
+# shell session) go to PSRAM. None of them is used from an ISR or while the
+# flash cache is off.
+[mapping:td_extram_tinydesk]
+archive: libtinydesk.a
+entries:
+    * (extram_bss)
+
+[mapping:td_extram_tdsh]
+archive: libtdsh.a
+entries:
+    * (extram_bss)

@@ -1,5 +1,5 @@
 # The TinyDesk application shared by the ESP-IDF board projects
-# (ports/esp32c6, ports/esp32, ports/esp32-4mb). A board's main/CMakeLists.txt
+# (ports/esp32c6, ports/esp32, ports/esp32-4mb, ports/esp32s3). A board's main/CMakeLists.txt
 # includes this file and registers its main component with these sources and
 # its desktop link (link_usj.c on the ESP32-C6, link_uart.c here on the
 # classic ESP32):
