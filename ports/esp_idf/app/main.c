@@ -44,7 +44,7 @@
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
 
-#if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
 #define UI_TASK_STACK 8192   /* Xtensa frames are bigger; RAM is plentiful (PSRAM) */
 #else
 #define UI_TASK_STACK 5120   /* measured on the C6: about 1.8 KB used */
@@ -322,8 +322,10 @@ static void fill_sysinfo(void)
 {
     esp_chip_info_t chip;
     esp_chip_info(&chip);
-    const char *model = chip.model == CHIP_ESP32 ? "ESP32" : chip.model == CHIP_ESP32C6 ? "ESP32-C6"
-                                                                                        : CONFIG_IDF_TARGET;
+    const char *model = chip.model == CHIP_ESP32     ? "ESP32"
+                        : chip.model == CHIP_ESP32C6 ? "ESP32-C6"
+                        : chip.model == CHIP_ESP32S3 ? "ESP32-S3"
+                                                     : CONFIG_IDF_TARGET;
     snprintf(s_chip, sizeof(s_chip), "%s rev %d.%d, %d core%s", model, chip.revision / 100, chip.revision % 100,
              chip.cores, chip.cores == 1 ? "" : "s");
     snprintf(s_sdk, sizeof(s_sdk), "ESP-IDF %s", esp_get_idf_version());

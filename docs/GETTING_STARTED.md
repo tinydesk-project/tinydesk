@@ -20,9 +20,9 @@ Host files live in `tinydesk_fs/` beneath the working directory.
 
 ## On an ESP32
 
-Use ESP-IDF 5.3.1. Choose `ports/esp32c6` for an 8 MB C6,
-`ports/esp32` for a 16 MB classic ESP32 with PSRAM, or `ports/esp32-4mb`
-for a 4 MB classic ESP32. Check the board's flash and PSRAM before flashing.
+Use ESP-IDF 5.3.1. Choose `ports/esp32s3` for a 16 MB S3 with Octal PSRAM,
+`ports/esp32c6` for an 8 MB C6, `ports/esp32` for a 16 MB classic ESP32 with PSRAM,
+or `ports/esp32-4mb` for a 4 MB classic ESP32. Check the board's flash and PSRAM before flashing.
 
 In the selected directory, copy `board.example.conf` to `board.conf` only
 if you need to change the wiring. Review the commented keys for RS-485,

@@ -91,12 +91,13 @@ jobs:
           idf.py set-target esp32c6
           idf.py build
           idf.py size
-      - name: Build the classic ESP32 firmware (with and without PSRAM)
+      - name: Build the classic ESP32 and ESP32-S3 firmware
         shell: bash
         run: |
           . $IDF_PATH/export.sh
           (cd ports/esp32 && idf.py build && idf.py size)
           (cd ports/esp32-4mb && idf.py build && idf.py size)
+          (cd ports/esp32s3 && idf.py set-target esp32s3 && idf.py build && idf.py size)
       - name: Build the TinyDesk Shell firmware (ESP32-C6, ESP32)
         shell: bash
         run: |

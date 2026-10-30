@@ -48,6 +48,7 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 
 | Desktop target | Hardware | Console / limits |
 | --- | --- | --- |
+| ESP32-S3 with PSRAM | 16 MB flash, Octal PSRAM | USB-UART, 921600 baud |
 | ESP32-C6 | 8 MB flash | Built-in USB Serial/JTAG |
 | Classic ESP32 with PSRAM | 16 MB flash, PSRAM required | USB-UART, 921600 baud |
 | Classic ESP32, 4 MB | PSRAM optional | USB-UART, 921600 baud; 80×25, no SSH server or OTA |
@@ -91,6 +92,7 @@ cd tinydesk
 | Target | Commands |
 | --- | --- |
 | Desktop on the PC (Linux, macOS, WSL, Windows with MinGW) | `cmake -B build -G Ninja && cmake --build build && ./build/tinydesk` |
+| ESP32-S3 with PSRAM, ESP-IDF 5.3.1 | `cd ports/esp32s3 && idf.py build && idf.py -p PORT -b 921600 flash` |
 | ESP32-C6, ESP-IDF 5.3.1 | `cd ports/esp32c6 && idf.py build && idf.py -p PORT flash` |
 | Classic ESP32 with PSRAM, ESP-IDF 5.3.1 | `cd ports/esp32 && idf.py build && idf.py -p PORT -b 921600 flash` |
 | Classic ESP32, 4 MB flash, no PSRAM | `cd ports/esp32-4mb && idf.py build && idf.py -p PORT -b 921600 flash` |
