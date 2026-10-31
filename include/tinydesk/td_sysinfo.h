@@ -189,9 +189,16 @@ typedef struct
     int16_t cpu_tenths;        /* share of all cores since the previous call, in 0.1 %; -1 unknown */
 } td_task_info_t;
 
+/* A file a port puts on every new Desktop (td_sysinfo_t.desktop_files). */
 typedef struct
 {
-    const char *platform;      /* "ESP32-C6", "Windows host", ... */
+    const char *name;          /* "Credits.txt"; NULL ends the list */
+    const char *text;          /* the file's contents */
+} td_desktop_file_t;
+
+typedef struct
+{
+    const char *platform;     /* "ESP32-C6", "Windows host", ... */
     const char *chip;          /* e.g. "ESP32-C6 rev 0.1, 1 core" */
     const char *sdk_version;   /* e.g. ESP-IDF version */
 
@@ -247,6 +254,12 @@ typedef struct
 
     /* Optional extra "About" line, e.g. the embedded shell version. */
     const char *extra;
+
+    /* Optional files written next to Welcome.txt when a user's Desktop
+     * folder is first created, e.g. a port's Credits.txt. An array ended by
+     * an entry with name NULL; names are plain file names (no '/' or '\'),
+     * others are skipped. */
+    const td_desktop_file_t *desktop_files;
 } td_sysinfo_t;
 
 /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

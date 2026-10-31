@@ -423,6 +423,21 @@ static const char s_welcome[] =
     "The shell sees this folder as ~/Desktop. Every user has their own.\n"
     "Save with Ctrl+S, close with Ctrl+W.\n";
 
+/* The port's own files for a new Desktop (td_sysinfo_t.desktop_files). */
+static void write_port_files(void)
+{
+    const td_desktop_file_t *d = td_sysinfo()->desktop_files;
+    for (; d && d->name; d++)
+    {
+        if (!td_valid_name(d->name) || !d->text)
+            continue;
+        char path[PATH_LEN];
+        item_path(path, d->name);
+        if (path[0])
+            fs()->write(path, d->text, (int)strlen(d->text));
+    }
+}
+
 void td_desktop_folder_init(void)
 {
     const td_fs_ops_t *f = fs();
@@ -445,6 +460,7 @@ void td_desktop_folder_init(void)
             char path[PATH_LEN];
             item_path(path, "Welcome.txt");
             f->write(path, s_welcome, (int)sizeof(s_welcome) - 1);
+            write_port_files();
         }
     }
     s_count = 0;                 /* a different user: forget the old icons */

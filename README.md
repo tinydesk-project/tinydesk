@@ -135,5 +135,6 @@ for the list.
 ## Contributing
 
 Bug reports and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+The people who made TinyDesk are listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 Security problems: please report them privately (GitHub → Security →
 Report a vulnerability), see [SECURITY.md](SECURITY.md).
