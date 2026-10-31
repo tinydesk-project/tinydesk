@@ -93,10 +93,10 @@ after start-up, Wi-Fi connected unless noted):
 
 | Board | Firmware size (app slot) | Free RAM |
 | --- | --- | --- |
-| ESP32-C6 | 1.83 MB (2.5 MB slot, 27 % free) | about 167 KB |
-| ESP32 with PSRAM | 1.73 MB (3 MB slot, 42 % free) | about 155 KB internal + 3.2 MB PSRAM |
-| ESP32 4 MB | 1.66 MB (2.5 MB slot, 34 % free) | about 96 KB, Wi-Fi not connected |
-| ESP32-S3 | 1.67 MB (3 MB slot, 44 % free) | about 203 KB internal + 7.2 MB PSRAM, Wi-Fi not connected |
+| ESP32-C6 | 2.22 MB (2.5 MB slot, 11 % free) | about 113 KB |
+| ESP32 with PSRAM | 2.07 MB (3 MB slot, 31 % free) | about 155 KB internal + 3.2 MB PSRAM |
+| ESP32 4 MB | 1.99 MB (2.5 MB slot, 20 % free) | about 59 KB |
+| ESP32-S3 | 2.00 MB (3 MB slot, 33 % free) | about 189 KB internal + 7.2 MB PSRAM |
 
 ## What is in this preview
 
