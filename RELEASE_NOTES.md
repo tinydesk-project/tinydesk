@@ -82,7 +82,7 @@ board reboots. Remote takeover is refused while physical recovery is active.
 
 | Desktop target | Required hardware | Screen | Limits |
 | --- | --- | --- | --- |
-| ESP32-C6 | 8 MB flash, built-in USB Serial/JTAG | up to 80×25 | |
+| ESP32-C6 | 8 MB flash, built-in USB Serial/JTAG | up to 80×25 | no SSH server in this release (see Known issues) |
 | ESP32 with PSRAM | 16 MB flash plus PSRAM (e.g. WROVER-IE N16R8) | up to 256×96 | |
 | ESP32 4 MB | 4 MB flash, no PSRAM needed (e.g. WROOM-32) | up to 80×25 | no SSH server, no over-the-air updates |
 | ESP32-S3 | 16 MB flash plus 8 MB Octal PSRAM (e.g. ESP32-S3-DevKitC-1 N16R8) | up to 256×96 | |
@@ -120,6 +120,13 @@ after start-up, Wi-Fi connected unless noted):
 - Board pins come from a configuration file (`board` command), not from
   the code.
 - Tests gate release builds; every release starts as a draft pre-release.
+
+## Known issues
+
+- **SSH on the ESP32-C6:** `ssh start` refuses with "insufficient internal
+  RAM" on the ESP32-C6 (it has done so since 0.1.0). A fix is ready and
+  tested and comes in a later release. The other boards with SSH are not
+  affected.
 
 ## Licences
 
