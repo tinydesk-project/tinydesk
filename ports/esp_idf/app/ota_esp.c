@@ -62,6 +62,8 @@ static int64_t s_start_us;
 #define UPDATE_SITE "https://tinydesk-project.github.io/install/"
 #if CONFIG_IDF_TARGET_ESP32C6
 #define UPDATE_BOARD "esp32c6"
+#elif CONFIG_IDF_TARGET_ESP32S3
+#define UPDATE_BOARD "esp32s3"
 #else
 #define UPDATE_BOARD "esp32"          /* the classic ESP32 with PSRAM; the 4 MB one has no OTA */
 #endif

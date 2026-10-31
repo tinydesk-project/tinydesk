@@ -5,7 +5,8 @@
 #   ctest --test-dir build --output-on-failure
 #
 # The ESP32 firmware is built by separate ESP-IDF projects: ports/esp32c6,
-# ports/esp32 and ports/esp32-4mb, with their shared code in ports/esp_idf.
+# ports/esp32, ports/esp32-4mb and ports/esp32s3, with their shared code in
+# ports/esp_idf.
 cmake_minimum_required(VERSION 3.16)
 project(tinydesk C)
 
