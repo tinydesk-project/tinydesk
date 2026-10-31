@@ -129,7 +129,7 @@ typedef struct
     /* Bracketed paste being received, and the last one delivered. */
     char *paste;
     int paste_len, paste_cap;
-    uint8_t paste_match;      /* bytes of the end marker seen so far */
+    uint8_t paste_match;      /* bytes held in seq: end marker or size reply */
     bool paste_cut;
     char *pasted;
     int pasted_len;
@@ -147,6 +147,9 @@ void td_input_paste_done(td_input_t *p);
 
 /* Feed one received byte; completed events go to the event queue. */
 void td_input_feed(td_input_t *p, uint8_t byte, uint32_t now_ms);
+
+/* True while a bracketed paste is being received. */
+bool td_input_pasting(const td_input_t *p);
 
 /* Call regularly: turns a lone ESC into the ESC key after
  * TD_ESC_TIMEOUT_MS and discards stalled sequences. */

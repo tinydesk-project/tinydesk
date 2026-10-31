@@ -13,7 +13,7 @@
 #include "freertos/FreeRTOS.h"
 #include "rs485.h"
 
-#define RX_BUFFER        1024
+#define RX_BUFFER        8192         /* a full ring drops USB packets; hold a paste while a frame is drawn */
 #define TX_BUFFER        1024
 #define WRITE_CHUNK      256          /* the driver queues whole chunks or nothing */
 #define WRITE_TIMEOUT_MS 20

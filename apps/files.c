@@ -355,7 +355,7 @@ static void on_delete(td_widget_t *w, void *user)
 static void run_selected(void)
 {
     const entry_t *e = selected();
-    if (!e || e->is_dir || !td_is_script(e->name))
+    if (!e || e->is_dir || !td_is_runnable(e->name))
         return;
     char path[PATH_MAX_];
     join(path, s_cwd, e->name);
@@ -367,7 +367,7 @@ static void entry_menu_chosen(int item, void *user)
 {
     (void)user;
     const entry_t *e = selected();
-    if (e && !e->is_dir && td_is_script(e->name))
+    if (e && !e->is_dir && td_is_runnable(e->name))
     {
         if (item == 0)
         {
@@ -444,7 +444,7 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
             "New folder",
             "Refresh",
         };
-        bool script = !s_entries[row].is_dir && td_is_script(s_entries[row].name);
+        bool script = !s_entries[row].is_dir && td_is_runnable(s_entries[row].name);
         td_menu_popup(ax, ay, script ? items : items + 1, script ? 8 : 7, entry_menu_chosen, NULL);
     }
     else

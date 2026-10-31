@@ -315,9 +315,12 @@ bool td_step(void)
         if (now - s_last_retry_ms >= TD_LINK_RETRY_MS)
             s_resync_pending = true;
     }
-    else if (TD_SIZE_POLL_MS > 0 && now - s_last_size_query_ms >= TD_SIZE_POLL_MS)
+    else if (TD_SIZE_POLL_MS > 0 && now - s_last_size_query_ms >= TD_SIZE_POLL_MS &&
+             !td_input_pasting(&s_input))
     {
-        /* Terminals do not report resizes over a serial line; ask. */
+        /* Terminals do not report resizes over a serial line; ask. Not
+         * during a paste: the reply would arrive in the middle of it (the
+         * parser copes, but there is no need). */
         s_renderer.write_failed = false;
         td_render_query_size(&s_renderer);
         td_render_flush(&s_renderer);

@@ -75,6 +75,12 @@ jobs:
           cat tls.txt
           if grep -q "not available in this build" tls.txt; then echo "::error::built without MQTT over TLS"; exit 1; fi
           grep -q "Connecting to mqtts://127.0.0.1:1" tls.txt
+          # MicroPython (py): the command line does not contain the result;
+          # the imports check the frozen asyncio, neopixel and tdui, hashlib, and that
+          # machine imports on a PC (which has no hardware for it).
+          ../build/tdsim wait=300 key=Enter wait=1500 'type=py -c "import asyncio, hashlib, machine, neopixel, tdui; print(6 * 7, 2 ** 70)"\r' wait=3000 shot > py.txt
+          cat py.txt
+          grep -q "42 1180591620717411303424" py.txt
 
   firmware:
     runs-on: ubuntu-latest
