@@ -160,7 +160,7 @@ A successful build alone is not counted as a hardware test.
   built in), keeps its four board settings in `/etc/board.conf`, and all
   13 apps open.
 
-## 0.2.0 (not released yet)
+## 0.2.0 (2026-10-31)
 
 Release candidate: `tinydesk` f879e28 with `tinydesk-shell` de3a729 (both
 version 0.2.0), built clean with ESP-IDF v5.3.1 on 2026-10-31 in a fresh
@@ -206,6 +206,20 @@ passed on tinydesk#11.
 
 Known issue: `ssh start` refuses on the ESP32-C6 (it asks for about
 160 KB of free internal RAM); see the release notes.
+
+Release: TinyDesk Shell 0.2.0 (tag v0.2.0 on de3a729) and TinyDesk 0.2.0
+(tag v0.2.0 on 3953c42), both built by their release workflows (CI on
+main and on the tags passed) and published as pre-releases. The ten
+firmware images and the PC programs of TinyDesk Shell's release, and the
+26 files of TinyDesk's, were downloaded and matched their
+`SHA256SUMS.txt`; the site's `tools/fetch_release.py` accepted the release
+(ESP32-S3 manifests included) and a local installer offered 0.2.0 for all
+seven board/edition entries. After the site's Pages workflow: the live
+installer's seven manifests say 0.2.0 with the right chip family, its ten
+images match the live `SHA256SUMS.txt`, the update feeds of the ESP32-C6,
+the ESP32 with PSRAM and the ESP32-S3 offer 0.2.0, the cover shows 0.2.0,
+and the web terminal lists the ESP32-S3. Not done for this release: a
+fresh install from the live site on each board.
 
 ## 0.1.6 (2026-10-18)
 
