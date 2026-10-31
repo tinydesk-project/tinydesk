@@ -103,3 +103,14 @@ after start-up, Wi-Fi connected unless noted):
 - Board pins come from a configuration file (`board` command), not from
   the code.
 - Tests gate release builds; every release starts as a draft pre-release.
+
+## Licences
+
+TinyDesk and TinyDesk Shell are MIT. The firmware images also contain
+third-party code under its own licence: wolfSSH and wolfSSL (GPLv3) for the
+SSH/SFTP server, so the firmware as a whole is distributed under the GPLv3;
+and MicroPython (MIT, Copyright (c) 2013-2026 Damien P. George) for the
+`py` command, whose SHA-256 code from
+`lib/crypto-algorithms` is public domain. The source archive has every
+licence text: `LICENSE`, `third_party/tdsh/THIRD_PARTY_LICENSES.md` and
+`third_party/micropython/LICENSE`. The PC programs include theirs.
