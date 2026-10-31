@@ -160,7 +160,54 @@ A successful build alone is not counted as a hardware test.
   built in), keeps its four board settings in `/etc/board.conf`, and all
   13 apps open.
 
-## 0.1.6 (not released yet)
+## 0.2.0 (not released yet)
+
+Release candidate: `tinydesk` f879e28 with `tinydesk-shell` de3a729 (both
+version 0.2.0), built clean with ESP-IDF v5.3.1 on 2026-10-31 in a fresh
+checkout, as the release workflow builds them (`-DTD_USE_EXAMPLE_BOARD=ON`
+for the desktop, no settings built in), and packaged with
+`tools/make_release.py` (seven factory images, three app images with
+their update feeds, seven manifests). The later commits of 0.2.0 change
+only the release notes and this file. Images and their SHA-256:
+
+| Image | SHA-256 |
+| --- | --- |
+| `ports/esp32c6` `tinydesk.bin` | `b469e97a0bcef3e4f4b114e94c1bab69a6176163b3101aafb80e4761afbf7702` |
+| `ports/esp32` `tinydesk.bin` | `9551e578607bb1e35e837104b9fec9e1dddce79c0e8a97ae2715d8a88b899047` |
+| `ports/esp32-4mb` `tinydesk.bin` | `ebcb40dba1c569b4165c4a4002469184eb4f5923fa7df8523b2032f58f6daf83` |
+| `ports/esp32s3` `tinydesk.bin` | `d164401e19d891b79ccad5fdf84b12a8987ac9476e5218dc03c20012225e4142` |
+| Shell `tdsh_c6.bin` (built, not run on a board) | `0ec8e7e1bac5c11b04793289cd9801532cd837d75b1fdbd962f10bdcdf4c2120` |
+| Shell `tdsh_esp32.bin` (built, not run on a board) | `3a464f33f0e6d9c25f15857885172da40d79c19b0b5beb412d263be40118f628` |
+| Shell `tdsh_esp32s3.bin` (built; the same source ran on the S3 before the version bump) | `de191d3fea46a1db9f4bc0e40cb5e82e4b1800742da31afd5f9a0aa4b30f0ada` |
+
+The four desktop images were written with their bootloader, partition
+table and boot selection (no erase), so settings, users and files stayed;
+no whole-flash backup was taken this time. Then, as root, scripted over
+the serial link and read back from the screen, on the ESP32-C6 (USB,
+80x25), the ESP32 with PSRAM (UART 921600, 160x50), the 4 MB ESP32 (UART
+921600, 80x25) and the ESP32-S3 (UART 921600, 160x50), all with Wi-Fi
+connected:
+
+- About shows TinyDesk 0.2.0 and TinyDesk Shell 0.2.0 on all four.
+- `whoami` in the Terminal; a window dragged by its title (Counter) and
+  resized from its corner (Editor); a file opened in the Editor, changed,
+  saved and opened again, and the file on flash afterwards.
+- No reset in 10.5 minutes of use and idle (uptime 17.5, 16.8, 12.6 and
+  16.3 minutes at the end).
+- Free RAM in About: ESP32-C6 113 KB; ESP32 with PSRAM 155 KB + 3260 KB
+  PSRAM; 4 MB ESP32 59 KB; ESP32-S3 189 KB + 7357 KB PSRAM.
+
+Before the version bump, on builds of the same Python code (tinydesk
+a24e415 and 0eab9ff): the Python board tests passed on the ESP32 with
+PSRAM, the ESP32-S3 and the ESP32-C6 (features with native code 6/6;
+on the S3 and the ESP32 with PSRAM also `machine` 4/4, `tdui` 14/14,
+window sizes 8/8, the Python Editor 11/11, long pastes 5/5), and CI
+passed on tinydesk#11.
+
+Known issue: `ssh start` refuses on the ESP32-C6 (it asks for about
+160 KB of free internal RAM); see the release notes.
+
+## 0.1.6 (2026-10-18)
 
 Release candidate: `tinydesk` 97286c5 with `tinydesk-shell` e85ad85 (both
 version 0.1.6), built clean with ESP-IDF v5.3.1 on 2026-10-18. Images and
