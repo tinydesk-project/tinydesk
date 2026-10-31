@@ -7,23 +7,38 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
-## New in 0.1.6
+## New in 0.2.0
 
-* **nano with UTF-8 text:** the cursor, Backspace and Delete work by
-  character, so text such as `Привет` or `日本語` no longer breaks into
-  stray bytes; Up and Down keep the column (#4).
-* **`peek` and `poke`:** root can read RAM, ROM, PSRAM and the GPIO,
-  IO_MUX and eFuse registers, and switch GPIO outputs, from the
-  Terminal; `peek -l` lists what is allowed.
-* **The Editor on small boards:** a build can also set the number of
-  undo records (`TD_EDITOR_UNDO_OPS`), next to the text size
-  (`TD_EDITOR_MAX`) and the undo text (`TD_EDITOR_UNDO`), to save RAM
-  while the Editor is open (#6).
-* **Scripts on small boards:** a port can set the script memory limits,
-  and a script that runs out of memory while it loads says so instead of
-  stopping silently.
+* **ESP32-S3:** the Desktop edition for an ESP32-S3 with 16 MB flash and
+  8 MB Octal PSRAM (screens up to 256×96, SSH, over-the-air updates), and
+  the Shell edition for any ESP32-S3 with 4 MB flash or more, both on the
+  board's USB-UART port. The port came from @SanjayG-xls (#9).
+* **Python scripts with MicroPython:** `py script.py`, `py -c ...` or the
+  prompt, in the Terminal and over SSH, with TinyDesk's files and paths.
+  The `tinydesk` module runs shell commands, publishes MQTT messages and
+  reads or writes Modbus registers; `asyncio`, `hashlib` and precompiled
+  `.mpy` files are included, and root can use native and viper code.
+* **Pins and buses from Python (`machine`, root only):** `Pin` with
+  interrupts, `ADC`, `PWM`, `I2C`, `SPI`, `UART`, their software versions
+  and `neopixel`. The pins TinyDesk uses are refused, and everything a
+  script opened is released when it ends.
+* **Windows from Python (`tdui`):** a script opens desktop windows with
+  buttons, text boxes, lists, canvases, dialogs and menus, and handles
+  their events in Python: a small app without writing C.
+* **The Editor for Python:** colours, line numbers, indents and
+  completion for `.py` files; F5 runs the file with the output under the
+  text, F8 goes to the line of an error; find and replace, go to a line.
+  The Editor's buffer now follows the file's size, which leaves more RAM
+  on small boards (#6). `.py` files run from the desktop and Files.
+* **Files of the port on new Desktops:** a port can add its own files,
+  such as a `Credits.txt`, next to `Welcome.txt` (#5, an idea of
+  @aquasock).
+* **Fixes:** pasted text no longer picks up the terminal's size reply,
+  and long pastes arrive whole on the ESP32-C6 (its USB receive buffer
+  grew from 1 KB to 8 KB).
 
-Also since 0.1.0: the new home at github.com/tinydesk-project, update
+Also since 0.1.0: nano with UTF-8 text, `peek` and `poke`, and script
+memory limits for small boards (0.1.6); the new home at github.com/tinydesk-project, update
 information that can move, and only root changes the network policy
 (0.1.5); Software Update offers to save built-in pins before
 an official update, non-ASCII names line up, long command lines wrap
@@ -93,6 +108,8 @@ after start-up, Wi-Fi connected unless noted):
   Settings, Software Update (OTA with rollback), About.
 - Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes
   and redirection; right-click → Run on the desktop.
+- Python scripts (MicroPython): `py`, pins and buses with `machine`,
+  desktop windows with `tdui`, and the Editor's Python mode.
 - Two editions: TinyDesk Desktop, and TinyDesk Shell on its own.
 - Security: physical recovery uses a transport trust policy, not just shell
   task identity; Telnet is opt-in; Telnet, SSH and FTP reject the factory

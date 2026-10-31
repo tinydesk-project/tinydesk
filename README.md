@@ -1,6 +1,6 @@
 <p align="center"><img src="docs/images/tinydesk-banner.png" alt="TinyDesk: a tiny board, a real desktop, inside your terminal" width="100%"></p>
 
-v0.1.6 · Developer preview.
+v0.2.0 · Developer preview.
 
 **[Install it from the browser](https://tinydesk-project.github.io/install/)**: flash an ESP32 (Chrome or
 Edge, no toolchain), or download the Windows and Linux programs. Then open

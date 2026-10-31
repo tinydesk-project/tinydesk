@@ -23,7 +23,7 @@ list(APPEND EXTRA_COMPONENT_DIRS
 if(DEFINED ENV{TD_VERSION})
     set(PROJECT_VER "$ENV{TD_VERSION}")
 else()
-    set(PROJECT_VER "0.1.6")
+    set(PROJECT_VER "0.2.0")
 endif()
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(tinydesk)
