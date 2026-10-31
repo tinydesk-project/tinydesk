@@ -1,0 +1,18 @@
+# tinydesk on the Arduino Nano ESP32 (16 MB flash): two 3 MB OTA slots,
+# 9.9 MB /fs. The layout matches ports/esp32s3, so an image built for that
+# target keeps the same offsets.
+#
+# NOTE: this table overwrites the Arduino core's factory table
+# (app3M_spiffs9M_fact512k_16MB.csv), whose 9 MB spiffs volume starts at
+# 0x610000 -- the same offset this table gives otadata. Anything an
+# Arduino/PlatformIO sketch stored in that volume is destroyed by the first
+# flash of this firmware and is not restored by flashing the sketch back,
+# because the partition table is not rebuilt from the sketch alone.
+# Read the flash out first if it holds something that cannot be regenerated.
+# Name,     Type, SubType,  Offset,   Size,
+nvs,        data, nvs,      0x9000,   0x6000,
+phy_init,   data, phy,      0xF000,   0x1000,
+ota_0,      app,  ota_0,    0x10000,  0x300000,
+ota_1,      app,  ota_1,    0x310000, 0x300000,
+otadata,    data, ota,      0x610000, 0x2000,
+storage,    data, littlefs, 0x620000, 0x9E0000,
