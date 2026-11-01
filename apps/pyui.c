@@ -26,6 +26,10 @@
 #define LIST_ITEMS  1000
 #define LIST_BYTES  16384
 
+#define STR_(x)   #x
+#define STR(x)    STR_(x)
+#define CELLS_MSG "canvases are limited to " STR(TD_PYUI_MAX_CELLS) " cells in all"
+
 enum
 {
     LINK_OFF,
@@ -75,7 +79,10 @@ typedef struct
     int nitems, offs_cap;
     /* canvas: its place in the window; window: the client size last reported */
     td_rect_t rect;
+    /* canvas: `pages` pictures of rect.w x rect.h cells, one after the other;
+     * requests draw into page `draw`, the window shows page `show` */
     cell_t *cells;
+    uint8_t pages, draw, show;
 } obj_t;
 
 typedef struct
@@ -244,10 +251,21 @@ static obj_t *new_obj(uint8_t kind, uint16_t id)
     return NULL;
 }
 
+/* A canvas's cells, every page counted. */
+static int canvas_cells(const obj_t *o)
+{
+    return o->rect.w * o->rect.h * o->pages;
+}
+
+static cell_t *canvas_page(const obj_t *o, int page)
+{
+    return o->cells + (size_t)page * (size_t)(o->rect.w * o->rect.h);
+}
+
 static void free_obj(obj_t *o)
 {
     if (o->kind == K_CANVAS)
-        s_link->cells -= o->rect.w * o->rect.h;
+        s_link->cells -= canvas_cells(o);
     free(o->items);
     free(o->offs);
     free(o->cells);
@@ -345,11 +363,12 @@ static void win_draw(td_window_t *win, int cw, int ch)
         obj_t *o = &s_link->objs[i];
         if (o->kind != K_CANVAS || o->win != wo->id)
             continue;
+        const cell_t *cells = canvas_page(o, o->show);
         for (int y = 0; y < o->rect.h; y++)
         {
             for (int x = 0; x < o->rect.w; x++)
             {
-                const cell_t *c = &o->cells[y * o->rect.w + x];
+                const cell_t *c = &cells[y * o->rect.w + x];
                 td_putc(o->rect.x + x, o->rect.y + y, c->ch ? c->ch : ' ', c->fg < 0 ? t->win_fg : (uint8_t)c->fg,
                         c->bg < 0 ? t->win_bg : (uint8_t)c->bg, 0);
             }
@@ -506,7 +525,7 @@ static void canvas_put(obj_t *o, int x, int y, const char *s, int fg, int bg)
         }
         if (x >= 0 && y >= 0 && x < o->rect.w)
         {
-            cell_t *c = &o->cells[y * o->rect.w + x];
+            cell_t *c = &canvas_page(o, o->draw)[y * o->rect.w + x];
             c->ch = (uint16_t)(cp > 0xFFFF ? '?' : cp);
             c->fg = (int16_t)fg;
             c->bg = (int16_t)bg;
@@ -517,11 +536,12 @@ static void canvas_put(obj_t *o, int x, int y, const char *s, int fg, int bg)
 
 static void canvas_fill(obj_t *o, int x0, int y0, int w, int h, uint32_t cp, int fg, int bg)
 {
+    cell_t *cells = canvas_page(o, o->draw);
     for (int y = y0 < 0 ? 0 : y0; y < y0 + h && y < o->rect.h; y++)
     {
         for (int x = x0 < 0 ? 0 : x0; x < x0 + w && x < o->rect.w; x++)
         {
-            cell_t *c = &o->cells[y * o->rect.w + x];
+            cell_t *c = &cells[y * o->rect.w + x];
             c->ch = (uint16_t)(cp > 0xFFFF ? '?' : cp);
             c->fg = (int16_t)fg;
             c->bg = (int16_t)bg;
@@ -529,13 +549,131 @@ static void canvas_fill(obj_t *o, int x0, int y0, int w, int h, uint32_t cp, int
     }
 }
 
-/* A new size for a canvas: what fits of the old picture stays. */
+/* Big characters for canvas.big(): 3x5 "pixels" each ('.' and ':' 1x5),
+ * two pixel rows to a cell with the half blocks, so a pixel is square;
+ * `scale` makes each pixel scale x scale. Letters are upper case. */
+typedef struct
+{
+    char ch;
+    const char *rows[5];
+} big_glyph_t;
+
+static const big_glyph_t s_big[] = {
+    {' ', {"...", "...", "...", "...", "..."}},
+    {'0', {"###", "#.#", "#.#", "#.#", "###"}},
+    {'1', {".#.", "##.", ".#.", ".#.", "###"}},
+    {'2', {"###", "..#", "###", "#..", "###"}},
+    {'3', {"###", "..#", ".##", "..#", "###"}},
+    {'4', {"#.#", "#.#", "###", "..#", "..#"}},
+    {'5', {"###", "#..", "###", "..#", "###"}},
+    {'6', {"###", "#..", "###", "#.#", "###"}},
+    {'7', {"###", "..#", ".#.", ".#.", ".#."}},
+    {'8', {"###", "#.#", "###", "#.#", "###"}},
+    {'9', {"###", "#.#", "###", "..#", "###"}},
+    {'-', {"...", "...", "###", "...", "..."}},
+    {'+', {"...", ".#.", "###", ".#.", "..."}},
+    {'%', {"#.#", "..#", ".#.", "#..", "#.#"}},
+    {'/', {"..#", "..#", ".#.", "#..", "#.."}},
+    {'.', {".", ".", ".", ".", "#"}},
+    {':', {".", "#", ".", "#", "."}},
+    {'?', {"##.", "..#", ".#.", "...", ".#."}},
+    {'A', {".#.", "#.#", "###", "#.#", "#.#"}},
+    {'B', {"##.", "#.#", "##.", "#.#", "##."}},
+    {'C', {".##", "#..", "#..", "#..", ".##"}},
+    {'D', {"##.", "#.#", "#.#", "#.#", "##."}},
+    {'E', {"###", "#..", "##.", "#..", "###"}},
+    {'F', {"###", "#..", "##.", "#..", "#.."}},
+    {'G', {".##", "#..", "#.#", "#.#", ".##"}},
+    {'H', {"#.#", "#.#", "###", "#.#", "#.#"}},
+    {'I', {"###", ".#.", ".#.", ".#.", "###"}},
+    {'J', {"..#", "..#", "..#", "#.#", ".#."}},
+    {'K', {"#.#", "#.#", "##.", "#.#", "#.#"}},
+    {'L', {"#..", "#..", "#..", "#..", "###"}},
+    {'M', {"#.#", "###", "###", "#.#", "#.#"}},
+    {'N', {"##.", "#.#", "#.#", "#.#", "#.#"}},
+    {'O', {".#.", "#.#", "#.#", "#.#", ".#."}},
+    {'P', {"##.", "#.#", "##.", "#..", "#.."}},
+    {'Q', {".#.", "#.#", "#.#", "##.", ".##"}},
+    {'R', {"##.", "#.#", "##.", "#.#", "#.#"}},
+    {'S', {".##", "#..", ".#.", "..#", "##."}},
+    {'T', {"###", ".#.", ".#.", ".#.", ".#."}},
+    {'U', {"#.#", "#.#", "#.#", "#.#", "###"}},
+    {'V', {"#.#", "#.#", "#.#", "#.#", ".#."}},
+    {'W', {"#.#", "#.#", "###", "###", "#.#"}},
+    {'X', {"#.#", "#.#", ".#.", "#.#", "#.#"}},
+    {'Y', {"#.#", "#.#", ".#.", ".#.", ".#."}},
+    {'Z', {"###", "..#", ".#.", "#..", "###"}},
+};
+
+#define BIG_MAX 64   /* characters drawn by one request */
+
+static const big_glyph_t *big_glyph(uint32_t cp)
+{
+    if (cp >= 'a' && cp <= 'z')
+        cp -= 'a' - 'A';
+    for (size_t i = 0; i < sizeof(s_big) / sizeof(s_big[0]); i++)
+        if ((uint32_t)(unsigned char)s_big[i].ch == cp)
+            return &s_big[i];
+    return big_glyph('?');
+}
+
+static void canvas_set(obj_t *o, int x, int y, uint32_t cp, int fg, int bg)
+{
+    if (x < 0 || y < 0 || x >= o->rect.w || y >= o->rect.h)
+        return;
+    cell_t *c = &canvas_page(o, o->draw)[y * o->rect.w + x];
+    c->ch = (uint16_t)cp;
+    c->fg = (int16_t)fg;
+    c->bg = (int16_t)bg;
+}
+
+/* Text in big characters at x, y. width > 0: right-aligned in that many
+ * characters, blanks before it (so a shorter number clears a longer one). */
+static void canvas_big(obj_t *o, int x, int y, const char *s, int fg, int bg, int scale, int width)
+{
+    static const uint32_t half[4] = {' ', 0x2580, 0x2584, 0x2588};   /* none, upper, lower, both */
+    const big_glyph_t *g[BIG_MAX];
+    int n = 0;
+    while (*s && n < BIG_MAX)
+        g[n++] = big_glyph(td_utf8_next(&s));
+    scale = scale < 1 ? 1 : scale > 4 ? 4
+                                      : scale;
+    int first = 0, pad = 0;
+    if (width > BIG_MAX)
+        width = BIG_MAX;
+    if (width > 0 && n > width)
+        first = n - width;
+    else if (width > 0)
+        pad = width - n;
+    int rows = 5 * scale, cx = x;
+    for (int i = 0; i < pad + n - first; i++)
+    {
+        const big_glyph_t *gl = i < pad ? big_glyph(' ') : g[first + i - pad];
+        int cw = (int)strlen(gl->rows[0]) * scale;
+        for (int r = 0; r < rows; r += 2)
+        {
+            for (int c = 0; c < cw; c++)
+            {
+                int gc = c / scale;
+                int top = gl->rows[r / scale][gc] == '#';
+                int bot = r + 1 < rows && gl->rows[(r + 1) / scale][gc] == '#';
+                canvas_set(o, cx + c, y + r / 2, half[top | bot << 1], fg, bg);
+            }
+            if (i + 1 < pad + n - first)   /* the gap to the next character */
+                for (int c = cw; c < cw + scale; c++)
+                    canvas_set(o, cx + c, y + r / 2, ' ', fg, bg);
+        }
+        cx += cw + scale;
+    }
+}
+
+/* A new size for a canvas: what fits of each page's picture stays. */
 static void canvas_resize(obj_t *o, int w, int h)
 {
-    int cells = w * h;
-    if (w <= 0 || h <= 0 || s_link->cells - o->rect.w * o->rect.h + cells > TD_PYUI_MAX_CELLS)
+    int cells = w * h * o->pages;
+    if (w <= 0 || h <= 0 || s_link->cells - canvas_cells(o) + cells > TD_PYUI_MAX_CELLS)
     {
-        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "canvases are limited to 2000 cells in all");
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, CELLS_MSG);
         return;
     }
     cell_t *nc = malloc((size_t)cells * sizeof(cell_t));
@@ -544,20 +682,24 @@ static void canvas_resize(obj_t *o, int w, int h)
         post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "out of memory");
         return;
     }
-    for (int y = 0; y < h; y++)
+    for (int p = 0; p < o->pages; p++)
     {
-        for (int x = 0; x < w; x++)
+        const cell_t *old = canvas_page(o, p);
+        for (int y = 0; y < h; y++)
         {
-            cell_t *c = &nc[y * w + x];
-            if (x < o->rect.w && y < o->rect.h)
-                *c = o->cells[y * o->rect.w + x];
-            else
-                *c = (cell_t){' ', -1, -1};
+            for (int x = 0; x < w; x++)
+            {
+                cell_t *c = &nc[(size_t)p * (size_t)(w * h) + (size_t)(y * w + x)];
+                if (x < o->rect.w && y < o->rect.h)
+                    *c = old[y * o->rect.w + x];
+                else
+                    *c = (cell_t){' ', -1, -1};
+            }
         }
     }
+    s_link->cells += cells - canvas_cells(o);
     free(o->cells);
     o->cells = nc;
-    s_link->cells += cells - o->rect.w * o->rect.h;
     o->rect.w = w;
     o->rect.h = h;
 }
@@ -632,10 +774,16 @@ static void add_widget(const td_pyui_msg_t *m, const char *text)
     td_window_t *win = wo->w;
     if (m->flags == TD_PYUI_W_CANVAS)
     {
-        int cells = m->c * m->d;
+        int pages = m->e < 1 ? 1 : m->e;
+        int cells = m->c * m->d * pages;
+        if (pages > TD_PYUI_MAX_PAGES)
+        {
+            post(TD_PYUI_EV_ERROR, m->id, 0, 0, 0, 0, "too many canvas pages");
+            return;
+        }
         if (m->c <= 0 || m->d <= 0 || s_link->cells + cells > TD_PYUI_MAX_CELLS)
         {
-            post(TD_PYUI_EV_ERROR, m->id, 0, 0, 0, 0, "canvases are limited to 2000 cells in all");
+            post(TD_PYUI_EV_ERROR, m->id, 0, 0, 0, 0, CELLS_MSG);
             return;
         }
         obj_t *o = new_obj(K_CANVAS, m->id);
@@ -643,6 +791,7 @@ static void add_widget(const td_pyui_msg_t *m, const char *text)
             return;
         o->win = m->win;
         o->rect = td_rect(m->a, m->b, m->c, m->d);
+        o->pages = (uint8_t)pages;
         o->cells = malloc((size_t)cells * sizeof(cell_t));
         if (!o->cells)
         {
@@ -651,7 +800,12 @@ static void add_widget(const td_pyui_msg_t *m, const char *text)
             return;
         }
         s_link->cells += cells;
-        canvas_fill(o, 0, 0, m->c, m->d, ' ', -1, -1);
+        for (int p = 0; p < pages; p++)
+        {
+            o->draw = (uint8_t)p;
+            canvas_fill(o, 0, 0, m->c, m->d, ' ', -1, -1);
+        }
+        o->draw = 0;
         td_win_invalidate(win);
         return;
     }
@@ -843,7 +997,44 @@ static void run_request(const td_pyui_msg_t *m, char *text)
             uint32_t cp = *s ? td_utf8_next(&s) : ' ';
             canvas_fill(o, m->a, m->b, m->c, m->d, cp, m->e, m->f);
         }
-        td_win_invalidate(NULL);
+        if (o->draw == o->show)
+            td_win_invalidate(NULL);
+        break;
+    case TD_PYUI_BIG:
+        if (o->kind != K_CANVAS)
+            break;
+        canvas_big(o, m->a, m->b, text, m->c, m->d, m->e, m->f);
+        if (o->draw == o->show)
+            td_win_invalidate(NULL);
+        break;
+    case TD_PYUI_PAGE:
+        if (o->kind != K_CANVAS)
+            break;
+        if (m->a >= o->pages || m->b >= o->pages)
+        {
+            post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "no such canvas page");
+            break;
+        }
+        if (m->a >= 0)
+            o->draw = (uint8_t)m->a;
+        if (m->b >= 0 && m->b != o->show)
+        {
+            o->show = (uint8_t)m->b;
+            td_win_invalidate(NULL);
+        }
+        break;
+    case TD_PYUI_PAGE_COPY:
+        if (o->kind != K_CANVAS)
+            break;
+        if (m->a < 0 || m->b < 0 || m->a >= o->pages || m->b >= o->pages)
+        {
+            post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "no such canvas page");
+            break;
+        }
+        if (m->a != m->b)
+            memcpy(canvas_page(o, m->b), canvas_page(o, m->a), (size_t)(o->rect.w * o->rect.h) * sizeof(cell_t));
+        if (m->b == o->show)
+            td_win_invalidate(NULL);
         break;
     case TD_PYUI_RESIZE:
         if (o->kind == K_WINDOW)

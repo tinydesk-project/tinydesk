@@ -36,6 +36,9 @@ _MENU = const(15)
 _RESIZE = const(16)
 _MOVE = const(17)
 _SHOW = const(18)
+_PAGE = const(19)
+_PAGE_COPY = const(20)
+_BIG = const(21)
 
 _W_LABEL = const(1)
 _W_BUTTON = const(2)
@@ -56,7 +59,8 @@ _EV_RESIZE = const(8)
 
 MAX_WINDOWS = const(4)
 MAX_WIDGETS = const(48)
-MAX_CELLS = const(2000)
+MAX_CELLS = _tdui.MAX_CELLS   # all canvases together, pages counted: 2000, more with PSRAM
+MAX_PAGES = const(16)         # pages of one canvas
 
 _KEYS = ("enter", "tab", "backspace", "esc", "up", "down", "right", "left", "home", "end",
          "insert", "delete", "pgup", "pgdn", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8",
@@ -239,8 +243,8 @@ class Window:
     def list(self, x, y, w, h, items=(), on_select=None, on_activate=None):
         return List(self, x, y, w, h, items, on_select, on_activate)
 
-    def canvas(self, x, y, w, h, on_mouse=None):
-        return Canvas(self, x, y, w, h, on_mouse)
+    def canvas(self, x, y, w, h, on_mouse=None, pages=1):
+        return Canvas(self, x, y, w, h, on_mouse, pages)
 
 
 class _Widget:
@@ -425,42 +429,80 @@ class List(_Widget):
 
 class Canvas(_Widget):
     # A grid of character cells. Colours are palette numbers 0..255, -1 for
-    # the window's own.
+    # the window's own. With pages > 1 it keeps that many pictures on the
+    # desktop: draw into a hidden one (draw_to), then show it at once.
     _n = 0
 
-    def __init__(self, win, x, y, w, h, on_mouse):
+    def __init__(self, win, x, y, w, h, on_mouse, pages=1):
         global _cells
         if not win.is_open:
             raise OSError("tdui: the window is closed")
         if x < 0 or y < 0 or w < 1 or h < 1:
             raise ValueError("canvas size")
-        if _cells + w * h > MAX_CELLS:
+        if not 1 <= pages <= MAX_PAGES:
+            raise ValueError("canvas pages: 1 to %d" % MAX_PAGES)
+        if _cells + w * h * pages > MAX_CELLS:
             raise OSError("tdui: canvases are limited to %d cells in all" % MAX_CELLS)
-        _cells += w * h
-        self._cells = w * h
+        _cells += w * h * pages
+        self._cells = w * h * pages
         self.width = w
         self.height = h
+        self.pages = pages
+        self.drawing = 0      # the page put/fill/big draw into
+        self.showing = 0      # the page the window shows
         self.on_mouse = on_mouse
-        super().__init__(win, _W_CANVAS, x, y, w, h, 0, "")
+        super().__init__(win, _W_CANVAS, x, y, w, h, pages, "")
 
+    # Drawing goes straight to _tdui.send: these are called most.
     def put(self, x, y, text, fg=-1, bg=-1):
-        self._req2(_PUT, x, y, fg, bg, 0, 0, str(text))
+        if self.win.is_open:
+            _tdui.send(_PUT, self.id, 0, 0, x, y, fg, bg, 0, 0, str(text))
 
     def fill(self, x, y, w, h, ch=" ", fg=-1, bg=-1):
-        self._req2(_FILL, x, y, w, h, fg, bg, ch)
+        if self.win.is_open:
+            _tdui.send(_FILL, self.id, 0, 0, x, y, w, h, fg, bg, ch)
 
     def clear(self, fg=-1, bg=-1):
         self.fill(0, 0, self.width, self.height, " ", fg, bg)
+
+    def big(self, x, y, text, fg=-1, bg=-1, scale=1, width=0):
+        # Text in big characters (digits, A-Z, - + % / . : and space), drawn
+        # on the desktop: 3 cells wide and 3 rows high a character at scale
+        # 1, 6 x 5 at scale 2. width > 0: right-aligned in that many
+        # characters, blanking what is left. big_size() gives the size.
+        if self.win.is_open:
+            _tdui.send(_BIG, self.id, 0, 0, x, y, fg, bg, scale, width, str(text))
+
+    def _page(self, n):
+        if not 0 <= n < self.pages:
+            raise ValueError("canvas page: 0 to %d" % (self.pages - 1))
+        return n
+
+    def draw_to(self, page):
+        # put/fill/big draw into this page from now on; the window keeps
+        # showing its page.
+        self.drawing = self._page(page)
+        self._req2(_PAGE, page, -1, 0, 0, 0, 0, None)
+
+    def show(self, page):
+        # The window shows this page at once (all of it, not piece by piece).
+        self.showing = self._page(page)
+        self._req2(_PAGE, -1, page, 0, 0, 0, 0, None)
+
+    def copy_page(self, src, dst):
+        # Page src's picture onto page dst, for example a background drawn
+        # once.
+        self._req2(_PAGE_COPY, self._page(src), self._page(dst), 0, 0, 0, 0, None)
 
     def resize(self, w, h):
         # What fits of the picture stays; new cells are blank.
         global _cells
         if w < 1 or h < 1:
             raise ValueError("canvas size")
-        if _cells - self._cells + w * h > MAX_CELLS:
+        if _cells - self._cells + w * h * self.pages > MAX_CELLS:
             raise OSError("tdui: canvases are limited to %d cells in all" % MAX_CELLS)
-        _cells += w * h - self._cells
-        self._cells = w * h
+        _cells += w * h * self.pages - self._cells
+        self._cells = w * h * self.pages
         self.width = w
         self.height = h
         self._req2(_RESIZE, w, h, 0, 0, 0, 0, None)
@@ -475,6 +517,15 @@ class Canvas(_Widget):
     def _event(self, op, a, b, c, d, t):
         if op == _EV_MOUSE and self.on_mouse:
             self.on_mouse(self, a, b, c, d)
+
+
+def big_size(text, scale=1):
+    # Columns and rows Canvas.big() takes for text ('.' and ':' are narrow).
+    n = len(text)
+    if not n:
+        return 0, 0
+    cols = sum(1 if c in ".:" else 3 for c in text) * scale + (n - 1) * scale
+    return cols, (5 * scale + 1) // 2
 
 
 # ------------------------------------------------------------ the loop
