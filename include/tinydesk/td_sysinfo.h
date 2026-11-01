@@ -213,6 +213,9 @@ typedef struct
     uint32_t (*psram_total)(void);
     int (*task_count)(void);
     int (*cpu_mhz)(void);
+    /* Optional: the chip's own temperature (its die, not the room) in
+     * tenths of a degree Celsius; false when it cannot be read. */
+    bool (*chip_temp)(int *tenths_c);
     /* Optional: fill up to max tasks, return how many, or -1 when they
      * cannot be listed now (out of memory). CPU shares are measured between
      * calls (the first call has none). Tasks whose name starts with "IDLE"
