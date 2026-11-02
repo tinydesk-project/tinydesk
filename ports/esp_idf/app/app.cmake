@@ -28,6 +28,7 @@ set(TD_ESP_APP_REQUIRES
     micropython
     nvs_flash
     esp_driver_uart
+    esp_driver_tsens
     app_update
     esp_https_ota
     json

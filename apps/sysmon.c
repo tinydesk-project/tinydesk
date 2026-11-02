@@ -1,5 +1,6 @@
 /*
- * sysmon.c - live heap, tasks, CPU, uptime and tinydesk's own statistics.
+ * sysmon.c - live heap, tasks, CPU (and its temperature where the chip has
+ * a sensor), uptime and tinydesk's own statistics.
  * The bars show memory in use; internal RAM and PSRAM (if any) apart.
  */
 #include <stdio.h>
@@ -53,7 +54,12 @@ static void update(void)
         snprintf(tasks, sizeof(tasks), "%d", si->task_count());
     if (si->cpu_mhz)
         snprintf(cpu, sizeof(cpu), "%d MHz", si->cpu_mhz());
-    td_widget_printf(s_tasks, "Tasks: %-8s  CPU: %s", tasks, cpu);
+    int t;
+    if (si->chip_temp && si->chip_temp(&t))
+        td_widget_printf(s_tasks, "Tasks: %-8s  CPU: %-9s  Chip: %s%d.%d °C", tasks, cpu, t < 0 ? "-" : "",
+                         (t < 0 ? -t : t) / 10, (t < 0 ? -t : t) % 10);
+    else
+        td_widget_printf(s_tasks, "Tasks: %-8s  CPU: %s", tasks, cpu);
 
     uint32_t s = td_uptime_ms() / 1000u;
     td_widget_printf(s_uptime, "Uptime: %02u:%02u:%02u",
