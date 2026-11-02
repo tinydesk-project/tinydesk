@@ -30,6 +30,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <string.h>
 
@@ -348,6 +349,9 @@ static char s_mouse_name[40];      /* "USB mouse 04ca:00bd, with its wheel" */
 static float s_rest_x, s_rest_y;   /* fractions of counts left over by the gain */
 static int64_t s_last_us;
 static int s_mx = -1, s_my;        /* the pointer, in mouse counts */
+static int s_cx = -1, s_cy;        /* the cell reported last */
+static bool s_slop;                /* a button pressed and the mouse not moved off yet */
+static int s_px, s_py;             /* where it was pressed, in counts */
 static uint8_t s_buttons;
 static int s_mice;
 
@@ -539,10 +543,10 @@ static void mouse_move(uint8_t b, int dx, int dy, int wheel)
     {
         /* The speed changed (the Mouse app): the pointer stays in its cell,
          * now counted in the new cell size. */
-        if (s_mx >= 0)
+        if (s_cx >= 0)
         {
-            s_mx = s_mx / s_div_x * wx + wx / 2;
-            s_my = s_my / s_div_y * wy + wy / 2;
+            s_mx = s_px = s_cx * wx + wx / 2;
+            s_my = s_py = s_cy * wy + wy / 2;
         }
         s_div_x = wx;
         s_div_y = wy;
@@ -561,7 +565,6 @@ static void mouse_move(uint8_t b, int dx, int dy, int wheel)
             s_my = rows / 2 * s_div_y;
         }
     }
-    int ox = s_mx / s_div_x, oy = s_my / s_div_y;
     /* A pointer curve, as desktop systems have: slow moves (aiming) go
      * s_slow times as far, normal ones one for one, faster ones further,
      * up to 1 + s_accel times at about 5 counts a millisecond (a flick). */
@@ -599,14 +602,41 @@ static void mouse_move(uint8_t b, int dx, int dy, int wheel)
         s_my = rows * s_div_y - 1;
     int cx = s_mx / s_div_x, cy = s_my / s_div_y;
 
+    /* Sure clicks: a press snaps the pointer to the middle of its cell, and
+     * while a button is held the pointer stays on that cell until the
+     * mouse has moved a whole cell away from it. A hand that nudges the
+     * mouse while clicking would otherwise move the release to the next
+     * cell, and a button there would not count the click. */
+    if (s_slop && (s_buttons & 7))
+    {
+        if (abs(s_mx - s_px) < s_div_x && abs(s_my - s_py) < s_div_y)
+        {
+            cx = s_cx;
+            cy = s_cy;
+        }
+        else
+        {
+            s_slop = false;
+        }
+    }
+    if ((b & 7) && !(s_buttons & 7))
+    {
+        s_mx = s_px = cx * s_div_x + s_div_x / 2;
+        s_my = s_py = cy * s_div_y + s_div_y / 2;
+        s_rest_x = s_rest_y = 0.0f;
+        s_slop = true;
+    }
+
     /* SGR button numbers: left 0, middle 1, right 2; HID bits: left, right, middle. */
     static const uint8_t bit[3] = {0x01, 0x04, 0x02};
     int held = -1;
     for (int i = 0; i < 3; i++)
         if (s_buttons & bit[i])
             held = held < 0 ? i : held;
-    if (cx != ox || cy != oy)
+    if (cx != s_cx || cy != s_cy)
         mouse_send(held >= 0 ? 32 + held : 35, cx, cy, false);
+    s_cx = cx;
+    s_cy = cy;
     for (int i = 0; i < 3; i++)
         if ((b ^ s_buttons) & bit[i])
             mouse_send(i, cx, cy, !(b & bit[i]));
@@ -728,8 +758,9 @@ static void open_interface(hid_host_device_handle_t dev)
                  wheel ? "with its wheel" : "no wheel");
     if (boot && p.proto == HID_PROTOCOL_MOUSE && s_mice++ == 0)
     {
-        s_mx = -1;
+        s_mx = s_cx = -1;
         s_buttons = 0;
+        s_slop = false;
         td_wm_set_pointer(true);
     }
 }
