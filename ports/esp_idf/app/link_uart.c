@@ -39,7 +39,11 @@ bool link_init(void)
     if (s_baud < 9600)
         s_baud = DEFAULT_BAUD;
     int tx = tdsh_board_int("console.tx", -1), rx = tdsh_board_int("console.rx", -1);
+#if CONFIG_IDF_TARGET_ESP32S3
+    snprintf(s_platform, sizeof(s_platform), "ESP32-S3 (UART%d, %d baud)", (int)s_uart, s_baud);
+#else
     snprintf(s_platform, sizeof(s_platform), "ESP32 (UART%d, %d baud)", (int)s_uart, s_baud);
+#endif
     uart_config_t cfg = {
         .baud_rate = s_baud,
         .data_bits = UART_DATA_8_BITS,
@@ -87,7 +91,11 @@ const char *board_platform(void)
 }
 const char *board_hostname(void)
 {
+#if CONFIG_IDF_TARGET_ESP32S3
+    return "esp32s3";
+#else
     return "esp32";
+#endif
 }
 const td_mb_serial_t *board_rtu_lines(void)
 {

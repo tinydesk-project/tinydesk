@@ -32,6 +32,10 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
+#include "soc/soc_caps.h"
+#if SOC_TEMP_SENSOR_SUPPORTED
+#include "driver/temperature_sensor.h"
+#endif
 
 #include "hal_mux.h"
 #include "link.h"
@@ -39,14 +43,15 @@
 #include "ota_esp.h"
 #include "td_modbus.h"
 #include "td_proto_cmds.h"
+#include "td_py.h"
 #include "td_apps.h"
 #include "telnet.h"
 #include "td_fs_stdio.h"
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
 
-#if CONFIG_IDF_TARGET_ARCH_XTENSA
-#define UI_TASK_STACK 8192   /* Xtensa (ESP32, ESP32-S3): bigger frames */
+#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
+#define UI_TASK_STACK 8192   /* Xtensa frames are bigger; RAM is plentiful (PSRAM) */
 #else
 #define UI_TASK_STACK 5120   /* measured on the C6: about 1.8 KB used */
 #endif
@@ -187,6 +192,28 @@ static int cpu_mhz(void)
 {
     return CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ;
 }
+
+#if SOC_TEMP_SENSOR_SUPPORTED
+/* The chip's built-in temperature sensor (not on the classic ESP32), started
+ * on the first reading. */
+static temperature_sensor_handle_t s_tsens;
+static bool s_tsens_failed;
+
+static bool chip_temp(int *tenths_c)
+{
+    if (!s_tsens && !s_tsens_failed)
+    {
+        temperature_sensor_config_t cfg = TEMPERATURE_SENSOR_CONFIG_DEFAULT(-10, 80);
+        if (temperature_sensor_install(&cfg, &s_tsens) != ESP_OK || temperature_sensor_enable(s_tsens) != ESP_OK)
+            s_tsens_failed = true;
+    }
+    float c;
+    if (s_tsens_failed || temperature_sensor_get_celsius(s_tsens, &c) != ESP_OK)
+        return false;
+    *tenths_c = (int)(c * 10.0f + (c < 0 ? -0.5f : 0.5f));
+    return true;
+}
+#endif
 
 /* Time zone: the same offset file TinyDesk Shell's `tz` command uses, so the
  * taskbar clock and `date` agree. Re-read now and then (tz may change it). */
@@ -357,6 +384,9 @@ static void fill_sysinfo(void)
     s_info.tasks = list_tasks;
 #endif
     s_info.cpu_mhz = cpu_mhz;
+#if SOC_TEMP_SENSOR_SUPPORTED
+    s_info.chip_temp = chip_temp;
+#endif
     s_info.time_now = time_now;
     s_info.time_set = time_set;
     s_info.time_auto_get = time_auto_get;
@@ -526,6 +556,9 @@ void app_main(void)
     {
         td_proto_register_shell_commands();   /* mqtt, modbus */
         td_proto_set_break_check(tdsh_bridge_break_requested);   /* Ctrl+C stops modbus read -i */
+        td_py_register_shell_command();                          /* py (MicroPython) */
+        td_py_set_break_check(tdsh_bridge_break_requested);      /* Ctrl+C stops a script */
+        td_py_set_desktop_check(tdsh_is_local_console_task);     /* tdui windows from the Terminal */
         if (esp_ota_get_next_update_partition(NULL))
             ota_esp_register_command();   /* ota (root only) */
     }

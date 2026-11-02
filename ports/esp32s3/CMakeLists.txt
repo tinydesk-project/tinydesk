@@ -1,15 +1,15 @@
-# tinydesk firmware for the ESP32-S3 with PSRAM (tested on an ESP32-S3R8:
-# 16 MB flash, 8 MB octal PSRAM in the chip), ESP-IDF 5.3.1.
+# tinydesk firmware for the ESP32-S3 (16 MB flash, 8 MB Octal PSRAM),
+# ESP-IDF 5.3.1.
 #
+#   idf.py set-target esp32s3
 #   idf.py build
-#   idf.py -p COMx flash        (close the terminal first)
+#   idf.py -p COMx -b 921600 flash        (close PuTTY first)
 #
-# The desktop is served on the chip's built-in USB Serial/JTAG port (on most
-# boards the connector marked "USB"; any baud rate in the terminal); the
-# ESP-IDF console is off (logs go to the Log Viewer). The application is
-# shared with the other ESP-IDF projects (../esp_idf/app, with the USB link
-# of the ESP32-C6); this project brings the PSRAM placement
-# (main/extram.lf), the partitions and the sdkconfig.
+# The desktop is served on UART0 (the board's USB-UART chip) at 921600 baud;
+# the ESP-IDF console is off (logs go to the Log Viewer). The application
+# is shared with the other ESP-IDF projects (../esp_idf/app); this project
+# brings the UART link, the PSRAM placement (main/extram.lf), the
+# partitions and the sdkconfig.
 cmake_minimum_required(VERSION 3.16)
 
 get_filename_component(TD_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
@@ -23,7 +23,7 @@ list(APPEND EXTRA_COMPONENT_DIRS
 if(DEFINED ENV{TD_VERSION})
     set(PROJECT_VER "$ENV{TD_VERSION}")
 else()
-    set(PROJECT_VER "0.1.5")
+    set(PROJECT_VER "0.2.0")
 endif()
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 project(tinydesk)

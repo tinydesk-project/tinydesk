@@ -60,6 +60,11 @@ CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
 # 96 KB free to start).
 CONFIG_FREERTOS_PLACE_FUNCTIONS_INTO_FLASH=y
 
+# RAM is not split into a non-executable data part and an instruction part
+# (PMP): py runs @micropython.native/viper code and native .mpy files (root
+# only) from the heap, as MicroPython's own C6 firmware does.
+CONFIG_ESP_SYSTEM_PMP_IDRAM_SPLIT=n
+
 # SD card (sd mount): FAT with long file names in UTF-8, the name buffer on
 # the heap only while a call runs.
 CONFIG_FATFS_LFN_HEAP=y

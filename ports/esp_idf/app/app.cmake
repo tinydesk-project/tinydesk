@@ -1,9 +1,9 @@
 # The TinyDesk application shared by the ESP-IDF board projects
-# (ports/esp32c6, ports/esp32s3, ports/esp32, ports/esp32-4mb). A board's
-# main/CMakeLists.txt includes this file and registers its main component
-# with these sources and its desktop link from this folder (link_usj.c: the
-# built-in USB Serial/JTAG port of the ESP32-C6 and ESP32-S3; link_uart.c:
-# UART0 on the classic ESP32):
+# (ports/esp32c6, ports/esp32, ports/esp32-4mb, ports/esp32s3). A board's main/CMakeLists.txt
+# includes this file and registers its main component with these sources and
+# its desktop link from this folder (link_usj.c: the built-in USB Serial/JTAG
+# port of the ESP32-C6; link_uart.c: UART0 on the classic ESP32 and the
+# ESP32-S3):
 #
 #   include("${CMAKE_CURRENT_LIST_DIR}/../../esp_idf/app/app.cmake")
 #   idf_component_register(
@@ -26,8 +26,10 @@ set(TD_ESP_APP_SRCS
 set(TD_ESP_APP_REQUIRES
     tinydesk
     tdsh
+    micropython
     nvs_flash
     esp_driver_uart
+    esp_driver_tsens
     app_update
     esp_https_ota
     json

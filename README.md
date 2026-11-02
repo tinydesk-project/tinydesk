@@ -1,8 +1,6 @@
-# TinyDesk
+<p align="center"><img src="docs/images/tinydesk-banner.png" alt="TinyDesk: a tiny board, a real desktop, inside your terminal" width="100%"></p>
 
-**A tiny board. A real desktop. Inside your terminal.**
-
-v0.1.5 · Developer preview.
+v0.2.0 · Developer preview.
 
 **[Install it from the browser](https://tinydesk-project.github.io/install/)**: flash an ESP32 (Chrome or
 Edge, no toolchain), or download the Windows and Linux programs. Then open
@@ -44,6 +42,17 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   and redirection, run from the Terminal or with right-click → Run on the
   desktop. Language reference: `docs/SCRIPTING.md` in
   [TinyDesk Shell](https://github.com/tinydesk-project/tinydesk-shell).
+* Python scripts with [MicroPython](https://micropython.org): `py script.py`
+  in the Terminal, or `py` for the interactive prompt. Scripts read and
+  write TinyDesk's files, and the `tinydesk` module runs shell commands,
+  publishes MQTT messages and reads or writes Modbus registers. `asyncio`
+  runs several jobs in one script, and precompiled `.mpy` files load too.
+  On the boards, root's scripts drive pins and buses with `machine` (Pin,
+  ADC, PWM, I2C, SPI, UART, NeoPixel LEDs); pins TinyDesk uses are refused.
+  With `tdui` a script opens windows of its own (buttons, text boxes,
+  lists, canvases, dialogs) and handles them in Python.
+  The Editor colours Python, runs the file with F5 (output underneath),
+  goes to the line of an error and suggests names.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides
   an encrypted shell and SFTP, not the windowed desktop. FTP, SMB mounts,
   Wi-Fi and W6100 Ethernet are available from the shell.
@@ -52,6 +61,7 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 
 | Desktop target | Hardware | Console / limits |
 | --- | --- | --- |
+| ESP32-S3 with PSRAM | 16 MB flash, Octal PSRAM | USB-UART, 921600 baud |
 | ESP32-C6 | 8 MB flash | Built-in USB Serial/JTAG |
 | ESP32-S3 with PSRAM | 16 MB flash, octal PSRAM (e.g. ESP32-S3R8, -N16R8) | Built-in USB Serial/JTAG; build it yourself (no release images yet) |
 | Classic ESP32 with PSRAM | 16 MB flash, PSRAM required | USB-UART, 921600 baud |
@@ -75,7 +85,7 @@ Maintained by their authors, not built or tested here:
 ## First connection
 
 Open the board's serial port (any speed on the ESP32-C6; 921600 baud for
-the desktop on the ESP32, 115200 for the shell) and press a key. You start
+the desktop on the ESP32 and ESP32-S3, 115200 for the shell) and press a key. You start
 as root. Run `passwd` locally (old password: **`TinyDesk`**) before enabling
 remote access. Telnet starts **disabled** and requires an explicit Network
 setting. Telnet, SSH and FTP refuse remote authentication while the factory
@@ -96,6 +106,7 @@ cd tinydesk
 | Target | Commands |
 | --- | --- |
 | Desktop on the PC (Linux, macOS, WSL, Windows with MinGW) | `cmake -B build -G Ninja && cmake --build build && ./build/tinydesk` |
+| ESP32-S3 with PSRAM, ESP-IDF 5.3.1 | `cd ports/esp32s3 && idf.py build && idf.py -p PORT -b 921600 flash` |
 | ESP32-C6, ESP-IDF 5.3.1 | `cd ports/esp32c6 && idf.py build && idf.py -p PORT flash` |
 | ESP32-S3 with PSRAM, ESP-IDF 5.3.1 | `cd ports/esp32s3 && idf.py build && idf.py -p PORT flash` (the USB port) |
 | Classic ESP32 with PSRAM, ESP-IDF 5.3.1 | `cd ports/esp32 && idf.py build && idf.py -p PORT -b 921600 flash` |
@@ -134,10 +145,13 @@ notably **wolfSSH and wolfSSL (GPLv3)** for the SSH/SFTP server. Firmware
 built with them, including the prebuilt releases, is therefore distributed
 under the terms of the GPLv3 as a whole. The source code in this repository
 stays MIT. See [`third_party/tdsh/THIRD_PARTY_LICENSES.md`](third_party/tdsh/THIRD_PARTY_LICENSES.md)
-for the list.
+for the list. The `py` command is [MicroPython](third_party/micropython/README.md)
+(MIT; its SHA-256 code from `lib/crypto-algorithms` is public domain), in
+`third_party/micropython`.
 
 ## Contributing
 
 Bug reports and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md).
+The people who made TinyDesk are listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 Security problems: please report them privately (GitHub → Security →
 Report a vulnerability), see [SECURITY.md](SECURITY.md).

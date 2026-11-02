@@ -1,7 +1,9 @@
 /*
  * test_editor.c - the Editor's undo and redo, cut / copy / paste, and
  * closing with unsaved changes. Keys and pastes are synthetic events; the
- * file lives in memory, and the text is read back from the screen.
+ * file lives in memory, and the text is read back from the screen. Also
+ * the extras: indents, comments, find and replace, go to a line, Python
+ * completion, and running a file with its error line found in the output.
  */
 #include "td_test.h"
 #include "td_apps.h"
@@ -448,6 +450,279 @@ static void test_close_asks_about_changes(void)
     CHECK(file_is("xz"));
 }
 
+/* ------------------------------------------------------ Python files */
+
+/* Open `path` holding `text`. */
+static void open_as(const char *path, const char *text)
+{
+    td_wm_close_all();
+    s_file_len = (int)strlen(text);
+    memcpy(s_file, text, (size_t)s_file_len);
+    s_writes = 0;
+    td_editor_open(path);
+    s_ed = td_win_focused();
+    CHECK(s_ed != NULL);
+}
+
+static void test_indent(void)
+{
+    /* Enter keeps the indent, adds one after ':' and drops one after
+     * return; Backspace in the indent goes back to a multiple of 4. */
+    open_as("/fs/t.py", "");
+    type("def f(x):");
+    key(TD_KEY_ENTER, 0);
+    type("if x:");
+    key(TD_KEY_ENTER, 0);
+    type("return 1");
+    key(TD_KEY_ENTER, 0);
+    type("y = 2");
+    key(TD_KEY_ENTER, 0);
+    key(TD_KEY_BACKSPACE, 0);
+    type("z");
+    ctrl('s');
+    CHECK(file_is("def f(x):\n    if x:\n        return 1\n    y = 2\nz"));
+    CHECK(shows(0, "  1 def f(x):"));       /* line numbers for Python */
+
+    /* Tab and Shift+Tab move the selected lines; one undo step each. */
+    open_as("/fs/t.py", "a\nb\n\nc\n");
+    for (int i = 0; i < 4; i++)
+        key(TD_KEY_DOWN, TD_MOD_SHIFT);
+    key(TD_KEY_TAB, 0);
+    key(TD_KEY_TAB, 0);
+    ctrl('s');
+    CHECK(file_is("        a\n        b\n\n        c\n"));   /* blank lines stay blank */
+    key(TD_KEY_TAB, TD_MOD_SHIFT);
+    ctrl('s');
+    CHECK(file_is("    a\n    b\n\n    c\n"));
+    for (int i = 0; i < 3; i++)
+        ctrl('z');
+    ctrl('s');
+    CHECK(file_is("a\nb\n\nc\n"));
+
+    /* Tab without a selection: spaces to the next multiple of 4. */
+    open_as("/fs/a.txt", "ab");
+    key(TD_KEY_END, 0);
+    key(TD_KEY_TAB, 0);
+    type("c");
+    ctrl('s');
+    CHECK(file_is("ab  c"));
+}
+
+static void test_comment(void)
+{
+    open_as("/fs/t.py", "x = 1\n    y = 2\n\nz\n");
+    ctrl('a');
+    key('_', TD_MOD_CTRL);                    /* what Ctrl+/ sends */
+    ctrl('s');
+    CHECK(file_is("# x = 1\n#     y = 2\n\n# z\n"));
+    key('/', TD_MOD_CTRL);
+    ctrl('s');
+    CHECK(file_is("x = 1\n    y = 2\n\nz\n"));
+
+    /* One line: at its own indent; the cursor stays on the text. */
+    open_as("/fs/t.py", "if a:\n    b()\n");
+    key(TD_KEY_DOWN, 0);
+    key(TD_KEY_END, 0);
+    key('_', TD_MOD_CTRL);
+    type("!");
+    ctrl('s');
+    CHECK(file_is("if a:\n    # b()!\n"));
+}
+
+/* Answer the dialog that has the keyboard. */
+static void answer(const char *text)
+{
+    td_window_t *box = td_win_focused();
+    CHECK(box != s_ed);
+    type(text);
+    key(TD_KEY_ENTER, 0);
+}
+
+static void test_find_replace_go_to(void)
+{
+    open_as("/fs/a.txt", "one two\nthree two\nfour");
+    ctrl('f');
+    answer("two");
+    CHECK(status_has("Ln 1, Col 8"));         /* selected; the cursor after it */
+    CHECK(status_has("3 selected"));
+    key(TD_KEY_F3, 0);
+    CHECK(status_has("Ln 2, Col 10"));
+    key(TD_KEY_F3, 0);
+    CHECK(status_has("From the top"));
+    CHECK(status_has("Ln 1, Col 8"));
+
+    ctrl('r');
+    answer("");                               /* suggested: the selection */
+    answer("2");
+    CHECK(status_has("Replaced 2"));
+    ctrl('s');
+    CHECK(file_is("one 2\nthree 2\nfour"));
+    ctrl('z');                                /* one step */
+    ctrl('s');
+    CHECK(file_is("one two\nthree two\nfour"));
+
+    ctrl('g');
+    answer("3");
+    CHECK(status_has("Ln 3, Col 1"));
+    ctrl('g');
+    answer("99");
+    CHECK(status_has("Ln 3, Col 1"));
+}
+
+static void test_buffer_grows(void)
+{
+    /* The buffer starts at the file's size and grows with the text, up to
+     * TD_EDITOR_MAX (16384 by default). */
+    static char big[16001];
+    memset(big, 'a', sizeof(big) - 1);
+    open_as("/fs/a.txt", "x");
+    for (int i = 0; i < 4; i++)
+    {
+        td_clipboard_set(big, 3000);
+        ctrl('v');
+    }
+    ctrl('s');
+    CHECK_EQ(s_file_len, 12001);
+    td_clipboard_set(big, 5000);
+    ctrl('v');
+    CHECK(status_has("The file is full"));
+    type("b");
+    ctrl('s');
+    CHECK_EQ(s_file_len, 12002);
+    ctrl('z');
+    ctrl('z');
+    ctrl('s');
+    CHECK_EQ(s_file_len, 9001);
+
+    /* A file that fills it: typing says so. */
+    open_as("/fs/a.txt", big);
+    td_clipboard_set(big, 384);
+    ctrl('v');
+    CHECK_EQ(s_writes, 0);
+    ctrl('s');
+    CHECK_EQ(s_file_len, 16384);
+    type("z");
+    CHECK(status_has("The file is full"));
+}
+
+static void test_completion(void)
+{
+    td_editor_prefs()->completion = 0;
+    open_as("/fs/t.py", "import tinydesk\n");
+    key(TD_KEY_END, TD_MOD_CTRL);
+    type("tinydesk.");
+    CHECK(!strstr(row_text(2), "log"));       /* off: nothing pops up */
+    key(' ', TD_MOD_CTRL);                    /* Ctrl+Space asks */
+    CHECK(strstr(row_text(2), "log") != NULL);
+    key(TD_KEY_DOWN, 0);
+    key(TD_KEY_ENTER, 0);
+    type("(");
+    ctrl('s');
+    CHECK(file_is("import tinydesk\ntinydesk.modbus_read("));
+
+    /* Popping up while typing; words of the file are offered too. */
+    td_editor_prefs()->completion = 1;
+    open_as("/fs/t.py", "counter = 0\n");
+    key(TD_KEY_END, TD_MOD_CTRL);
+    type("pri");
+    key(TD_KEY_TAB, 0);
+    type("(cou");
+    key(TD_KEY_ENTER, 0);
+    type(")");
+    ctrl('s');
+    CHECK(file_is("counter = 0\nprint(counter)"));
+    td_editor_prefs()->completion = 0;
+}
+
+/* --------------------------------------------- run and the error line */
+
+static char s_sent[256];
+static int s_sent_len;
+static const char *s_output;
+
+static int be_start(void *ctx, int cols, int rows)
+{
+    (void)ctx;
+    (void)cols;
+    (void)rows;
+    return 0;
+}
+
+static int be_read(void *ctx, uint8_t *buf, int cap)
+{
+    (void)ctx;
+    if (!s_output)
+        return 0;
+    int n = (int)strlen(s_output);
+    if (n > cap)
+        n = cap;
+    memcpy(buf, s_output, (size_t)n);
+    s_output = n < (int)strlen(s_output) ? s_output + n : NULL;
+    return n;
+}
+
+static int be_write(void *ctx, const uint8_t *buf, int len)
+{
+    (void)ctx;
+    if (s_sent_len + len < (int)sizeof(s_sent))
+    {
+        memcpy(s_sent + s_sent_len, buf, (size_t)len);
+        s_sent_len += len;
+        s_sent[s_sent_len] = '\0';
+    }
+    return len;
+}
+
+static const td_term_backend_t s_backend = {
+    .name = "test",
+    .start = be_start,
+    .read = be_read,
+    .write = be_write,
+};
+
+static void test_run_and_error(void)
+{
+    open_as("/fs/t.py", "x = 1\nprint(y)\n");
+    s_sent_len = 0;
+    key(TD_KEY_F5, 0);
+    CHECK(strcmp(s_sent, "\x15py \"/t.py\"\r") == 0);
+    CHECK(status_has("F5 Run"));
+
+    /* The output pane shows what the program prints. */
+    s_output = "Traceback (most recent call last):\r\n"
+               "  File \"/lib/m.py\", line 9, in f\r\n"
+               "  File \"/t.py\", line 2, in <module>\r\n"
+               "NameError: name 'y' isn't defined\r\n\x1b[1m$ \x1b[0m";
+    td_terminal_pump();
+    CHECK(status_has("Line 2: NameError: name 'y' isn't defined"));
+    bool seen = false;
+    for (int r = 0; r < td_win_client(s_ed).h; r++)
+        seen |= strstr(row_text(r), "NameError") != NULL && strncmp(row_text(r), " Ln", 3) != 0;
+    CHECK(seen);
+    key(TD_KEY_F8, 0);
+    CHECK(status_has("Ln 2, Col 1"));
+
+    /* F7: keys go to the program until F7 or Esc. */
+    key(TD_KEY_F7, 0);
+    s_sent_len = 0;
+    type("ab");
+    ctrl('c');
+    CHECK(strcmp(s_sent, "ab\x03") == 0);
+    key(TD_KEY_ESC, 0);
+    CHECK(td_win_is_open(s_ed));
+    type("#");
+    ctrl('s');
+    CHECK(file_is("x = 1\n#print(y)\n"));
+
+    /* Unsaved changes are saved first. */
+    s_sent_len = 0;
+    type("!");
+    key(TD_KEY_F5, 0);
+    CHECK(file_is("x = 1\n#!print(y)\n"));
+    CHECK(strstr(s_sent, "py \"/t.py\"") != NULL);
+    td_wm_close_all();
+}
+
 int main(void)
 {
     td_set_sysinfo(&s_info);
@@ -462,5 +737,12 @@ int main(void)
     test_paste_from_the_terminal();
     test_history_limits();
     test_close_asks_about_changes();
+    td_terminal_set_backend(&s_backend);
+    test_indent();
+    test_comment();
+    test_find_replace_go_to();
+    test_buffer_grows();
+    test_completion();
+    test_run_and_error();
     return TD_TEST_RESULT();
 }

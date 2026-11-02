@@ -7,27 +7,40 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
-## New in 0.1.5
+## New in 0.2.0
 
-* **New home:** the code is at github.com/tinydesk-project and the
-  documentation, installer and update information at
-  <https://tinydesk-project.github.io/>. Boards running 0.1.3 or 0.1.4
-  still find this update at the old address; from 0.1.5 on they check
-  the new one.
-* **Update information can move:** should the site move again, the old
-  update information can name the new address (`moved`), and boards
-  follow it from then on (HTTPS only; your own `update.url` still comes
-  first). `ota feed` shows the address in use and why, `ota feed reset`
-  forgets a moved one.
-* **Only root changes the network policy:** `network mode` and
-  `network autowifi` with a value need root; any user still sees them.
-* **Board configuration numbers** are decimal or `0x` hexadecimal; a
-  leading zero no longer means octal.
-* **For contributors:** `STANDARDS.md` in TinyDesk Shell sets out names,
-  code style, commands, board keys and release rules, also for
-  community ports.
+* **ESP32-S3:** the Desktop edition for an ESP32-S3 with 16 MB flash and
+  8 MB Octal PSRAM (screens up to 256×96, SSH, over-the-air updates), and
+  the Shell edition for any ESP32-S3 with 4 MB flash or more, both on the
+  board's USB-UART port. The port came from @SanjayG-xls (#9).
+* **Python scripts with MicroPython:** `py script.py`, `py -c ...` or the
+  prompt, in the Terminal and over SSH, with TinyDesk's files and paths.
+  The `tinydesk` module runs shell commands, publishes MQTT messages and
+  reads or writes Modbus registers; `asyncio`, `hashlib` and precompiled
+  `.mpy` files are included, and root can use native and viper code.
+* **Pins and buses from Python (`machine`, root only):** `Pin` with
+  interrupts, `ADC`, `PWM`, `I2C`, `SPI`, `UART`, their software versions
+  and `neopixel`. The pins TinyDesk uses are refused, and everything a
+  script opened is released when it ends.
+* **Windows from Python (`tdui`):** a script opens desktop windows with
+  buttons, text boxes, lists, canvases, dialogs and menus, and handles
+  their events in Python: a small app without writing C.
+* **The Editor for Python:** colours, line numbers, indents and
+  completion for `.py` files; F5 runs the file with the output under the
+  text, F8 goes to the line of an error; find and replace, go to a line.
+  The Editor's buffer now follows the file's size, which leaves more RAM
+  on small boards (#6). `.py` files run from the desktop and Files.
+* **Files of the port on new Desktops:** a port can add its own files,
+  such as a `Credits.txt`, next to `Welcome.txt` (#5, an idea of
+  @aquasock).
+* **Fixes:** pasted text no longer picks up the terminal's size reply,
+  and long pastes arrive whole on the ESP32-C6 (its USB receive buffer
+  grew from 1 KB to 8 KB).
 
-Also since 0.1.0: Software Update offers to save built-in pins before
+Also since 0.1.0: nano with UTF-8 text, `peek` and `poke`, and script
+memory limits for small boards (0.1.6); the new home at github.com/tinydesk-project, update
+information that can move, and only root changes the network policy
+(0.1.5); Software Update offers to save built-in pins before
 an official update, non-ASCII names line up, long command lines wrap
 (0.1.4); official updates in Software Update and fixes for boards
 without PSRAM (0.1.3); the SD card at `/sd` and in Files (0.1.2);
@@ -54,8 +67,8 @@ Factory flashing can erase user data: back up an existing board first.
 
 Use a UTF-8 terminal with ANSI/VT cursor control and xterm mouse reporting,
 or the web terminal above. ESP32-C6 uses its built-in USB port (any speed);
-the classic ESP32 Desktop edition uses 921600 baud, the Shell edition
-115200. On the local console, run `passwd` as root (initial password:
+the classic ESP32 and the ESP32-S3 (its USB-UART port) use 921600 baud in
+the Desktop edition and 115200 in the Shell edition. On the local console, run `passwd` as root (initial password:
 `TinyDesk`). Remote access is blocked until that password changes. Telnet
 starts disabled; enable it explicitly in Network only on a trusted network.
 It is unencrypted and root-only because it takes over the existing desktop.
@@ -69,9 +82,10 @@ board reboots. Remote takeover is refused while physical recovery is active.
 
 | Desktop target | Required hardware | Screen | Limits |
 | --- | --- | --- | --- |
-| ESP32-C6 | 8 MB flash, built-in USB Serial/JTAG | up to 80×25 | |
+| ESP32-C6 | 8 MB flash, built-in USB Serial/JTAG | up to 80×25 | no SSH server in this release (see Known issues) |
 | ESP32 with PSRAM | 16 MB flash plus PSRAM (e.g. WROVER-IE N16R8) | up to 256×96 | |
 | ESP32 4 MB | 4 MB flash, no PSRAM needed (e.g. WROOM-32) | up to 80×25 | no SSH server, no over-the-air updates |
+| ESP32-S3 | 16 MB flash plus 8 MB Octal PSRAM (e.g. ESP32-S3-DevKitC-1 N16R8) | up to 256×96 | |
 | Windows, Linux | x86_64 PC | up to 400×150 | no Wi-Fi, OTA or users (the PC's network is used) |
 
 Measured on our boards with this firmware (About → Free RAM, idle desktop
@@ -79,9 +93,10 @@ after start-up, Wi-Fi connected unless noted):
 
 | Board | Firmware size (app slot) | Free RAM |
 | --- | --- | --- |
-| ESP32-C6 | 1.83 MB (2.5 MB slot, 27 % free) | about 167 KB |
-| ESP32 with PSRAM | 1.73 MB (3 MB slot, 42 % free) | about 155 KB internal + 3.2 MB PSRAM |
-| ESP32 4 MB | 1.66 MB (2.5 MB slot, 34 % free) | about 96 KB, Wi-Fi not connected |
+| ESP32-C6 | 2.22 MB (2.5 MB slot, 11 % free) | about 113 KB |
+| ESP32 with PSRAM | 2.07 MB (3 MB slot, 31 % free) | about 155 KB internal + 3.2 MB PSRAM |
+| ESP32 4 MB | 1.99 MB (2.5 MB slot, 20 % free) | about 59 KB |
+| ESP32-S3 | 2.00 MB (3 MB slot, 33 % free) | about 189 KB internal + 7.2 MB PSRAM |
 
 ## What is in this preview
 
@@ -93,6 +108,8 @@ after start-up, Wi-Fi connected unless noted):
   Settings, Software Update (OTA with rollback), About.
 - Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes
   and redirection; right-click → Run on the desktop.
+- Python scripts (MicroPython): `py`, pins and buses with `machine`,
+  desktop windows with `tdui`, and the Editor's Python mode.
 - Two editions: TinyDesk Desktop, and TinyDesk Shell on its own.
 - Security: physical recovery uses a transport trust policy, not just shell
   task identity; Telnet is opt-in; Telnet, SSH and FTP reject the factory
@@ -103,3 +120,21 @@ after start-up, Wi-Fi connected unless noted):
 - Board pins come from a configuration file (`board` command), not from
   the code.
 - Tests gate release builds; every release starts as a draft pre-release.
+
+## Known issues
+
+- **SSH on the ESP32-C6:** `ssh start` refuses with "insufficient internal
+  RAM" on the ESP32-C6 (it has done so since 0.1.0). A fix is ready and
+  tested and comes in a later release. The other boards with SSH are not
+  affected.
+
+## Licences
+
+TinyDesk and TinyDesk Shell are MIT. The firmware images also contain
+third-party code under its own licence: wolfSSH and wolfSSL (GPLv3) for the
+SSH/SFTP server, so the firmware as a whole is distributed under the GPLv3;
+and MicroPython (MIT, Copyright (c) 2013-2026 Damien P. George) for the
+`py` command, whose SHA-256 code from
+`lib/crypto-algorithms` is public domain. The source archive has every
+licence text: `LICENSE`, `third_party/tdsh/THIRD_PARTY_LICENSES.md` and
+`third_party/micropython/LICENSE`. The PC programs include theirs.

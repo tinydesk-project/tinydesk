@@ -24,6 +24,8 @@ static bool s_vt_ready;
 static bool s_started;
 static int s_scroll;          /* lines scrolled back */
 static int s_bg_timer = -1;
+static td_window_t *s_viewer;  /* another window showing the session */
+static void (*s_tap)(const uint8_t *data, int len);
 
 /* Answers to terminal queries go straight back to the program. */
 static void vt_reply(void *user, const char *data, int len)
@@ -196,13 +198,22 @@ static void pump(void)
         if (n <= 0)
             break;
         td_vterm_write(&s_vt, buf, n);
+        if (s_tap)
+            s_tap(buf, n);
     }
     if (s_vt.dirty)
     {
         s_vt.dirty = false;
         if (td_win_is_open(s_win))
             td_win_invalidate(s_win);
+        if (td_win_is_open(s_viewer))
+            td_win_invalidate(s_viewer);
     }
+}
+
+void td_terminal_pump(void)
+{
+    pump();
 }
 
 /* Keep draining output while the window is closed, via a timer, so a
@@ -434,19 +445,79 @@ static const td_app_t s_app = {"Terminal", launch, ">_"};
 
 /* ------------------------------------------------------ run a command */
 
-bool td_terminal_run(const char *command)
+bool td_terminal_command(const char *command)
 {
     if (!s_backend || !s_backend->write)
     {
         td_msgbox("Terminal", "This build has no shell to run it in.", "OK", NULL, NULL);
         return false;
     }
-    launch();
     s_scroll = 0;
     send("\x15", 1);                       /* Ctrl+U: drop a half-typed line */
     send(command, (int)strlen(command));
     send("\r", 1);
     return true;
+}
+
+bool td_terminal_run(const char *command)
+{
+    if (!s_backend || !s_backend->write)
+        return td_terminal_command(command);   /* says why not */
+    launch();
+    return td_terminal_command(command);
+}
+
+int td_terminal_draw_view(td_window_t *win, int x, int y, int w, int h, int scroll_back, bool cursor)
+{
+    if (!s_backend || w <= 0 || h <= 0)
+        return 0;
+    if (!s_vt_ready)
+        ensure_vt(w, h);
+    if (!td_win_is_open(s_win) && (s_vt.cols != w || s_vt.rows != h))
+    {
+        td_vterm_resize(&s_vt, w, h);
+        if (s_backend->resize)
+            s_backend->resize(s_backend->ctx, w, h);
+    }
+    if (scroll_back > td_vterm_scrollback_lines(&s_vt))
+        scroll_back = td_vterm_scrollback_lines(&s_vt);
+    if (scroll_back < 0)
+        scroll_back = 0;
+    /* Taller than the view (the Terminal window is open): the rows that
+     * end at the cursor. */
+    int first = s_vt.rows > h && s_vt.cy >= h ? s_vt.cy - h + 1 : 0;
+    td_rect_t c = td_win_client(win);
+    td_rect_t old = td_draw_get_clip();
+    td_rect_t view = td_rect(c.x + x, c.y + y, w, h);
+    td_rect_t clip = td_rect_intersect(old, view);
+    td_draw_clip(clip);
+    td_fill(td_rect(x, y, w, h), ' ', s_vt.def_fg, s_vt.def_bg);
+    td_vterm_draw(&s_vt, x, y - first, scroll_back, cursor);
+    td_draw_clip(old);
+    return scroll_back;
+}
+
+void td_terminal_key(const td_event_t *ev)
+{
+    char out[16];
+    int n = encode_key(ev, out);
+    if (n > 0)
+    {
+        s_scroll = 0;
+        send(out, n);
+    }
+}
+
+void td_terminal_send(const char *text, int len)
+{
+    s_scroll = 0;
+    send(text, len);
+}
+
+void td_terminal_set_viewer(td_window_t *win, void (*tap)(const uint8_t *data, int len))
+{
+    s_viewer = win;
+    s_tap = win ? tap : NULL;
 }
 
 bool td_is_script(const char *name)
@@ -455,11 +526,23 @@ bool td_is_script(const char *name)
     return n > e && strcmp(name + n - e, TD_SCRIPT_EXT) == 0;
 }
 
+bool td_is_python(const char *name)
+{
+    size_t n = strlen(name);
+    return n > 3 && strcmp(name + n - 3, ".py") == 0;
+}
+
+bool td_is_runnable(const char *name)
+{
+    return td_is_script(name) || td_is_python(name);
+}
+
 bool td_script_run(const char *path)
 {
     const char *p = td_shell_path(path);
     char cmd[TD_PATH_MAX + 16];
-    if (strchr(p, '"') || snprintf(cmd, sizeof(cmd), "tdsh run \"%s\"", p) >= (int)sizeof(cmd))
+    const char *fmt = td_is_python(path) ? "py \"%s\"" : "tdsh run \"%s\"";
+    if (strchr(p, '"') || snprintf(cmd, sizeof(cmd), fmt, p) >= (int)sizeof(cmd))
     {
         td_msgbox("Run", "This file name cannot be passed to the shell.", "OK", NULL, NULL);
         return false;

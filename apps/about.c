@@ -5,8 +5,13 @@
 
 #include "td_apps.h"
 
+/* Wide enough for the longest line, the shell repository's address (50
+ * characters) at the labels' indent of 2. */
+#define ABOUT_W 56
+
 static td_window_t *s_win;
 static td_widget_t *s_heap, *s_uptime;
+static int s_url_y; /* row of the repository addresses */
 
 static void update(void)
 {
@@ -22,6 +27,18 @@ static void update(void)
     uint32_t s = td_uptime_ms() / 1000u;
     td_widget_printf(s_uptime, "Uptime:    %uh %02um %02us",
                      (unsigned)(s / 3600u), (unsigned)(s / 60u % 60u), (unsigned)(s % 60u));
+}
+
+/* The addresses are drawn, not labels: a label holds TD_TEXT_MAX - 1
+ * characters (47 on the ESP32 builds), and the shell's address is 50. */
+static void on_draw(td_window_t *win, int w, int h)
+{
+    (void)win;
+    (void)w;
+    (void)h;
+    const td_theme_t *th = td_theme();
+    td_text(2, s_url_y, TD_REPO_URL, th->win_fg, th->win_bg, 0);
+    td_text(2, s_url_y + 1, TD_SHELL_REPO_URL, th->win_fg, th->win_bg, 0);
 }
 
 static void on_tick(td_window_t *win)
@@ -60,8 +77,9 @@ static void launch(void)
     int h = 14 + (have_fw ? 1 : 0) + (si->extra ? 1 : 0);
     td_window_desc_t d = {
         .title = "About TinyDesk",
-        .rect = td_rect(-1, -1, 50, h),
+        .rect = td_rect(-1, -1, ABOUT_W, h),
         .flags = TD_WIN_MOVABLE | TD_WIN_CLOSABLE,
+        .on_draw = on_draw,
         .on_close = on_close,
         .on_tick = on_tick,
         .tick_ms = 1000,
@@ -95,10 +113,10 @@ static void launch(void)
     s_uptime = td_label(s_win, 2, y++, 0, "");
     if (si->extra)
         td_label(s_win, 2, y++, 0, si->extra);
-    td_label(s_win, 2, y++, 0, TD_REPO_URL);
-    td_label(s_win, 2, y++, 0, TD_SHELL_REPO_URL);
+    s_url_y = y; /* drawn by on_draw */
+    y += 2;
 
-    td_widget_t *ok = td_button(s_win, 20, y, "OK", on_ok, NULL);
+    td_widget_t *ok = td_button(s_win, (ABOUT_W - 2 - 6) / 2, y, "OK", on_ok, NULL); /* "[ OK ]", centred */
     td_widget_focus(ok);
     update();
 }

@@ -171,8 +171,10 @@ static const char *prov_icon(int i, void *user)
     if (s_items[i].is_dir)
         return "[/";
     if (td_is_image(s_items[i].name))
-        return "\xE2\x96\x93\xE2\x96\x92"; /* the Image Viewer's icon */
-    return td_is_script(s_items[i].name) ? "#!" : "\xC2\xB6 ";   /* #! for shell scripts */
+        return "ââ"; /* the Image Viewer's icon */
+    if (td_is_script(s_items[i].name))
+        return "#!";   /* shell scripts */
+    return td_is_python(s_items[i].name) ? "py" : "\xC2\xB6 ";
 }
 
 static int prov_icon_fg(int i, void *user)
@@ -288,7 +290,7 @@ static void item_menu_chosen(int item, void *user)
     (void)user;
     if (s_target < 0 || s_target >= s_count || strcmp(s_items[s_target].name, s_target_name) != 0)
         return;
-    if (!s_items[s_target].is_dir && td_is_script(s_target_name))
+    if (!s_items[s_target].is_dir && td_is_runnable(s_target_name))
     {
         if (item == 0)
         {
@@ -350,7 +352,7 @@ static void prov_context(int i, int x, int y, void *user)
     if (i >= 0 && i < s_count)
     {
         static const char *const items[] = {"Run", "Open", "Rename", "Delete"};
-        bool script = !s_items[i].is_dir && td_is_script(s_items[i].name);
+        bool script = !s_items[i].is_dir && td_is_runnable(s_items[i].name);
         s_target = i;
         snprintf(s_target_name, sizeof(s_target_name), "%s", s_items[i].name);
         td_menu_popup(x, y, script ? items : items + 1, script ? 4 : 3, item_menu_chosen, NULL);
@@ -427,6 +429,21 @@ static const char s_welcome[] =
     "The shell sees this folder as ~/Desktop. Every user has their own.\n"
     "Save with Ctrl+S, close with Ctrl+W.\n";
 
+/* The port's own files for a new Desktop (td_sysinfo_t.desktop_files). */
+static void write_port_files(void)
+{
+    const td_desktop_file_t *d = td_sysinfo()->desktop_files;
+    for (; d && d->name; d++)
+    {
+        if (!td_valid_name(d->name) || !d->text)
+            continue;
+        char path[PATH_LEN];
+        item_path(path, d->name);
+        if (path[0])
+            fs()->write(path, d->text, (int)strlen(d->text));
+    }
+}
+
 void td_desktop_folder_init(void)
 {
     const td_fs_ops_t *f = fs();
@@ -449,6 +466,7 @@ void td_desktop_folder_init(void)
             char path[PATH_LEN];
             item_path(path, "Welcome.txt");
             f->write(path, s_welcome, (int)sizeof(s_welcome) - 1);
+            write_port_files();
         }
     }
     s_count = 0;                 /* a different user: forget the old icons */

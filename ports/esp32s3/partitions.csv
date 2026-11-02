@@ -1,4 +1,4 @@
-# tinydesk on the ESP32-S3 with 16 MB flash (as the classic ESP32 port): two 3 MB OTA slots, 9.9 MB /fs.
+# tinydesk on ESP32-S3 (16 MB flash): two 3 MB OTA slots, 9.9 MB /fs.
 # Name,     Type, SubType,  Offset,   Size,
 nvs,        data, nvs,      0x9000,   0x6000,
 phy_init,   data, phy,      0xF000,   0x1000,

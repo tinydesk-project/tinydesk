@@ -12,3 +12,9 @@ entries:
 archive: libtdsh.a
 entries:
     * (extram_bss)
+
+# MicroPython's interpreter state (its heap is allocated in PSRAM per run).
+[mapping:td_extram_micropython]
+archive: libmicropython.a
+entries:
+    * (extram_bss)

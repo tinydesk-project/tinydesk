@@ -26,11 +26,13 @@ idf_component_register(
         "${TD_ROOT}/apps/datetime.c"
         "${TD_ROOT}/apps/desktop.c"
         "${TD_ROOT}/apps/editor.c"
+        "${TD_ROOT}/apps/editor_py.c"
         "${TD_ROOT}/apps/files.c"
         "${TD_ROOT}/apps/logview.c"
         "${TD_ROOT}/apps/modbus.c"
         "${TD_ROOT}/apps/mqtt.c"
         "${TD_ROOT}/apps/network.c"
+        "${TD_ROOT}/apps/pyui.c"
         "${TD_ROOT}/apps/session.c"
         "${TD_ROOT}/apps/settings.c"
         "${TD_ROOT}/apps/sysmon.c"
@@ -68,7 +70,10 @@ idf_component_register(
 # RAM), the default 128 with it. A window that still does not fit, or gets
 # no timer, is closed with a message instead of opening with missing parts.
 if(CONFIG_SPIRAM)
-    set(TD_SCREEN_LIMITS TD_MAX_COLS=256 TD_MAX_ROWS=96 TD_VT_SCROLLBACK=200)
+    # Python canvases may cover a whole large screen several times over
+    # (pages: 100x30 is 3000 cells, 6 bytes each); they are allocated in
+    # PSRAM while a script runs, 192 KB at most.
+    set(TD_SCREEN_LIMITS TD_MAX_COLS=256 TD_MAX_ROWS=96 TD_VT_SCROLLBACK=200 TD_PYUI_MAX_CELLS=32000)
 else()
     set(TD_SCREEN_LIMITS TD_MAX_COLS=80 TD_MAX_ROWS=25 TD_VT_SCROLLBACK=12 TD_MAX_WIDGETS=96)
 endif()

@@ -160,51 +160,199 @@ A successful build alone is not counted as a hardware test.
   built in), keeps its four board settings in `/etc/board.conf`, and all
   13 apps open.
 
-## Not released yet (branch experiment/pixelbuffer)
+## 0.2.0 (2026-10-31)
 
-- Pixel canvas and Pixels: the plasma and the palette on the ESP32-C6
-  (built-in USB), the ESP32-S3 (built-in USB) and the ESP32 with PSRAM
-  (UART at 921600), read back with vtshot; tests/test_canvas.c (90
-  checks, with dithering and Fine detail). Pictures per second, plasma: default window (42x30 pixels) C6
-  30, S3 32, ESP32 9; full screen at 80x25 C6 18 (425 KB/s), S3 24
-  (564 KB/s); at 160x50 S3 6 (633 KB/s), ESP32 1 (87 KB/s). On the
-  ESP32 and the S3 every canvas is allocated in PSRAM (Log Viewer: canvas:
-  ... in PSRAM). No restart on any board.
-- Flicker: before, a terminal reading slower than the C6 sent (my reader
-  at 20 and 8 KB/s) caused a screen clear after every dropped frame (10-13
-  in 10 s). Now: none at full speed, 55 KB/s or with pauses of 200-400 ms
-  every second (60 s each); one setup with a clear only when nothing got
-  through for 3 s. Real PuTTY, 25 s recorded at 30 fps: no dark frame.
-  tests/test_link.c (33 checks) fails without each rule.
-- Frame pacing, real PuTTY on the C6 while Pixels animates, a key sent
-  to PuTTY until the picture changed: median 2.4 s (worst 4.7 s) without
-  pacing, 0.11 s (worst 0.2 s) with it; PuTTY shows about 10 pictures a
-  second (86 KB/s).
-- ESP32-S3 port on an ESP32-S3R8 (rev 0.2, 8 MB octal PSRAM, 16 MB
-  flash) over its built-in USB: boots to the desktop (root@esp32s3),
-  joins Wi-Fi, `ota feed` names update-desktop-esp32s3.json, About 199 KB
-  internal + 7373 KB PSRAM free, every app opens one after another (13 of
-  13, then the Task Manager), no restart. Not on hardware: SSH, RS-485,
-  Ethernet, SD card. After moving link_usj.c to ports/esp_idf/app the C6,
-  ESP32 and 4 MB ESP32 still build.
-- Image Viewer: tests/test_image.c (102 checks: every BMP kind, binary
-  and plain PPM/PGM, 16-bit samples, a plain file longer than the 4 KB
-  window, the errors). tdsim on Windows: a 320x200 24-bit BMP on the
-  desktop opens from a double-click, right way up, right colours. ESP32-S3:
-  a 64x40 plain PPM typed in through the Terminal's `write` (53 lines,
-  18,540 bytes, 24 s) and the 2x2 `echo` example from the guide open from
-  the desktop icon; white and pure colours stay solid with dithering on
-  (black too, in the tests). The C6, ESP32 and 4 MB ESP32 build with it; not opened on them.
-- Fine pictures (four pixels per cell) on the ESP32-S3 at 120x40: a
-  160x100 test card full screen shows 1-pixel stripes as stripes (Normal:
-  grey), round circles in both details; the setting survives a restart;
-  Pixels' plasma 29 pictures/s in the default window (Normal 32), 7/s
-  full screen at 240x78 pixels (Normal 10/s at 120x78). Real PuTTY with
-  its default font (Courier New): the picture is right, but the
-  quadrant characters Courier New lacks show as small boxes along edges;
-  Courier New, Consolas and Lucida Console have no quadrants, Cascadia
-  Mono and Cascadia Code have all ten (checked in the font files). Not
-  seen in PuTTY with Cascadia Mono.
+Release candidate: `tinydesk` f879e28 with `tinydesk-shell` de3a729 (both
+version 0.2.0), built clean with ESP-IDF v5.3.1 on 2026-10-31 in a fresh
+checkout, as the release workflow builds them (`-DTD_USE_EXAMPLE_BOARD=ON`
+for the desktop, no settings built in), and packaged with
+`tools/make_release.py` (seven factory images, three app images with
+their update feeds, seven manifests). The later commits of 0.2.0 change
+only the release notes and this file. Images and their SHA-256:
+
+| Image | SHA-256 |
+| --- | --- |
+| `ports/esp32c6` `tinydesk.bin` | `b469e97a0bcef3e4f4b114e94c1bab69a6176163b3101aafb80e4761afbf7702` |
+| `ports/esp32` `tinydesk.bin` | `9551e578607bb1e35e837104b9fec9e1dddce79c0e8a97ae2715d8a88b899047` |
+| `ports/esp32-4mb` `tinydesk.bin` | `ebcb40dba1c569b4165c4a4002469184eb4f5923fa7df8523b2032f58f6daf83` |
+| `ports/esp32s3` `tinydesk.bin` | `d164401e19d891b79ccad5fdf84b12a8987ac9476e5218dc03c20012225e4142` |
+| Shell `tdsh_c6.bin` (built, not run on a board) | `0ec8e7e1bac5c11b04793289cd9801532cd837d75b1fdbd962f10bdcdf4c2120` |
+| Shell `tdsh_esp32.bin` (built, not run on a board) | `3a464f33f0e6d9c25f15857885172da40d79c19b0b5beb412d263be40118f628` |
+| Shell `tdsh_esp32s3.bin` (built; the same source ran on the S3 before the version bump) | `de191d3fea46a1db9f4bc0e40cb5e82e4b1800742da31afd5f9a0aa4b30f0ada` |
+
+The four desktop images were written with their bootloader, partition
+table and boot selection (no erase), so settings, users and files stayed;
+no whole-flash backup was taken this time. Then, as root, scripted over
+the serial link and read back from the screen, on the ESP32-C6 (USB,
+80x25), the ESP32 with PSRAM (UART 921600, 160x50), the 4 MB ESP32 (UART
+921600, 80x25) and the ESP32-S3 (UART 921600, 160x50), all with Wi-Fi
+connected:
+
+- About shows TinyDesk 0.2.0 and TinyDesk Shell 0.2.0 on all four.
+- `whoami` in the Terminal; a window dragged by its title (Counter) and
+  resized from its corner (Editor); a file opened in the Editor, changed,
+  saved and opened again, and the file on flash afterwards.
+- No reset in 10.5 minutes of use and idle (uptime 17.5, 16.8, 12.6 and
+  16.3 minutes at the end).
+- Free RAM in About: ESP32-C6 113 KB; ESP32 with PSRAM 155 KB + 3260 KB
+  PSRAM; 4 MB ESP32 59 KB; ESP32-S3 189 KB + 7357 KB PSRAM.
+
+Before the version bump, on builds of the same Python code (tinydesk
+a24e415 and 0eab9ff): the Python board tests passed on the ESP32 with
+PSRAM, the ESP32-S3 and the ESP32-C6 (features with native code 6/6;
+on the S3 and the ESP32 with PSRAM also `machine` 4/4, `tdui` 14/14,
+window sizes 8/8, the Python Editor 11/11, long pastes 5/5), and CI
+passed on tinydesk#11.
+
+Known issue: `ssh start` refuses on the ESP32-C6 (it asks for about
+160 KB of free internal RAM); see the release notes.
+
+Release: TinyDesk Shell 0.2.0 (tag v0.2.0 on de3a729) and TinyDesk 0.2.0
+(tag v0.2.0 on 3953c42), both built by their release workflows (CI on
+main and on the tags passed) and published as pre-releases. The ten
+firmware images and the PC programs of TinyDesk Shell's release, and the
+26 files of TinyDesk's, were downloaded and matched their
+`SHA256SUMS.txt`; the site's `tools/fetch_release.py` accepted the release
+(ESP32-S3 manifests included) and a local installer offered 0.2.0 for all
+seven board/edition entries. After the site's Pages workflow: the live
+installer's seven manifests say 0.2.0 with the right chip family, its ten
+images match the live `SHA256SUMS.txt`, the update feeds of the ESP32-C6,
+the ESP32 with PSRAM and the ESP32-S3 offer 0.2.0, the cover shows 0.2.0,
+and the web terminal lists the ESP32-S3. Not done for this release: a
+fresh install from the live site on each board.
+
+## 0.1.6 (2026-10-18)
+
+Release candidate: `tinydesk` 97286c5 with `tinydesk-shell` e85ad85 (both
+version 0.1.6), built clean with ESP-IDF v5.3.1 on 2026-10-18. Images and
+their SHA-256:
+
+| Image | SHA-256 |
+| --- | --- |
+| `ports/esp32c6` `tinydesk.bin` | `33d735b8156f2a9359a1d8d0419da7752acafb6fc2c6cdf9f2a6519a6196f28d` |
+| `ports/esp32` `tinydesk.bin` | `621f56b5f1de2813eb64c57c6f2ebc539190b61d7ff1695b45a6e878ed0dd232` |
+| `ports/esp32-4mb` `tinydesk.bin` | `9e8eeb169a4730432779c58b151256d0beab3a29a8e53c6a53d471023703853b` |
+| Shell `tdsh_c6.bin` (built, not run on a board) | `0a6f741139a2e90a0ad60ecb39b184613257f55adb53cebd315f0807c4209646` |
+| Shell `tdsh_esp32.bin` (built, not run on a board) | `d77198c84c3fdee65ac5633c707ec0b15be0472f9eaad0ed55618332cb07a11b` |
+
+All three desktop images are built as the release workflow builds them
+(`-DTD_USE_EXAMPLE_BOARD=ON`, no settings built in); a first C6 build
+from 97286c5 had the developer's own `board.conf` built in and was
+replaced (the ESP32 images never had one). On the C6 the pins then come
+from its `/etc/board.conf`, as on a board updated by an official image.
+
+The first candidate, 26ae9c8, passed the same tests but About cut the
+TinyDesk Shell address to `.../tinydesk-s` (a label holds 47 characters on
+the ESP32 builds); 97286c5 draws both addresses whole. The Shell images
+are the same source in both and were built from 26ae9c8.
+
+Each board's whole flash was backed up first (kept off the repositories);
+the three desktop images were written to the app partition only, so
+settings, users and files stayed. Then, as root, scripted over the serial
+link and read back from the screen, on the ESP32-C6 (USB, 80x25), the ESP32
+with PSRAM (UART 921600, 160x50) and the 4 MB ESP32 (UART 921600, 80x25):
+
+- About shows TinyDesk 0.1.6, TinyDesk Shell 0.1.6 and both repository
+  addresses in full on all three;
+  `ota status` on the ESP32-C6 and the ESP32 with PSRAM: 0.1.6 in ota_0
+  (the 4 MB ESP32 has no OTA).
+- A window dragged by its title (Counter) and resized from its corner
+  (Editor).
+- A file made with `write`, opened from its desktop icon in the Editor, a
+  line added, saved with Ctrl+S, closed, opened again with both lines;
+  `cat` showed both lines from flash.
+- Shell commands: `whoami`, `uptime`, `heap`, `cat`, `rm`.
+- Memory, idle desktop: ESP32-C6 `heap` 132,568 bytes free (largest
+  block 102,400); ESP32 with PSRAM 155 KB + 3263 KB PSRAM
+  (158,471, largest 110,592); 4 MB ESP32 96 KB (98,900, largest 86,016;
+  lowest during the tests 66,824).
+- 10.5 minutes of use (About and the Terminal opened about once a minute)
+  and idle: no reset; `uptime` at the end 12:58 (ESP32-C6), 17:14 (ESP32
+  with PSRAM), 12:47 (4 MB ESP32).
+- Cold boot (unplugged and plugged in again by the owner): the ESP32-C6
+  and the 4 MB ESP32 started on their own into 0.1.6 (`uptime` matching
+  the replug). The ESP32 with PSRAM (an ESP32-WROVER-IE board) stayed
+  silent after 3 of 4 power-ons: nothing at 115200 from about 3 s after
+  power-up, no answer at 921600, and not in download mode (esptool
+  cannot connect without a reset); a pulse on EN started it normally.
+  Two of those were with 0.1.6, one with the official 0.1.4 (`ota
+  rollback`, replugged, then back to 0.1.6), and the fourth power-on
+  started 0.1.6 on its own (`uptime` matching the replug): this board's
+  power-up, not the firmware.
+- The Shell firmware (`tdsh_esp32.bin` above) on the 4 MB ESP32, written
+  to the app partition (same layout as the desktop): boots to root on the
+  local console at 115200, `version` TinyDesk Shell 0.1.6, `heap` 210,700
+  bytes free, a file written and read back, a file opened, saved and
+  opened again in nano, a `.tdsh` script with arithmetic, `peek -l` (8
+  regions), `peek` of the eFuse, `poke` to RAM refused; 10.5 minutes of
+  commands and idle without a reset (`uptime` 12:21). Then the desktop
+  image above was written back and About showed TinyDesk 0.1.6.
+- The release packaged locally from these builds (`make_release.py
+  --build-dir`, into a copy of the site): 17 files, all matching
+  `SHA256SUMS.txt`; the five manifests name 0.1.6 and images that exist
+  and match; the two update feeds name 0.1.6 and the very app images
+  tested above (size and SHA-256). `fetch_release.py`'s check accepts the
+  release and refuses a copy with one byte of an image changed; the
+  site's tests (11) pass. The installer page from that copy: all five
+  board and edition choices show "version 0.1.6" with Install; quick
+  board changes end on the last one chosen; Linux programs not on the
+  site point to the GitHub releases, Windows programs download from the
+  site; a missing and an empty image each show "not on this site right
+  now" without Install, the other boards still install.
+
+- The TinyDesk Shell draft release `v0.1.6` (tag on e85ad85, built by
+  the release workflow): its 7 files match its `SHA256SUMS.txt`; both
+  manifests name 0.1.6 and the right chip; the PC archives hold `tdsh` /
+  `tdsh.exe`, README and LICENSE. The app part of its ESP32 image,
+  written to the 4 MB ESP32's app partition, runs: `version` 0.1.6,
+  `idfinfo` ESP-IDF v5.3.1, a file written and read back, `peek -l`;
+  then the desktop image was written back. Its ESP32-C6 image was not
+  run on a board.
+
+- The TinyDesk draft release `v0.1.6` (tag on b084b2d, which has the
+  tested firmware source of 97286c5; built by the release workflow after
+  CI passed): its 19 files match its `SHA256SUMS.txt` and nothing is
+  unlisted; the five manifests name 0.1.6, the right chip and offset 0;
+  both update feeds name 0.1.6 and their app images (size, SHA-256
+  `1da7cedd49446229…` ESP32-C6, `e715ad1368181dd0…` ESP32); the four PC
+  archives hold the program, README and licences; the release text is
+  "New in 0.1.6". Its images on the boards (the ESP32-C6 and ESP32 app
+  images, the app part of the 4 MB factory image, each written to the
+  app partition): About shows TinyDesk 0.1.6, ESP-IDF v5.3.1, TinyDesk
+  Shell 0.1.6 and both addresses in full; window drag and resize, the
+  Editor open, save and reopen, shell commands, and 3 minutes of use and
+  idle without a reset on all three.
+
+- Published (both releases), then the site pushed and its GitHub Pages
+  workflow run: the live cover and installer page say 0.1.6; the five
+  manifests and their images, both update feeds with their app images,
+  and the four PC downloads on https://tinydesk-project.github.io/install/
+  match the release's `SHA256SUMS.txt`. `ota official` on the ESP32 with
+  PSRAM and the ESP32-C6 reads the live update information: "TinyDesk
+  0.1.6, the newest release, is installed."
+
+Not done for this release yet (they need the owner's passwords):
+factory NVS, recovery, and fresh installs from the live site. After tagging: the draft release's images against
+`SHA256SUMS.txt`.
+
+The `peek` and `poke` results below were on a build before the version
+bump (shell efb4e1f code).
+
+- `peek` and `poke` in the TinyDesk firmware, as root over the serial
+  Terminal: `peek -l` lists 9 regions on the ESP32 with PSRAM (with
+  `psram`), 8 on the 4 MB ESP32 (no `psram`) and 7 on the ESP32-C6. Reads
+  in every region; the eFuse MAC words match the Wi-Fi MAC on the ESP32
+  with PSRAM (90:38:0C:AD:45:60) and the ESP32-C6 (AC:EB:E6:D0:E7:C8).
+  Refused: 8-bit reads of the ESP32's instruction-bus ROM, `poke` to RAM
+  and to the read-only GPIO registers, 8- and 16-bit `poke`. A dump from
+  `gpio_out` into `gpio` (overlapping regions) works. `poke` set and
+  cleared the output latch of a pin whose output stays disabled (GPIO33
+  on the ESP32, GPIO1 on the ESP32-C6), read back with `peek`; no pin was
+  driven. The Shell firmware builds with the same table; not run on a
+  board.
+- A script that runs out of memory while it loads prints
+  `uscript: <file>:<line>: not enough memory to load the script`
+  (tinydesk-shell tests/test_script_oom.c, which fails without the fix).
 
 ## Not validated yet
 

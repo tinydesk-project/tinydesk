@@ -194,9 +194,16 @@ typedef struct
     int16_t cpu_tenths;        /* share of all cores since the previous call, in 0.1 %; -1 unknown */
 } td_task_info_t;
 
+/* A file a port puts on every new Desktop (td_sysinfo_t.desktop_files). */
 typedef struct
 {
-    const char *platform;      /* "ESP32-C6", "Windows host", ... */
+    const char *name;          /* "Credits.txt"; NULL ends the list */
+    const char *text;          /* the file's contents */
+} td_desktop_file_t;
+
+typedef struct
+{
+    const char *platform;     /* "ESP32-C6", "Windows host", ... */
     const char *chip;          /* e.g. "ESP32-C6 rev 0.1, 1 core" */
     const char *sdk_version;   /* e.g. ESP-IDF version */
 
@@ -211,6 +218,9 @@ typedef struct
     uint32_t (*psram_total)(void);
     int (*task_count)(void);
     int (*cpu_mhz)(void);
+    /* Optional: the chip's own temperature (its die, not the room) in
+     * tenths of a degree Celsius; false when it cannot be read. */
+    bool (*chip_temp)(int *tenths_c);
     /* Optional: fill up to max tasks, return how many, or -1 when they
      * cannot be listed now (out of memory). CPU shares are measured between
      * calls (the first call has none). Tasks whose name starts with "IDLE"
@@ -252,6 +262,12 @@ typedef struct
 
     /* Optional extra "About" line, e.g. the embedded shell version. */
     const char *extra;
+
+    /* Optional files written next to Welcome.txt when a user's Desktop
+     * folder is first created, e.g. a port's Credits.txt. An array ended by
+     * an entry with name NULL; names are plain file names (no '/' or '\'),
+     * others are skipped. */
+    const td_desktop_file_t *desktop_files;
 } td_sysinfo_t;
 
 /* Install / read the port's sysinfo (never NULL; unset members are NULL). */
