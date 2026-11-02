@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "tinydesk/td.h"
+#include "tinydesk/td_picture.h"
 
 static const td_hal_t *s_hal;
 static td_buffer_t s_front, s_back;
@@ -137,6 +138,11 @@ static void resync(void)
     s_renderer.write_failed = false;
     td_render_setup_terminal(&s_renderer);
     td_render_query_size(&s_renderer);
+    /* Can it show pictures (Sixel in the device attributes), and how big
+     * are its cells in pixels? Until it says so: no pictures. */
+    td_term_set_sixel(false);
+    td_pictures_forget();
+    td_render_raw(&s_renderer, "\x1b[c\x1b[16t");
     td_render_flush(&s_renderer);
     td_buffer_invalidate(&s_front);
     td_wm_invalidate();
@@ -304,12 +310,29 @@ static void update_rate(uint32_t now)
     s_rate_start_bytes = s_renderer.bytes_sent;
 }
 
+static void picture_write(void *user, const char *s, int n)
+{
+    td_render_write(user, s, n);
+}
+
 static void render_frame(void)
 {
     uint32_t t0 = td_millis();
     uint32_t sent_before = s_renderer.bytes_sent;
+    td_pictures_begin();
     td_wm_compose(&s_back);
+    td_pictures_mark(&s_front, &s_back);   /* before front catches up */
     bool ok = td_render_diff(&s_renderer, &s_front, &s_back);
+    if (ok)
+    {
+        bool moved = false;
+        td_pictures_send(picture_write, &s_renderer, &moved);
+        ok = td_render_flush(&s_renderer);
+        if (moved)
+            td_render_reset_state(&s_renderer);   /* the cursor came back with ESC 8; colours as before */
+        if (!ok)
+            td_pictures_forget();
+    }
     s_stats.frames++;
     s_stats.frame_ms = td_millis() - t0;
     if (!ok)

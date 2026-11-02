@@ -2,9 +2,10 @@
 #
 #     py pixels_demo.py      (ui_sheet.ppm next to it)
 #
-# A gradient sky, a sun, a panel and three buttons drawn from one small
-# sprite sheet (tools/make_ui_sheet.py), with text over the pixels. Every
-# shape and picture is one call: the desktop draws the pixels, not Python.
+# A gradient sky, a sun, a panel with a number in big pixel text, round
+# buttons drawn in colours and one from a small sprite sheet
+# (tools/make_ui_sheet.py), and text over the pixels. Every shape, picture
+# and text is one call: the desktop draws the pixels, not Python.
 
 import tdui
 
@@ -21,19 +22,16 @@ except NameError:
 sheet = tdui.Image.load(here + "/ui_sheet.ppm", key=KEY, dither=False)
 
 win = tdui.Window("Pixels", W, H)
+cv = win.canvas(0, 0, W, H)
 count = 0
-buttons = []                       # (x, y, w, h in cells, label, action)
-
-
-def draw_button(b, pressed=False):
-    x, y, w, h, label, _ = b
-    cv.nine(sheet, 2 * x, 2 * y, 2 * w, 2 * h, 4, src=DOWN if pressed else BUTTON)
-    cv.put(x + (w - len(label)) // 2, y + h // 2, label, WHITE, tdui.CLEAR)
 
 
 def draw_count():
-    cv.nine(sheet, 60, 10, 44, 18, 4, src=PANEL)
-    cv.big(35, 8, str(count), YELLOW, tdui.CLEAR, width=3)
+    # The panel, then the number in the 8 x 16 font, centred on it.
+    cv.nine(sheet, 60, 8, 44, 20, 4, src=PANEL)
+    s = str(count)
+    tw, th = tdui.text_size(s)
+    cv.draw_text(82 - tw // 2, 18 - th // 2, s, YELLOW)
 
 
 def change(n):
@@ -42,45 +40,22 @@ def change(n):
     draw_count()
 
 
-pressed = None
-
-
-def on_mouse(c, x, y, button, action):
-    # A press shows the button down at once; letting go puts it back up,
-    # and does what it says if the mouse is still on it.
-    global pressed
-    hit = None
-    for b in buttons:
-        bx, by, bw, bh = b[:4]
-        if bx <= x < bx + bw and by <= y < by + bh:
-            hit = b
-    if action == 0 and button == 0 and hit:
-        pressed = hit
-        draw_button(hit, True)
-    elif action == 1 and pressed:
-        draw_button(pressed)
-        if hit is pressed:
-            pressed[5]()
-        pressed = None
-
-
-cv = win.canvas(0, 0, W, H, on_mouse=on_mouse)
-
 # The sky: one gradient, then a sun of two circles and the ground.
 cv.gradient(0, 0, cv.pwidth, cv.pheight, (20, 40, 110), (250, 150, 90))
-cv.circle(90, 8, 6, tdui.rgb(255, 230, 120))
-cv.circle(90, 8, 8, tdui.rgb(255, 200, 80), outline=True)
+cv.circle(96, 7, 5, tdui.rgb(255, 230, 120))
+cv.circle(96, 7, 7, tdui.rgb(255, 200, 80), outline=True)
 cv.rect(0, cv.pheight - 6, cv.pwidth, 6, tdui.rgb(30, 70, 40))
 cv.put(2, 1, "Pictures and pixels in a tdui window", WHITE, tdui.CLEAR)
 cv.image(sheet, 4, 6, 8, 8, src=LED)
-
-buttons = [
-    [4, 13, 10, 3, "- 1", lambda: change(-1)],
-    [16, 13, 10, 3, "+ 1", lambda: change(1)],
-    [42, 13, 10, 3, "Quit", win.close],
-]
-for b in buttons:
-    draw_button(b)
+# The small font at scale 2: with Normal pictures a cell shows one of its
+# two pixel columns, which a 3-pixel letter does not survive at scale 1.
+cv.draw_text(14, 6, "ONLINE", tdui.rgb(120, 255, 140), scale=2, small=True)
 draw_count()
+
+# Round buttons in colours (rim: an outline), and one from the sheet.
+rim = tdui.rgb(170, 210, 255)
+cv.button(3, 13, 10, 3, "- 1", lambda b: change(-1), rim=rim)
+cv.button(15, 13, 10, 3, "+ 1", lambda b: change(1), rim=rim)
+cv.button(42, 13, 10, 3, "Quit", lambda b: win.close(), sheet=sheet, src=BUTTON, src_down=DOWN)
 
 tdui.run()

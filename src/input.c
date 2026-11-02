@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "tinydesk/td_input.h"
+#include "tinydesk/td_picture.h"
 #include "tinydesk/td.h"
 
 enum
@@ -433,6 +434,16 @@ static void finish_csi(td_input_t *p, uint32_t now)
             emit_mouse(prm[0], prm[1], prm[2], final == 'm', now);
         return;
     }
+    if (body_len > 0 && body[0] == '?' && final == 'c')
+    {
+        /* Device attributes, the answer to ESC [ c: 4 means Sixel. */
+        int n = parse_params(body + 1, body_len - 1, prm, 8);
+        bool sixel = false;
+        for (int i = 1; i < n; i++)
+            sixel |= prm[i] == 4;
+        td_term_set_sixel(sixel);
+        return;
+    }
     if (body_len > 0 && (body[0] < '0' || body[0] > ';'))
         return; /* private: ignore */
 
@@ -478,6 +489,12 @@ static void finish_csi(td_input_t *p, uint32_t now)
     {
         /* Shift+Tab; ESC [ 1 ; 4 Z is Alt+Shift+Tab. */
         emit_key(TD_KEY_TAB, (uint8_t)(TD_MOD_SHIFT | mods_from_param(n > 1 ? prm[1] : 0)), now);
+        return;
+    }
+    if (final == 't' && n == 3 && prm[0] == 6)
+    {
+        /* ESC [ 6 ; height ; width t: a cell's size in pixels (ESC [ 16 t). */
+        td_term_set_cell_px(prm[2], prm[1]);
         return;
     }
     if (final == 'R' && n == 2 && prm[0] > 1)

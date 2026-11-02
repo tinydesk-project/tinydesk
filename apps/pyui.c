@@ -23,15 +23,18 @@
  */
 #include <math.h>
 #include <stdatomic.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "td_apps.h"
 #include "tinydesk/td_canvas.h"
+#include "tinydesk/td_picture.h"
 
 #define REQ_SIZE    4096   /* powers of two */
 #define EVT_SIZE    2048
 #define MAX_OBJS    104    /* 4 windows, 48 widgets, images, dialogs and spare */
+#define MAX_PICS    48     /* pictures on all canvas pages */
 #define TICK_MS     10
 #define TICK_BUDGET 200    /* requests run per tick, so the desktop stays smooth */
 #define LIST_ITEMS  1000
@@ -108,8 +111,23 @@ typedef struct
 
 typedef struct
 {
+    bool used;
+    bool nine;
+    uint8_t page;
+    uint16_t canvas, img;
+    int16_t x, y, w, h;   /* cells of the canvas */
+    int16_t sx, sy;       /* the image's part */
+    td_pyui_picture_t part;
+    uint32_t serial;      /* new for every picture: td_picture_add()'s id */
+    char label[48];
+} pic_t;
+
+typedef struct
+{
     ring_t req, evt;
     obj_t objs[MAX_OBJS];
+    pic_t pics[MAX_PICS];
+    uint32_t pic_serial;
     int cells;          /* canvas cells in use */
     bool closing;       /* close_all() is running: post nothing */
     char text[TD_PYUI_TEXT_MAX + 1];
@@ -339,8 +357,20 @@ static cell_t *canvas_page(const obj_t *o, int page)
     return o->cells + (size_t)page * (size_t)(o->rect.w * o->rect.h);
 }
 
+static void forget_pictures(const obj_t *o)
+{
+    for (int i = 0; i < MAX_PICS; i++)
+    {
+        pic_t *p = &s_link->pics[i];
+        if (p->used && ((o->kind == K_CANVAS && p->canvas == o->id) || (o->kind == K_IMAGE && p->img == o->id)))
+            p->used = false;
+    }
+}
+
 static void free_obj(obj_t *o)
 {
+    if (o->kind == K_CANVAS || o->kind == K_IMAGE)
+        forget_pictures(o);
     if (o->kind == K_CANVAS)
         s_link->cells -= canvas_cells(o);
     if (o->px)
@@ -441,7 +471,9 @@ static uint8_t main_colour(const uint8_t q[4]);
 
 /* A canvas's cells: text, or the cell's four pixels as one quadrant
  * character (Fine pictures) or an upper half block (two of them). */
-static void draw_canvas(const obj_t *o, const td_theme_t *t)
+static void show_pictures(const obj_t *o, td_rect_t client);
+
+static void draw_canvas(const obj_t *o, const td_theme_t *t, td_rect_t client)
 {
     bool quad = td_canvas_detail() == TD_CANVAS_QUAD && !td_get_ascii_mode();
     const cell_t *cells = canvas_page(o, o->show);
@@ -469,6 +501,7 @@ static void draw_canvas(const obj_t *o, const td_theme_t *t)
                     c->fg < 0 ? t->win_fg : (uint8_t)c->fg, bg, 0);
         }
     }
+    show_pictures(o, client);
 }
 
 static void win_draw(td_window_t *win, int cw, int ch)
@@ -481,7 +514,7 @@ static void win_draw(td_window_t *win, int cw, int ch)
     {
         obj_t *o = &s_link->objs[i];
         if (o->kind == K_CANVAS && o->win == wo->id)
-            draw_canvas(o, t);
+            draw_canvas(o, t, td_win_client(win));
     }
 }
 
@@ -963,14 +996,21 @@ static void round_rect(surf_t *s, int x0, int y0, int w, int h, int r, int color
         r = w / 2;
     if (r > h / 2)
         r = h / 2;
+    /* On a canvas whose cells it covers whole, both pixels of a column pair
+     * get the shape of the inner one: a cell then looks the same whether it
+     * shows both (Fine pictures) or only its left pixel (Normal), and the
+     * left side is rounded like the right. */
+    bool pairs = s->cells && !(x0 & 1) && !(w & 1);
     for (int y = 0; y < h; y++)
     {
         for (int x = 0; x < w; x++)
         {
-            if (!in_round_rect(x, y, w, h, r))
+            int ex = pairs ? (x < w / 2 ? x | 1 : x & ~1) : x;
+            if (!in_round_rect(ex, y, w, h, r))
                 continue;
-            if (outline && in_round_rect(x - 1, y, w, h, r) && in_round_rect(x + 1, y, w, h, r) &&
-                in_round_rect(x, y - 1, w, h, r) && in_round_rect(x, y + 1, w, h, r))
+            if (outline && in_round_rect(ex - (pairs ? 2 : 1), y, w, h, r) &&
+                in_round_rect(ex + (pairs ? 2 : 1), y, w, h, r) && in_round_rect(ex, y - 1, w, h, r) &&
+                in_round_rect(ex, y + 1, w, h, r))
                 continue;
             plot(s, x0 + x, y0 + y, color);
         }
@@ -1098,6 +1138,51 @@ static void draw_image(obj_t *o, const td_pyui_msg_t *m, const char *text)
         blit(&s, m->a, m->b, dw, dh, img, sx, sy, sw, sh);
 }
 
+/* Text in pixels: the 8x16 font, or (small) the 3x5 one of big(), each
+ * pixel scale x scale. bg TD_PYUI_CLEAR leaves what is behind the text. */
+static void pixel_text(surf_t *s, int x0, int y0, const char *text, int fg, int bg, int scale, bool small)
+{
+    scale = scale < 1 ? 1 : scale > 8 ? 8
+                                      : scale;
+    int x = x0, y = y0;
+    while (*text)
+    {
+        uint32_t cp = td_utf8_next(&text);
+        if (cp == '\n')
+        {
+            x = x0;
+            y += (small ? 6 : 16) * scale;
+            continue;
+        }
+        int gw, gh = small ? 5 : 16;
+        const uint8_t *rows = NULL;
+        const big_glyph_t *g = NULL;
+        if (small)
+        {
+            g = big_glyph(cp);
+            gw = (int)strlen(g->rows[0]);
+        }
+        else
+        {
+            rows = td_pyui_glyph(cp);
+            if (!rows)
+                rows = td_pyui_glyph('?');
+            gw = 8;
+        }
+        for (int r = 0; r < gh; r++)
+        {
+            for (int c = 0; c < gw; c++)
+            {
+                bool on = small ? g->rows[r][c] == '#' : (rows[r] >> (7 - c)) & 1;
+                if (!on && bg == TD_PYUI_CLEAR)
+                    continue;
+                fill_rect(s, x + c * scale, y + r * scale, scale, scale, on ? fg : bg);
+            }
+        }
+        x += (small ? gw + 1 : gw) * scale;
+    }
+}
+
 /* One pixel request on a canvas or an image. */
 static void pixel_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
 {
@@ -1118,7 +1203,8 @@ static void pixel_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
     default:
         if (!surface(o, &s))
             return;
-        if (m->op != TD_PYUI_GRADIENT && m->e == TD_PYUI_CLEAR && !image_mask(o, &s))
+        if (m->op != TD_PYUI_GRADIENT && (m->op == TD_PYUI_PTEXT ? m->c == TD_PYUI_CLEAR : m->e == TD_PYUI_CLEAR) &&
+            !image_mask(o, &s))
             return;
         if (m->op == TD_PYUI_RECT && m->f > 0)
             round_rect(&s, m->a, m->b, m->c, m->d, m->f, m->e, m->flags & 1);
@@ -1138,6 +1224,8 @@ static void pixel_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
             circle(&s, m->a, m->b, m->c, m->e, m->flags & 1);
         else if (m->op == TD_PYUI_GRADIENT && m->len >= 6)
             gradient(&s, m->a, m->b, m->c, m->d, (const uint8_t *)text, m->flags & 1);
+        else if (m->op == TD_PYUI_PTEXT)
+            pixel_text(&s, m->a, m->b, text, m->c, m->d, m->e, m->flags & 1);
         break;
     }
     if (o->kind == K_CANVAS && o->draw == o->show)
@@ -1188,6 +1276,308 @@ static uint8_t main_colour(const uint8_t q[4])
         }
     }
     return q[best];
+}
+
+/* ---------------------------------------------------------- pictures */
+
+/* A picture on a canvas page (TD_PYUI_PICTURE): drawn by terminals that
+ * can at their own resolution (td_picture.h), and into the canvas's
+ * pixels for the others. Anything drawn over its cells removes it. */
+static pic_t *pictures(void)
+{
+    return s_link->pics;
+}
+
+static void drop_picture(pic_t *p)
+{
+    p->used = false;
+    td_win_invalidate(NULL);
+}
+
+/* Forget the pictures of a canvas page that overlap cells x0..x1, y0..y1
+ * (exclusive ends); page -1: every page; o NULL: those of image img. */
+static void cut_pictures(const obj_t *o, int page, int x0, int y0, int x1, int y1)
+{
+    for (int i = 0; i < MAX_PICS; i++)
+    {
+        pic_t *p = &pictures()[i];
+        if (!p->used || p->canvas != o->id || (page >= 0 && p->page != page))
+            continue;
+        if (p->x < x1 && x0 < p->x + p->w && p->y < y1 && y0 < p->y + p->h)
+            drop_picture(p);
+    }
+}
+
+static void drop_image_pictures(uint16_t img)
+{
+    for (int i = 0; i < MAX_PICS; i++)
+        if (pictures()[i].used && pictures()[i].img == img)
+            drop_picture(&pictures()[i]);
+}
+
+/* The part of the image a picture shows, clipped to it. */
+static void picture_part(const pic_t *p, const td_pyui_image_t *img, int *sx, int *sy, int *sw, int *sh)
+{
+    *sx = p->sx < 0 ? 0 : p->sx >= img->w ? img->w - 1
+                                          : p->sx;
+    *sy = p->sy < 0 ? 0 : p->sy >= img->h ? img->h - 1
+                                          : p->sy;
+    *sw = p->part.w > 0 && *sx + p->part.w <= img->w ? p->part.w : img->w - *sx;
+    *sh = p->part.h > 0 && *sy + p->part.h <= img->h ? p->part.h : img->h - *sy;
+}
+
+/* The label's size: as asked, or the largest that fits well. */
+static int label_scale(const pic_t *p, int w, int h)
+{
+    int n = td_utf8_len(p->label);
+    if (p->part.scale > 0)
+        return p->part.scale;
+    int s = 1;
+    while (16 * (s + 1) * 10 <= h * 6 && 8 * (s + 1) * n * 10 <= w * 9 && s < 8)
+        s++;
+    return s;
+}
+
+/* td_picture_render_fn: the canvas under the picture, the image over it,
+ * then the label, all at the terminal's pixels. */
+static void render_picture(void *user, uint8_t *px, int w, int h)
+{
+    const pic_t *p = user;
+    const obj_t *co = find(p->canvas), *io = find(p->img);
+    uint8_t bg = td_theme()->win_bg;
+    for (int y = 0; y < h; y++)
+    {
+        for (int x = 0; x < w; x++)
+        {
+            uint8_t c = bg;
+            if (co && co->px)
+            {
+                int cx = 2 * p->x + x * 2 * p->w / w, cy = 2 * p->y + y * 2 * p->h / h;
+                c = canvas_layer(co, co->show)[cy * 2 * co->rect.w + cx];
+            }
+            px[y * w + x] = c;
+        }
+    }
+    surf_t s = {px, NULL, w, h, NULL, 0};
+    if (io && io->kind == K_IMAGE)
+    {
+        int sx, sy, sw, sh;
+        picture_part(p, io->img, &sx, &sy, &sw, &sh);
+        if (p->nine)
+            nine(&s, 0, 0, w, h, io->img, sx, sy, sw, sh, p->part.border);
+        else
+            blit(&s, 0, 0, w, h, io->img, sx, sy, sw, sh);
+    }
+    if (p->label[0])
+    {
+        int sc = label_scale(p, w, h);
+        int tw = 8 * sc * td_utf8_len(p->label), th = 16 * sc;
+        pixel_text(&s, (w - tw) / 2, (h - th) / 2, p->label, p->part.fg, TD_PYUI_CLEAR, sc, false);
+    }
+}
+
+/* A picture in a canvas's pixels (dx, dy, dw x dh of them): drawn at FB
+ * pixels to each canvas pixel (as a screen would), then each block averaged
+ * to the nearest palette colour, so curves and gradients come out clean
+ * and dithering does not speckle. Mostly transparent blocks leave the
+ * canvas as it is. border < 0: stretched, not nine-slice. */
+#define FB 8
+static void picture_fallback(surf_t *d, int dx, int dy, int dw, int dh, const td_pyui_image_t *img, int sx, int sy,
+                             int sw, int sh, int border)
+{
+    int w = dw * FB, h = dh * FB;
+    uint8_t *px = malloc((size_t)w * (size_t)h * 2);
+    if (!px)
+        return;
+    uint8_t *mask = px + (size_t)w * (size_t)h;
+    memset(mask, 1, (size_t)w * (size_t)h);
+    surf_t s = {px, mask, w, h, NULL, 0};
+    if (border >= 0)
+        nine(&s, 0, 0, w, h, img, sx, sy, sw, sh, border);
+    else
+        blit(&s, 0, 0, w, h, img, sx, sy, sw, sh);
+    for (int ty = 0; ty < dh; ty++)
+    {
+        for (int tx = 0; tx < dw; tx++)
+        {
+            int sum[3] = {0, 0, 0}, n = 0;
+            for (int y = ty * FB; y < (ty + 1) * FB; y++)
+                for (int x = tx * FB; x < (tx + 1) * FB; x++)
+                {
+                    size_t i = (size_t)y * (size_t)w + (size_t)x;
+                    if (mask[i])
+                        continue;
+                    uint8_t rgb[3];
+                    td_palette_rgb(px[i], rgb);
+                    for (int k = 0; k < 3; k++)
+                        sum[k] += rgb[k];
+                    n++;
+                }
+            if (n * 2 >= FB * FB)
+                plot(d, dx + tx, dy + ty, td_rgb256((uint8_t)(sum[0] / n), (uint8_t)(sum[1] / n), (uint8_t)(sum[2] / n)));
+        }
+    }
+    free(px);
+}
+
+static void picture_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
+{
+    obj_t *io = find(m->win);
+    if (!io || io->kind != K_IMAGE)
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "no such image");
+        return;
+    }
+    if (o->kind != K_CANVAS || m->c <= 0 || m->d <= 0)
+        return;
+    td_pyui_picture_t part = {0, 0, 0, 231, 0};
+    const char *label = "";
+    if (m->len >= sizeof(part))
+    {
+        memcpy(&part, text, sizeof(part));
+        label = text + sizeof(part);
+    }
+    cut_pictures(o, o->draw, m->a, m->b, m->a + m->c, m->b + m->d);
+
+    /* For terminals without pictures: the same in the canvas's pixels, its
+     * border scaled down as the picture is (a cell is 2 x 2 pixels here). */
+    pic_t tmp = {.sx = m->e, .sy = m->f, .part = part};
+    int sx, sy, sw, sh;
+    picture_part(&tmp, io->img, &sx, &sy, &sw, &sh);
+    surf_t s;
+    if (surface(o, &s))
+        picture_fallback(&s, 2 * m->a, 2 * m->b, 2 * m->c, 2 * m->d, io->img, sx, sy, sw, sh,
+                         (m->flags & 1) ? part.border : -1);
+    if (label[0])
+    {
+        int n = td_utf8_len(label);
+        canvas_put(o, m->a + (m->c - n) / 2, m->b + m->d / 2, label, part.fg, TD_PYUI_CLEAR);
+    }
+
+    for (int i = 0; i < MAX_PICS; i++)
+    {
+        pic_t *p = &pictures()[i];
+        if (p->used)
+            continue;
+        *p = (pic_t){.used = true,
+                     .canvas = o->id,
+                     .img = m->win,
+                     .page = o->draw,
+                     .nine = (m->flags & 1) != 0,
+                     .x = m->a,
+                     .y = m->b,
+                     .w = m->c,
+                     .h = m->d,
+                     .sx = m->e,
+                     .sy = m->f,
+                     .part = part,
+                     .serial = ++s_link->pic_serial};
+        snprintf(p->label, sizeof(p->label), "%s", label);
+        break;
+    }
+    if (o->draw == o->show)
+        td_win_invalidate(NULL);
+}
+
+/* Page src's pictures onto page dst (whose own are dropped). */
+static void copy_pictures(obj_t *o, int src, int dst)
+{
+    cut_pictures(o, dst, -32768, -32768, 32767, 32767);
+    for (int i = 0; i < MAX_PICS; i++)
+    {
+        pic_t *p = &pictures()[i];
+        if (!p->used || p->canvas != o->id || p->page != src)
+            continue;
+        for (int j = 0; j < MAX_PICS; j++)
+        {
+            pic_t *q = &pictures()[j];
+            if (q->used)
+                continue;
+            *q = *p;
+            q->page = (uint8_t)dst;
+            q->serial = ++s_link->pic_serial;
+            break;
+        }
+    }
+}
+
+/* In the window's on_draw: the canvas's pictures, where the terminal can
+ * show them, over blank cells (td_picture.h). */
+static void show_pictures(const obj_t *o, td_rect_t client)
+{
+    if (!td_term_images())
+        return;
+    for (int i = 0; i < MAX_PICS; i++)
+    {
+        pic_t *p = &pictures()[i];
+        if (!p->used || p->canvas != o->id || p->page != o->show)
+            continue;
+        td_fill(td_rect(o->rect.x + p->x, o->rect.y + p->y, p->w, p->h), ' ', 0, 0);
+        td_picture_add(client.x + o->rect.x + p->x, client.y + o->rect.y + p->y, p->w, p->h, p->serial, render_picture,
+                       p);
+    }
+}
+
+/* The cells a request draws on (for cutting pictures away); false when it
+ * draws on none of them, or it is not known. */
+static bool request_cells(const obj_t *o, const td_pyui_msg_t *m, const char *text, int r[4])
+{
+    int x0, y0, x1, y1;   /* pixels, ends exclusive */
+    switch (m->op)
+    {
+    case TD_PYUI_PUT:
+    {
+        int n = td_utf8_len(text), lines = 1;
+        for (const char *c = text; *c; c++)
+            lines += *c == '\n';
+        r[0] = m->a, r[1] = m->b, r[2] = lines > 1 ? o->rect.w : m->a + n, r[3] = m->b + lines;
+        return true;
+    }
+    case TD_PYUI_FILL:
+        r[0] = m->a, r[1] = m->b, r[2] = m->a + m->c, r[3] = m->b + m->d;
+        return true;
+    case TD_PYUI_BIG:
+    {
+        int scale = m->e < 1 ? 1 : m->e, n = td_utf8_len(text);
+        n = m->f > n ? m->f : n;
+        r[0] = m->a, r[1] = m->b, r[2] = m->a + n * 4 * scale, r[3] = m->b + (5 * scale + 1) / 2;
+        return true;
+    }
+    case TD_PYUI_RECT:
+    case TD_PYUI_GRADIENT:
+        x0 = m->a, y0 = m->b, x1 = m->a + m->c, y1 = m->b + m->d;
+        break;
+    case TD_PYUI_LINE:
+        x0 = m->a < m->c ? m->a : m->c, x1 = (m->a > m->c ? m->a : m->c) + 1;
+        y0 = m->b < m->d ? m->b : m->d, y1 = (m->b > m->d ? m->b : m->d) + 1;
+        break;
+    case TD_PYUI_CIRCLE:
+        x0 = m->a - m->c, y0 = m->b - m->c, x1 = m->a + m->c + 1, y1 = m->b + m->c + 1;
+        break;
+    case TD_PYUI_PTEXT:
+        x0 = m->a, y0 = m->b, x1 = m->a + 8 * (m->e < 1 ? 1 : m->e) * td_utf8_len(text), y1 = m->b + 16 * (m->e < 1 ? 1 : m->e);
+        break;
+    case TD_PYUI_DRAW_IMAGE:
+    {
+        const obj_t *io = find(m->win);
+        int w = m->c > 0 ? m->c : io && io->kind == K_IMAGE ? io->img->w
+                                                            : 32767;
+        int h = m->d > 0 ? m->d : io && io->kind == K_IMAGE ? io->img->h
+                                                            : 32767;
+        x0 = m->a, y0 = m->b, x1 = m->a + w, y1 = m->b + h;
+        break;
+    }
+    case TD_PYUI_IMAGE_DATA:
+    {
+        const td_pyui_image_t *img = msg_image(m, text);
+        x0 = m->a, y0 = m->b, x1 = m->a + (img ? img->w : 32767), y1 = m->b + (img ? img->h : 32767);
+        break;
+    }
+    default:
+        return false;
+    }
+    r[0] = x0 >> 1, r[1] = y0 >> 1, r[2] = (x1 + 1) >> 1, r[3] = (y1 + 1) >> 1;
+    return true;
 }
 
 /* A new size for a canvas: what fits of each page's picture stays. */
@@ -1485,6 +1875,9 @@ static void run_request(const td_pyui_msg_t *m, char *text)
             free(msg_image(m, text));
         return;   /* its window was closed in the meantime */
     }
+    int cells[4];
+    if (o->kind == K_CANVAS && request_cells(o, m, text, cells))
+        cut_pictures(o, o->draw, cells[0], cells[1], cells[2], cells[3]);
     td_widget_t *w = o->wd;
     switch (m->op)
     {
@@ -1496,6 +1889,7 @@ static void run_request(const td_pyui_msg_t *m, char *text)
         }
         else if (o->kind == K_IMAGE)
         {
+            drop_image_pictures(o->id);
             free_obj(o);
         }
         break;
@@ -1505,7 +1899,11 @@ static void run_request(const td_pyui_msg_t *m, char *text)
     case TD_PYUI_LINE:
     case TD_PYUI_GRADIENT:
     case TD_PYUI_CIRCLE:
+    case TD_PYUI_PTEXT:
         pixel_request(o, m, text);
+        break;
+    case TD_PYUI_PICTURE:
+        picture_request(o, m, text);
         break;
     case TD_PYUI_TEXT:
         if (o->kind == K_WINDOW)
@@ -1615,6 +2013,7 @@ static void run_request(const td_pyui_msg_t *m, char *text)
             memcpy(canvas_page(o, m->b), canvas_page(o, m->a), (size_t)(o->rect.w * o->rect.h) * sizeof(cell_t));
             if (o->px)
                 memcpy(canvas_layer(o, m->b), canvas_layer(o, m->a), (size_t)layer_size(o));
+            copy_pictures(o, m->a, m->b);
         }
         if (m->b == o->show)
             td_win_invalidate(NULL);
@@ -1627,6 +2026,7 @@ static void run_request(const td_pyui_msg_t *m, char *text)
         }
         else if (o->kind == K_CANVAS)
         {
+            forget_pictures(o);
             canvas_resize(o, m->a, m->b);
             td_win_invalidate(NULL);
         }

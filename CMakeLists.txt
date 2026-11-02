@@ -29,6 +29,7 @@ endif()
 # ---------------------------------------------------------------- core
 add_library(tinydesk_core STATIC
     src/canvas.c
+    src/picture.c
     src/draw.c
     src/event.c
     src/input.c
@@ -120,6 +121,7 @@ add_library(tinydesk_apps STATIC
     apps/mqtt.c
     apps/network.c
     apps/pyui.c
+    apps/pyui_font.c
     apps/trash.c
     apps/kiosk.c
     apps/session.c

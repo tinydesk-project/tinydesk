@@ -193,6 +193,7 @@ void td_render_reset_state(td_renderer_t *r);
 
 /* Queue raw bytes (escape sequences) into the output buffer. */
 void td_render_raw(td_renderer_t *r, const char *s);
+void td_render_write(td_renderer_t *r, const void *data, int len);
 
 /* Send everything queued. Returns false if the terminal did not accept
  * all bytes (the rest of the frame is dropped). */

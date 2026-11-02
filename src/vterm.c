@@ -13,6 +13,8 @@ enum
     VS_CSI,
     VS_OSC,
     VS_OSC_ESC,
+    VS_DCS,
+    VS_DCS_ESC,
     VS_SKIP1
 };
 
@@ -534,7 +536,14 @@ static void csi(td_vterm_t *vt, char final)
         break;
     case 'c':
         if (!vt->priv && p0 == 0)
-            reply(vt, "\x1b[?1;2c");
+            reply(vt, vt->sixel ? "\x1b[?62;4c" : "\x1b[?1;2c");
+        break;
+    case 't':
+        if (!vt->priv && p0 == 16 && vt->cell_w > 0 && vt->cell_h > 0)
+        {
+            snprintf(buf, sizeof(buf), "\x1b[6;%d;%dt", vt->cell_h, vt->cell_w);
+            reply(vt, buf);
+        }
         break;
     default:
         break;
@@ -555,6 +564,11 @@ static void esc_final(td_vterm_t *vt, uint8_t b)
         break;
     case ']':
         vt->state = VS_OSC;
+        break;
+    case 'P':
+        vt->state = VS_DCS;
+        if (vt->dcs)
+            vt->dcs(vt->dcs_user, -1);
         break;
     case '(':
     case ')':
@@ -664,6 +678,21 @@ static void feed_byte(td_vterm_t *vt, uint8_t b)
         break;
     case VS_OSC_ESC:
         vt->state = (b == '\\') ? VS_GROUND : VS_OSC;
+        break;
+    case VS_DCS:
+        if (b == 0x1B)
+            vt->state = VS_DCS_ESC;
+        else if (vt->dcs)
+            vt->dcs(vt->dcs_user, b);
+        break;
+    case VS_DCS_ESC:
+        /* ESC \ ends the string; any other ESC sequence ends it too. */
+        if (vt->dcs)
+            vt->dcs(vt->dcs_user, -2);
+        if (b == '\\')
+            vt->state = VS_GROUND;
+        else
+            esc_final(vt, b);
         break;
     case VS_SKIP1:
     default:

@@ -5,6 +5,7 @@ get_filename_component(TD_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../.." ABSOLUTE)
 idf_component_register(
     SRCS
         "${TD_ROOT}/src/canvas.c"
+        "${TD_ROOT}/src/picture.c"
         "${TD_ROOT}/src/draw.c"
         "${TD_ROOT}/src/event.c"
         "${TD_ROOT}/src/input.c"
@@ -35,6 +36,7 @@ idf_component_register(
         "${TD_ROOT}/apps/mqtt.c"
         "${TD_ROOT}/apps/network.c"
         "${TD_ROOT}/apps/pyui.c"
+        "${TD_ROOT}/apps/pyui_font.c"
         "${TD_ROOT}/apps/trash.c"
         "${TD_ROOT}/apps/kiosk.c"
         "${TD_ROOT}/apps/session.c"

@@ -57,6 +57,16 @@ typedef struct
     td_vterm_reply_fn reply;
     void *reply_user;
     bool dirty;           /* set when anything changed; clear it yourself */
+
+    /* Optional, set after td_vterm_init(): the bytes of DCS strings
+     * (ESC P ... ESC \), such as Sixel pictures, go to dcs(dcs_user, b),
+     * -1 before the first and -2 after the last; without it they are
+     * skipped. sixel: say so in the device attributes (ESC [ c); cell_w,
+     * cell_h: a cell's size in pixels, the answer to ESC [ 16 t. */
+    void (*dcs)(void *user, int b);
+    void *dcs_user;
+    bool sixel;
+    int cell_w, cell_h;
 } td_vterm_t;
 
 /* Reset to a blank screen of the given size (clamped to the maximum). */

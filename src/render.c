@@ -60,6 +60,11 @@ static void out_bytes(td_renderer_t *r, const void *data, int len)
     }
 }
 
+void td_render_write(td_renderer_t *r, const void *data, int len)
+{
+    out_bytes(r, data, len);
+}
+
 void td_render_raw(td_renderer_t *r, const char *s)
 {
     out_bytes(r, s, (int)strlen(s));

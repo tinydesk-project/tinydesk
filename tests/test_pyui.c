@@ -8,6 +8,7 @@
 #include "td_test.h"
 #include "td_apps.h"
 #include "tinydesk/td_canvas.h"
+#include "tinydesk/td_picture.h"
 
 static uint32_t s_now = 1000;
 static int fake_read(void *ctx)
@@ -15,10 +16,14 @@ static int fake_read(void *ctx)
     (void)ctx;
     return -1;
 }
+static char s_out[65536];   /* what the desktop sent, for the picture test */
+static int s_out_len;
 static int fake_write(void *ctx, const uint8_t *b, int n)
 {
     (void)ctx;
-    (void)b;
+    for (int i = 0; i < n && s_out_len < (int)sizeof(s_out) - 1; i++)
+        s_out[s_out_len++] = (char)b[i];
+    s_out[s_out_len] = 0;
     return n;
 }
 static uint32_t fake_millis(void *ctx)
@@ -296,6 +301,17 @@ static void test_pixels(void)
     CHECK_EQ(cell(1, 0).fg, 196);
     send(TD_PYUI_PAGE, CANVAS, 0, 0, 0, 0, 0, 0, 0, NULL);
 
+    /* Text in pixels: '1' of the 8x16 font at pixel (0, 0). Its rows 2
+     * and 3 are 0x18 and 0x38, so cell (1, 1) (pixels 2..3, 2..3) has
+     * the background at its upper left and the text's colour elsewhere. */
+    send(TD_PYUI_FILL, CANVAS, 0, 0, 0, 12, 4, -1, -1, " ");
+    send(TD_PYUI_PTEXT, CANVAS, 0, 0, 0, 9, TD_PYUI_CLEAR, 1, 0, "1");
+    settle();
+    c = cell(1, 1);
+    CHECK_EQ(c.fg, bg);
+    CHECK_EQ(c.bg, 9);
+    CHECK_EQ(cell(3, 0).ch, ' ');   /* a CLEAR background leaves other cells alone */
+
     /* Drawing an image that does not exist is an error. */
     send_part(TD_PYUI_DRAW_IMAGE, CANVAS, 0, 99, 0, 0, 0, 0, 0, 0, (td_pyui_part_t){0, 0, 0});
     settle();
@@ -306,6 +322,65 @@ static void test_pixels(void)
     CHECK(!td_pyui_pixels_take(TD_PYUI_MAX_PIXELS + 1L));
     send(TD_PYUI_CLOSE, 20, 0, 0, 0, 0, 0, 0, 0, NULL);
     settle();
+}
+
+static void send_picture(int img, int x, int y, int w, int h, const char *label)
+{
+    char text[64];
+    td_pyui_picture_t part = {0, 0, 1, 15, 1};
+    memcpy(text, &part, sizeof(part));
+    int n = (int)strlen(label);
+    memcpy(text + sizeof(part), label, (size_t)n);
+    td_pyui_msg_t m = {0};
+    m.op = TD_PYUI_PICTURE;
+    m.flags = 1;
+    m.id = CANVAS;
+    m.win = (uint16_t)img;
+    m.a = (int16_t)x;
+    m.b = (int16_t)y;
+    m.c = (int16_t)w;
+    m.d = (int16_t)h;
+    m.len = (uint16_t)(sizeof(part) + (size_t)n);
+    CHECK(td_pyui_send(&m, text));
+}
+
+static void test_pictures(void)
+{
+    static const uint8_t n9[9] = {21, 21, 21, 21, 196, 21, 21, 21, 21};
+    send_image(30, 3, 3, n9, NULL);
+    send(TD_PYUI_FILL, CANVAS, 0, 0, 0, 12, 4, -1, -1, " ");
+
+    /* A terminal without pictures: the canvas's own pixels show it. */
+    td_term_set_sixel(false);
+    send_picture(30, 2, 1, 8, 2, "OK");
+    settle();
+    CHECK_EQ(cell(2, 1).ch, 0x2580);   /* pixels: the picture, made smaller */
+    CHECK_EQ(cell(3, 2).fg, 196);      /* its middle is red (the label is at 5..6) */
+
+    /* One with Sixel and 10x20 cells: blank cells, and the picture sent as
+     * Sixel at that size (8 x 2 cells: 80 x 40 pixels). */
+    td_term_set_sixel(true);
+    td_term_set_cell_px(10, 20);
+    s_out_len = 0;
+    td_wm_invalidate();
+    settle();
+    CHECK_EQ(cell(2, 1).ch, ' ');
+    CHECK_EQ(cell(9, 2).bg, 0);
+    CHECK(strstr(s_out, "\x1bP0;1;0q\"1;1;80;40") != NULL);
+    CHECK(strstr(s_out, "#196;2;100;0;0") != NULL);   /* the middle's red */
+
+    /* Nothing changed: not sent again. */
+    s_out_len = 0;
+    td_wm_invalidate();
+    settle();
+    CHECK(strstr(s_out, "\x1bP") == NULL);
+
+    /* Text over it removes it; the cells show again. */
+    send(TD_PYUI_PUT, CANVAS, 0, 3, 1, 15, -1, 0, 0, "X");
+    settle();
+    CHECK_EQ(cell(3, 1).ch, 'X');
+    CHECK_EQ(cell(2, 1).ch, 0x2580);   /* the rest is the pixels again */
+    td_term_set_sixel(false);
 }
 
 static void test_limits(void)
@@ -334,6 +409,7 @@ int main(void)
     test_pages();
     test_big();
     test_pixels();
+    test_pictures();
     test_limits();
 
     td_pyui_detach_begin();

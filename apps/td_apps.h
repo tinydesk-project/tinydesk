@@ -394,6 +394,14 @@ enum
                            * bottom */
     TD_PYUI_CIRCLE,       /* target id: centre a, b, radius c in colour e; flags 1:
                            * outline only */
+    TD_PYUI_PTEXT,        /* target id: text in pixels at a, b in colour c on d
+                           * (TD_PYUI_CLEAR: nothing behind it), e times the size;
+                           * flags 0: the 8x16 font, 1: the 3x5 one of TD_PYUI_BIG */
+    TD_PYUI_PICTURE,      /* canvas id: image win over cells a, b, size c x d, at the
+                           * terminal's own resolution where it can (td_picture.h);
+                           * its part at e, f; text td_pyui_picture_t then the label;
+                           * flags 1: nine-slice. Below it the canvas gets the same in
+                           * its pixels, for terminals without pictures. */
 };
 
 /* TD_PYUI_SHOW states. */
@@ -454,12 +462,24 @@ typedef struct
     uint8_t *mask;    /* NULL (opaque), or w * h, 1 where transparent */
 } td_pyui_image_t;
 
+/* TD_PYUI_PICTURE: the image's part (0: to its edge), the nine-slice
+ * border in the image's pixels, and the label's colour and size (0: as
+ * large as fits). The label (UTF-8) follows. */
+typedef struct
+{
+    int16_t w, h, border, fg, scale;
+} td_pyui_picture_t;
+
 /* The size of the part of an image TD_PYUI_DRAW_IMAGE draws, and the
  * nine-slice border. */
 typedef struct
 {
     int16_t w, h, border;
 } td_pyui_part_t;
+
+/* The 8x16 font of TD_PYUI_PTEXT: printable ASCII and Latin-1 (16 rows,
+ * bit 7 leftmost), or NULL for a character it lacks (apps/pyui_font.c). */
+const uint8_t *td_pyui_glyph(uint32_t cp);
 
 #define TD_PYUI_TEXT_MAX  1024   /* text in one message */
 #define TD_PYUI_MAX_PAGES 16     /* pages of one canvas */

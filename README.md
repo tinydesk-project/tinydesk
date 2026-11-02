@@ -154,7 +154,9 @@ under the terms of the GPLv3 as a whole. The source code in this repository
 stays MIT. See [`third_party/tdsh/THIRD_PARTY_LICENSES.md`](third_party/tdsh/THIRD_PARTY_LICENSES.md)
 for the list. The `py` command is [MicroPython](third_party/micropython/README.md)
 (MIT; its SHA-256 code from `lib/crypto-algorithms` is public domain), in
-`third_party/micropython`.
+`third_party/micropython`. The pixel text of Python windows uses glyphs of the
+console font Uni2-VGA16 by Dmitry Bolkhovityanov (MIT), in
+`apps/pyui_font.c`.
 
 ## Contributing
 

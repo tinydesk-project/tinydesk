@@ -47,6 +47,8 @@ _RECT = const(25)
 _LINE = const(26)
 _GRADIENT = const(27)
 _CIRCLE = const(28)
+_PTEXT = const(29)
+_PICTURE = const(30)
 
 _W_LABEL = const(1)
 _W_BUTTON = const(2)
@@ -487,11 +489,86 @@ class _Pixels:
             sx, sy, sw, sh = src or (0, 0, 0, 0)
             _tdui.send(_DRAW_IMAGE, self.id, img.id, 1, x, y, w, h, sx, sy, _part(sw, sh, border))
 
+    def draw_text(self, x, y, text, color, bg=CLEAR, scale=1, small=False):
+        # Text in pixels at x, y: an 8 x 16 font (4 x 8 cells) times scale
+        # (1-8), or small=True the 3 x 5 one of big() (digits, A-Z, - + %
+        # / . : ?). bg CLEAR: only the letters are drawn, over whatever is
+        # there. text_size() gives the size. (Not text(): a canvas's text is
+        # its widget text.)
+        if self._alive():
+            _tdui.send(_PTEXT, self.id, 0, 1 if small else 0, x, y, color, bg, scale, 0, str(text))
+
     def pixels(self, x, y, w, h, data, rgb=False, dither=True):
         # w x h pixels from bytes: palette numbers, or (rgb) red, green, blue
         # for each, dithered or the nearest colour. One call for all of them.
         if self._alive():
             _tdui.pixels(self.id, x, y, w, h, data, (1 if dither else 2) if rgb else 0)
+
+
+def text_size(text, scale=1, small=False):
+    # Pixels wide and high that draw_text() draws text in ("\n" starts a line).
+    lines = str(text).split("\n")
+    if small:
+        w = max(sum(1 if ch in ".:" else 3 for ch in l) + len(l) - 1 if l else 0 for l in lines)
+        return w * scale, (6 * len(lines) - 1) * scale
+    return 8 * scale * max(len(l) for l in lines), 16 * scale * len(lines)
+
+
+class CanvasButton:
+    # A button drawn in pixels on a canvas (canvas.button()): rounded, in
+    # colours, or a piece of a sprite sheet stretched to its size
+    # (nine-slice), with its text on it. It looks pressed while the mouse
+    # button is held on it and calls on_click(button) when let go on it.
+    # Cells: x, y, w, h. The look is a few desktop calls; nothing per pixel.
+
+    def __init__(self, cv, x, y, w, h, text, on_click, color, down, rim, fg, radius, scale, sheet, src, src_down, border):
+        self.cv = cv
+        self.x, self.y, self.w, self.h = x, y, w, h
+        self._text = str(text)
+        self.on_click = on_click
+        self.color, self.down, self.rim, self.fg = color, down, rim, fg
+        self.radius, self.scale = radius, scale
+        self.sheet, self.src, self.src_down, self.border = sheet, src, src_down, border
+        self.enabled = True
+        cv._buttons.append(self)
+        self.draw()
+
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, t):
+        self._text = str(t)
+        self.draw()
+
+    def draw(self, pressed=False):
+        # Drawn again: after a background was drawn over it, say.
+        cv = self.cv
+        px, py, pw, ph = 2 * self.x, 2 * self.y, 2 * self.w, 2 * self.h
+        if self.sheet:
+            # A picture: at the terminal's own resolution where it can.
+            src = self.src_down if pressed and self.src_down else self.src
+            cv.picture(self.sheet, self.x, self.y, self.w, self.h, src=src, border=self.border, text=self._text,
+                       fg=self.fg, scale=self.scale)
+            return
+        cv.rect(px, py, pw, ph, self.down if pressed else self.color, self.radius)
+        if self.rim is not None:
+            cv.rect(px, py, pw, ph, self.rim, self.radius, outline=True)
+        if self.scale:
+            tw, th = text_size(self._text, self.scale)
+            cv.draw_text(px + (pw - tw) // 2, py + (ph - th) // 2 + (1 if pressed else 0), self._text, self.fg,
+                    scale=self.scale)
+        else:
+            cv.put(self.x + (self.w - len(self._text)) // 2, self.y + self.h // 2, self._text, self.fg, CLEAR)
+
+    def remove(self):
+        # It no longer takes clicks (what is drawn stays).
+        if self in self.cv._buttons:
+            self.cv._buttons.remove(self)
+
+    def _hit(self, x, y):
+        return self.enabled and self.x <= x < self.x + self.w and self.y <= y < self.y + self.h
 
 
 class Image(_Pixels):
@@ -563,6 +640,8 @@ class Canvas(_Widget, _Pixels):
         self.drawing = 0      # the page put/fill/big and the pixels draw into
         self.showing = 0      # the page the window shows
         self.on_mouse = on_mouse
+        self._buttons = []    # CanvasButton
+        self._held = None     # the one pressed
         super().__init__(win, _W_CANVAS, x, y, w, h, pages, "")
 
     # Drawing goes straight to _tdui.send: these are called most.
@@ -629,6 +708,21 @@ class Canvas(_Widget, _Pixels):
     def _alive(self):
         return self.win.is_open
 
+    def picture(self, img, x, y, w, h, src=None, border=0, text="", fg=231, scale=0):
+        # img (or its part src = (sx, sy, sw, sh)) over cells x, y, w x h, at
+        # the terminal's own resolution where it can show pictures (the
+        # CrowPanel's LCD, the web terminal, Windows Terminal): smooth
+        # corners and gradients, like an LCD panel's UI. border > 0:
+        # nine-slice, keeping border pixels of the image at each edge.
+        # text: a label drawn into the picture in fg (scale: its size, 0 as
+        # large as fits). Other terminals (PuTTY) show the same in the
+        # canvas's pixels. Drawing over its cells removes it.
+        if self.win.is_open:
+            sx, sy, sw, sh = src or (0, 0, 0, 0)
+            head = bytes(v & 255 if i % 2 == 0 else (v >> 8) & 255
+                         for v in (sw, sh, border, fg, scale) for i in (0, 1))
+            _tdui.send(_PICTURE, self.id, img.id, 1 if border else 0, x, y, w, h, sx, sy, head + str(text).encode())
+
     @property
     def pwidth(self):
         return 2 * self.width
@@ -638,8 +732,41 @@ class Canvas(_Widget, _Pixels):
         return 2 * self.height
 
     def _event(self, op, a, b, c, d, t):
-        if op == _EV_MOUSE and self.on_mouse:
+        if op != _EV_MOUSE:
+            return
+        # Buttons drawn in pixels first: a press on one is theirs, and so is
+        # the release that follows (wherever it is).
+        held = self._held
+        if c == 0 and d == 0:
+            for btn in self._buttons:
+                if btn._hit(a, b):
+                    self._held = btn
+                    btn.draw(True)
+                    return
+        elif d == 1 and held:
+            self._held = None
+            held.draw()
+            if held._hit(a, b) and held.on_click:
+                held.on_click(held)
+            return
+        elif held:
+            return
+        if self.on_mouse:
             self.on_mouse(self, a, b, c, d)
+
+    def button(self, x, y, w, h, text, on_click=None, color=None, down=None, rim=None, fg=231, radius=6, scale=0,
+               sheet=None, src=None, src_down=None, border=4):
+        # A CanvasButton at cell x, y, w x h cells. In colours: color (a
+        # blue by default), down when pressed (darker), rim an outline;
+        # radius rounds the corners (pixels). From a sprite sheet: sheet and
+        # its pieces src and src_down, border pixels kept at the edges.
+        # scale > 0: the text in pixels (draw_text()), that big.
+        if color is None:
+            color = rgb(40, 110, 210)
+        if down is None:
+            down = rgb(20, 60, 140)
+        return CanvasButton(self, x, y, w, h, text, on_click, color, down, rim, fg, radius, scale, sheet, src,
+                            src_down, border)
 
 
 def big_size(text, scale=1):
