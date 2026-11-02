@@ -4,7 +4,8 @@
  *
  *   Enter / double-click   open (folders are entered)
  *   Backspace              parent folder
- *   Delete                 delete (asks first)
+ *   Delete                 into the Recycle Bin (asks first)
+ *   Shift+Delete           delete for good (asks first)
  *   F2                     rename
  *   right-click            menu for the entry under the mouse
  */
@@ -275,15 +276,8 @@ static void rename_answer(const char *name, void *user)
     reload_select(name);
 }
 
-static void delete_answer(int button, void *user)
+static void deleted(void)
 {
-    (void)user;
-    if (button != 0)
-        return;
-    char path[PATH_MAX_];
-    join(path, s_cwd, s_target);
-    if (fs()->remove(path) != 0)
-        error_box("Delete failed.");
     reload();
 }
 
@@ -313,15 +307,14 @@ static void do_rename(void)
         td_inputbox("Rename", "New name:", s_target, rename_answer, NULL);
 }
 
-static void do_delete(void)
+/* Into the Recycle Bin, or with for_good straight away (asks first). */
+static void do_delete(bool for_good)
 {
     if (!target_selected() || !fs()->remove)
         return;
-    char text[160], name[24 * 4 + 1]; /* the dialog shortens lines to fit */
-    td_utf8_copy(name, sizeof(name), s_target, 24); /* never half a character */
-    snprintf(text, sizeof(text), "Delete %s%s%s?", s_target_dir ? "folder " : "", name,
-             s_target_dir ? " and\neverything in it" : "");
-    td_msgbox("Confirm", text, "Delete|Cancel", delete_answer, NULL);
+    char path[PATH_MAX_];
+    join(path, s_cwd, s_target);
+    td_trash_ask_delete(path, s_target_dir, for_good, deleted);
 }
 
 /* Buttons. */
@@ -353,7 +346,7 @@ static void on_delete(td_widget_t *w, void *user)
 {
     (void)w;
     (void)user;
-    do_delete();
+    do_delete(false);
 }
 
 static void run_selected(void)
@@ -389,15 +382,18 @@ static void entry_menu_chosen(int item, void *user)
         do_rename();
         break;
     case 2:
-        do_delete();
+        do_delete(false);
         break;
-    case 4:
-        do_new_file();
+    case 3:
+        do_delete(true);
         break;
     case 5:
-        do_new_folder();
+        do_new_file();
         break;
     case 6:
+        do_new_folder();
+        break;
+    case 7:
         reload();
         break;
     default:
@@ -443,13 +439,14 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
             "Open",
             "Rename (F2)",
             "Delete (Del)",
+            "Delete for good (Shift+Del)",
             "-",
             "New file",
             "New folder",
             "Refresh",
         };
         bool script = !s_entries[row].is_dir && td_is_runnable(s_entries[row].name);
-        td_menu_popup(ax, ay, script ? items : items + 1, script ? 8 : 7, entry_menu_chosen, NULL);
+        td_menu_popup(ax, ay, script ? items : items + 1, script ? 9 : 8, entry_menu_chosen, NULL);
     }
     else
     {
@@ -465,12 +462,17 @@ static bool on_event(td_window_t *win, const td_event_t *ev)
         context_menu(win, ev);
         return true;
     }
+    if (ev->type == TD_EV_KEY && ev->key == TD_KEY_DELETE && ev->mods == TD_MOD_SHIFT)
+    {
+        do_delete(true);
+        return true;
+    }
     if (ev->type != TD_EV_KEY || ev->mods)
         return false;
     switch (ev->key)
     {
     case TD_KEY_DELETE:
-        do_delete();
+        do_delete(false);
         return true;
     case TD_KEY_F2:
         do_rename();

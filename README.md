@@ -38,7 +38,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
   the terminal.
 * Apps: Terminal (the shell), Files, Editor, Network, MQTT, Modbus (TCP and
-  RTU), Task Manager, System Monitor, Log Viewer, Settings, Software Update
+  RTU), Task Manager, System Monitor, Log Viewer, Settings, Recycle Bin
+  (restore what was deleted), Software Update
   (OTA), Pixels, Image Viewer (BMP, PPM, PGM), Mouse and Keyboard (with USB
   on the ESP32-S3), and a small API for writing your own, with a pixel
   canvas (`td_canvas.h`: two pixels per cell in any terminal, four with a

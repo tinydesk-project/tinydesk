@@ -120,6 +120,7 @@ add_library(tinydesk_apps STATIC
     apps/mqtt.c
     apps/network.c
     apps/pyui.c
+    apps/trash.c
     apps/kiosk.c
     apps/session.c
     apps/settings.c
@@ -341,6 +342,12 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_desktop PROPERTIES C_STANDARD 11)
     target_compile_options(test_desktop PRIVATE ${TD_WARNINGS})
     add_test(NAME test_desktop COMMAND test_desktop)
+    add_executable(test_trash tests/test_trash.c ports/common/td_fs_stdio.c)
+    target_include_directories(test_trash PRIVATE ports/common)
+    target_link_libraries(test_trash PRIVATE tinydesk_apps)
+    set_target_properties(test_trash PROPERTIES C_STANDARD 11)
+    target_compile_options(test_trash PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_trash COMMAND test_trash)
     add_executable(test_pyui tests/test_pyui.c)
     target_link_libraries(test_pyui PRIVATE tinydesk_apps)
     set_target_properties(test_pyui PROPERTIES C_STANDARD 11)

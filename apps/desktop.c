@@ -262,26 +262,12 @@ static void rename_answer(const char *name, void *user)
     td_desktop_refresh();
 }
 
-static void delete_answer(int button, void *user)
+/* Into the Recycle Bin, or with for_good straight away (asks first). */
+static void ask_delete(bool for_good)
 {
-    (void)user;
-    if (button != 0)
-        return;
     char path[PATH_LEN];
     item_path(path, s_target_name);
-    if (fs()->remove(path) != 0)
-        error_box("Delete failed.");
-    td_desktop_refresh();
-}
-
-static void ask_delete(void)
-{
-    char text[160], name[24 * 4 + 1]; /* the dialog shortens lines to fit */
-    bool dir = s_items[s_target].is_dir;
-    td_utf8_copy(name, sizeof(name), s_target_name, 24); /* never half a character */
-    snprintf(text, sizeof(text), "Delete %s%s%s?", dir ? "folder " : "", name,
-             dir ? " and\neverything in it" : "");
-    td_msgbox("Confirm", text, "Delete|Cancel", delete_answer, NULL);
+    td_trash_ask_delete(path, s_items[s_target].is_dir, for_good, td_desktop_refresh);
 }
 
 /* Right-click on an icon. A script's menu starts with "Run". */
@@ -310,7 +296,10 @@ static void item_menu_chosen(int item, void *user)
         td_inputbox("Rename", "New name:", s_target_name, rename_answer, NULL);
         break;
     case 2:
-        ask_delete();
+        ask_delete(false);
+        break;
+    case 3:
+        ask_delete(true);
         break;
     default:
         break;
@@ -351,11 +340,11 @@ static void prov_context(int i, int x, int y, void *user)
     (void)user;
     if (i >= 0 && i < s_count)
     {
-        static const char *const items[] = {"Run", "Open", "Rename", "Delete"};
+        static const char *const items[] = {"Run", "Open", "Rename", "Delete", "Delete for good"};
         bool script = !s_items[i].is_dir && td_is_runnable(s_items[i].name);
         s_target = i;
         snprintf(s_target_name, sizeof(s_target_name), "%s", s_items[i].name);
-        td_menu_popup(x, y, script ? items : items + 1, script ? 4 : 3, item_menu_chosen, NULL);
+        td_menu_popup(x, y, script ? items : items + 1, script ? 5 : 4, item_menu_chosen, NULL);
     }
     else
     {

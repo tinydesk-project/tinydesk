@@ -223,6 +223,19 @@ void td_time_of_day(int64_t utc, char *buf, int cap)
     format_time(&c, true, buf, (size_t)cap);
 }
 
+void td_date_time(int64_t utc, char *buf, int cap)
+{
+    buf[0] = '\0';
+    if (utc <= 0)
+        return;
+    civil_t c;
+    char d[16], t[16];
+    civil_from_seconds((long long)utc + user_tz(), &c);
+    format_date(&c, d, sizeof(d));
+    format_time(&c, false, t, sizeof(t));
+    snprintf(buf, (size_t)cap, "%s %s", d, t);
+}
+
 /* ------------------------------------------------------ taskbar clock */
 
 static bool clock_text(char *buf, int cap)

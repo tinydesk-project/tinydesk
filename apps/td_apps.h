@@ -23,6 +23,7 @@ void td_files_register(void);
 void td_counter_register(void);
 void td_pixels_register(void);
 void td_imageview_register(void);
+void td_trash_register(void);      /* the Recycle Bin, and its hourly clean-up */
 void td_mouse_register(void);      /* only where td_sysinfo()->mouse is set */
 void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set */
 void td_terminal_register(void);
@@ -165,6 +166,55 @@ typedef struct
 } td_editor_prefs_t;
 td_editor_prefs_t *td_editor_prefs(void);
 
+/* ------------------------------------------------------ recycle bin */
+
+/* apps/trash.c. Files and the Desktop move what is deleted into the
+ * current user's bin, ~/.trash: each item in a folder of its own,
+ * ~/.trash/<id>/<name>, with ~/.trash/<id>/.tdtrash (where it was, when,
+ * how big). The bin holds at most the user's size limit, the oldest going
+ * first, and can delete items after a time. */
+#define TD_TRASH_SIZES 6   /* size codes: 0 1 MB (the default), 1 off, 2 256 KB,
+                            * 3 4 MB, 4 16 MB, 5 64 MB */
+#define TD_TRASH_KEEPS 5   /* keep codes: 0 for ever, then 1, 7, 30, 90 days */
+
+/* The user's limits (saved with the other settings: td_settings_save()). */
+typedef struct
+{
+    uint8_t size;   /* size code */
+    uint8_t keep;   /* keep code */
+} td_trash_prefs_t;
+td_trash_prefs_t *td_trash_prefs(void);
+
+uint32_t td_trash_limit(void);            /* bytes; 0: the bin is off */
+const char *td_trash_size_name(int code); /* "1 MB", "Off"... */
+const char *td_trash_keep_name(int code); /* "never", "7 days"... */
+int td_trash_next_size(int code);         /* the next larger limit, then off */
+
+typedef enum
+{
+    TD_TRASH_OK,
+    TD_TRASH_OFF,       /* the bin is off, or the path is in it */
+    TD_TRASH_TOO_BIG,   /* larger than the size limit */
+    TD_TRASH_FAILED
+} td_trash_result_t;
+
+/* Move a file or folder (a real path) into the bin, then apply the limits. */
+td_trash_result_t td_trash_put(const char *path, bool is_dir);
+
+/* Ask the user and delete: into the bin ("Move ... to the Recycle Bin?"),
+ * or for good when for_good, when the bin is off or the item is bigger than
+ * it holds. done (optional) runs after the answer, to show the change. */
+void td_trash_ask_delete(const char *path, bool is_dir, bool for_good, void (*done)(void));
+
+/* Apply the size and time limits now (also hourly and after each delete). */
+void td_trash_purge(void);
+
+/* Put item id back where it was (NULL, or a message); *where gets the path
+ * it went to. Users other than root only restore into their home. */
+const char *td_trash_restore(const char *id, char *where, int where_cap);
+void td_trash_delete(const char *id);   /* one item, for good */
+void td_trash_empty(void);              /* everything, for good */
+
 /* ------------------------------------------------------ clipboard */
 
 /* A text clipboard shared by the apps (the Editor's copy, cut and paste).
@@ -177,6 +227,10 @@ void td_clipboard_clear(void);
 
 /* Open the Date & time window (also opened by clicking the clock). */
 void td_datetime_open(void);
+
+/* Date and time of a UTC moment in the user's zone and formats
+ * ("02-11-2026 18:05"); "" for 0. */
+void td_date_time(int64_t utc, char *buf, int cap);
 
 /* Put the clock (with its click menu) in the taskbar. */
 void td_datetime_install_clock(void);

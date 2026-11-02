@@ -33,7 +33,9 @@ typedef struct
     uint8_t editor;       /* bit 0: completion pops up in the Editor */
     uint8_t win_size;     /* 0 small (and in older blobs), 1 medium, 2 large */
     uint8_t picture_detail; /* 0 half blocks (and in older blobs), 1 quadrants */
-    uint8_t reserved2[3];
+    uint8_t trash_size;     /* Recycle Bin size code (0: 1 MB, also in older blobs) */
+    uint8_t trash_keep;     /* Recycle Bin keep code (0: for ever) */
+    uint8_t reserved2[1];
 } settings_blob_t;
 
 #define LEGACY_SIZE 8   /* magic + theme, ascii, pattern, hide_icons */
@@ -44,6 +46,7 @@ static const char *const s_pattern_names[] = {"light shade", "medium shade", "da
 
 static td_clock_prefs_t s_clock;
 static td_editor_prefs_t s_editor;
+static td_trash_prefs_t s_trash;
 static td_window_t *s_win;
 static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_pattern_label, *s_status;
 static td_widget_t *s_size_btn[4];      /* desktop icons, start menu, taskbar, windows */
@@ -68,6 +71,11 @@ td_clock_prefs_t *td_clock_prefs(void)
 td_editor_prefs_t *td_editor_prefs(void)
 {
     return &s_editor;
+}
+
+td_trash_prefs_t *td_trash_prefs(void)
+{
+    return &s_trash;
 }
 
 static int pattern_index(void)
@@ -134,7 +142,10 @@ void td_settings_apply_saved(void)
     td_wm_set_window_size(b.win_size == 1 ? TD_UI_MEDIUM : b.win_size == 2 ? TD_UI_LARGE
                                                                            : TD_UI_SMALL);
     td_canvas_set_detail(b.picture_detail == 1 ? TD_CANVAS_QUAD : TD_CANVAS_HALF);
+    s_trash.size = b.trash_size < TD_TRASH_SIZES ? b.trash_size : 0;
+    s_trash.keep = b.trash_keep < TD_TRASH_KEEPS ? b.trash_keep : 0;
     td_wm_invalidate();
+    td_trash_purge();   /* this user's bin, with this user's limits */
 }
 
 bool td_settings_save(void)
@@ -156,6 +167,8 @@ bool td_settings_save(void)
         .win_size = (uint8_t)(td_wm_window_size() == TD_UI_MEDIUM ? 1 : td_wm_window_size() == TD_UI_LARGE ? 2
                                                                                                            : 0),
         .picture_detail = td_canvas_detail() == TD_CANVAS_QUAD ? 1 : 0,
+        .trash_size = s_trash.size,
+        .trash_keep = s_trash.keep,
     };
     if (!si->fs || !si->fs->write || !td_session_home()[0])
         return false;
