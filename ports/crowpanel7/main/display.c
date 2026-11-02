@@ -1,0 +1,564 @@
+/*
+ * display.c - the CrowPanel 7.0's LCD (800x480 RGB565 TFT on the ESP32-S3's
+ * RGB interface, EK9716BD3 + EK73002ACGB) as a terminal for the desktop.
+ *
+ * The desktop writes VT sequences as it does to PuTTY. They go into a
+ * td_vterm of 100x30 cells; a task paints the cells that changed (8x16
+ * pixels each, font8x16.c) into the frame buffer in PSRAM, which the RGB
+ * peripheral scans out on its own. Pins and timings are Elecrow's
+ * (CrowPanel 7.0 wiki, LovyanGFX configuration).
+ */
+#include "display.h"
+
+#include <stdlib.h>
+#include <string.h>
+
+#include "driver/gpio.h"
+#include "esp_heap_caps.h"
+#include "esp_lcd_panel_ops.h"
+#include "esp_lcd_panel_rgb.h"
+#include "esp_log.h"
+#include "esp_private/esp_gpio_reserve.h"
+#include "font8x16.h"
+#include "lcd_fonts.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
+#include "tdsh_board.h"
+#include "tinydesk/td_vterm.h"
+
+#define PIN_BACKLIGHT 2
+/* Pixel clock: a frame is 928 x 525 clocks with the porches, so 30 MHz
+ * refreshes the panel 62 times a second. Elecrow's 15 MHz (31 Hz) flickers
+ * visibly. Board configuration key lcd.pclk_mhz changes it (10 to 40). */
+#define PCLK_MHZ      30
+#define BOUNCE_LINES  20            /* internal-RAM bounce buffers keep the picture steady during flash writes */
+#define PAINT_MS      20
+#define PAINT_PRIO    4             /* below the desktop's UI task (5) */
+#define PAINT_STACK   4096
+
+static const char *TAG = "display";
+
+/* RGB565 data lines: B0-B4, G0-G5, R0-R4. */
+static const int s_data_pins[16] = {15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45};
+#define PIN_DE    41
+#define PIN_VSYNC 40
+#define PIN_HSYNC 39
+#define PIN_PCLK  0
+
+static uint16_t *s_fb;              /* DISPLAY_W x DISPLAY_H, in PSRAM */
+static td_vterm_t *s_vt;            /* in PSRAM */
+static SemaphoreHandle_t s_lock;    /* s_vt between the UI task and the painter */
+static display_reply_fn s_reply;
+static uint16_t s_palette[256];
+static uint8_t s_rgb[256][3];       /* the same colours in 8-bit RGB, for the shades */
+
+/* The font (lcd.font): cell size, bytes a glyph row, glyphs. */
+static int s_cw = 8, s_ch = 16, s_bpr = 1;
+static int s_cols = DISPLAY_MAX_COLS, s_rows = DISPLAY_MAX_ROWS;
+static const uint8_t *(*s_glyph)(uint16_t cp) = font8x16_glyph;
+
+/* What the panel shows, to paint only what changed. */
+static td_vcell_t s_shown[DISPLAY_MAX_ROWS][DISPLAY_MAX_COLS];
+static td_vcell_t s_snap[DISPLAY_MAX_ROWS][DISPLAY_MAX_COLS];
+static int s_cur_x = -1, s_cur_y = -1;     /* cursor as painted, -1: none */
+
+/* ------------------------------------------------------------ colours */
+
+static uint16_t rgb565(int r, int g, int b)
+{
+    return (uint16_t)(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
+}
+
+static void set_colour(int i, int r, int g, int b)
+{
+    s_rgb[i][0] = (uint8_t)r;
+    s_rgb[i][1] = (uint8_t)g;
+    s_rgb[i][2] = (uint8_t)b;
+    s_palette[i] = rgb565(r, g, b);
+}
+
+/* The xterm palette: 16 colours, the 6x6x6 cube, 24 greys. */
+static void make_palette(void)
+{
+    static const uint8_t base[16][3] = {
+        {0, 0, 0},
+        {205, 0, 0},
+        {0, 205, 0},
+        {205, 205, 0},
+        {0, 0, 238},
+        {205, 0, 205},
+        {0, 205, 205},
+        {229, 229, 229},
+        {127, 127, 127},
+        {255, 0, 0},
+        {0, 255, 0},
+        {255, 255, 0},
+        {92, 92, 255},
+        {255, 0, 255},
+        {0, 255, 255},
+        {255, 255, 255},
+    };
+    for (int i = 0; i < 16; i++)
+        set_colour(i, base[i][0], base[i][1], base[i][2]);
+    static const uint8_t level[6] = {0, 95, 135, 175, 215, 255};
+    for (int i = 0; i < 216; i++)
+        set_colour(16 + i, level[i / 36], level[(i / 6) % 6], level[i % 6]);
+    for (int i = 0; i < 24; i++)
+    {
+        int v = 8 + i * 10;
+        set_colour(232 + i, v, v, v);
+    }
+}
+
+/* fg over bg at quarters (1: 25 %, 2: 50 %, 3: 75 %). */
+static uint16_t blend(uint8_t fg, uint8_t bg, int quarters)
+{
+    int c[3];
+    for (int k = 0; k < 3; k++)
+        c[k] = (s_rgb[fg][k] * quarters + s_rgb[bg][k] * (4 - quarters)) / 4;
+    return rgb565(c[0], c[1], c[2]);
+}
+
+/* ------------------------------------------------------------ pictures */
+
+/* Sixel pictures (td_picture.h on the desktop's side) at the panel's own
+ * resolution. A decoded picture goes into a slot in full colour, and the
+ * cells it covers get tile marks: character TILE_BASE + its tile, the slot
+ * in fg. The painter draws a marked cell from the picture; text written
+ * there later replaces the mark, as a terminal's text replaces a picture.
+ * Slots no cell refers to any more are freed. */
+#define IMG_SLOTS 128
+#define TILE_BASE 0xE000          /* Unicode's private use area */
+#define TILE_MAX  6400
+
+typedef struct
+{
+    uint16_t *px;                 /* w x h RGB565, in PSRAM */
+    int w, h, cols;               /* cols: cells across */
+} slot_t;
+
+static slot_t s_slots[IMG_SLOTS];
+static int s_next_slot;
+static SemaphoreHandle_t s_img_lock;   /* the slots, between decoding and painting */
+
+static struct
+{
+    bool data;                    /* past the 'q' */
+    int cx, cy;                   /* the cell the picture starts at */
+    int x, y;                     /* the next sixel's pixel column, band top */
+    int w, h;
+    uint16_t *buf;
+    uint16_t pal[256];
+    int colour, repeat;
+    char cmd;                     /* '"', '#', '!' while their numbers come */
+    int num[5], nn;
+} s_six;
+
+static void six_command_done(void)
+{
+    if (s_six.cmd == '"' && s_six.nn >= 4 && !s_six.buf)
+    {
+        int w = s_six.num[2], h = s_six.num[3];
+        if (w > 0 && h > 0 && w <= DISPLAY_W && h <= DISPLAY_H)
+        {
+            s_six.buf = heap_caps_calloc((size_t)w * (size_t)h, 2, MALLOC_CAP_SPIRAM);
+            if (s_six.buf)
+            {
+                s_six.w = w;
+                s_six.h = h;
+            }
+        }
+    }
+    else if (s_six.cmd == '#' && s_six.nn >= 1)
+    {
+        int c = s_six.num[0] & 255;
+        if (s_six.nn >= 5 && s_six.num[1] == 2)   /* RGB in percent */
+            s_six.pal[c] = rgb565(s_six.num[2] * 255 / 100, s_six.num[3] * 255 / 100, s_six.num[4] * 255 / 100);
+        s_six.colour = c;
+    }
+    else if (s_six.cmd == '!' && s_six.nn >= 1)
+    {
+        s_six.repeat = s_six.num[0];
+    }
+    s_six.cmd = 0;
+}
+
+static void six_sixel(int bits)
+{
+    int n = s_six.repeat > 0 ? s_six.repeat : 1;
+    s_six.repeat = 0;
+    uint16_t c = s_six.pal[s_six.colour];
+    for (int i = 0; i < n; i++, s_six.x++)
+    {
+        if (!s_six.buf || s_six.x >= s_six.w)
+            continue;
+        for (int k = 0; k < 6; k++)
+            if ((bits >> k) & 1 && s_six.y + k < s_six.h)
+                s_six.buf[(s_six.y + k) * s_six.w + s_six.x] = c;
+    }
+}
+
+/* The finished picture into a slot, and its cells marked. Runs while
+ * td_vterm_write() holds s_lock. */
+static void six_finish(void)
+{
+    if (!s_six.buf)
+        return;
+    int cols = (s_six.w + s_cw - 1) / s_cw, rows = (s_six.h + s_ch - 1) / s_ch;
+    if (cols * rows > TILE_MAX)
+    {
+        heap_caps_free(s_six.buf);
+        s_six.buf = NULL;
+        return;
+    }
+    xSemaphoreTake(s_img_lock, portMAX_DELAY);
+    int slot = s_next_slot;
+    s_next_slot = (s_next_slot + 1) % IMG_SLOTS;
+    heap_caps_free(s_slots[slot].px);
+    s_slots[slot] = (slot_t){s_six.buf, s_six.w, s_six.h, cols};
+    s_six.buf = NULL;
+    for (int r = 0; r < rows && s_six.cy + r < s_rows; r++)
+        for (int c = 0; c < cols && s_six.cx + c < s_cols; c++)
+            s_vt->cells[(s_six.cy + r) * TD_VT_MAX_COLS + s_six.cx + c] =
+                (td_vcell_t){(uint16_t)(TILE_BASE + r * cols + c), (uint8_t)slot, 0};
+    /* Pictures no cell shows any more go. */
+    static bool used[IMG_SLOTS];
+    memset(used, 0, sizeof(used));
+    for (int r = 0; r < s_rows; r++)
+        for (int c = 0; c < s_cols; c++)
+        {
+            td_vcell_t v = s_vt->cells[r * TD_VT_MAX_COLS + c];
+            if (v.ch >= TILE_BASE && v.ch < TILE_BASE + TILE_MAX)
+                used[v.fg] = true;
+        }
+    for (int i = 0; i < IMG_SLOTS; i++)
+        if (!used[i] && s_slots[i].px)
+        {
+            heap_caps_free(s_slots[i].px);
+            s_slots[i].px = NULL;
+        }
+    xSemaphoreGive(s_img_lock);
+    s_vt->dirty = true;
+}
+
+/* td_vterm_t.dcs: the bytes of a DCS string; -1 before, -2 after. */
+static void six_byte(void *user, int b)
+{
+    (void)user;
+    if (b == -1)
+    {
+        heap_caps_free(s_six.buf);
+        memset(&s_six, 0, sizeof(s_six));
+        memcpy(s_six.pal, s_palette, sizeof(s_six.pal));
+        s_six.cx = s_vt->cx;
+        s_six.cy = s_vt->cy;
+        return;
+    }
+    if (b == -2)
+    {
+        six_command_done();
+        if (s_six.data)
+            six_finish();
+        heap_caps_free(s_six.buf);
+        s_six.buf = NULL;
+        return;
+    }
+    if (!s_six.data)
+    {
+        s_six.data = b == 'q';    /* the parameters before it are not needed */
+        return;
+    }
+    if (s_six.cmd)
+    {
+        if (b >= '0' && b <= '9')
+        {
+            if (s_six.nn == 0)
+                s_six.nn = 1;
+            if (s_six.nn <= 5 && s_six.num[s_six.nn - 1] < 100000)
+                s_six.num[s_six.nn - 1] = s_six.num[s_six.nn - 1] * 10 + (b - '0');
+            return;
+        }
+        if (b == ';')
+        {
+            if (s_six.nn == 0)
+                s_six.nn = 1;
+            if (s_six.nn < 5)
+                s_six.num[s_six.nn++] = 0;
+            return;
+        }
+        six_command_done();
+    }
+    if (b == '"' || b == '#' || b == '!')
+    {
+        s_six.cmd = (char)b;
+        s_six.nn = 0;
+        memset(s_six.num, 0, sizeof(s_six.num));
+    }
+    else if (b == '$')
+        s_six.x = 0;
+    else if (b == '-')
+    {
+        s_six.x = 0;
+        s_six.y += 6;
+    }
+    else if (b >= '?' && b <= '~')
+        six_sixel(b - '?');
+}
+
+/* A tile of a picture into the cell at col, row; false if it is gone. */
+static bool paint_tile(int col, int row, td_vcell_t c)
+{
+    bool ok = false;
+    xSemaphoreTake(s_img_lock, portMAX_DELAY);
+    const slot_t *s = &s_slots[c.fg];
+    if (s->px)
+    {
+        int tile = c.ch - TILE_BASE, tx = tile % s->cols, ty = tile / s->cols;
+        uint16_t *p = s_fb + (size_t)row * s_ch * DISPLAY_W + (size_t)col * s_cw;
+        for (int y = 0; y < s_ch; y++, p += DISPLAY_W)
+        {
+            int sy = ty * s_ch + y;
+            for (int x = 0; x < s_cw; x++)
+            {
+                int sx = tx * s_cw + x;
+                p[x] = sx < s->w && sy < s->h ? s->px[sy * s->w + sx] : 0;
+            }
+        }
+        ok = true;
+    }
+    xSemaphoreGive(s_img_lock);
+    return ok;
+}
+
+/* ----------------------------------------------------------- painting */
+
+static void paint_cell(int col, int row, td_vcell_t c, bool cursor)
+{
+    if (c.ch >= TILE_BASE && c.ch < TILE_BASE + TILE_MAX && !cursor && paint_tile(col, row, c))
+        return;
+    /* The shades (the desktop's background) as one mixed colour: as dots
+     * of pixels they flicker on this TN panel, whose polarity inversion
+     * beats against such patterns. */
+    uint16_t *p = s_fb + (size_t)row * s_ch * DISPLAY_W + (size_t)col * s_cw;
+    if (c.ch >= 0x2591 && c.ch <= 0x2593 && !cursor)
+    {
+        uint16_t mix = blend(c.fg, c.bg, c.ch - 0x2590);
+        for (int y = 0; y < s_ch; y++, p += DISPLAY_W)
+            for (int x = 0; x < s_cw; x++)
+                p[x] = mix;
+        return;
+    }
+    const uint8_t *g = s_glyph(c.ch);
+    if (!g && c.ch > ' ')
+        g = s_glyph('?');
+    uint16_t fg = s_palette[c.fg], bg = s_palette[c.bg];
+    for (int y = 0; y < s_ch; y++, p += DISPLAY_W)
+    {
+        const uint8_t *bits = g ? g + y * s_bpr : NULL;
+        bool under = cursor && y >= s_ch - s_ch / 8;   /* an underline cursor, in reverse */
+        for (int x = 0; x < s_cw; x++)
+        {
+            bool on = bits && (bits[x >> 3] & (0x80 >> (x & 7)));
+            p[x] = on != under ? fg : bg;
+        }
+    }
+}
+
+static bool same(td_vcell_t a, td_vcell_t b)
+{
+    return a.ch == b.ch && a.fg == b.fg && a.bg == b.bg;
+}
+
+/* Copy the cells under the lock, paint outside it. */
+static void paint(void)
+{
+    int cx = -1, cy = -1;
+    xSemaphoreTake(s_lock, portMAX_DELAY);
+    if (!s_vt->dirty)
+    {
+        xSemaphoreGive(s_lock);
+        return;
+    }
+    s_vt->dirty = false;
+    for (int r = 0; r < s_rows; r++)
+        memcpy(s_snap[r], &s_vt->cells[r * TD_VT_MAX_COLS], (size_t)s_cols * sizeof(td_vcell_t));
+    if (s_vt->cursor_visible)
+    {
+        cx = s_vt->cx < s_cols ? s_vt->cx : s_cols - 1;
+        cy = s_vt->cy;
+    }
+    xSemaphoreGive(s_lock);
+
+    for (int r = 0; r < s_rows; r++)
+        for (int c = 0; c < s_cols; c++)
+        {
+            bool cur = (c == cx && r == cy), was = (c == s_cur_x && r == s_cur_y);
+            if (cur || was || !same(s_snap[r][c], s_shown[r][c]))
+            {
+                paint_cell(c, r, s_snap[r][c], cur);
+                s_shown[r][c] = s_snap[r][c];
+            }
+        }
+    s_cur_x = cx;
+    s_cur_y = cy;
+}
+
+static void paint_task(void *arg)
+{
+    (void)arg;
+    for (;;)
+    {
+        paint();
+        vTaskDelay(pdMS_TO_TICKS(PAINT_MS));
+    }
+}
+
+/* ---------------------------------------------------------- terminal */
+
+static void vt_reply(void *user, const char *data, int len)
+{
+    (void)user;
+    if (s_reply)
+        s_reply(data, len);
+}
+
+void display_write(const uint8_t *buf, int len)
+{
+    if (!s_vt || len <= 0)
+        return;
+    xSemaphoreTake(s_lock, portMAX_DELAY);
+    td_vterm_write(s_vt, buf, len);
+    xSemaphoreGive(s_lock);
+}
+
+/* -------------------------------------------------------------- panel */
+
+static bool panel_init(void)
+{
+    int mhz = tdsh_board_int("lcd.pclk_mhz", PCLK_MHZ);
+    if (mhz < 10 || mhz > 40)
+        mhz = PCLK_MHZ;
+    esp_lcd_rgb_panel_config_t cfg = {
+        .clk_src = LCD_CLK_SRC_DEFAULT,
+        .timings =
+            {
+                .pclk_hz = (uint32_t)mhz * 1000000u,
+                .h_res = DISPLAY_W,
+                .v_res = DISPLAY_H,
+                .hsync_pulse_width = 48,
+                .hsync_back_porch = 40,
+                .hsync_front_porch = 40,
+                .vsync_pulse_width = 31,
+                .vsync_back_porch = 13,
+                .vsync_front_porch = 1,
+                .flags.pclk_active_neg = 1,
+            },
+        .data_width = 16,
+        .bits_per_pixel = 16,
+        .num_fbs = 1,
+        .bounce_buffer_size_px = DISPLAY_W * BOUNCE_LINES,
+        .psram_trans_align = 64,
+        .hsync_gpio_num = PIN_HSYNC,
+        .vsync_gpio_num = PIN_VSYNC,
+        .de_gpio_num = PIN_DE,
+        .pclk_gpio_num = PIN_PCLK,
+        .disp_gpio_num = -1,
+        .flags.fb_in_psram = 1,
+    };
+    memcpy(cfg.data_gpio_nums, s_data_pins, sizeof(s_data_pins));
+    esp_lcd_panel_handle_t panel = NULL;
+    esp_err_t err = esp_lcd_new_rgb_panel(&cfg, &panel);
+    if (err == ESP_OK)
+        err = esp_lcd_panel_reset(panel);
+    if (err == ESP_OK)
+        err = esp_lcd_panel_init(panel);
+    void *fb = NULL;
+    if (err == ESP_OK)
+        err = esp_lcd_rgb_panel_get_frame_buffer(panel, 1, &fb);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "RGB panel: %s", esp_err_to_name(err));
+        return false;
+    }
+    s_fb = fb;
+
+    /* The LCD's pins are not for scripts (machine.Pin refuses reserved pins). */
+    uint64_t mask = BIT64(PIN_DE) | BIT64(PIN_VSYNC) | BIT64(PIN_HSYNC) | BIT64(PIN_PCLK) | BIT64(PIN_BACKLIGHT);
+    for (int i = 0; i < 16; i++)
+        mask |= BIT64(s_data_pins[i]);
+    esp_gpio_reserve(mask);
+    return true;
+}
+
+static void backlight_on(void)
+{
+    gpio_config_t io = {.pin_bit_mask = BIT64(PIN_BACKLIGHT), .mode = GPIO_MODE_OUTPUT};
+    gpio_config(&io);
+    gpio_set_level(PIN_BACKLIGHT, 1);
+}
+
+int display_cols(void)
+{
+    return s_cols;
+}
+
+int display_rows(void)
+{
+    return s_rows;
+}
+
+/* lcd.font: 16 (8x16, the default), 20, 24 or 32 pixels high. */
+static void choose_font(void)
+{
+    switch (tdsh_board_int("lcd.font", 16))
+    {
+    case 20:
+        s_cw = 10, s_ch = 20, s_glyph = font10x20_glyph;
+        break;
+    case 24:
+        s_cw = 12, s_ch = 24, s_glyph = font12x24_glyph;
+        break;
+    case 32:
+        s_cw = 16, s_ch = 32, s_glyph = font16x32_glyph;
+        break;
+    default:
+        s_cw = 8, s_ch = 16, s_glyph = font8x16_glyph;
+        break;
+    }
+    s_bpr = (s_cw + 7) / 8;
+    s_cols = DISPLAY_W / s_cw;
+    s_rows = DISPLAY_H / s_ch;
+}
+
+bool display_init(display_reply_fn reply)
+{
+    s_reply = reply;
+    choose_font();
+    make_palette();
+    s_vt = heap_caps_calloc(1, sizeof(*s_vt), MALLOC_CAP_SPIRAM);
+    s_lock = xSemaphoreCreateMutex();
+    if (!s_vt || !s_lock || !panel_init())
+        return false;
+    td_vterm_init(s_vt, s_cols, s_rows);
+    s_vt->reply = vt_reply;
+    /* Pictures: Sixel at the panel's own pixels, a cell s_cw x s_ch. */
+    s_img_lock = xSemaphoreCreateMutex();
+    s_vt->dcs = six_byte;
+    s_vt->dcs_user = NULL;
+    s_vt->sixel = s_img_lock != NULL;
+    s_vt->cell_w = s_cw;
+    s_vt->cell_h = s_ch;
+
+    /* Blank the panel and mark every cell as needing paint. */
+    for (size_t i = 0; i < (size_t)DISPLAY_W * DISPLAY_H; i++)
+        s_fb[i] = 0;
+    memset(s_shown, 0xFF, sizeof(s_shown));
+    s_vt->dirty = true;
+    backlight_on();
+    if (xTaskCreate(paint_task, "lcd", PAINT_STACK, NULL, PAINT_PRIO, NULL) != pdPASS)
+        return false;
+    ESP_LOGI(TAG, "LCD %dx%d as %dx%d cells of %dx%d, pixel clock %d MHz", DISPLAY_W, DISPLAY_H, s_cols, s_rows, s_cw,
+             s_ch, tdsh_board_int("lcd.pclk_mhz", PCLK_MHZ));
+    return true;
+}

@@ -69,9 +69,9 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 | --- | --- | --- |
 | ESP32-S3 with PSRAM | 16 MB flash, Octal PSRAM | USB-UART, 921600 baud |
 | ESP32-C6 | 8 MB flash | Built-in USB Serial/JTAG |
-| ESP32-S3 with PSRAM | 16 MB flash, octal PSRAM (e.g. ESP32-S3R8, -N16R8) | Built-in USB Serial/JTAG; build it yourself (no release images yet) |
 | Classic ESP32 with PSRAM | 16 MB flash, PSRAM required | USB-UART, 921600 baud |
 | Classic ESP32, 4 MB | PSRAM optional | USB-UART, 921600 baud; 80×25, no SSH server or OTA |
+| Elecrow CrowPanel 7.0 | ESP32-S3, 4 MB flash, 8 MB PSRAM | The desktop on its 800×480 touch LCD (100×30 cells, larger text with `lcd.font`), keyboard on UART0; kiosk HMIs; build it yourself (`ports/crowpanel7`) |
 | PC | Linux, Windows with MinGW, or macOS | Compatible terminal; host simulator for development |
 
 [TinyDesk Shell](https://github.com/tinydesk-project/tinydesk-shell) also runs as
@@ -156,7 +156,9 @@ for the list. The `py` command is [MicroPython](third_party/micropython/README.m
 (MIT; its SHA-256 code from `lib/crypto-algorithms` is public domain), in
 `third_party/micropython`. The pixel text of Python windows uses glyphs of the
 console font Uni2-VGA16 by Dmitry Bolkhovityanov (MIT), in
-`apps/pyui_font.c`.
+`apps/pyui_font.c`. The CrowPanel's larger LCD fonts are made from
+Terminus Font by Dimitar Toshkov Zhekov (SIL Open Font License 1.1,
+[`ports/crowpanel7/main/OFL-Terminus.txt`](ports/crowpanel7/main/OFL-Terminus.txt)).
 
 ## Contributing
 

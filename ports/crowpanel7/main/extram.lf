@@ -1,0 +1,19 @@
+# tinydesk's, TinyDesk Shell's and MicroPython's static buffers (screen,
+# terminal, shell session, interpreter state) go to PSRAM, leaving the
+# ESP32-S3's internal RAM to Wi-Fi, task stacks, the LCD's bounce buffers
+# and DMA. None of them is used from an ISR or while the flash cache is
+# off.
+[mapping:td_extram_tinydesk]
+archive: libtinydesk.a
+entries:
+    * (extram_bss)
+
+[mapping:td_extram_tdsh]
+archive: libtdsh.a
+entries:
+    * (extram_bss)
+
+[mapping:td_extram_micropython]
+archive: libmicropython.a
+entries:
+    * (extram_bss)

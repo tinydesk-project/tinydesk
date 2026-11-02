@@ -1,0 +1,70 @@
+# tinydesk on the Elecrow CrowPanel 7.0 (ESP32-S3-WROOM-1-N4R8: 4 MB flash,
+# 8 MB octal PSRAM; 800x480 RGB LCD, GT911 touch), ESP-IDF 5.3.1.
+
+# --- UART0 belongs to the desktop's keyboard --------------------------------
+# The ESP-IDF console is off (logs go to the Log Viewer app), also the
+# secondary console: it would take GPIO19/20 (USB), which are the touch
+# screen's I2C here. The bootloader is quiet, and the app starts at WARN
+# and raises the level to INFO once the ROM's UART output is detached.
+CONFIG_ESP_CONSOLE_NONE=y
+CONFIG_ESP_CONSOLE_SECONDARY_NONE=y
+CONFIG_BOOTLOADER_LOG_LEVEL_NONE=y
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y
+CONFIG_LOG_MAXIMUM_LEVEL_INFO=y
+
+CONFIG_FREERTOS_HZ=1000
+
+# --- Flash: one 2.5 MB app, 1.4 MB /fs (partitions.csv) ----------------------
+CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
+CONFIG_ESPTOOLPY_FLASHMODE_DIO=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
+
+# --- Octal PSRAM -----------------------------------------------------------
+# "R8" modules have octal PSRAM; ESP-IDF's default for the S3 is quad, and
+# the firmware would then stop at boot.
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_USE_MALLOC=y
+CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=4096
+# Static buffers of tinydesk and TinyDesk Shell go to PSRAM (main/extram.lf).
+CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
+
+# --- The LCD ---------------------------------------------------------------
+# Code and constants run from PSRAM, so the picture keeps going while the
+# flash is written (files, settings); the data cache is made larger for the
+# frame buffer, and a scan-out that slipped restarts at the next frame.
+CONFIG_SPIRAM_FETCH_INSTRUCTIONS=y
+CONFIG_SPIRAM_RODATA=y
+CONFIG_ESP32S3_DATA_CACHE_64KB=y
+CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
+CONFIG_LCD_RGB_RESTART_IN_VSYNC=y
+
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# --- TinyDesk Shell settings (as on the other ports) ------------------------
+CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE=6144
+CONFIG_VFS_SUPPORT_DIR=y
+# Board wiring (RS-485, SD card...) is not configured here: see
+# board.example.conf.
+
+# --- TLS -------------------------------------------------------------------
+CONFIG_MBEDTLS_DYNAMIC_BUFFER=y
+
+# Task Manager: task list and CPU shares (a few bytes per task).
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
+
+# FreeRTOS kernel code (non-ISR functions) in flash: more IRAM for the rest
+# of the firmware.
+CONFIG_FREERTOS_PLACE_FUNCTIONS_INTO_FLASH=y
+
+# SD card (sd mount): FAT with long file names in UTF-8, the name buffer on
+# the heap only while a call runs.
+CONFIG_FATFS_LFN_HEAP=y
+CONFIG_FATFS_MAX_LFN=255
+CONFIG_FATFS_API_ENCODING_UTF_8=y
