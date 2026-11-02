@@ -316,6 +316,28 @@ enum
     TD_PYUI_BIG,          /* canvas id: text in big characters at a, b in colours c, d;
                            * e scale (1-4), f width in characters (0: the text's own,
                            * otherwise right-aligned and blanked to that width) */
+    /* Pixels. A canvas has 2 x 2 pixels to a cell, in a layer under its
+     * cells: a cell drawn in shows them, text whose background is
+     * TD_PYUI_CLEAR shows over them. Images are pixel pictures the desktop
+     * keeps for the script; they are only seen when drawn into a canvas.
+     * Coordinates are pixels; "target" is a canvas (its draw page) or an
+     * image. */
+    TD_PYUI_IMAGE,        /* image id: text is the td_pyui_image_t pointer, which the
+                           * desktop takes over (td_pyui_send_image) */
+    TD_PYUI_IMAGE_DATA,   /* target id: text is a td_pyui_image_t pointer whose pixels
+                           * go to a, b; the desktop frees it */
+    TD_PYUI_DRAW_IMAGE,   /* target id: image win into a, b, size c, d (0: the part's
+                           * own, otherwise stretched), its part at e, f of the size in
+                           * text (td_pyui_part_t; 0: to the image's edge); flags 1:
+                           * nine-slice, the border's pixels kept and the rest stretched */
+    TD_PYUI_RECT,         /* target id: a, b, c, d in colour e; f corner radius; flags 1:
+                           * outline only */
+    TD_PYUI_LINE,         /* target id: a, b to c, d in colour e */
+    TD_PYUI_GRADIENT,     /* target id: a, b, c, d from the RGB colour text[0..2] to
+                           * text[3..5], dithered; flags 1: left to right, else top to
+                           * bottom */
+    TD_PYUI_CIRCLE,       /* target id: centre a, b, radius c in colour e; flags 1:
+                           * outline only */
 };
 
 /* TD_PYUI_SHOW states. */
@@ -362,11 +384,37 @@ typedef struct
     int16_t a, b, c, d, e, f;
 } td_pyui_msg_t;
 
+/* A colour with none of its own: text and fills over a canvas's pixels
+ * show the pixels (text gets the colour most of its cell's pixels have);
+ * in an image, transparent. */
+#define TD_PYUI_CLEAR (-2)
+
+/* A pixel picture: w x h palette indexes, and where it is transparent. One
+ * block from td_pyui_image_new(), freed with free(). */
+typedef struct
+{
+    int16_t w, h;
+    uint8_t *px;      /* w * h, row by row */
+    uint8_t *mask;    /* NULL (opaque), or w * h, 1 where transparent */
+} td_pyui_image_t;
+
+/* The size of the part of an image TD_PYUI_DRAW_IMAGE draws, and the
+ * nine-slice border. */
+typedef struct
+{
+    int16_t w, h, border;
+} td_pyui_part_t;
+
 #define TD_PYUI_TEXT_MAX  1024   /* text in one message */
 #define TD_PYUI_MAX_PAGES 16     /* pages of one canvas */
 #ifndef TD_PYUI_MAX_CELLS
 #define TD_PYUI_MAX_CELLS 2000   /* all canvases of a script together, every page counted;
                                   * builds with PSRAM set more */
+#endif
+#ifndef TD_PYUI_MAX_PIXELS
+#define TD_PYUI_MAX_PIXELS 16384 /* bytes of a script's images and canvas pixel layers
+                                  * together (a pixel is a byte, a mask one more); builds
+                                  * with PSRAM set more */
 #endif
 
 /* The desktop side: start serving scripts (td_apps_register_all does). */
@@ -383,6 +431,20 @@ bool td_pyui_send(const td_pyui_msg_t *m, const char *text);
 int td_pyui_recv(td_pyui_msg_t *m, char *text, int cap);
 void td_pyui_detach_begin(void);
 bool td_pyui_detach_done(void);
+
+/* Pixels, script side. take() reserves bytes of TD_PYUI_MAX_PIXELS (false
+ * when they do not fit), give() returns them; the desktop gives back what
+ * images and pixel layers it frees. image_new() is a w x h image of colour
+ * 0, with a mask (all opaque) when asked, or NULL without memory.
+ * send_image() sends op (TD_PYUI_IMAGE or TD_PYUI_IMAGE_DATA) with the
+ * image, which the desktop then owns; it is freed here when there is no
+ * desktop to take it (and its bytes given back for TD_PYUI_IMAGE). It
+ * waits while the queue is full, calling wait(). */
+bool td_pyui_pixels_take(long bytes);
+void td_pyui_pixels_give(long bytes);
+td_pyui_image_t *td_pyui_image_new(int w, int h, bool mask);
+long td_pyui_image_bytes(const td_pyui_image_t *img);
+void td_pyui_send_image(uint8_t op, uint16_t id, int a, int b, td_pyui_image_t *img, void (*wait)(void));
 
 /* ------------------------------------------------------- sessions */
 

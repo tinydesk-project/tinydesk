@@ -72,8 +72,10 @@ idf_component_register(
 if(CONFIG_SPIRAM)
     # Python canvases may cover a whole large screen several times over
     # (pages: 100x30 is 3000 cells, 6 bytes each); they are allocated in
-    # PSRAM while a script runs, 192 KB at most.
-    set(TD_SCREEN_LIMITS TD_MAX_COLS=256 TD_MAX_ROWS=96 TD_VT_SCROLLBACK=200 TD_PYUI_MAX_CELLS=32000)
+    # PSRAM while a script runs, 192 KB at most. Their pixel layers and the
+    # script's images (a byte a pixel) may take 2 MB of PSRAM.
+    set(TD_SCREEN_LIMITS TD_MAX_COLS=256 TD_MAX_ROWS=96 TD_VT_SCROLLBACK=200 TD_PYUI_MAX_CELLS=32000
+        TD_PYUI_MAX_PIXELS=2097152)
 else()
     set(TD_SCREEN_LIMITS TD_MAX_COLS=80 TD_MAX_ROWS=25 TD_VT_SCROLLBACK=12 TD_MAX_WIDGETS=96)
 endif()

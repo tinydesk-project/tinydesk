@@ -14,6 +14,7 @@
 # objects are numbered here, and widget values come back as events.
 
 import _tdui
+import os
 import time
 from micropython import const
 
@@ -39,6 +40,13 @@ _SHOW = const(18)
 _PAGE = const(19)
 _PAGE_COPY = const(20)
 _BIG = const(21)
+_IMAGE = const(22)
+_IMAGE_DATA = const(23)
+_DRAW_IMAGE = const(24)
+_RECT = const(25)
+_LINE = const(26)
+_GRADIENT = const(27)
+_CIRCLE = const(28)
 
 _W_LABEL = const(1)
 _W_BUTTON = const(2)
@@ -61,6 +69,9 @@ MAX_WINDOWS = const(4)
 MAX_WIDGETS = const(48)
 MAX_CELLS = _tdui.MAX_CELLS   # all canvases together, pages counted: 2000, more with PSRAM
 MAX_PAGES = const(16)         # pages of one canvas
+MAX_PIXELS = _tdui.MAX_PIXELS # bytes of images and canvas pixels together
+CLEAR = const(-2)             # a colour: none of its own (text and blanks over a
+                              # canvas's pixels show them; in an image, transparent)
 
 _KEYS = ("enter", "tab", "backspace", "esc", "up", "down", "right", "left", "home", "end",
          "insert", "delete", "pgup", "pgdn", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8",
@@ -427,10 +438,111 @@ class List(_Widget):
                 self.on_activate(self)
 
 
-class Canvas(_Widget):
+def rgb(r, g, b):
+    # The palette colour nearest to an RGB colour (0..255 each).
+    return _tdui.rgb(r, g, b)
+
+
+def _part(w, h, border):
+    return bytes((w & 255, (w >> 8) & 255, h & 255, (h >> 8) & 255, border & 255, (border >> 8) & 255))
+
+
+class _Pixels:
+    # Drawing in pixels, done on the desktop: one call draws a whole shape,
+    # picture or panel, however large. A canvas has 2 x 2 pixels to a cell
+    # (pwidth x pheight in all); a cell drawn in shows its pixels until text
+    # is put there. Colours are palette numbers 0..255 (rgb() finds one);
+    # CLEAR in an image is transparent.
+
+    def rect(self, x, y, w, h, color, radius=0, outline=False):
+        if self._alive():
+            _tdui.send(_RECT, self.id, 0, 1 if outline else 0, x, y, w, h, color, radius)
+
+    def line(self, x0, y0, x1, y1, color):
+        if self._alive():
+            _tdui.send(_LINE, self.id, 0, 0, x0, y0, x1, y1, color, 0)
+
+    def circle(self, x, y, r, color, outline=False):
+        if self._alive():
+            _tdui.send(_CIRCLE, self.id, 0, 1 if outline else 0, x, y, r, 0, color, 0)
+
+    def gradient(self, x, y, w, h, rgb1, rgb2, across=False):
+        # From one (r, g, b) colour to another, top to bottom (across: left
+        # to right), dithered to the palette.
+        if self._alive():
+            _tdui.send(_GRADIENT, self.id, 0, 1 if across else 0, x, y, w, h, 0, 0, bytes(tuple(rgb1) + tuple(rgb2)))
+
+    def image(self, img, x, y, w=0, h=0, src=None):
+        # img (or its part src = (sx, sy, sw, sh), say one picture of a
+        # sprite sheet) at x, y; w, h stretch or shrink it.
+        if self._alive():
+            sx, sy, sw, sh = src or (0, 0, 0, 0)
+            _tdui.send(_DRAW_IMAGE, self.id, img.id, 0, x, y, w, h, sx, sy, _part(sw, sh, 0))
+
+    def nine(self, img, x, y, w, h, border, src=None):
+        # img (or its part src) as a w x h panel: its corners of border
+        # pixels as they are, the edges and the middle stretched. One small
+        # picture makes buttons and frames of any size.
+        if self._alive():
+            sx, sy, sw, sh = src or (0, 0, 0, 0)
+            _tdui.send(_DRAW_IMAGE, self.id, img.id, 1, x, y, w, h, sx, sy, _part(sw, sh, border))
+
+    def pixels(self, x, y, w, h, data, rgb=False, dither=True):
+        # w x h pixels from bytes: palette numbers, or (rgb) red, green, blue
+        # for each, dithered or the nearest colour. One call for all of them.
+        if self._alive():
+            _tdui.pixels(self.id, x, y, w, h, data, (1 if dither else 2) if rgb else 0)
+
+
+class Image(_Pixels):
+    # A picture the desktop keeps for the script, drawn into canvases with
+    # their image() and nine(). Image(w, h, color) is blank (color CLEAR:
+    # transparent); Image.load() reads a PPM, PGM or BMP file.
+
+    def __init__(self, w, h, color=0, _file=None):
+        _tdui.open()
+        self.id = _new_id()
+        _objs[self.id] = self
+        try:
+            if _file:
+                self.width, self.height = _tdui.image_load(self.id, _file[0], _file[1], _file[2], w, h)
+            else:
+                _tdui.image(self.id, w, h, color)
+                self.width, self.height = w, h
+        except Exception:
+            del _objs[self.id]
+            raise
+
+    @staticmethod
+    def load(path, w=0, h=0, key=None, dither=True):
+        # The picture in path, scaled to w x h if given (only one: the other
+        # keeps its shape). key (r, g, b): that colour is transparent.
+        # Decoded in C on the script's task; dither spreads colours the
+        # palette lacks over neighbouring pixels.
+        if not path.startswith("/"):
+            path = os.getcwd().rstrip("/") + "/" + path
+        k = -1 if key is None else key[0] << 16 | key[1] << 8 | key[2]
+        return Image(w, h, 0, (path, k, dither))
+
+    def free(self):
+        # The desktop forgets it (it is also gone when the script ends).
+        if self._alive():
+            _send(_CLOSE, self.id)
+            del _objs[self.id]
+
+    def _alive(self):
+        return self.id in _objs
+
+    def _event(self, op, a, b, c, d, t):
+        pass
+
+
+class Canvas(_Widget, _Pixels):
     # A grid of character cells. Colours are palette numbers 0..255, -1 for
     # the window's own. With pages > 1 it keeps that many pictures on the
     # desktop: draw into a hidden one (draw_to), then show it at once.
+    # Pixels (_Pixels): 2 x 2 to a cell, in a layer under the cells; text
+    # with the background CLEAR stands on them.
     _n = 0
 
     def __init__(self, win, x, y, w, h, on_mouse, pages=1):
@@ -448,7 +560,7 @@ class Canvas(_Widget):
         self.width = w
         self.height = h
         self.pages = pages
-        self.drawing = 0      # the page put/fill/big draw into
+        self.drawing = 0      # the page put/fill/big and the pixels draw into
         self.showing = 0      # the page the window shows
         self.on_mouse = on_mouse
         super().__init__(win, _W_CANVAS, x, y, w, h, pages, "")
@@ -513,6 +625,17 @@ class Canvas(_Widget):
     def _req2(self, op, a, b, c, d, e, f, text):
         if self.win.is_open:
             _send(op, self.id, 0, 0, a, b, c, d, e, f, text)
+
+    def _alive(self):
+        return self.win.is_open
+
+    @property
+    def pwidth(self):
+        return 2 * self.width
+
+    @property
+    def pheight(self):
+        return 2 * self.height
 
     def _event(self, op, a, b, c, d, t):
         if op == _EV_MOUSE and self.on_mouse:

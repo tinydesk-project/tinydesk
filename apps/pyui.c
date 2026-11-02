@@ -11,24 +11,37 @@
  * first opens a window and freed when it ends: nothing is kept in RAM
  * while no script uses tdui. Objects are numbered by the script; the
  * table maps the numbers to the desktop's windows and widgets.
+ *
+ * Pixels stay on the desktop too: a script's images (decoded from files or
+ * made from its bytes in C on the script's task, then handed over as a
+ * pointer) and each canvas page's pixel layer, 2 x 2 pixels to a cell. A
+ * request draws a whole image, a part of one (a sprite sheet) or a
+ * nine-slice panel of any size, so a picture costs the script one call,
+ * not one per pixel. The window turns a cell's four pixels into a quadrant
+ * or half-block character when it draws (td_canvas_quad_cell()), and the
+ * renderer sends only the cells that changed.
  */
+#include <math.h>
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "td_apps.h"
+#include "tinydesk/td_canvas.h"
 
 #define REQ_SIZE    4096   /* powers of two */
 #define EVT_SIZE    2048
-#define MAX_OBJS    72     /* 4 windows, 48 widgets, dialogs and spare */
+#define MAX_OBJS    104    /* 4 windows, 48 widgets, images, dialogs and spare */
 #define TICK_MS     10
 #define TICK_BUDGET 200    /* requests run per tick, so the desktop stays smooth */
 #define LIST_ITEMS  1000
 #define LIST_BYTES  16384
 
-#define STR_(x)   #x
-#define STR(x)    STR_(x)
-#define CELLS_MSG "canvases are limited to " STR(TD_PYUI_MAX_CELLS) " cells in all"
+#define STR_(x)    #x
+#define STR(x)     STR_(x)
+#define CELLS_MSG  "canvases are limited to " STR(TD_PYUI_MAX_CELLS) " cells in all"
+#define PIXELS_MSG "images and canvas pixels are limited to " STR(TD_PYUI_MAX_PIXELS) " bytes in all"
+#define PX_CELL    0xFFFF   /* cell_t.ch of a cell that shows its pixels */
 
 enum
 {
@@ -44,7 +57,8 @@ enum
     K_WIDGET,
     K_CANVAS,
     K_DIALOG,
-    K_MENU
+    K_MENU,
+    K_IMAGE
 };
 
 typedef struct
@@ -83,6 +97,13 @@ typedef struct
      * requests draw into page `draw`, the window shows page `show` */
     cell_t *cells;
     uint8_t pages, draw, show;
+    /* canvas: `pages` pixel layers of 2w x 2h after one another (NULL until
+     * the first pixel is drawn) */
+    uint8_t *px;
+    long px_bytes;
+    /* image: its pixels; a mask added later is a block of its own */
+    td_pyui_image_t *img;
+    uint8_t *own_mask;
 } obj_t;
 
 typedef struct
@@ -95,6 +116,7 @@ typedef struct
 } link_t;
 
 static atomic_int s_state = LINK_OFF;
+static atomic_long s_pixels;   /* bytes of TD_PYUI_MAX_PIXELS in use */
 static link_t *s_link;    /* set by the script before LINK_ON, freed after LINK_OFF */
 static atomic_bool s_started;
 
@@ -211,6 +233,61 @@ bool td_pyui_detach_done(void)
     return true;
 }
 
+/* ------------------------------------------------- pixels, both sides */
+
+bool td_pyui_pixels_take(long bytes)
+{
+    long used = atomic_load(&s_pixels);
+    do
+    {
+        if (bytes < 0 || used + bytes > TD_PYUI_MAX_PIXELS)
+            return false;
+    } while (!atomic_compare_exchange_weak(&s_pixels, &used, used + bytes));
+    return true;
+}
+
+void td_pyui_pixels_give(long bytes)
+{
+    atomic_fetch_sub(&s_pixels, bytes);
+}
+
+td_pyui_image_t *td_pyui_image_new(int w, int h, bool mask)
+{
+    if (w < 1 || h < 1 || w > 4096 || h > 4096)
+        return NULL;
+    size_t n = (size_t)w * (size_t)h;
+    td_pyui_image_t *img = calloc(1, sizeof(*img) + n * (mask ? 2 : 1));
+    if (!img)
+        return NULL;
+    img->w = (int16_t)w;
+    img->h = (int16_t)h;
+    img->px = (uint8_t *)(img + 1);
+    img->mask = mask ? img->px + n : NULL;
+    return img;
+}
+
+long td_pyui_image_bytes(const td_pyui_image_t *img)
+{
+    return (long)img->w * img->h * (img->mask ? 2 : 1);
+}
+
+void td_pyui_send_image(uint8_t op, uint16_t id, int a, int b, td_pyui_image_t *img, void (*wait)(void))
+{
+    td_pyui_msg_t m = {.op = op, .id = id, .a = (int16_t)a, .b = (int16_t)b, .len = sizeof(img)};
+    for (;;)
+    {
+        if (atomic_load(&s_state) != LINK_ON)
+            break;
+        if (ring_put(&s_link->req, &m, (const char *)&img))
+            return;
+        if (wait)
+            wait();
+    }
+    if (op == TD_PYUI_IMAGE)
+        td_pyui_pixels_give(td_pyui_image_bytes(img));
+    free(img);
+}
+
 /* ----------------------------------------------------- desktop side */
 
 static void post(uint8_t op, uint16_t id, int a, int b, int c, int d, const char *text)
@@ -266,6 +343,13 @@ static void free_obj(obj_t *o)
 {
     if (o->kind == K_CANVAS)
         s_link->cells -= canvas_cells(o);
+    if (o->px)
+        td_pyui_pixels_give(o->px_bytes);
+    free(o->px);
+    if (o->img)
+        td_pyui_pixels_give(td_pyui_image_bytes(o->img));
+    free(o->img);
+    free(o->own_mask);
     free(o->items);
     free(o->offs);
     free(o->cells);
@@ -352,6 +436,41 @@ static const char *list_item(td_widget_t *w, int index, int *fg, void *user)
     return index >= 0 && index < o->nitems ? o->items + o->offs[index] : "";
 }
 
+static void cell_pixels(const obj_t *o, int page, int x, int y, uint8_t q[4]);
+static uint8_t main_colour(const uint8_t q[4]);
+
+/* A canvas's cells: text, or the cell's four pixels as one quadrant
+ * character (Fine pictures) or an upper half block (two of them). */
+static void draw_canvas(const obj_t *o, const td_theme_t *t)
+{
+    bool quad = td_canvas_detail() == TD_CANVAS_QUAD && !td_get_ascii_mode();
+    const cell_t *cells = canvas_page(o, o->show);
+    for (int y = 0; y < o->rect.h; y++)
+    {
+        for (int x = 0; x < o->rect.w; x++)
+        {
+            const cell_t *c = &cells[y * o->rect.w + x];
+            uint8_t q[4];
+            bool px = o->px != NULL && (c->ch == PX_CELL || c->bg == TD_PYUI_CLEAR);
+            if (px)
+                cell_pixels(o, o->show, x, y, q);
+            if (c->ch == PX_CELL && px)
+            {
+                uint32_t ch = 0x2580;
+                uint8_t fg = q[0], bg = q[2];
+                if (quad)
+                    td_canvas_quad_cell(q, &ch, &fg, &bg);
+                td_putc(o->rect.x + x, o->rect.y + y, ch, fg, bg, 0);
+                continue;
+            }
+            uint8_t bg = c->bg >= 0 ? (uint8_t)c->bg : px ? main_colour(q)
+                                                          : t->win_bg;
+            td_putc(o->rect.x + x, o->rect.y + y, c->ch && c->ch != PX_CELL ? c->ch : ' ',
+                    c->fg < 0 ? t->win_fg : (uint8_t)c->fg, bg, 0);
+        }
+    }
+}
+
 static void win_draw(td_window_t *win, int cw, int ch)
 {
     (void)cw;
@@ -361,18 +480,8 @@ static void win_draw(td_window_t *win, int cw, int ch)
     for (int i = 0; i < MAX_OBJS; i++)
     {
         obj_t *o = &s_link->objs[i];
-        if (o->kind != K_CANVAS || o->win != wo->id)
-            continue;
-        const cell_t *cells = canvas_page(o, o->show);
-        for (int y = 0; y < o->rect.h; y++)
-        {
-            for (int x = 0; x < o->rect.w; x++)
-            {
-                const cell_t *c = &cells[y * o->rect.w + x];
-                td_putc(o->rect.x + x, o->rect.y + y, c->ch ? c->ch : ' ', c->fg < 0 ? t->win_fg : (uint8_t)c->fg,
-                        c->bg < 0 ? t->win_bg : (uint8_t)c->bg, 0);
-            }
-        }
+        if (o->kind == K_CANVAS && o->win == wo->id)
+            draw_canvas(o, t);
     }
 }
 
@@ -512,6 +621,15 @@ static bool list_add(obj_t *o, const char *text, int len)
     return true;
 }
 
+/* A blank with no background of its own shows the cell's pixels. */
+static void set_cell(cell_t *c, uint32_t cp, int fg, int bg)
+{
+    c->ch = (uint16_t)(cp == ' ' && bg == TD_PYUI_CLEAR ? PX_CELL : cp > 0xFFFE ? '?'
+                                                                                : cp);
+    c->fg = (int16_t)fg;
+    c->bg = (int16_t)bg;
+}
+
 static void canvas_put(obj_t *o, int x, int y, const char *s, int fg, int bg)
 {
     while (*s && y < o->rect.h)
@@ -524,12 +642,7 @@ static void canvas_put(obj_t *o, int x, int y, const char *s, int fg, int bg)
             continue;
         }
         if (x >= 0 && y >= 0 && x < o->rect.w)
-        {
-            cell_t *c = &canvas_page(o, o->draw)[y * o->rect.w + x];
-            c->ch = (uint16_t)(cp > 0xFFFF ? '?' : cp);
-            c->fg = (int16_t)fg;
-            c->bg = (int16_t)bg;
-        }
+            set_cell(&canvas_page(o, o->draw)[y * o->rect.w + x], cp, fg, bg);
         x++;
     }
 }
@@ -540,12 +653,7 @@ static void canvas_fill(obj_t *o, int x0, int y0, int w, int h, uint32_t cp, int
     for (int y = y0 < 0 ? 0 : y0; y < y0 + h && y < o->rect.h; y++)
     {
         for (int x = x0 < 0 ? 0 : x0; x < x0 + w && x < o->rect.w; x++)
-        {
-            cell_t *c = &cells[y * o->rect.w + x];
-            c->ch = (uint16_t)(cp > 0xFFFF ? '?' : cp);
-            c->fg = (int16_t)fg;
-            c->bg = (int16_t)bg;
-        }
+            set_cell(&cells[y * o->rect.w + x], cp, fg, bg);
     }
 }
 
@@ -621,10 +729,7 @@ static void canvas_set(obj_t *o, int x, int y, uint32_t cp, int fg, int bg)
 {
     if (x < 0 || y < 0 || x >= o->rect.w || y >= o->rect.h)
         return;
-    cell_t *c = &canvas_page(o, o->draw)[y * o->rect.w + x];
-    c->ch = (uint16_t)cp;
-    c->fg = (int16_t)fg;
-    c->bg = (int16_t)bg;
+    set_cell(&canvas_page(o, o->draw)[y * o->rect.w + x], cp, fg, bg);
 }
 
 /* Text in big characters at x, y. width > 0: right-aligned in that many
@@ -667,6 +772,424 @@ static void canvas_big(obj_t *o, int x, int y, const char *s, int fg, int bg, in
     }
 }
 
+/* ------------------------------------------------------------ pixels */
+
+/* A cell's background as a palette index, for the pixels under it. */
+static uint8_t cell_bg(const cell_t *c)
+{
+    return c->bg >= 0 ? (uint8_t)c->bg : td_theme()->win_bg;
+}
+
+static long layer_size(const obj_t *o)
+{
+    return 4L * o->rect.w * o->rect.h;
+}
+
+static uint8_t *canvas_layer(const obj_t *o, int page)
+{
+    return o->px + (size_t)page * (size_t)layer_size(o);
+}
+
+/* Give each cell's four pixels the cell's background. */
+static void layer_from_cells(obj_t *o, int page)
+{
+    const cell_t *cells = canvas_page(o, page);
+    uint8_t *px = canvas_layer(o, page);
+    int pw = 2 * o->rect.w;
+    for (int y = 0; y < o->rect.h; y++)
+    {
+        for (int x = 0; x < o->rect.w; x++)
+        {
+            uint8_t c = cell_bg(&cells[y * o->rect.w + x]);
+            uint8_t *p = px + (2 * y) * pw + 2 * x;
+            p[0] = p[1] = p[pw] = p[pw + 1] = c;
+        }
+    }
+}
+
+/* The canvas's pixel layers, allocated by the first pixel drawn. */
+static bool canvas_pixels(obj_t *o)
+{
+    if (o->px)
+        return true;
+    long bytes = layer_size(o) * o->pages;
+    if (!td_pyui_pixels_take(bytes))
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, PIXELS_MSG);
+        return false;
+    }
+    o->px = malloc((size_t)bytes);
+    if (!o->px)
+    {
+        td_pyui_pixels_give(bytes);
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "out of memory");
+        return false;
+    }
+    o->px_bytes = bytes;
+    for (int p = 0; p < o->pages; p++)
+        layer_from_cells(o, p);
+    return true;
+}
+
+/* What pixel requests draw into: a canvas's draw page or an image. */
+typedef struct
+{
+    uint8_t *px, *mask;
+    int w, h;
+    cell_t *cells;      /* canvas: its cells (turned into pixel cells) */
+    int cols;
+} surf_t;
+
+static bool surface(obj_t *o, surf_t *s)
+{
+    memset(s, 0, sizeof(*s));
+    if (o->kind == K_IMAGE)
+    {
+        s->px = o->img->px;
+        s->mask = o->img->mask;
+        s->w = o->img->w;
+        s->h = o->img->h;
+        return true;
+    }
+    if (o->kind != K_CANVAS || !canvas_pixels(o))
+        return false;
+    s->px = canvas_layer(o, o->draw);
+    s->w = 2 * o->rect.w;
+    s->h = 2 * o->rect.h;
+    s->cells = canvas_page(o, o->draw);
+    s->cols = o->rect.w;
+    return true;
+}
+
+/* An image that is to get a transparent pixel needs a mask. */
+static bool image_mask(obj_t *o, surf_t *s)
+{
+    if (s->mask || o->kind != K_IMAGE)
+        return true;
+    long n = (long)o->img->w * o->img->h;
+    if (!td_pyui_pixels_take(n))
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, PIXELS_MSG);
+        return false;
+    }
+    o->own_mask = calloc(1, (size_t)n);
+    if (!o->own_mask)
+    {
+        td_pyui_pixels_give(n);
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "out of memory");
+        return false;
+    }
+    o->img->mask = s->mask = o->own_mask;
+    return true;
+}
+
+/* One pixel. On a canvas, a cell that showed text shows its pixels from
+ * now on, its other pixels in the text's background; TD_PYUI_CLEAR there
+ * is the window's background. In an image, TD_PYUI_CLEAR is transparent. */
+static void plot(surf_t *s, int x, int y, int color)
+{
+    if (x < 0 || y < 0 || x >= s->w || y >= s->h)
+        return;
+    if (s->cells)
+    {
+        cell_t *c = &s->cells[(y >> 1) * s->cols + (x >> 1)];
+        if (c->ch != PX_CELL)
+        {
+            uint8_t b = cell_bg(c);
+            uint8_t *p = s->px + (y & ~1) * s->w + (x & ~1);
+            p[0] = p[1] = p[s->w] = p[s->w + 1] = b;
+            c->ch = PX_CELL;
+            c->fg = -1;
+            c->bg = TD_PYUI_CLEAR;
+        }
+        s->px[y * s->w + x] = color < 0 ? td_theme()->win_bg : (uint8_t)color;
+        return;
+    }
+    size_t i = (size_t)y * (size_t)s->w + (size_t)x;
+    if (s->mask)
+        s->mask[i] = color == TD_PYUI_CLEAR;
+    if (color >= 0)
+        s->px[i] = (uint8_t)color;
+}
+
+static void fill_rect(surf_t *s, int x0, int y0, int w, int h, int color)
+{
+    int x1 = x0 + w > s->w ? s->w : x0 + w, y1 = y0 + h > s->h ? s->h : y0 + h;
+    for (int y = y0 < 0 ? 0 : y0; y < y1; y++)
+        for (int x = x0 < 0 ? 0 : x0; x < x1; x++)
+            plot(s, x, y, color);
+}
+
+static void line(surf_t *s, int x0, int y0, int x1, int y1, int color)
+{
+    int dx = abs(x1 - x0), dy = -abs(y1 - y0);
+    int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+    for (int n = 0; n < 20000; n++)   /* no line on a canvas is longer */
+    {
+        plot(s, x0, y0, color);
+        if (x0 == x1 && y0 == y1)
+            break;
+        int e2 = 2 * err;
+        if (e2 >= dy)
+        {
+            err += dy;
+            x0 += sx;
+        }
+        if (e2 <= dx)
+        {
+            err += dx;
+            y0 += sy;
+        }
+    }
+}
+
+/* Is pixel (x, y) of a w x h rectangle with corners of radius r inside? */
+static bool in_round_rect(int x, int y, int w, int h, int r)
+{
+    if (x < 0 || y < 0 || x >= w || y >= h)
+        return false;
+    int cx = x < r ? r : x >= w - r ? w - r - 1
+                                    : x;
+    int cy = y < r ? r : y >= h - r ? h - r - 1
+                                    : y;
+    int dx = x - cx, dy = y - cy;
+    return dx * dx + dy * dy <= r * r + r;
+}
+
+static void round_rect(surf_t *s, int x0, int y0, int w, int h, int r, int color, bool outline)
+{
+    if (r > w / 2)
+        r = w / 2;
+    if (r > h / 2)
+        r = h / 2;
+    for (int y = 0; y < h; y++)
+    {
+        for (int x = 0; x < w; x++)
+        {
+            if (!in_round_rect(x, y, w, h, r))
+                continue;
+            if (outline && in_round_rect(x - 1, y, w, h, r) && in_round_rect(x + 1, y, w, h, r) &&
+                in_round_rect(x, y - 1, w, h, r) && in_round_rect(x, y + 1, w, h, r))
+                continue;
+            plot(s, x0 + x, y0 + y, color);
+        }
+    }
+}
+
+static void circle(surf_t *s, int cx, int cy, int r, int color, bool outline)
+{
+    int rr = r * r + r;
+    for (int y = -r; y <= r; y++)
+    {
+        for (int x = -r; x <= r; x++)
+        {
+            if (x * x + y * y > rr)
+                continue;
+            if (outline && (x - 1) * (x - 1) + y * y <= rr && (x + 1) * (x + 1) + y * y <= rr &&
+                x * x + (y - 1) * (y - 1) <= rr && x * x + (y + 1) * (y + 1) <= rr)
+                continue;
+            plot(s, cx + x, cy + y, color);
+        }
+    }
+}
+
+/* From one RGB colour to another, dithered to the palette. */
+static void gradient(surf_t *s, int x0, int y0, int w, int h, const uint8_t *rgb, bool across)
+{
+    int n = (across ? w : h) - 1;
+    if (n < 1)
+        n = 1;
+    for (int y = 0; y < h; y++)
+    {
+        for (int x = 0; x < w; x++)
+        {
+            int t = across ? x : y, px = x0 + x, py = y0 + y;
+            if (px < 0 || py < 0 || px >= s->w || py >= s->h)
+                continue;
+            uint8_t v[3];
+            for (int k = 0; k < 3; k++)
+                v[k] = (uint8_t)(rgb[k] + (rgb[3 + k] - rgb[k]) * t / n);
+            plot(s, px, py, td_rgb256_dither(v[0], v[1], v[2], px, py));
+        }
+    }
+}
+
+/* Part (sx, sy, sw, sh) of an image into (dx, dy, dw, dh), stretched or
+ * shrunk to it (nearest pixel); transparent pixels leave what is there. */
+static void blit(surf_t *d, int dx, int dy, int dw, int dh, const td_pyui_image_t *img, int sx, int sy, int sw,
+                 int sh)
+{
+    if (dw <= 0 || dh <= 0 || sw <= 0 || sh <= 0)
+        return;
+    for (int y = 0; y < dh; y++)
+    {
+        int ty = dy + y;
+        if (ty < 0 || ty >= d->h)
+            continue;
+        int iy = sy + (int)((long)y * sh / dh);
+        const uint8_t *row = img->px + (size_t)iy * (size_t)img->w;
+        const uint8_t *mrow = img->mask ? img->mask + (size_t)iy * (size_t)img->w : NULL;
+        for (int x = 0; x < dw; x++)
+        {
+            int ix = sx + (int)((long)x * sw / dw);
+            if (!mrow || !mrow[ix])
+                plot(d, dx + x, ty, row[ix]);
+        }
+    }
+}
+
+/* A nine-slice panel: the corners as they are, the edges stretched along
+ * and the middle both ways, so one small picture makes a button or frame
+ * of any size. */
+static void nine(surf_t *d, int dx, int dy, int dw, int dh, const td_pyui_image_t *img, int sx, int sy, int sw,
+                 int sh, int b)
+{
+    int lim[4] = {dw / 2, dh / 2, sw / 2, sh / 2};
+    for (int i = 0; i < 4; i++)
+        if (b > lim[i])
+            b = lim[i];
+    if (b <= 0)
+    {
+        blit(d, dx, dy, dw, dh, img, sx, sy, sw, sh);
+        return;
+    }
+    int sxs[4] = {sx, sx + b, sx + sw - b, sx + sw}, dxs[4] = {dx, dx + b, dx + dw - b, dx + dw};
+    int sys[4] = {sy, sy + b, sy + sh - b, sy + sh}, dys[4] = {dy, dy + b, dy + dh - b, dy + dh};
+    for (int j = 0; j < 3; j++)
+        for (int i = 0; i < 3; i++)
+            blit(d, dxs[i], dys[j], dxs[i + 1] - dxs[i], dys[j + 1] - dys[j], img, sxs[i], sys[j],
+                 sxs[i + 1] - sxs[i], sys[j + 1] - sys[j]);
+}
+
+/* A pointer passed in a request's text (TD_PYUI_IMAGE, _IMAGE_DATA). */
+static td_pyui_image_t *msg_image(const td_pyui_msg_t *m, const char *text)
+{
+    td_pyui_image_t *img = NULL;
+    if (m->len == sizeof(img))
+        memcpy(&img, text, sizeof(img));
+    return img;
+}
+
+static void draw_image(obj_t *o, const td_pyui_msg_t *m, const char *text)
+{
+    obj_t *io = find(m->win);
+    surf_t s;
+    if (!io || io->kind != K_IMAGE || io == o)
+    {
+        post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "no such image");
+        return;
+    }
+    if (!surface(o, &s))
+        return;
+    const td_pyui_image_t *img = io->img;
+    td_pyui_part_t part = {0, 0, 0};
+    if (m->len >= sizeof(part))
+        memcpy(&part, text, sizeof(part));
+    int sx = m->e < 0 ? 0 : m->e, sy = m->f < 0 ? 0 : m->f;
+    if (sx >= img->w || sy >= img->h)
+        return;
+    int sw = part.w > 0 && sx + part.w <= img->w ? part.w : img->w - sx;
+    int sh = part.h > 0 && sy + part.h <= img->h ? part.h : img->h - sy;
+    int dw = m->c > 0 ? m->c : sw, dh = m->d > 0 ? m->d : sh;
+    if (m->flags & 1)
+        nine(&s, m->a, m->b, dw, dh, img, sx, sy, sw, sh, part.border);
+    else
+        blit(&s, m->a, m->b, dw, dh, img, sx, sy, sw, sh);
+}
+
+/* One pixel request on a canvas or an image. */
+static void pixel_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
+{
+    surf_t s;
+    switch (m->op)
+    {
+    case TD_PYUI_DRAW_IMAGE:
+        draw_image(o, m, text);
+        break;
+    case TD_PYUI_IMAGE_DATA:
+    {
+        td_pyui_image_t *img = msg_image(m, text);
+        if (img && surface(o, &s))
+            blit(&s, m->a, m->b, img->w, img->h, img, 0, 0, img->w, img->h);
+        free(img);
+        break;
+    }
+    default:
+        if (!surface(o, &s))
+            return;
+        if (m->op != TD_PYUI_GRADIENT && m->e == TD_PYUI_CLEAR && !image_mask(o, &s))
+            return;
+        if (m->op == TD_PYUI_RECT && m->f > 0)
+            round_rect(&s, m->a, m->b, m->c, m->d, m->f, m->e, m->flags & 1);
+        else if (m->op == TD_PYUI_RECT && (m->flags & 1) && m->c > 0 && m->d > 0)
+        {
+            int x1 = m->a + m->c - 1, y1 = m->b + m->d - 1;
+            line(&s, m->a, m->b, x1, m->b, m->e);
+            line(&s, m->a, y1, x1, y1, m->e);
+            line(&s, m->a, m->b, m->a, y1, m->e);
+            line(&s, x1, m->b, x1, y1, m->e);
+        }
+        else if (m->op == TD_PYUI_RECT)
+            fill_rect(&s, m->a, m->b, m->c, m->d, m->e);
+        else if (m->op == TD_PYUI_LINE)
+            line(&s, m->a, m->b, m->c, m->d, m->e);
+        else if (m->op == TD_PYUI_CIRCLE)
+            circle(&s, m->a, m->b, m->c, m->e, m->flags & 1);
+        else if (m->op == TD_PYUI_GRADIENT && m->len >= 6)
+            gradient(&s, m->a, m->b, m->c, m->d, (const uint8_t *)text, m->flags & 1);
+        break;
+    }
+    if (o->kind == K_CANVAS && o->draw == o->show)
+        td_win_invalidate(NULL);
+}
+
+/* An image the script made: the desktop keeps it under its id. */
+static void add_image(const td_pyui_msg_t *m, const char *text)
+{
+    td_pyui_image_t *img = msg_image(m, text);
+    if (!img)
+        return;
+    obj_t *o = new_obj(K_IMAGE, m->id);
+    if (!o)
+    {
+        td_pyui_pixels_give(td_pyui_image_bytes(img));
+        free(img);
+        return;
+    }
+    o->img = img;
+}
+
+/* The four pixels of cell (x, y) of a canvas page: upper left, upper
+ * right, lower left, lower right. */
+static void cell_pixels(const obj_t *o, int page, int x, int y, uint8_t q[4])
+{
+    const uint8_t *p = canvas_layer(o, page) + (2 * y) * (2 * o->rect.w) + 2 * x;
+    q[0] = p[0];
+    q[1] = p[1];
+    q[2] = p[2 * o->rect.w];
+    q[3] = p[2 * o->rect.w + 1];
+}
+
+/* The colour most of four pixels have (the first of a tie), for text that
+ * stands on them. */
+static uint8_t main_colour(const uint8_t q[4])
+{
+    int best = 0, best_n = 0;
+    for (int i = 0; i < 4; i++)
+    {
+        int n = 0;
+        for (int j = 0; j < 4; j++)
+            n += q[j] == q[i];
+        if (n > best_n)
+        {
+            best = i;
+            best_n = n;
+        }
+    }
+    return q[best];
+}
+
 /* A new size for a canvas: what fits of each page's picture stays. */
 static void canvas_resize(obj_t *o, int w, int h)
 {
@@ -696,6 +1219,41 @@ static void canvas_resize(obj_t *o, int w, int h)
                     *c = (cell_t){' ', -1, -1};
             }
         }
+    }
+    uint8_t *npx = NULL;
+    long bytes = 4L * w * h * o->pages;
+    if (o->px)
+    {
+        if (!td_pyui_pixels_take(bytes))
+        {
+            free(nc);
+            post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, PIXELS_MSG);
+            return;
+        }
+        npx = malloc((size_t)bytes);
+        if (!npx)
+        {
+            td_pyui_pixels_give(bytes);
+            free(nc);
+            post(TD_PYUI_EV_ERROR, o->id, 0, 0, 0, 0, "out of memory");
+            return;
+        }
+    }
+    if (npx)
+    {
+        int ow = 2 * o->rect.w, oh = 2 * o->rect.h, nw = 2 * w, nh = 2 * h;
+        for (int p = 0; p < o->pages; p++)
+        {
+            const uint8_t *src = canvas_layer(o, p);
+            uint8_t *dst = npx + (size_t)p * (size_t)(nw * nh);
+            for (int y = 0; y < nh; y++)
+                for (int x = 0; x < nw; x++)
+                    dst[y * nw + x] = x < ow && y < oh ? src[y * ow + x] : td_theme()->win_bg;
+        }
+        td_pyui_pixels_give(o->px_bytes);
+        free(o->px);
+        o->px = npx;
+        o->px_bytes = bytes;
     }
     s_link->cells += cells - canvas_cells(o);
     free(o->cells);
@@ -915,9 +1473,18 @@ static void run_request(const td_pyui_msg_t *m, char *text)
         add_widget(m, text);
         return;
     }
+    if (m->op == TD_PYUI_IMAGE)
+    {
+        add_image(m, text);
+        return;
+    }
     obj_t *o = find(m->id);
     if (!o)
+    {
+        if (m->op == TD_PYUI_IMAGE_DATA)
+            free(msg_image(m, text));
         return;   /* its window was closed in the meantime */
+    }
     td_widget_t *w = o->wd;
     switch (m->op)
     {
@@ -927,6 +1494,18 @@ static void run_request(const td_pyui_msg_t *m, char *text)
             o->quiet = true;
             td_win_close(o->w);   /* win_close() forgets it */
         }
+        else if (o->kind == K_IMAGE)
+        {
+            free_obj(o);
+        }
+        break;
+    case TD_PYUI_IMAGE_DATA:
+    case TD_PYUI_DRAW_IMAGE:
+    case TD_PYUI_RECT:
+    case TD_PYUI_LINE:
+    case TD_PYUI_GRADIENT:
+    case TD_PYUI_CIRCLE:
+        pixel_request(o, m, text);
         break;
     case TD_PYUI_TEXT:
         if (o->kind == K_WINDOW)
@@ -1032,7 +1611,11 @@ static void run_request(const td_pyui_msg_t *m, char *text)
             break;
         }
         if (m->a != m->b)
+        {
             memcpy(canvas_page(o, m->b), canvas_page(o, m->a), (size_t)(o->rect.w * o->rect.h) * sizeof(cell_t));
+            if (o->px)
+                memcpy(canvas_layer(o, m->b), canvas_layer(o, m->a), (size_t)layer_size(o));
+        }
         if (m->b == o->show)
             td_win_invalidate(NULL);
         break;
@@ -1075,6 +1658,16 @@ static void close_all(void)
 {
     link_t *l = s_link;
     l->closing = true;
+    td_pyui_msg_t m;
+    while (ring_get(&l->req, &m, l->text, sizeof(l->text)))
+    {
+        if (m.op != TD_PYUI_IMAGE && m.op != TD_PYUI_IMAGE_DATA)
+            continue;
+        td_pyui_image_t *img = msg_image(&m, l->text);
+        if (img && m.op == TD_PYUI_IMAGE)
+            td_pyui_pixels_give(td_pyui_image_bytes(img));
+        free(img);
+    }
     for (int i = 0; i < MAX_OBJS; i++)
     {
         obj_t *o = &l->objs[i];
