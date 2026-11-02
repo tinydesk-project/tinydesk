@@ -1110,6 +1110,11 @@ static void tick(void *user)
     check_sizes();
 }
 
+bool td_pyui_running(void)
+{
+    return atomic_load(&s_state) != LINK_OFF;
+}
+
 void td_pyui_start(void)
 {
     if (atomic_load(&s_started))

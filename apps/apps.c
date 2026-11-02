@@ -45,4 +45,5 @@ void td_apps_register_all(void)
     td_pyui_start();     /* windows for Python scripts (tdui) */
     td_session_init();   /* root until a shell reports its user; ~/Desktop icons,
                           * that user's settings */
+    td_kiosk_start();    /* only when the port names a kiosk app */
 }

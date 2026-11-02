@@ -116,6 +116,7 @@ add_library(tinydesk_apps STATIC
     apps/mqtt.c
     apps/network.c
     apps/pyui.c
+    apps/kiosk.c
     apps/session.c
     apps/settings.c
     apps/sysmon.c

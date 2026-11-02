@@ -32,6 +32,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   Windows, Linux and macOS terminals for development.
 * On the ESP32-S3, a USB keyboard and mouse can also be plugged into the
   board itself (`usb.host = 1`), with Windows-key shortcuts.
+* Kiosk mode: one Python app on the whole screen instead of the desktop
+  (`kiosk.app`), for operator panels; root's password leaves it.
 * Windows with z-order, drag, resize, minimise, maximise; taskbar, start
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
   the terminal.

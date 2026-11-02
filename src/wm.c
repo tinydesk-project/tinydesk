@@ -150,14 +150,20 @@ static td_window_t *modal_window(void)
     return NULL;
 }
 
+/* Kiosk mode: one application on the whole screen (td_wm_set_kiosk). */
+static bool s_kiosk;
+static bool (*s_kiosk_hook)(const td_event_t *ev);
+
 static bool taskbar_visible(void)
 {
     td_window_t *top = top_window(false);
-    return !(top && (top->flags & TD_WIN_FULLSCREEN));
+    return !s_kiosk && !(top && (top->flags & TD_WIN_FULLSCREEN));
 }
 
 static int taskbar_h(void)
 {
+    if (s_kiosk)
+        return 0;
     return s_bar_size == TD_UI_LARGE ? 2 : 1;
 }
 static bool in_taskbar(int y)
@@ -448,6 +454,10 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
     if (desc->rect.y < 0)
         w->rect.y = (td_wm_desktop_rows() - w->rect.h) / 2;
     w->restore_rect = w->rect;
+    /* In kiosk mode every window but a dialog covers the screen, with no
+     * frame to move, resize, minimise or close it by. */
+    if (s_kiosk && !(w->flags & TD_WIN_MODAL))
+        w->flags |= TD_WIN_FULLSCREEN;
     clamp_rect(w);
 
     if (w->on_tick && desc->tick_ms > 0)
@@ -906,6 +916,29 @@ void td_wm_add_start_item(const char *label, void (*fn)(void))
     s_start_extra_count++;
 }
 
+void td_wm_set_kiosk(bool on, bool (*hook)(const td_event_t *ev))
+{
+    s_kiosk = on;
+    s_kiosk_hook = hook;
+    s_menu_open = false;
+    for (int i = 0; i < TD_MAX_WINDOWS; i++)
+    {
+        td_window_t *w = &s_wins[i];
+        if (!w->used || (w->flags & TD_WIN_MODAL))
+            continue;
+        /* On: everything covers the screen. Off: back to windows. */
+        td_win_set_fullscreen(w, on);
+        if (!on)
+            w->flags &= (uint16_t)~TD_WIN_HIDDEN;
+    }
+    s_dirty = true;
+}
+
+bool td_wm_kiosk(void)
+{
+    return s_kiosk;
+}
+
 void td_wm_set_user_label(const char *label)
 {
     snprintf(s_user_label, sizeof(s_user_label), "%s", label ? label : "");
@@ -960,6 +993,8 @@ const char *td_ui_size_name(td_ui_size_t size)
 
 void td_wm_toggle_start_menu(void)
 {
+    if (s_kiosk)
+        return;
     if (s_menu_open && s_menu.is_start)
     {
         td_menu_close();
@@ -1126,6 +1161,8 @@ static void window_menu_chosen(int i, void *user)
 /* Right-click on a title bar or taskbar button. */
 static void window_menu(td_window_t *w, int x, int y)
 {
+    if (s_kiosk)
+        return;
     const char *items[6];
     int n = 0;
     if (w->flags & TD_WIN_RESIZABLE)
@@ -1797,7 +1834,7 @@ void td_wm_compose(td_buffer_t *back)
     td_draw_target(back);
 
     td_fill(td_rect(0, 0, s_cols, s_rows), td_desktop_pattern(), t->desktop_fg, t->desktop_bg);
-    if (td_desktop_icons())
+    if (td_desktop_icons() && !s_kiosk)
         for (int i = 0; i < icon_count(); i++)
             draw_icon(i);
 
@@ -1980,6 +2017,8 @@ static void dispatch_mouse(const td_event_t *ev)
 {
     s_mouse_x = ev->x;
     s_mouse_y = ev->y;
+    if (s_kiosk && s_kiosk_hook && s_kiosk_hook(ev))
+        return;
 
     /* Plain movement (no button) only moves highlights around. */
     if (ev->action == TD_MOUSE_MOVE && s_drag.mode == DRAG_NONE)
@@ -2037,6 +2076,8 @@ static void dispatch_mouse(const td_event_t *ev)
     td_window_t *modal = modal_window();
     if (!w)
     {
+        if (s_kiosk)
+            return;                   /* no desktop icons or menus */
         if (!modal && ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_LEFT)
             desktop_press(ev);
         if (!modal && ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_RIGHT)
@@ -2140,6 +2181,22 @@ static void super_key(const td_event_t *ev, td_window_t *w)
 static void dispatch_key(const td_event_t *ev)
 {
     bool plain = ev->mods == 0;
+
+    if (s_kiosk)
+    {
+        /* Only the application gets keys: no Start menu, window switching,
+         * closing, full screen or Windows-key shortcuts. The hook sees
+         * every key first (the way out of kiosk mode). */
+        if (s_kiosk_hook && s_kiosk_hook(ev))
+            return;
+        bool global = (ev->mods & TD_MOD_SUPER) || (ev->key == TD_KEY_F10 && plain) || (ev->key == TD_KEY_F6 && plain) ||
+                      (ev->key == TD_KEY_TAB && (ev->mods & TD_MOD_ALT)) ||
+                      (ev->key == 'q' && ev->mods == TD_MOD_CTRL) ||
+                      (ev->key == TD_KEY_F4 && ev->mods == TD_MOD_ALT) || (ev->key == TD_KEY_F11 && plain);
+        td_window_t *kw = td_win_focused();
+        if (global || !kw)
+            return;
+    }
 
     if (ev->key == TD_KEY_F10 && plain)
     {

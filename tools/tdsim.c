@@ -13,6 +13,7 @@
  *                      PgDn Del Bksp F1..F12 CtrlA..CtrlZ
  *   click=X,Y          left click at 0-based cell X,Y
  *   rclick=X,Y         right click
+ *   hold=X,Y,MS        left button held down at X,Y for MS milliseconds
  *   drag=X1,Y1,X2,Y2   left-button drag
  *   move=X,Y           mouse movement without a button (hover)
  *   wheel=X,Y,up|down  mouse wheel
@@ -317,6 +318,13 @@ int main(int argc, char **argv)
         {
             send_mouse(0, x, y, 'M');
             run_for(20);
+            send_mouse(0, x, y, 'm');
+            run_for(80);
+        }
+        else if (sscanf(a, "hold=%d,%d,%d", &x, &y, &x2) == 3)
+        {
+            send_mouse(0, x, y, 'M');
+            run_for((uint32_t)x2);
             send_mouse(0, x, y, 'm');
             run_for(80);
         }

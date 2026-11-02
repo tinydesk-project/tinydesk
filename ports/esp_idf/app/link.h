@@ -26,6 +26,13 @@ int link_read(uint8_t *buf, int cap);
 /* Bytes accepted (may be fewer than len when nobody is reading). */
 int link_write(const uint8_t *buf, int len);
 
+/* Maintenance start: true when the board is to start without kiosk mode
+ * (and, where the port has one, with its usual keyboard link back), for
+ * this start only. Optional: main.c's weak default watches the BOOT button
+ * for 1.5 s (board key kiosk.maint_pin); a port defines its own when it
+ * needs something else. Only called when kiosk.app is set. */
+bool board_maintenance_start(void);
+
 /* Board facts. */
 const char *board_platform(void);          /* "ESP32-C6 (USB Serial/JTAG)" */
 const char *board_hostname(void);          /* the shell's host name */

@@ -309,6 +309,11 @@ typedef struct
      * ESP32-S3), for the Mouse and Keyboard apps. NULL: none, and no app. */
     const td_mouse_ops_t *mouse;
     const td_keyboard_ops_t *keyboard;
+
+    /* Optional: kiosk mode. A Python script (a shell path, such as
+     * "/root/hmi.py") the desktop runs full screen at start, with no
+     * taskbar, Start menu or desktop (apps/kiosk.c). NULL or "": off. */
+    const char *kiosk_app;
 } td_sysinfo_t;
 
 /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

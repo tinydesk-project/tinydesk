@@ -173,6 +173,14 @@ void td_wm_add_start_item(const char *label, void (*fn)(void));
 /* Close every window at once, without asking (used when the user changes). */
 void td_wm_close_all(void);
 
+/* Kiosk mode: no taskbar, Start menu, desktop icons or window menus, every
+ * window but a dialog full screen without a frame, and no keys that switch,
+ * close or resize windows. hook (optional) sees every mouse and key event
+ * first and returns true to take it. Turning it off gives the windows their
+ * frames back. */
+void td_wm_set_kiosk(bool on, bool (*hook)(const td_event_t *ev));
+bool td_wm_kiosk(void);
+
 /* The taskbar clock (optional). text() fills in the clock (return false to
  * hide it); click() gets TD_BUTTON_LEFT or TD_BUTTON_RIGHT and the cell. */
 typedef struct

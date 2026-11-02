@@ -32,6 +32,7 @@
 #include "nvs_flash.h"
 #include "sdkconfig.h"
 #include "soc/soc_caps.h"
+#include "driver/gpio.h"
 #if SOC_TEMP_SENSOR_SUPPORTED
 #include "driver/temperature_sensor.h"
 #endif
@@ -46,6 +47,8 @@
 #include "td_apps.h"
 #include "telnet.h"
 #include "td_fs_stdio.h"
+#include "tdsh.h"
+#include "tdsh_board.h"
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
 #if TD_USB_HID
@@ -442,6 +445,43 @@ static int log_hook(const char *fmt, va_list ap)
 
 /* ----------------------------------------------------------- UI task */
 
+/* Maintenance start (link.h), for ports that have no way of their own:
+ * the board's BOOT button (GPIO0; GPIO9 on the ESP32-C6, or the board
+ * key kiosk.maint_pin, -1 for none) held for 0.2 s within 1.5 s of the
+ * start. Pressed after RESET is let go: held through the reset, it selects
+ * the ROM's download mode instead. Asked when kiosk.app is set, and by
+ * the CrowPanel's link when console.uart is -1. */
+#if CONFIG_IDF_TARGET_ESP32C6
+#define BOOT_PIN 9
+#else
+#define BOOT_PIN 0
+#endif
+#define MAINT_WINDOW_MS 1500
+#define MAINT_HOLD_MS   200
+
+__attribute__((weak)) bool board_maintenance_start(void)
+{
+    static int s_result = -1;
+    if (s_result >= 0)
+        return s_result != 0;
+    int pin = tdsh_board_int("kiosk.maint_pin", BOOT_PIN);
+    s_result = 0;
+    if (pin < 0 || !GPIO_IS_VALID_GPIO(pin))
+        return false;
+    gpio_config_t io = {.pin_bit_mask = BIT64(pin), .mode = GPIO_MODE_INPUT, .pull_up_en = GPIO_PULLUP_ENABLE};
+    gpio_config(&io);
+    ESP_LOGI(TAG, "kiosk mode: hold BOOT (GPIO%d) now for a maintenance start", pin);
+    int low_ms = 0;
+    for (int t = 0; t < MAINT_WINDOW_MS && low_ms < MAINT_HOLD_MS; t += 10)
+    {
+        low_ms = gpio_get_level(pin) == 0 ? low_ms + 10 : 0;
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+    gpio_reset_pin(pin);
+    s_result = low_ms >= MAINT_HOLD_MS;
+    return s_result != 0;
+}
+
 static void ui_task(void *arg)
 {
     (void)arg;
@@ -535,6 +575,23 @@ void app_main(void)
     s_info.mouse = usb_hid_mouse_ops();         /* the Mouse and Keyboard apps, when it is on */
     s_info.keyboard = usb_hid_keyboard_ops();
 #endif
+
+    /* Kiosk mode: board configuration key kiosk.app names the Python app,
+     * unless this is a maintenance start (link.h; the BOOT button). */
+    static char s_kiosk_app[TDSH_MAX_PATH];
+    const char *kiosk = tdsh_board_get("kiosk.app");
+    if (kiosk && kiosk[0])
+    {
+        if (board_maintenance_start())
+        {
+            ESP_LOGW(TAG, "maintenance start: kiosk mode is off until the next restart");
+        }
+        else
+        {
+            snprintf(s_kiosk_app, sizeof(s_kiosk_app), "%s", kiosk);
+            s_info.kiosk_app = s_kiosk_app;
+        }
+    }
 
     xTaskCreate(ui_task, "tinydesk", UI_TASK_STACK, NULL, UI_TASK_PRIORITY, NULL);
 
