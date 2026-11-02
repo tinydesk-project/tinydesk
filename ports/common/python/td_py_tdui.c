@@ -135,6 +135,7 @@ static const mp_rom_map_elem_t tdui_module_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR_open), MP_ROM_PTR(&tdui_open_obj)},
     {MP_ROM_QSTR(MP_QSTR_send), MP_ROM_PTR(&tdui_send_obj)},
     {MP_ROM_QSTR(MP_QSTR_recv), MP_ROM_PTR(&tdui_recv_obj)},
+    {MP_ROM_QSTR(MP_QSTR_MAX_CELLS), MP_ROM_INT(TD_PYUI_MAX_CELLS)},
 };
 static MP_DEFINE_CONST_DICT(tdui_module_globals, tdui_module_globals_table);
 

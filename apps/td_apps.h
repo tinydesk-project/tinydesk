@@ -258,6 +258,11 @@ enum
     TD_PYUI_RESIZE,       /* window id: a, b client size; canvas id: a, b size */
     TD_PYUI_MOVE,         /* window id: a, b position on the screen; canvas id: in the window */
     TD_PYUI_SHOW,         /* window id: a is TD_PYUI_SHOW_* */
+    TD_PYUI_PAGE,         /* canvas id: a the page drawn into, b the page shown (-1: as is) */
+    TD_PYUI_PAGE_COPY,    /* canvas id: page a copied onto page b */
+    TD_PYUI_BIG,          /* canvas id: text in big characters at a, b in colours c, d;
+                           * e scale (1-4), f width in characters (0: the text's own,
+                           * otherwise right-aligned and blanked to that width) */
 };
 
 /* TD_PYUI_SHOW states. */
@@ -278,7 +283,7 @@ enum
     TD_PYUI_W_TEXTBOX,    /* c width; e 1 secret */
     TD_PYUI_W_PROGRESS,   /* c width; e percent */
     TD_PYUI_W_LIST,       /* c, d size, the scrollbar included (<= 0: to the edge) */
-    TD_PYUI_W_CANVAS,     /* c, d size */
+    TD_PYUI_W_CANVAS,     /* c, d size; e pages (0: 1) */
 };
 
 /* Events (desktop -> script). */
@@ -305,7 +310,11 @@ typedef struct
 } td_pyui_msg_t;
 
 #define TD_PYUI_TEXT_MAX  1024   /* text in one message */
-#define TD_PYUI_MAX_CELLS 2000   /* all canvases of a script together */
+#define TD_PYUI_MAX_PAGES 16     /* pages of one canvas */
+#ifndef TD_PYUI_MAX_CELLS
+#define TD_PYUI_MAX_CELLS 2000   /* all canvases of a script together, every page counted;
+                                  * builds with PSRAM set more */
+#endif
 
 /* The desktop side: start serving scripts (td_apps_register_all does). */
 void td_pyui_start(void);

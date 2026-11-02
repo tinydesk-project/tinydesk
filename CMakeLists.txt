@@ -122,6 +122,9 @@ add_library(tinydesk_apps STATIC
     apps/update.c
 )
 target_include_directories(tinydesk_apps PUBLIC apps)
+# Python canvases may cover a whole large terminal several times (pages), as
+# with PSRAM on a board.
+target_compile_definitions(tinydesk_apps PUBLIC TD_PYUI_MAX_CELLS=32000)
 target_link_libraries(tinydesk_apps PUBLIC tinydesk_core tinydesk_proto)
 set_target_properties(tinydesk_apps PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
 target_compile_options(tinydesk_apps PRIVATE ${TD_WARNINGS})
@@ -331,4 +334,9 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_desktop PROPERTIES C_STANDARD 11)
     target_compile_options(test_desktop PRIVATE ${TD_WARNINGS})
     add_test(NAME test_desktop COMMAND test_desktop)
+    add_executable(test_pyui tests/test_pyui.c)
+    target_link_libraries(test_pyui PRIVATE tinydesk_apps)
+    set_target_properties(test_pyui PROPERTIES C_STANDARD 11)
+    target_compile_options(test_pyui PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_pyui COMMAND test_pyui)
 endif()
