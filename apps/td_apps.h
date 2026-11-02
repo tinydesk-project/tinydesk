@@ -23,6 +23,8 @@ void td_files_register(void);
 void td_counter_register(void);
 void td_pixels_register(void);
 void td_imageview_register(void);
+void td_mouse_register(void);      /* only where td_sysinfo()->mouse is set */
+void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set */
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);
@@ -419,6 +421,19 @@ typedef struct
 
 /* The desktop side: start serving scripts (td_apps_register_all does). */
 void td_pyui_start(void);
+
+/* A script is using tdui (from its first request until its windows are
+ * gone after it ends). */
+bool td_pyui_running(void);
+
+/* Kiosk mode (apps/kiosk.c): when td_sysinfo()->kiosk_app is set, the
+ * desktop starts in kiosk mode (td_wm_set_kiosk) and runs that Python
+ * script in the shell, again whenever it ends. Holding the top-right
+ * corner for 5 s, F10 three times within 2 s or Ctrl+Alt+Delete asks for
+ * root's password and leaves kiosk mode until the next restart. Called by
+ * td_apps_register_all(). */
+void td_kiosk_start(void);
+bool td_kiosk_active(void);
 
 /* The script side, from the script's task. attach() is false when the
  * desktop is not running or memory is short. send() is false while the

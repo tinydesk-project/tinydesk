@@ -100,8 +100,15 @@ static void test_keys(void)
     KEY("\x1b[1;6B", TD_KEY_DOWN, TD_MOD_CTRL | TD_MOD_SHIFT);
     KEY("\x1b[5;5~", TD_KEY_PGUP, TD_MOD_CTRL);
     KEY("\x1b[Z", TD_KEY_TAB, TD_MOD_SHIFT);
+    KEY("\x1b[1;4Z", TD_KEY_TAB, TD_MOD_SHIFT | TD_MOD_ALT);
+
+    /* The Windows key (Super), as the USB keyboard code sends it. */
+    KEY("\x1b[1;9A", TD_KEY_UP, TD_MOD_SUPER);
+    KEY("\x1b[27;9;101~", 'e', TD_MOD_SUPER);
+    KEY("\x1b[27;10;68~", 'd', TD_MOD_SUPER | TD_MOD_SHIFT);
 
     KEY("\x1bx", 'x', TD_MOD_ALT);
+    KEY("\x1b\t", TD_KEY_TAB, TD_MOD_ALT);
 }
 
 static void test_lone_esc(void)

@@ -11,6 +11,8 @@
  * 8N1, no flow control: set the same speed in the terminal. At 921600 a
  * full 80x25 redraw takes about 0.2 s (115200 would take about 2 s).
  * RS-485 lines come from the rs485.* keys (rs485.c), on other UARTs.
+ * Builds with TD_USB_HID (the ESP32-S3) also read a USB keyboard and mouse
+ * (usb_hid.c) and mix their bytes in.
  */
 #include "link.h"
 
@@ -20,6 +22,9 @@
 #include "esp_log.h"
 #include "rs485.h"
 #include "tdsh_board.h"
+#if TD_USB_HID
+#include "usb_hid.h"
+#endif
 
 #define LINK_UART    s_uart
 #define DEFAULT_BAUD 921600
@@ -68,6 +73,11 @@ bool link_init(void)
 
 int link_read(uint8_t *buf, int cap)
 {
+#if TD_USB_HID
+    int usb = usb_hid_read(buf, cap);
+    if (usb > 0)
+        return usb;   /* whole key and mouse reports; the UART's bytes wait */
+#endif
     size_t avail = 0;
     if (uart_get_buffered_data_len(LINK_UART, &avail) != ESP_OK || avail == 0)
         return 0;

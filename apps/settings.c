@@ -31,7 +31,7 @@ typedef struct
     uint8_t menu_size;
     uint8_t bar_size;
     uint8_t editor;       /* bit 0: completion pops up in the Editor */
-    uint8_t reserved[1];
+    uint8_t win_size;     /* 0 small (and in older blobs), 1 medium, 2 large */
     uint8_t picture_detail; /* 0 half blocks (and in older blobs), 1 quadrants */
     uint8_t reserved2[3];
 } settings_blob_t;
@@ -46,7 +46,7 @@ static td_clock_prefs_t s_clock;
 static td_editor_prefs_t s_editor;
 static td_window_t *s_win;
 static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_pattern_label, *s_status;
-static td_widget_t *s_size_btn[3];      /* desktop icons, start menu, taskbar */
+static td_widget_t *s_size_btn[4];      /* desktop icons, start menu, taskbar, windows */
 static td_widget_t *s_detail_btn;       /* pictures: Normal / Fine */
 
 static uint8_t size_code(td_ui_size_t s)
@@ -131,6 +131,8 @@ void td_settings_apply_saved(void)
     td_wm_set_icon_size(code_size(b.icon_size));
     td_wm_set_start_menu_size(code_size(b.menu_size));
     td_wm_set_taskbar_size(code_size(b.bar_size));
+    td_wm_set_window_size(b.win_size == 1 ? TD_UI_MEDIUM : b.win_size == 2 ? TD_UI_LARGE
+                                                                           : TD_UI_SMALL);
     td_canvas_set_detail(b.picture_detail == 1 ? TD_CANVAS_QUAD : TD_CANVAS_HALF);
     td_wm_invalidate();
 }
@@ -151,6 +153,8 @@ bool td_settings_save(void)
         .menu_size = size_code(td_wm_start_menu_size()),
         .bar_size = size_code(td_wm_taskbar_size()),
         .editor = s_editor.completion ? 1 : 0,
+        .win_size = (uint8_t)(td_wm_window_size() == TD_UI_MEDIUM ? 1 : td_wm_window_size() == TD_UI_LARGE ? 2
+                                                                                                           : 0),
         .picture_detail = td_canvas_detail() == TD_CANVAS_QUAD ? 1 : 0,
     };
     if (!si->fs || !si->fs->write || !td_session_home()[0])
@@ -171,6 +175,7 @@ static void update_labels(void)
     td_widget_set_text(s_size_btn[1], td_ui_size_name(td_wm_start_menu_size()));
     td_widget_set_text(s_size_btn[2], td_ui_size_name(td_wm_taskbar_size()));
     td_widget_set_text(s_detail_btn, td_canvas_detail() == TD_CANVAS_QUAD ? "Fine" : "Normal");
+    td_widget_set_text(s_size_btn[3], td_ui_size_name(td_wm_window_size()));
     uint8_t utf8[4];
     int n = td_utf8_encode(td_desktop_pattern(), utf8);
     char ch[5];
@@ -237,6 +242,9 @@ static void on_size(td_widget_t *w, void *user)
     case 1:
         td_wm_set_start_menu_size(next_size(td_wm_start_menu_size()));
         break;
+    case 3:
+        td_wm_set_window_size(next_size(td_wm_window_size()));
+        break;
     default:
         td_wm_set_taskbar_size(next_size(td_wm_taskbar_size()));
         break;
@@ -268,7 +276,8 @@ static void on_draw(td_window_t *win, int w, int h)
     td_text(3, 8, "Desktop icons", t->win_fg, t->win_bg, 0);
     td_text(3, 9, "Start menu", t->win_fg, t->win_bg, 0);
     td_text(3, 10, "Taskbar", t->win_fg, t->win_bg, 0);
-    td_text(3, 11, "Pictures", t->win_fg, t->win_bg, 0);
+    td_text(3, 11, "Windows", t->win_fg, t->win_bg, 0);
+    td_text(3, 12, "Pictures", t->win_fg, t->win_bg, 0);
 }
 
 static void on_network(td_widget_t *w, void *user)
@@ -313,7 +322,7 @@ static void launch(void)
     }
     td_window_desc_t d = {
         .title = "Settings",
-        .rect = td_rect(-1, -1, 46, 21),
+        .rect = td_rect(-1, -1, 46, 23),
         .on_draw = on_draw,
         .flags = TD_WIN_MOVABLE | TD_WIN_CLOSABLE,
         .on_close = on_close,
@@ -327,16 +336,16 @@ static void launch(void)
     s_theme_box[1] = td_checkbox(s_win, 20, 2, td_theme_get(1)->name, false, on_theme, (void *)(intptr_t)1);
     s_ascii = td_checkbox(s_win, 1, 4, "ASCII-only drawing (no UTF-8)", false, on_ascii, NULL);
     s_icons = td_checkbox(s_win, 1, 5, "Desktop icons", true, on_icons, NULL);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 4; i++)
         s_size_btn[i] = td_button(s_win, 18, 8 + i, "Medium", on_size, (void *)(intptr_t)i);
-    s_detail_btn = td_button(s_win, 18, 11, "Normal", on_detail, NULL);
-    s_pattern_label = td_label(s_win, 1, 12, 0, "");
-    td_button(s_win, 3, 13, "Next pattern", on_pattern, NULL);
-    td_button(s_win, 1, 15, "Network...", on_network, NULL);
-    td_button(s_win, 16, 15, "Date & time...", on_datetime, NULL);
-    td_button(s_win, 1, 16, "Software update...", on_update, NULL);
-    td_button(s_win, 1, 18, "Close", on_close_btn, NULL);
-    s_status = td_label(s_win, 11, 18, 33, "");
+    s_detail_btn = td_button(s_win, 18, 12, "Normal", on_detail, NULL);
+    s_pattern_label = td_label(s_win, 1, 14, 0, "");
+    td_button(s_win, 3, 15, "Next pattern", on_pattern, NULL);
+    td_button(s_win, 1, 17, "Network...", on_network, NULL);
+    td_button(s_win, 16, 17, "Date & time...", on_datetime, NULL);
+    td_button(s_win, 1, 18, "Software update...", on_update, NULL);
+    td_button(s_win, 1, 20, "Close", on_close_btn, NULL);
+    s_status = td_label(s_win, 11, 20, 33, "");
     td_widget_printf(s_status, "Settings of %.24s", td_session_user());
     update_labels();
 }

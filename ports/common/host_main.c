@@ -4,6 +4,7 @@
  * shell and the Files app); settings in ./tinydesk_settings.bin.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -145,6 +146,7 @@ void td_host_setup(const td_hal_t *hal, const char *platform_name)
 #ifdef TD_WITH_TDSH
     s_info.extra = "Shell:     TinyDesk Shell " TDSH_VERSION;
 #endif
+    s_info.kiosk_app = getenv("TINYDESK_KIOSK");   /* kiosk mode: a Python app's shell path */
     td_set_sysinfo(&s_info);
 
     td_init(hal);
@@ -156,9 +158,10 @@ void td_host_setup(const td_hal_t *hal, const char *platform_name)
     td_terminal_set_backend(td_tdsh_host_backend(fs_root, "tinydesk"));
     td_logf('I', "TinyDesk Shell sandbox: %s", fs_root);
 #endif
-    td_msgbox("Welcome to TinyDesk",
-              "Press F10 or click [Start] for apps.\nF6 switches windows, F11 is full screen.\nOpen the Terminal now?",
-              "Terminal|Later", welcome_done, NULL);
+    if (!td_kiosk_active())
+        td_msgbox("Welcome to TinyDesk",
+                  "Press F10 or click [Start] for apps.\nF6 switches windows, F11 is full screen.\nOpen the Terminal now?",
+                  "Terminal|Later", welcome_done, NULL);
 }
 
 int td_host_main(const char *platform_name)

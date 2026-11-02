@@ -93,6 +93,7 @@ static int s_task_btn_count;
  * frame is only recomposed when the pointer moves onto something else. */
 static int s_mouse_x = -1, s_mouse_y = -1;
 static uintptr_t s_hover_id;
+static volatile bool s_pointer;   /* td_wm_set_pointer */
 
 /* Desktop icons: one per app, in columns from the top-left corner. */
 /* Icon slots (cells), by td_ui_size_t: small = one line; medium = 3 rows
@@ -149,14 +150,20 @@ static td_window_t *modal_window(void)
     return NULL;
 }
 
+/* Kiosk mode: one application on the whole screen (td_wm_set_kiosk). */
+static bool s_kiosk;
+static bool (*s_kiosk_hook)(const td_event_t *ev);
+
 static bool taskbar_visible(void)
 {
     td_window_t *top = top_window(false);
-    return !(top && (top->flags & TD_WIN_FULLSCREEN));
+    return !s_kiosk && !(top && (top->flags & TD_WIN_FULLSCREEN));
 }
 
 static int taskbar_h(void)
 {
+    if (s_kiosk)
+        return 0;
     return s_bar_size == TD_UI_LARGE ? 2 : 1;
 }
 static bool in_taskbar(int y)
@@ -169,6 +176,12 @@ int td_wm_desktop_rows(void)
     return s_rows - taskbar_h();
 }
 
+void td_wm_set_pointer(bool on)
+{
+    s_pointer = on;
+    s_dirty = true;
+}
+
 bool td_wm_mouse_pos(int *x, int *y)
 {
     if (s_mouse_x < 0)
@@ -176,6 +189,19 @@ bool td_wm_mouse_pos(int *x, int *y)
     *x = s_mouse_x;
     *y = s_mouse_y;
     return true;
+}
+
+/* Roughly how light a 256-colour palette entry is (xterm's colours). */
+static bool colour_is_light(uint8_t c)
+{
+    if (c < 16)
+        return c == 7 || c == 8 || c == 10 || c == 11 || c == 14 || c == 15;
+    if (c >= 232)
+        return c >= 244;   /* the grey ramp: 8 + 10 * (c - 232) */
+    static const uint8_t level[6] = {0, 95, 135, 175, 215, 255};
+    int i = c - 16;
+    int r = level[i / 36], g = level[(i / 6) % 6], b = level[i % 6];
+    return r * 299 + g * 587 + b * 114 >= 128 * 1000;
 }
 
 /* Swap colours to show that the mouse is over something. */
@@ -235,14 +261,36 @@ static void order_push(int idx)
     s_order_count++;
 }
 
+/* Window frames (td_wm_set_window_size): small = one title row and
+ * buttons "[x]"; medium = buttons "[ x ]" and a wider resize corner; large
+ * = the same with two title rows. */
+static td_ui_size_t s_win_size = TD_UI_SMALL;
+
+static int title_h(void)
+{
+    return s_win_size == TD_UI_LARGE ? 2 : 1;
+}
+static int button_w(void)
+{
+    return s_win_size == TD_UI_SMALL ? 3 : 5;
+}
+static int grip_w(void)
+{
+    return s_win_size == TD_UI_SMALL ? 2 : 4;
+}
+
 /* Title-bar button positions (absolute x). */
 static int close_x(const td_window_t *w)
 {
-    return w->rect.x + w->rect.w - 4;
+    return w->rect.x + w->rect.w - 1 - button_w();
 }
 static int min_x(const td_window_t *w)
 {
-    return close_x(w) - 3;
+    return close_x(w) - button_w();
+}
+static bool in_title(const td_window_t *w, int y)
+{
+    return y >= w->rect.y && y < w->rect.y + title_h();
 }
 
 static bool has_frame(const td_window_t *w)
@@ -262,7 +310,44 @@ td_rect_t td_win_client(const td_window_t *win)
     td_rect_t r = win->rect;
     if (!has_frame(win))
         return r;
-    return td_rect(r.x + 1, r.y + 1, r.w - 2, r.h - 2);
+    return td_rect(r.x + 1, r.y + title_h(), r.w - 2, r.h - title_h() - 1);
+}
+
+int td_wm_title_rows(void)
+{
+    return title_h();
+}
+
+td_ui_size_t td_wm_window_size(void)
+{
+    return s_win_size;
+}
+
+static void clamp_rect(td_window_t *w);
+
+void td_wm_set_window_size(td_ui_size_t size)
+{
+    int old = title_h();
+    s_win_size = size;
+    int delta = title_h() - old;
+    /* Open windows keep their contents' size: they grow or shrink by the
+     * title bar's change. */
+    for (int i = 0; delta && i < TD_MAX_WINDOWS; i++)
+    {
+        td_window_t *w = &s_wins[i];
+        if (!w->used || !has_frame(w))
+            continue;
+        w->min_h += delta;
+        w->restore_rect.h += delta;
+        if (!(w->flags & TD_WIN_MAXIMIZED))
+        {
+            w->rect.h += delta;
+            if (w->rect.y + w->rect.h > td_wm_desktop_rows())
+                w->rect.y = td_wm_desktop_rows() - w->rect.h;
+            clamp_rect(w);
+        }
+    }
+    s_dirty = true;
 }
 
 void td_win_invalidate(td_window_t *win)
@@ -355,6 +440,11 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
         w->rect.w = 40;
     if (w->rect.h <= 0)
         w->rect.h = 12;
+    if (has_frame(w))
+    {
+        w->rect.h += title_h() - 1;   /* a taller title bar adds rows */
+        w->min_h += title_h() - 1;
+    }
     if (w->rect.w > s_cols)
         w->rect.w = s_cols;
     if (w->rect.h > td_wm_desktop_rows())
@@ -364,6 +454,10 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
     if (desc->rect.y < 0)
         w->rect.y = (td_wm_desktop_rows() - w->rect.h) / 2;
     w->restore_rect = w->rect;
+    /* In kiosk mode every window but a dialog covers the screen, with no
+     * frame to move, resize, minimise or close it by. */
+    if (s_kiosk && !(w->flags & TD_WIN_MODAL))
+        w->flags |= TD_WIN_FULLSCREEN;
     clamp_rect(w);
 
     if (w->on_tick && desc->tick_ms > 0)
@@ -523,6 +617,20 @@ void td_win_set_fullscreen(td_window_t *win, bool on)
     s_dirty = true;
 }
 
+/* Alt+Shift+Tab: the bottom visible window to the top. */
+static void cycle_windows_back(void)
+{
+    for (int i = 0; i < s_order_count; i++)
+    {
+        td_window_t *w = &s_wins[s_order[i]];
+        if (!(w->flags & TD_WIN_HIDDEN))
+        {
+            td_win_focus(w);
+            return;
+        }
+    }
+}
+
 /* Move the top window to the bottom so the next one comes forward. */
 static void cycle_windows(void)
 {
@@ -555,6 +663,12 @@ void td_wm_init(int cols, int rows)
     s_cols = cols;
     s_rows = rows;
     s_dirty = true;
+}
+
+void td_wm_screen_size(int *cols, int *rows)
+{
+    *cols = s_cols;
+    *rows = s_rows;
 }
 
 void td_wm_set_screen_size(int cols, int rows)
@@ -802,6 +916,29 @@ void td_wm_add_start_item(const char *label, void (*fn)(void))
     s_start_extra_count++;
 }
 
+void td_wm_set_kiosk(bool on, bool (*hook)(const td_event_t *ev))
+{
+    s_kiosk = on;
+    s_kiosk_hook = hook;
+    s_menu_open = false;
+    for (int i = 0; i < TD_MAX_WINDOWS; i++)
+    {
+        td_window_t *w = &s_wins[i];
+        if (!w->used || (w->flags & TD_WIN_MODAL))
+            continue;
+        /* On: everything covers the screen. Off: back to windows. */
+        td_win_set_fullscreen(w, on);
+        if (!on)
+            w->flags &= (uint16_t)~TD_WIN_HIDDEN;
+    }
+    s_dirty = true;
+}
+
+bool td_wm_kiosk(void)
+{
+    return s_kiosk;
+}
+
 void td_wm_set_user_label(const char *label)
 {
     snprintf(s_user_label, sizeof(s_user_label), "%s", label ? label : "");
@@ -856,6 +993,8 @@ const char *td_ui_size_name(td_ui_size_t size)
 
 void td_wm_toggle_start_menu(void)
 {
+    if (s_kiosk)
+        return;
     if (s_menu_open && s_menu.is_start)
     {
         td_menu_close();
@@ -1022,6 +1161,8 @@ static void window_menu_chosen(int i, void *user)
 /* Right-click on a title bar or taskbar button. */
 static void window_menu(td_window_t *w, int x, int y)
 {
+    if (s_kiosk)
+        return;
     const char *items[6];
     int n = 0;
     if (w->flags & TD_WIN_RESIZABLE)
@@ -1598,11 +1739,11 @@ static uintptr_t hover_id(int x, int y)
         int i = icon_at(x, y);
         return i >= 0 ? 0x30000u + (uintptr_t)i : 2;
     }
-    if (has_frame(w) && y == w->rect.y)
+    if (has_frame(w) && in_title(w, y))
     {
-        if (x >= close_x(w) && x < close_x(w) + 3)
+        if (x >= close_x(w) && x < close_x(w) + button_w())
             return (uintptr_t)w + 1;
-        if (x >= min_x(w) && x < min_x(w) + 3)
+        if (x >= min_x(w) && x < min_x(w) + button_w())
             return (uintptr_t)w + 2;
     }
     for (td_widget_t *wd = w->widgets; wd; wd = wd->next)
@@ -1636,30 +1777,41 @@ static void draw_window(td_window_t *w, bool focused)
         uint8_t ffg = focused ? t->frame_active_fg : t->frame_fg;
         td_box(r, focused ? TD_BOX_DOUBLE : TD_BOX_SINGLE, ffg, t->win_bg);
 
-        /* Title bar: the top row between the corners. */
+        /* Title bar: the top row(s) between the corners; the title and the
+         * buttons' captions on its last row. */
         uint8_t tfg = focused ? t->title_fg : t->title_inactive_fg;
         uint8_t tbg = focused ? t->title_bg : t->title_inactive_bg;
-        td_fill(td_rect(r.x + 1, r.y, r.w - 2, 1), ' ', tfg, tbg);
+        int th = title_h(), ty = r.y + th - 1, bw = button_w();
+        td_fill(td_rect(r.x + 1, r.y, r.w - 2, th), ' ', tfg, tbg);
         int buttons_x = (w->flags & TD_WIN_MODAL) ? close_x(w) : min_x(w);
-        td_textn(r.x + 2, r.y, w->title, buttons_x - r.x - 3, tfg, tbg, focused ? TD_BOLD : 0);
+        td_textn(r.x + 2, ty, w->title, buttons_x - r.x - 3, tfg, tbg, focused ? TD_BOLD : 0);
         bool top = td_wm_window_at(s_mouse_x, s_mouse_y) == w;
+        bool wide = bw > 3;
         if (!(w->flags & TD_WIN_MODAL))
         {
             uint8_t fg = tfg, bg = tbg;
-            if (top && mouse_over(min_x(w), r.y, 3))
+            if (top && in_title(w, s_mouse_y) && s_mouse_x >= min_x(w) && s_mouse_x < min_x(w) + bw)
                 hover_colours(&fg, &bg);
-            td_text(min_x(w), r.y, "[-]", fg, bg, 0);
+            td_fill(td_rect(min_x(w), r.y, bw, th), ' ', fg, bg);
+            td_text(min_x(w), ty, wide ? "[ - ]" : "[-]", fg, bg, 0);
         }
         if (w->flags & TD_WIN_CLOSABLE)
         {
-            bool hot = top && mouse_over(close_x(w), r.y, 3);
-            td_text(close_x(w), r.y, "[x]", hot ? t->close_hover_fg : tfg,
-                    hot ? t->close_hover_bg : tbg, hot ? TD_BOLD : 0);
+            bool hot = top && in_title(w, s_mouse_y) && s_mouse_x >= close_x(w) && s_mouse_x < close_x(w) + bw;
+            uint8_t fg = hot ? t->close_hover_fg : tfg, bg = hot ? t->close_hover_bg : tbg;
+            td_fill(td_rect(close_x(w), r.y, bw, th), ' ', fg, bg);
+            td_text(close_x(w), ty, wide ? "[ x ]" : "[x]", fg, bg, hot ? TD_BOLD : 0);
         }
 
-        /* Resize grip: the bottom-right corner, highlighted. */
+        /* Resize grip: the bottom-right corner (and more of the bottom edge
+         * with larger frames), highlighted. */
         if ((w->flags & TD_WIN_RESIZABLE) && !(w->flags & TD_WIN_MAXIMIZED))
+        {
+            uint32_t edge = focused ? 0x2550 : 0x2500;
+            for (int x = r.x + r.w - grip_w(); x < r.x + r.w - 1; x++)
+                td_putc(x, r.y + r.h - 1, edge, tbg, t->win_bg, TD_BOLD);
             td_putc(r.x + r.w - 1, r.y + r.h - 1, focused ? 0x255D : 0x2518, tbg, t->win_bg, TD_BOLD);
+        }
     }
 
     td_rect_t c = td_win_client(w);
@@ -1682,7 +1834,7 @@ void td_wm_compose(td_buffer_t *back)
     td_draw_target(back);
 
     td_fill(td_rect(0, 0, s_cols, s_rows), td_desktop_pattern(), t->desktop_fg, t->desktop_bg);
-    if (td_desktop_icons())
+    if (td_desktop_icons() && !s_kiosk)
         for (int i = 0; i < icon_count(); i++)
             draw_icon(i);
 
@@ -1709,6 +1861,20 @@ void td_wm_compose(td_buffer_t *back)
         int x = clamp(s_mouse_x + 1, 0, s_cols - len);
         int y = clamp(s_mouse_y, 0, s_rows - 1);
         td_text(x, y, label, t->select_fg, t->select_bg, TD_BOLD);
+    }
+    if (s_pointer && s_mouse_x >= 0 && s_mouse_x < s_cols && s_mouse_y < s_rows)
+    {
+        /* The pointer: a triangle pointing up ('^' in ASCII mode), black on
+         * light cells and white on dark ones, on the cell's own background. */
+        td_cell_t *c = td_buffer_cell(back, s_mouse_x, s_mouse_y);
+        if (c)
+        {
+            if (c->attr & TD_REVERSE)
+                c->bg = c->fg;
+            c->ch = 0x25B2;
+            c->fg = colour_is_light(c->bg) ? 16 : 231;
+            c->attr = TD_BOLD;
+        }
     }
     s_dirty = false;
 }
@@ -1761,14 +1927,14 @@ static bool frame_press(td_window_t *w, const td_event_t *ev)
     if (!has_frame(w) || td_rect_contains(td_win_client(w), ev->x, ev->y))
         return false;
 
-    if (ev->y == r.y)
+    if (in_title(w, ev->y))
     {
-        if ((w->flags & TD_WIN_CLOSABLE) && ev->x >= close_x(w) && ev->x < close_x(w) + 3)
+        if ((w->flags & TD_WIN_CLOSABLE) && ev->x >= close_x(w) && ev->x < close_x(w) + button_w())
         {
             td_win_request_close(w);
             return true;
         }
-        if (!(w->flags & TD_WIN_MODAL) && ev->x >= min_x(w) && ev->x < min_x(w) + 3)
+        if (!(w->flags & TD_WIN_MODAL) && ev->x >= min_x(w) && ev->x < min_x(w) + button_w())
         {
             td_win_minimize(w);
             return true;
@@ -1790,7 +1956,7 @@ static bool frame_press(td_window_t *w, const td_event_t *ev)
         }
         return true;
     }
-    bool grip = ev->y == r.y + r.h - 1 && ev->x >= r.x + r.w - 2;
+    bool grip = ev->y == r.y + r.h - 1 && ev->x >= r.x + r.w - grip_w();
     if (grip && (w->flags & TD_WIN_RESIZABLE) && !(w->flags & TD_WIN_MAXIMIZED))
     {
         s_drag.mode = DRAG_RESIZE;
@@ -1851,6 +2017,8 @@ static void dispatch_mouse(const td_event_t *ev)
 {
     s_mouse_x = ev->x;
     s_mouse_y = ev->y;
+    if (s_kiosk && s_kiosk_hook && s_kiosk_hook(ev))
+        return;
 
     /* Plain movement (no button) only moves highlights around. */
     if (ev->action == TD_MOUSE_MOVE && s_drag.mode == DRAG_NONE)
@@ -1908,6 +2076,8 @@ static void dispatch_mouse(const td_event_t *ev)
     td_window_t *modal = modal_window();
     if (!w)
     {
+        if (s_kiosk)
+            return;                   /* no desktop icons or menus */
         if (!modal && ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_LEFT)
             desktop_press(ev);
         if (!modal && ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_RIGHT)
@@ -1923,7 +2093,7 @@ static void dispatch_mouse(const td_event_t *ev)
         td_win_focus(w);
         if (ev->button == TD_BUTTON_LEFT && frame_press(w, ev))
             return;
-        if (ev->button == TD_BUTTON_RIGHT && has_frame(w) && ev->y == w->rect.y)
+        if (ev->button == TD_BUTTON_RIGHT && has_frame(w) && in_title(w, ev->y))
         {
             window_menu(w, ev->x, ev->y + 1);
             return;
@@ -1947,9 +2117,86 @@ static void dispatch_mouse(const td_event_t *ev)
     client_event(w, ev);
 }
 
+/* Windows-key shortcuts (TD_MOD_SUPER, from a USB keyboard only):
+ * Up maximizes, Down restores or minimizes, Left / Right fill that half of
+ * the screen, D minimizes every window (again: brings them back), E opens
+ * Files, R the Terminal, I Settings. */
+static void super_key(const td_event_t *ev, td_window_t *w)
+{
+    bool sizable = w && (w->flags & TD_WIN_RESIZABLE) && has_frame(w);
+    switch (ev->key)
+    {
+    case TD_KEY_UP:
+        if (sizable && !(w->flags & TD_WIN_MAXIMIZED))
+            td_win_toggle_maximize(w);
+        break;
+    case TD_KEY_DOWN:
+        if (w && (w->flags & TD_WIN_MAXIMIZED))
+            td_win_toggle_maximize(w);
+        else if (w)
+            td_win_minimize(w);
+        break;
+    case TD_KEY_LEFT:
+    case TD_KEY_RIGHT:
+        if (sizable)
+        {
+            if (w->flags & TD_WIN_MAXIMIZED)
+                td_win_toggle_maximize(w);
+            int half = s_cols / 2;
+            td_win_move(w, ev->key == TD_KEY_LEFT ? 0 : s_cols - half, 0);
+            td_win_resize(w, half, td_wm_desktop_rows());
+        }
+        break;
+    case 'd':
+    {
+        bool shown = false;
+        for (int i = 0; i < TD_MAX_WINDOWS; i++)
+        {
+            td_window_t *o = &s_wins[i];
+            if (o->used && !(o->flags & (TD_WIN_HIDDEN | TD_WIN_MODAL)))
+            {
+                td_win_minimize(o);
+                shown = true;
+            }
+        }
+        for (int i = 0; !shown && i < s_order_count; i++)   /* all hidden: back */
+            s_wins[s_order[i]].flags &= (uint16_t)~TD_WIN_HIDDEN;
+        break;
+    }
+    case 'e':
+        td_app_launch("Files");
+        break;
+    case 'r':
+        td_app_launch("Terminal");
+        break;
+    case 'i':
+        td_app_launch("Settings");
+        break;
+    default:
+        break;
+    }
+    s_dirty = true;
+}
+
 static void dispatch_key(const td_event_t *ev)
 {
     bool plain = ev->mods == 0;
+
+    if (s_kiosk)
+    {
+        /* Only the application gets keys: no Start menu, window switching,
+         * closing, full screen or Windows-key shortcuts. The hook sees
+         * every key first (the way out of kiosk mode). */
+        if (s_kiosk_hook && s_kiosk_hook(ev))
+            return;
+        bool global = (ev->mods & TD_MOD_SUPER) || (ev->key == TD_KEY_F10 && plain) || (ev->key == TD_KEY_F6 && plain) ||
+                      (ev->key == TD_KEY_TAB && (ev->mods & TD_MOD_ALT)) ||
+                      (ev->key == 'q' && ev->mods == TD_MOD_CTRL) ||
+                      (ev->key == TD_KEY_F4 && ev->mods == TD_MOD_ALT) || (ev->key == TD_KEY_F11 && plain);
+        td_window_t *kw = td_win_focused();
+        if (global || !kw)
+            return;
+    }
 
     if (ev->key == TD_KEY_F10 && plain)
     {
@@ -1966,7 +2213,9 @@ static void dispatch_key(const td_event_t *ev)
     bool alt_tab = ev->key == TD_KEY_TAB && (ev->mods & TD_MOD_ALT);
     if ((ev->key == TD_KEY_F6 && plain) || alt_tab)
     {
-        if (!modal)
+        if (!modal && alt_tab && (ev->mods & TD_MOD_SHIFT))
+            cycle_windows_back();
+        else if (!modal)
             cycle_windows();
         return;
     }
@@ -1974,6 +2223,12 @@ static void dispatch_key(const td_event_t *ev)
         td_full_redraw();
 
     td_window_t *w = td_win_focused();
+    if (ev->mods & TD_MOD_SUPER)
+    {
+        if (!modal)
+            super_key(ev, w);
+        return;
+    }
     /* Ctrl+Q (or Alt+F4, where the terminal lets it through) closes the
      * focused window, as its [x] would: it may ask about unsaved work. */
     if ((ev->key == 'q' && ev->mods == TD_MOD_CTRL) || (ev->key == TD_KEY_F4 && ev->mods == TD_MOD_ALT))
@@ -2049,6 +2304,8 @@ void td_wm_dispatch(const td_event_t *ev)
         s_dirty = true;
         break;
     case TD_EV_MOUSE:
+        if (s_pointer && (ev->x != s_mouse_x || ev->y != s_mouse_y))
+            s_dirty = true;   /* the drawn pointer moves */
         dispatch_mouse(ev);   /* plain moves only redraw when the hover changes */
         update_hover();
         break;

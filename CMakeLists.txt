@@ -108,6 +108,8 @@ add_library(tinydesk_apps STATIC
     apps/pixels.c
     apps/imagefile.c
     apps/imageview.c
+    apps/mouse.c
+    apps/keyboard.c
     apps/datetime.c
     apps/desktop.c
     apps/editor.c
@@ -118,6 +120,7 @@ add_library(tinydesk_apps STATIC
     apps/mqtt.c
     apps/network.c
     apps/pyui.c
+    apps/kiosk.c
     apps/session.c
     apps/settings.c
     apps/sysmon.c
