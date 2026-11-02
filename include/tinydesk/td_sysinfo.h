@@ -97,6 +97,47 @@ typedef struct
     const char *(*telnet_peer)(void);
 } td_net_ops_t;
 
+/* ---------------------------------------------------------------- mouse */
+
+/* Pointer settings of a mouse the board reads itself, in percent. */
+typedef struct
+{
+    int speed;       /* 100: 8 mouse counts a column, 16 a row */
+    int accel;       /* 0: none; 100: fast moves go up to 4 times as far */
+    int precision;   /* 0: none; 100: slow moves go 0.4 times as far */
+} td_mouse_settings_t;
+
+typedef struct
+{
+    /* What is attached, e.g. "USB mouse 04ca:00bd, with its wheel"; false
+     * when nothing is. */
+    bool (*status)(char *buf, int cap);
+    void (*get)(td_mouse_settings_t *s);
+    /* Apply at once and save; false when saving failed. */
+    bool (*set)(const td_mouse_settings_t *s);
+} td_mouse_ops_t;
+
+/* -------------------------------------------------------------- keyboard */
+
+/* Settings of a keyboard the board reads itself. */
+typedef struct
+{
+    int layout;      /* index of layout_name() */
+    int delay_ms;    /* before a held key repeats */
+    int rate;        /* repeats a second */
+} td_keyboard_settings_t;
+
+typedef struct
+{
+    /* What is attached, e.g. "USB keyboard"; false when nothing is. */
+    bool (*status)(char *buf, int cap);
+    void (*get)(td_keyboard_settings_t *s);
+    /* Apply at once and save; false when saving failed. */
+    bool (*set)(const td_keyboard_settings_t *s);
+    /* The layouts' names ("US (English)", "German"...); NULL past the last. */
+    const char *(*layout_name)(int i);
+} td_keyboard_ops_t;
+
 /* ------------------------------------------------------ software update */
 
 enum
@@ -263,6 +304,11 @@ typedef struct
      * an entry with name NULL; names are plain file names (no '/' or '\'),
      * others are skipped. */
     const td_desktop_file_t *desktop_files;
+
+    /* Optional: a mouse and a keyboard the board reads itself (USB on the
+     * ESP32-S3), for the Mouse and Keyboard apps. NULL: none, and no app. */
+    const td_mouse_ops_t *mouse;
+    const td_keyboard_ops_t *keyboard;
 } td_sysinfo_t;
 
 /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

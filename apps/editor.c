@@ -4,7 +4,8 @@
  *   arrows, Home/End, PgUp/PgDn, Ctrl+Home/End,      move (hold Shift to
  *   Ctrl+Left/Right (by word)                          select)
  *   mouse: click places the cursor, drag or Shift+click selects,
- *          double-click selects a word, the wheel scrolls, right-click menu
+ *          double-click selects a word, the wheel scrolls (Ctrl+wheel: half a
+ *          page), right-click menu
  *   typing, Enter (keeps the indent), Tab / Shift+Tab   edit (replace or
  *   (indent the selected lines), Backspace, Delete      delete a selection)
  *   Ctrl+A select all, Ctrl+C copy, Ctrl+X cut, Ctrl+V paste
@@ -2215,7 +2216,11 @@ static bool on_mouse(const td_event_t *ev)
     bool in_pane = E.pane_y >= 0 && ev->y > E.pane_y && ev->y < E.rows_all;
     if (ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN)
     {
-        int d = ev->button == TD_BUTTON_WHEEL_UP ? 3 : -3;
+        /* 3 lines a notch; with Ctrl, half a page. */
+        int rows = in_pane ? E.rows_all - E.pane_y - 1 : E.pane_y >= 0 ? E.pane_y
+                                                                       : E.rows_all;
+        int step = (ev->mods & TD_MOD_CTRL) && rows / 2 > 3 ? rows / 2 : 3;
+        int d = ev->button == TD_BUTTON_WHEEL_UP ? step : -step;
         if (in_pane)
         {
             E.pane_scroll = E.pane_scroll + d > 0 ? E.pane_scroll + d : 0;

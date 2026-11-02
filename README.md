@@ -27,15 +27,18 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 * Pure C11 core with no third-party dependencies. Screen buffers are allocated
   at initialization; pasted text can grow a heap buffer with `realloc()`.
   Only changed cells are sent each frame.
-* Runs on the **ESP32-C6** (built-in USB port) and the **classic ESP32**
-  (USB-UART, 921600 baud, PSRAM boards), and natively in Windows, Linux and
-  macOS terminals for development.
+* Runs on the **ESP32-C6** (built-in USB port), the **classic ESP32** and
+  the **ESP32-S3** (USB-UART, 921600 baud, PSRAM boards), and natively in
+  Windows, Linux and macOS terminals for development.
+* On the ESP32-S3, a USB keyboard and mouse can also be plugged into the
+  board itself (`usb.host = 1`), with Windows-key shortcuts.
 * Windows with z-order, drag, resize, minimise, maximise; taskbar, start
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
   the terminal.
 * Apps: Terminal (the shell), Files, Editor, Network, MQTT, Modbus (TCP and
   RTU), Task Manager, System Monitor, Log Viewer, Settings, Software Update
-  (OTA), and a small API for writing your own.
+  (OTA), Mouse and Keyboard (with USB on the ESP32-S3), and a small API for
+  writing your own.
 * Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes
   and redirection, run from the Terminal or with right-click → Run on the
   desktop. Language reference: `docs/SCRIPTING.md` in
@@ -113,8 +116,9 @@ Step-by-step instructions, terminal settings and troubleshooting are in the
 
 ## Your board's pins
 
-Pins are not in the code. RS-485 lines, W6100 Ethernet, the SD card and
-the ESP32's console UART come from a small `key = value` file:
+Pins are not in the code. RS-485 lines, W6100 Ethernet, the SD card, the
+ESP32's console UART and the ESP32-S3's USB keyboard and mouse come from a
+small `key = value` file:
 
 ```bash
 cd ports/esp32c6

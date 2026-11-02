@@ -35,6 +35,8 @@ void td_apps_register_all(void)
     td_taskmgr_register();
     td_logview_register();
     td_settings_register();
+    td_mouse_register();
+    td_keyboard_register();
     td_update_register();
     td_counter_register();
     td_about_register();

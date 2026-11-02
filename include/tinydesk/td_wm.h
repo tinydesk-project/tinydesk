@@ -149,6 +149,9 @@ void td_wm_init(int cols, int rows);
 /* Tell the window manager the terminal size changed. */
 void td_wm_set_screen_size(int cols, int rows);
 
+/* The screen size in cells. */
+void td_wm_screen_size(int *cols, int *rows);
+
 /* Route one event to the start menu, taskbar, windows and widgets. */
 void td_wm_dispatch(const td_event_t *ev);
 
@@ -204,6 +207,14 @@ void td_wm_set_start_menu_size(td_ui_size_t size);
 td_ui_size_t td_wm_start_menu_size(void);
 void td_wm_set_taskbar_size(td_ui_size_t size);
 td_ui_size_t td_wm_taskbar_size(void);
+/* Window frames: small = one title row, buttons [-][x] (the default);
+ * medium = buttons [ - ][ x ] and a wider resize corner; large = the same
+ * with two title rows. Windows grow or shrink by the title bar's change,
+ * so their contents keep their size. */
+void td_wm_set_window_size(td_ui_size_t size);
+td_ui_size_t td_wm_window_size(void);
+/* Rows of a framed window's title bar (1, or 2 with large frames). */
+int td_wm_title_rows(void);
 const char *td_ui_size_name(td_ui_size_t size);   /* "Small", "Medium", "Large" */
 
 /* ------------------------------------------------------- popup menus */
@@ -233,6 +244,11 @@ td_window_t *td_wm_window_at(int x, int y);
 /* Last known mouse position in screen cells; false before the first mouse
  * event. Used for hover highlights. */
 bool td_wm_mouse_pos(int *x, int *y);
+
+/* Draw the mouse pointer (a triangle in the cell under it), for a mouse
+ * the terminal does not show, such as one on the board's own USB port.
+ * Off by default; may be called from any task. */
+void td_wm_set_pointer(bool on);
 
 /* -------------------------------------------------------------- apps */
 

@@ -1,4 +1,21 @@
 dependencies:
+  espressif/usb_host_hid:
+    component_hash: 74b9c84cd2921a5e987f504c1713ca7819f7e8be80565e5253e9e9c7e07ab881
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32s2
+    - esp32s3
+    - esp32p4
+    - esp32h4
+    - esp32s31
+    - linux
+    version: 1.2.1
   espressif/w6100:
     component_hash: f0a03e304e5b4cef45b35d6459dff0e98f9652a6a2c77305556b7eefb114fbfe
     dependencies:
@@ -56,12 +73,13 @@ dependencies:
       type: service
     version: 5.8.2~1
 direct_dependencies:
+- espressif/usb_host_hid
 - espressif/w6100
 - espressif/wiznet_common
 - idf
 - joltwallet/littlefs
 - sahlberg/libsmb2
 - wolfssl/wolfssl
-manifest_hash: 01026be2f548fd90b576fb9f052b92ddab4ee67a6f9326cec3d27ac7a44c7771
+manifest_hash: 42f30b135d1c0fb845e5a310a28c525dbb4d9e3102e5c7fa856ddbbc9e19f5e3
 target: esp32s3
 version: 2.0.0

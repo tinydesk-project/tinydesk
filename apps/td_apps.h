@@ -21,6 +21,8 @@ void td_logview_register(void);
 void td_settings_register(void);
 void td_files_register(void);
 void td_counter_register(void);
+void td_mouse_register(void);      /* only where td_sysinfo()->mouse is set */
+void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set */
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);

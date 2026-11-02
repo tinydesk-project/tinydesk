@@ -104,6 +104,8 @@ add_library(tinydesk_apps STATIC
     apps/about.c
     apps/apps.c
     apps/counter.c
+    apps/mouse.c
+    apps/keyboard.c
     apps/datetime.c
     apps/desktop.c
     apps/editor.c

@@ -40,6 +40,8 @@ const char *td_hw_pin_owner(int pin, td_hw_chip_t chip)
         int tx = chip == TD_HW_CHIP_ESP32 ? 1 : 43, rx = chip == TD_HW_CHIP_ESP32 ? 3 : 44;
         if ((pin == tx && !tdsh_board_get("console.tx")) || (pin == rx && !tdsh_board_get("console.rx")))
             return "the desktop's serial link";
+        if (chip == TD_HW_CHIP_ESP32S3 && (pin == 19 || pin == 20) && tdsh_board_int("usb.host", 0) == 1)
+            return "usb.host";
     }
     else if (chip == TD_HW_CHIP_ESP32C6)
     {

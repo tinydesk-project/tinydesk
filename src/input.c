@@ -320,7 +320,7 @@ static int parse_params(const uint8_t *s, int len, int *out, int max)
     return n;
 }
 
-/* xterm modifier parameter: 1 + (shift | alt << 1 | ctrl << 2). */
+/* xterm modifier parameter: 1 + (shift | alt << 1 | ctrl << 2 | super << 3). */
 static uint8_t mods_from_param(int m)
 {
     if (m < 2)
@@ -333,6 +333,8 @@ static uint8_t mods_from_param(int m)
         mods |= TD_MOD_ALT;
     if (m & 4)
         mods |= TD_MOD_CTRL;
+    if (m & 8)
+        mods |= TD_MOD_SUPER;
     return mods;
 }
 
@@ -454,6 +456,17 @@ static void finish_csi(td_input_t *p, uint32_t now)
         p->paste_cut = false;
         return;
     }
+    if (final == '~' && n == 3 && prm[0] == 27)
+    {
+        /* ESC [ 27 ; mods ; char ~ (xterm's modifyOtherKeys): a character
+         * with modifiers, such as Super+E from a USB keyboard. */
+        uint32_t c = (uint32_t)prm[2];
+        if (c >= 'A' && c <= 'Z')
+            c += 'a' - 'A';
+        if (c >= 0x20 && c < 0x7F)
+            emit_key(c, mods_from_param(prm[1]), now);
+        return;
+    }
     if (final == '~')
     {
         uint32_t key = tilde_key(n > 0 ? prm[0] : 0);
@@ -463,7 +476,8 @@ static void finish_csi(td_input_t *p, uint32_t now)
     }
     if (final == 'Z')
     {
-        emit_key(TD_KEY_TAB, TD_MOD_SHIFT, now);
+        /* Shift+Tab; ESC [ 1 ; 4 Z is Alt+Shift+Tab. */
+        emit_key(TD_KEY_TAB, (uint8_t)(TD_MOD_SHIFT | mods_from_param(n > 1 ? prm[1] : 0)), now);
         return;
     }
     if (final == 'R' && n == 2 && prm[0] > 1)

@@ -48,6 +48,9 @@
 #include "td_fs_stdio.h"
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
+#if TD_USB_HID
+#include "usb_hid.h"
+#endif
 
 #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
 #define UI_TASK_STACK 8192   /* Xtensa frames are bigger; RAM is plentiful (PSRAM) */
@@ -527,6 +530,11 @@ void app_main(void)
             ota_esp_register_command();   /* ota (root only) */
     }
     td_mb_set_serial(board_rtu_lines());        /* Modbus RTU lines, if the board has any */
+#if TD_USB_HID
+    usb_hid_start();                            /* a USB keyboard and mouse (usb.host = 1) */
+    s_info.mouse = usb_hid_mouse_ops();         /* the Mouse and Keyboard apps, when it is on */
+    s_info.keyboard = usb_hid_keyboard_ops();
+#endif
 
     xTaskCreate(ui_task, "tinydesk", UI_TASK_STACK, NULL, UI_TASK_PRIORITY, NULL);
 

@@ -19,6 +19,8 @@ idf_component_register(
         "${TD_ROOT}/apps/about.c"
         "${TD_ROOT}/apps/apps.c"
         "${TD_ROOT}/apps/counter.c"
+        "${TD_ROOT}/apps/mouse.c"
+        "${TD_ROOT}/apps/keyboard.c"
         "${TD_ROOT}/apps/datetime.c"
         "${TD_ROOT}/apps/desktop.c"
         "${TD_ROOT}/apps/editor.c"

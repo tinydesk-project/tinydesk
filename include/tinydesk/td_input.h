@@ -36,6 +36,9 @@ typedef enum
 #define TD_MOD_SHIFT 0x01u
 #define TD_MOD_ALT   0x02u
 #define TD_MOD_CTRL  0x04u
+/* The Windows key. Only a keyboard the board reads itself (USB) sends it,
+ * so the desktop's Super shortcuts never clash with the PC's own keys. */
+#define TD_MOD_SUPER 0x08u
 
 /* Mouse actions. */
 #define TD_MOUSE_PRESS   0

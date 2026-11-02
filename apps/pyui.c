@@ -1040,7 +1040,7 @@ static void run_request(const td_pyui_msg_t *m, char *text)
         if (o->kind == K_WINDOW)
         {
             unmaximize(o->w);
-            td_win_resize(o->w, m->a + 2, m->b + 2);
+            td_win_resize(o->w, m->a + 2, m->b + 1 + td_wm_title_rows());
         }
         else if (o->kind == K_CANVAS)
         {
