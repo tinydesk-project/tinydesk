@@ -1,0 +1,29 @@
+{
+  "contract": "tdui",
+  "api": [1, 0],
+  "packageFormats": [1],
+  "bytecode": {"micropython": "1.29.0", "mpy": 6, "sub": 3},
+  "capabilities": {
+    "gradient_fills": "gradients in rect, circle and bar fills (every board)",
+    "rgb_pictures": "RGB565 pictures, tdui.enable_rgb_pictures() (boards with PSRAM, and the PC)"
+  },
+  "limits": {
+    "MAX_WINDOWS": 4,
+    "MAX_WIDGETS": 48,
+    "MAX_PAGES": 16,
+    "MAX_CELLS": {"default": 2000, "psram": 32000},
+    "MAX_PIXELS": {"default": 16384, "psram": 2097152}
+  },
+  "requests": {
+    "OPEN": 1, "CLOSE": 2, "ADD": 3, "TEXT": 4, "VALUE": 5, "VISIBLE": 6, "COLOR": 7,
+    "FOCUS": 8, "LIST_CLEAR": 9, "LIST_ADD": 10, "PUT": 11, "FILL": 12, "MSGBOX": 13, "INPUT": 14,
+    "MENU": 15, "RESIZE": 16, "MOVE": 17, "SHOW": 18, "PAGE": 19, "PAGE_COPY": 20, "BIG": 21,
+    "IMAGE": 22, "IMAGE_DATA": 23, "DRAW_IMAGE": 24, "RECT": 25, "LINE": 26, "GRADIENT": 27,
+    "CIRCLE": 28, "PTEXT": 29, "PICTURE": 30, "BATCH_BEGIN": 31, "BATCH_END": 32, "BAR": 33,
+    "FONT": 34, "FONT_TEXT": 35,
+    "RENDER_CACHE": 36
+  },
+  "widgets": {"LABEL": 1, "BUTTON": 2, "CHECKBOX": 3, "TEXTBOX": 4, "PROGRESS": 5, "LIST": 6, "CANVAS": 7},
+  "events": {"CLICK": 1, "CHANGE": 2, "CLOSE": 3, "KEY": 4, "MOUSE": 5, "RESULT": 6, "ERROR": 7, "RESIZE": 8},
+  "policy": "Within one major api number nothing is removed or changed in meaning: requests, widgets and events keep their numbers, new ones are added at the end and announced by a higher minor number or a capability. Firmware runs every package whose format it lists and whose major api number it has, whichever App Builder version made it. A new major number keeps the old one working for one more major TinyDesk release."
+}

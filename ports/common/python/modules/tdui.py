@@ -20,6 +20,14 @@ from micropython import const
 SUPPORTS_GRADIENT_FILLS = const(1)
 SUPPORTS_RGB_PICTURES = bool(getattr(_tdui, "SUPPORTS_RGB_PICTURES", False))
 
+# The contract apps are made for (ports/common/python/tdui_contract.json).
+# The first number changes only when apps made for the old one would break,
+# the second when something is added. CAPABILITIES names the optional parts
+# this firmware has; an app package lists the ones it needs and stops with
+# a clear message on firmware without them.
+API = (1, 0)
+CAPABILITIES = ("gradient_fills", "rgb_pictures") if SUPPORTS_RGB_PICTURES else ("gradient_fills",)
+
 def enable_rgb_pictures():
     # Opt in before creating images/canvases. Existing apps keep their budget.
     if not SUPPORTS_RGB_PICTURES:
