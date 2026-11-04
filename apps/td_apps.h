@@ -322,8 +322,10 @@ bool td_is_script(const char *name);
 
 /* Python scripts: files ending in .py. */
 bool td_is_python(const char *name);
+/* Loadable Python bytecode/native modules and self-contained app packages. */
+bool td_is_compiled_app(const char *name);
 
-/* Files with a Run command: shell and Python scripts. */
+/* Files with a Run command: shell, Python source, .mpy and .tdapp. */
 bool td_is_runnable(const char *name);
 
 /* Run the script at `path` (a real path, as the Files app and the Desktop
@@ -387,13 +389,14 @@ enum
                            * text (td_pyui_part_t; 0: to the image's edge); flags 1:
                            * nine-slice, the border's pixels kept and the rest stretched */
     TD_PYUI_RECT,         /* target id: a, b, c, d in colour e; f corner radius; flags 1:
-                           * outline only */
+                           * outline only; flags 2: text is 7-byte RGB gradient
+                           * (rgb1[3], rgb2[3], horizontal boolean), not dithered */
     TD_PYUI_LINE,         /* target id: a, b to c, d in colour e */
     TD_PYUI_GRADIENT,     /* target id: a, b, c, d from the RGB colour text[0..2] to
                            * text[3..5], dithered; flags 1: left to right, else top to
                            * bottom */
     TD_PYUI_CIRCLE,       /* target id: centre a, b, radius c in colour e; flags 1:
-                           * outline only */
+                           * outline only; flags 2: same 7-byte gradient as RECT */
     TD_PYUI_PTEXT,        /* target id: text in pixels at a, b in colour c on d
                            * (TD_PYUI_CLEAR: nothing behind it), e times the size;
                            * flags 0: the 8x16 font, 1: the 3x5 one of TD_PYUI_BIG */
@@ -402,6 +405,16 @@ enum
                            * its part at e, f; text td_pyui_picture_t then the label;
                            * flags 1: nine-slice. Below it the canvas gets the same in
                            * its pixels, for terminals without pictures. */
+    TD_PYUI_BATCH_BEGIN,  /* session-wide, nestable; at most 1000 ms without a frame */
+    TD_PYUI_BATCH_END,    /* release at the outer end; no rollback on error/timeout */
+    TD_PYUI_BAR,          /* pixel rect a,b,c,d; e: 0..1000 full, f: corner radius;
+                           * text[0..2]: fill, track, edge palette colours;
+                            * len 10 adds the 7-byte RGB gradient after colours;
+                           * flags 1: light top edge. One complete repaint. */
+    TD_PYUI_FONT,         /* immutable generated font pointer; desktop owns it */
+    TD_PYUI_FONT_TEXT,    /* canvas id, font win; cells a,b,c,d; e fg, f bg;
+                           * flags: horizontal 0..2, vertical <<2, wrap 16 */
+    TD_PYUI_RENDER_CACHE, /* session-wide: a capacity KiB (0..128), flags 1 warm idle pages */
 };
 
 /* TD_PYUI_SHOW states. */
@@ -460,7 +473,17 @@ typedef struct
     int16_t w, h;
     uint8_t *px;      /* w * h, row by row */
     uint8_t *mask;    /* NULL (opaque), or w * h, 1 where transparent */
+    uint16_t *rgb;    /* optional retained RGB565 source for native pictures */
 } td_pyui_image_t;
+
+/* One allocation; file bytes and parsed view remain valid until free(). */
+#include "tinydesk/td_font.h"
+typedef struct {
+    size_t bytes;
+    td_font_t face;
+    uint8_t data[];
+} td_pyui_font_t;
+void td_pyui_send_font(uint16_t id, td_pyui_font_t *font, void (*wait)(void));
 
 /* TD_PYUI_PICTURE: the image's part (0: to its edge), the nine-slice
  * border in the image's pixels, and the label's colour and size (0: as
@@ -488,7 +511,7 @@ const uint8_t *td_pyui_glyph(uint32_t cp);
                                   * builds with PSRAM set more */
 #endif
 #ifndef TD_PYUI_MAX_PIXELS
-#define TD_PYUI_MAX_PIXELS 16384 /* bytes of a script's images and canvas pixel layers
+#define TD_PYUI_MAX_PIXELS 16384 /* bytes of images, canvas layers and picture backgrounds
                                   * together (a pixel is a byte, a mask one more); builds
                                   * with PSRAM set more */
 #endif
@@ -530,8 +553,12 @@ bool td_pyui_detach_done(void);
  * desktop to take it (and its bytes given back for TD_PYUI_IMAGE). It
  * waits while the queue is full, calling wait(). */
 bool td_pyui_pixels_take(long bytes);
+bool td_pyui_enable_rgb(void);
+bool td_pyui_rgb_enabled(void);
+void td_pyui_cache_stats(uint32_t out[12]);
 void td_pyui_pixels_give(long bytes);
 td_pyui_image_t *td_pyui_image_new(int w, int h, bool mask);
+td_pyui_image_t *td_pyui_image_new_rgb(int w, int h, bool mask, bool rgb);
 long td_pyui_image_bytes(const td_pyui_image_t *img);
 void td_pyui_send_image(uint8_t op, uint16_t id, int a, int b, td_pyui_image_t *img, void (*wait)(void));
 
@@ -552,6 +579,18 @@ void td_session_switch(const char *user, bool switch_shell);
 
 const char *td_session_user(void);
 bool td_session_is_root(void);
+bool td_session_locked(void);
+bool td_session_auth_pending(void);
+bool td_session_has_right(uint32_t right);
+int td_session_role(void);
+void td_session_lock(void);
+void td_kiosk_stop_for_login(void);
+void td_session_accept_authenticated(const char *user);
+void td_session_accept_login(const char *user,uint32_t generation);
+bool td_session_path_allowed(const char *path,int action);
+void td_login_open(void);
+void td_login_status(const char *message);
+void td_users_register(void);
 const char *td_session_home(void);   /* real path, e.g. "/fs/home/bob" */
 const char *td_session_jail(void);   /* the Files app cannot go above this */
 

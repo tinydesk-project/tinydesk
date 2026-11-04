@@ -38,6 +38,7 @@ static uint32_t s_rate_start_ms;
 static uint32_t s_rate_start_bytes;
 static uint32_t s_last_clock_s;
 static uint32_t s_start_ms;
+static uint32_t s_hold_start, s_hold_ms;
 
 static const td_sysinfo_t s_no_sysinfo;
 static const td_sysinfo_t *s_sysinfo = &s_no_sysinfo;
@@ -70,6 +71,12 @@ void td_quit(void)
 void td_full_redraw(void)
 {
     s_resync_pending = true;
+}
+
+void td_frame_hold(uint32_t timeout_ms)
+{
+    s_hold_start = td_millis();
+    s_hold_ms = timeout_ms;
 }
 
 /* Apply a size reported by the terminal. */
@@ -159,6 +166,7 @@ static void resync(void)
 int td_init(const td_hal_t *hal)
 {
     s_hal = hal;
+    s_hold_ms = 0;
     s_start_ms = hal->millis(hal->ctx);
     memset(&s_stats, 0, sizeof(s_stats));
     td_render_init(&s_renderer, hal);
@@ -322,16 +330,25 @@ static void render_frame(void)
     td_pictures_begin();
     td_wm_compose(&s_back);
     td_pictures_mark(&s_front, &s_back);   /* before front catches up */
+    td_render_write(&s_renderer, "\x1b[?2026h", 8);
     bool ok = td_render_diff(&s_renderer, &s_front, &s_back);
+    if (ok)
+        ok = td_render_flush(&s_renderer); /* cells/frame begin precede a local picture sink */
     if (ok)
     {
         bool moved = false;
         td_pictures_send(picture_write, &s_renderer, &moved);
+        td_render_write(&s_renderer, "\x1b[?2026l", 8);
         ok = td_render_flush(&s_renderer);
         if (moved)
             td_render_reset_state(&s_renderer);   /* the cursor came back with ESC 8; colours as before */
         if (!ok)
             td_pictures_forget();
+    }
+    else
+    {
+        td_render_write(&s_renderer, "\x1b[?2026l", 8);
+        td_render_flush(&s_renderer);
     }
     s_stats.frames++;
     s_stats.frame_ms = td_millis() - t0;
@@ -422,6 +439,16 @@ bool td_step(void)
         td_render_flush(&s_renderer);
         s_last_size_query_ms = now;
     }
+
+    /* Even a resize or reconnect must not publish a partial batch. The
+     * deadline is absolute: a dead producer cannot freeze the desktop. */
+    if (s_hold_ms && td_millis() - s_hold_start < s_hold_ms)
+    {
+        update_rate(td_millis());
+        s_stats.loop_ms = td_millis() - now;
+        return s_running;
+    }
+    s_hold_ms = 0;
 
     if (s_resync_pending)
     {

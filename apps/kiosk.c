@@ -16,12 +16,14 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "td_apps.h"
 #include "tinydesk/td.h"
 #include "tinydesk/td_sysinfo.h"
 #include "tinydesk/td_widgets.h"
 #include "tinydesk/td_wm.h"
+#include "tinydesk/td_picture.h"
 
 #define FIRST_START_MS 1500      /* let the shell come up first */
 #define RESTART_MS     5000      /* an app that ended is started again after this */
@@ -41,6 +43,99 @@ static char s_cmd[TD_PATH_MAX + 8];
 static uint32_t s_launch_ms, s_idle_ms;
 static bool s_launched;
 static td_window_t *s_status;     /* behind the app: what kiosk mode is doing */
+static uint8_t *s_splash;
+static bool s_splash_rgb;
+static int s_splash_w, s_splash_h;
+
+static void load_splash(void)
+{
+    const char *path = td_sysinfo()->kiosk_splash;
+    if (!path || !path[0] || !td_sysinfo()->fs)
+        return;
+    const td_fs_ops_t *fs = td_sysinfo()->fs;
+    char resolved[TD_PATH_MAX];
+    /* board.conf uses shell paths (/root/...), while the native file
+     * reader needs /fs/root/... on ESP32, or the host sandbox root. */
+    const char *root = fs->root;
+    size_t n = root ? strlen(root) : 0;
+    if (n && (strncmp(path, root, n) || (path[n] && path[n] != '/')))
+    {
+        int length = snprintf(resolved, sizeof(resolved), "%s%s%s", root, path[0] == '/' ? "" : "/", path);
+        if (length < 0 || length >= (int)sizeof(resolved))
+            return;
+        path = resolved;
+    }
+    td_image_t image;
+    char error[96];
+    if (!td_image_load(&image, fs, path, error, sizeof(error)))
+    {
+        td_logf('E', "kiosk artwork: %s", error);
+        return;
+    }
+    if (image.w < 1 || image.h < 1 || (long)image.w * image.h > 800L * 480L)
+    {
+        td_image_close(&image);
+        return;
+    }
+    bool rgb=TD_PYUI_MAX_CELLS>2000;
+    uint8_t *pixels = malloc((size_t)image.w * image.h*(rgb?2:1));
+    uint8_t *row = malloc((size_t)image.w * 3);
+    int y, count = 0;
+    if (pixels && row)
+        while (td_image_row(&image, &y, row))
+        {
+            for (int x = 0; x < image.w; x++){
+                if(rgb)((uint16_t *)pixels)[y*image.w+x]=td_rgb565(row[x*3],row[x*3+1],row[x*3+2]);
+                else pixels[y * image.w + x] = td_rgb256(row[x * 3], row[x * 3 + 1], row[x * 3 + 2]);
+            }
+            count++;
+        }
+    free(row);
+    if (pixels && count == image.h)
+    {
+        s_splash = pixels;
+        s_splash_rgb=rgb;
+        s_splash_w = image.w;
+        s_splash_h = image.h;
+    }
+    else
+        free(pixels);
+    td_image_close(&image);
+}
+
+static void splash_pixels(void *user, uint8_t *pixels, int w, int h)
+{
+    (void)user;
+    memset(pixels, 0, (size_t)w * h);
+    int dw = s_splash_w, dh = s_splash_h;
+    if (dw > w) { dh = dh * w / dw; dw = w; }
+    if (dh > h) { dw = dw * h / dh; dh = h; }
+    if (dw < 1 || dh < 1)
+        return;
+    int ox = (w - dw) / 2, oy = (h - dh) / 2;
+    for (int y = 0; y < dh; y++)
+        for (int x = 0; x < dw; x++)
+        {
+            int at=(y*s_splash_h/dh)*s_splash_w+x*s_splash_w/dw;
+            uint8_t color=s_splash[at];
+            if(s_splash_rgb){uint8_t rgb[3];td_rgb565_rgb(((uint16_t *)s_splash)[at],rgb);color=td_rgb256(rgb[0],rgb[1],rgb[2]);}
+            pixels[(y+oy)*w+x+ox]=color;
+        }
+}
+
+static void splash_pixels_rgb(void *user,uint16_t *pixels,int w,int h)
+{
+    (void)user;memset(pixels,0,(size_t)w*h*sizeof(*pixels));
+    int dw=s_splash_w,dh=s_splash_h;
+    if(dw>w){dh=dh*w/dw;dw=w;}
+    if(dh>h){dw=dw*h/dh;dh=h;}
+    if(dw<1||dh<1)return;
+    int ox=(w-dw)/2,oy=(h-dh)/2;
+    for(int y=0;y<dh;y++)for(int x=0;x<dw;x++){
+        int at=(y*s_splash_h/dh)*s_splash_w+x*s_splash_w/dw;
+        pixels[(y+oy)*w+x+ox]=s_splash_rgb?((uint16_t *)s_splash)[at]:td_palette_rgb565(s_splash[at]);
+    }
+}
 
 /* ----------------------------------------------------- the corner hold */
 
@@ -353,8 +448,28 @@ static void open_unlock(void)
 
 static void status_draw(td_window_t *win, int w, int h)
 {
-    (void)win;
     const td_theme_t *t = td_theme();
+    if (s_splash || td_sysinfo()->kiosk_hide_status)
+    {
+        td_fill(td_rect(0, 0, w, h), ' ', 231, 0);
+        /* Pictures are emitted after cell composition. Loading artwork
+         * belongs only to this screen, never underneath an app or dialog. */
+        if (td_win_focused() != win)
+            return;
+        if (s_splash && td_term_images())
+        {
+            int cw, ch;
+            td_term_cell_px(&cw, &ch);
+            int cols = (s_splash_w + cw - 1) / cw, rows = (s_splash_h + ch - 1) / ch;
+            if (cols > w) cols = w;
+            if (rows > h) rows = h;
+            td_rect_t client = td_win_client(win);
+            if(s_splash_rgb)td_picture_add_rgb(client.x+(w-cols)/2,client.y+(h-rows)/2,cols,rows,0x53504c31u,splash_pixels,splash_pixels_rgb,NULL);
+            else td_picture_add(client.x + (w - cols) / 2, client.y + (h - rows) / 2, cols, rows,
+                                0x53504c31u, splash_pixels, NULL);
+        }
+        return;
+    }
     char line[TD_TEXT_MAX * 2];
     const char *app = td_sysinfo()->kiosk_app;
     if (!s_launched)
@@ -402,14 +517,23 @@ bool td_kiosk_active(void)
 {
     return s_active;
 }
+static int s_check_timer=-1;
+void td_kiosk_stop_for_login(void)
+{
+    s_active=false;s_launched=false;td_wm_set_kiosk(false,NULL);
+    if(td_win_is_open(s_status))td_win_close(s_status);
+    s_status=NULL;
+}
 
 void td_kiosk_start(void)
 {
     const char *app = td_sysinfo()->kiosk_app;
-    if (s_active || !app || !app[0])
+    if (!td_session_has_right(TD_RIGHT_APPS) || s_active || !app || !app[0])
         return;
+    if(!td_session_is_root()&&!strncmp(app,"/root/",6))return;
     snprintf(s_cmd, sizeof(s_cmd), "py %s", app);
     s_active = true;
+    load_splash();
     s_idle_ms = td_millis();
     td_wm_set_kiosk(true, kiosk_hook);
     td_window_desc_t d = {
@@ -418,6 +542,6 @@ void td_kiosk_start(void)
         .on_draw = status_draw,
     };
     s_status = td_win_create(&d);
-    td_timer_start(CHECK_MS, true, check, NULL, td_millis());
+    if(s_check_timer<0)s_check_timer=td_timer_start(CHECK_MS, true, check, NULL, td_millis());
     td_logf('I', "kiosk mode: %s", app);
 }

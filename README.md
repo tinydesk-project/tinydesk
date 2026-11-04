@@ -7,6 +7,10 @@ Edge, no toolchain), or download the Windows and Linux programs. Then open
 the board in the **[web terminal](https://tinydesk-project.github.io/console/)**, or in PuTTY.
 Full **[documentation](https://tinydesk-project.github.io/)**. To build from source, see below.
 
+Desktop [accounts and kiosk login](docs/ACCOUNTS.md),
+[generated bitmap fonts](docs/BITMAP_FONTS.md), and
+[GUI rendering and page caching](docs/GUI_PERFORMANCE.md) have local guides.
+
 ![Four TinyDesk windows opened, dragged and resized side by side on a physical ESP32, then About](docs/media/desktop-demo-esp32.gif)
 
 *One continuous take from an ESP32 over USB serial, at normal speed: Editor,
@@ -57,6 +61,9 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   ADC, PWM, I2C, SPI, UART, NeoPixel LEDs); pins TinyDesk uses are refused.
   With `tdui` a script opens windows of its own (buttons, text boxes,
   lists, canvases, dialogs) and handles them in Python.
+  `with canvas.batch():` groups visible drawing without intermediate
+  frames (a 1000 ms deadline releases an unfinished group); `canvas.bar()`
+  repaints a meter in one request. Canvas buttons belong to their page.
   The Editor colours Python, runs the file with F5 (output underneath),
   goes to the line of an error and suggests names.
 * Optional, root-only desktop takeover over unencrypted Telnet. SSH provides
@@ -166,3 +173,5 @@ Bug reports and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md
 The people who made TinyDesk are listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 Security problems: please report them privately (GitHub → Security →
 Report a vulnerability), see [SECURITY.md](SECURITY.md).
+
+Canvas buttons also support press, release and cancel handlers. Keyed picture corners retain their actual canvas background; load UI skins with `dither=False` for clean fills. See [hardware and Studio validation](docs/TDUI_VALIDATION.md) for the COM19/COM22 checks and the Studio `examples/button_events.json` starter.

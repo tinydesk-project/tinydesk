@@ -715,6 +715,8 @@ static void launch(void)
     td_window_desc_t d = {
         .title = "Recycle Bin",
         .rect = td_rect(-1, -1, 78, 19),
+        .min_w = 54,
+        .min_h = 10,
         .flags = TD_WIN_MOVABLE | TD_WIN_CLOSABLE | TD_WIN_RESIZABLE,
         .on_draw = on_draw,
         .on_close = on_close,

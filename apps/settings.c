@@ -354,11 +354,11 @@ static void launch(void)
     s_detail_btn = td_button(s_win, 18, 12, "Normal", on_detail, NULL);
     s_pattern_label = td_label(s_win, 1, 14, 0, "");
     td_button(s_win, 3, 15, "Next pattern", on_pattern, NULL);
-    td_button(s_win, 1, 17, "Network...", on_network, NULL);
-    td_button(s_win, 16, 17, "Date & time...", on_datetime, NULL);
-    td_button(s_win, 1, 18, "Software update...", on_update, NULL);
-    td_button(s_win, 1, 20, "Close", on_close_btn, NULL);
-    s_status = td_label(s_win, 11, 20, 33, "");
+    td_button(s_win, 1, 16, "Network...", on_network, NULL);
+    td_button(s_win, 16, 16, "Date & time...", on_datetime, NULL);
+    td_button(s_win, 1, 17, "Software update...", on_update, NULL);
+    td_button(s_win, 1, -1, "Close", on_close_btn, NULL);
+    s_status = td_label(s_win, 11, -1, 33, "");
     td_widget_printf(s_status, "Settings of %.24s", td_session_user());
     update_labels();
 }

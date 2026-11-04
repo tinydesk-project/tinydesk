@@ -6,6 +6,7 @@ idf_component_register(
     SRCS
         "${TD_ROOT}/src/canvas.c"
         "${TD_ROOT}/src/picture.c"
+        "${TD_ROOT}/src/font.c"
         "${TD_ROOT}/src/draw.c"
         "${TD_ROOT}/src/event.c"
         "${TD_ROOT}/src/input.c"
@@ -36,10 +37,13 @@ idf_component_register(
         "${TD_ROOT}/apps/mqtt.c"
         "${TD_ROOT}/apps/network.c"
         "${TD_ROOT}/apps/pyui.c"
+        "${TD_ROOT}/apps/pyui_cache.c"
         "${TD_ROOT}/apps/pyui_font.c"
         "${TD_ROOT}/apps/trash.c"
         "${TD_ROOT}/apps/kiosk.c"
         "${TD_ROOT}/apps/session.c"
+        "${TD_ROOT}/apps/login.c"
+        "${TD_ROOT}/apps/users.c"
         "${TD_ROOT}/apps/settings.c"
         "${TD_ROOT}/apps/sysmon.c"
         "${TD_ROOT}/apps/taskmgr.c"
@@ -81,7 +85,7 @@ if(CONFIG_SPIRAM)
     # PSRAM while a script runs, 192 KB at most. Their pixel layers and the
     # script's images (a byte a pixel) may take 2 MB of PSRAM.
     set(TD_SCREEN_LIMITS TD_MAX_COLS=256 TD_MAX_ROWS=96 TD_VT_SCROLLBACK=200 TD_PYUI_MAX_CELLS=32000
-        TD_PYUI_MAX_PIXELS=2097152)
+        TD_PYUI_MAX_PIXELS=2097152 TD_PICTURE_MAX=128)
 else()
     set(TD_SCREEN_LIMITS TD_MAX_COLS=80 TD_MAX_ROWS=25 TD_VT_SCROLLBACK=12 TD_MAX_WIDGETS=96)
 endif()
@@ -94,3 +98,9 @@ target_compile_definitions(${COMPONENT_LIB} PUBLIC
     TD_LOG_LINE_MAX=88
 )
 target_compile_options(${COMPONENT_LIB} PRIVATE -Wall -Wextra -Werror)
+option(TD_RENDER_OPTIMIZE "Optimize native rendering hot paths" ON)
+if(TD_RENDER_OPTIMIZE)
+    set_source_files_properties("${TD_ROOT}/apps/pyui.c" "${TD_ROOT}/apps/pyui_cache.c"
+        "${TD_ROOT}/src/picture.c" "${TD_ROOT}/src/canvas.c" "${TD_ROOT}/src/screen.c"
+        "${TD_ROOT}/src/render.c" "${TD_ROOT}/src/wm.c" PROPERTIES COMPILE_OPTIONS "-O2")
+endif()

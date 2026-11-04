@@ -8,6 +8,7 @@
 
 /* Filesystem operations rooted at `root` (the string is copied). */
 const td_fs_ops_t *td_fs_stdio(const char *root);
+void td_fs_stdio_guard(bool (*allow)(const char *path,int action));
 
 /* Serve the folder `from` (a path below the root) from `to` while
  * active() returns true: the ESP-IDF port shows a mounted SD card, which

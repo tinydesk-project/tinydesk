@@ -29,6 +29,9 @@
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#ifdef TD_FAST_TASK_SNAPSHOT
+#include "td_task_snapshot.h"
+#endif
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
@@ -107,10 +110,15 @@ extern const char s_board_builtin[] asm("_binary_board_builtin_conf_start");
 typedef struct
 {
     TaskHandle_t handle;
+    UBaseType_t number;
     configRUN_TIME_COUNTER_TYPE run;
 } task_sample_t;
 static task_sample_t *s_prev, *s_now;
+#ifdef TD_FAST_TASK_SNAPSHOT
+static td_task_snapshot_t *s_status;
+#else
 static TaskStatus_t *s_status;
+#endif
 static UBaseType_t s_task_cap;
 static int s_prev_count;
 static configRUN_TIME_COUNTER_TYPE s_prev_total;
@@ -119,7 +127,7 @@ static bool grow_task_buffers(UBaseType_t cap)
 {
     if (cap <= s_task_cap)
         return true;
-    TaskStatus_t *st = realloc(s_status, cap * sizeof(*st));
+    void *st = realloc(s_status, cap * sizeof(*s_status));
     if (!st)
         return false;
     s_status = st;
@@ -139,22 +147,39 @@ static int list_tasks(td_task_info_t *out, int max)
 {
     if (!grow_task_buffers(uxTaskGetNumberOfTasks() + 4))
         return -1;
-    TaskStatus_t *st = s_status;
     task_sample_t *now = s_now;
     configRUN_TIME_COUNTER_TYPE total = 0;
+#ifdef TD_FAST_TASK_SNAPSHOT
+    int64_t sample_start = esp_timer_get_time();
+    UBaseType_t n = td_task_snapshot_fast(s_status, s_task_cap, &total);
+    static bool measured;
+    if (!measured) {
+        ESP_LOGI(TAG, "LCD-safe task snapshot: %u tasks in %lld us (no stack scans)",
+                 (unsigned)n, (long long)(esp_timer_get_time() - sample_start));
+        measured = true;
+    }
+#else
+    TaskStatus_t *st = s_status;
     UBaseType_t n = uxTaskGetSystemState(st, s_task_cap, &total);
+#endif
     configRUN_TIME_COUNTER_TYPE elapsed = total - s_prev_total;   /* wraps fine */
     bool have_prev = s_prev_count > 0 && elapsed > 0;
     int k = 0;
     for (UBaseType_t i = 0; i < n; i++)
     {
-        now[i].handle = st[i].xHandle;
-        now[i].run = st[i].ulRunTimeCounter;
+#ifdef TD_FAST_TASK_SNAPSHOT
+        const TaskStatus_t *task = &s_status[i].task;
+#else
+        const TaskStatus_t *task = &st[i];
+#endif
+        now[i].handle = task->xHandle;
+        now[i].number = task->xTaskNumber;
+        now[i].run = task->ulRunTimeCounter;
         if (k >= max)
             continue;
         td_task_info_t *t = &out[k++];
-        snprintf(t->name, sizeof(t->name), "%s", st[i].pcTaskName);
-        switch (st[i].eCurrentState)
+        snprintf(t->name, sizeof(t->name), "%s", task->pcTaskName);
+        switch (task->eCurrentState)
         {
         case eRunning:
             t->state = 'R';
@@ -172,16 +197,21 @@ static int list_tasks(td_task_info_t *out, int max)
             t->state = 'D';
             break;
         }
-        t->priority = (uint8_t)st[i].uxCurrentPriority;
-        BaseType_t core = xTaskGetCoreID(st[i].xHandle);
+        t->priority = (uint8_t)task->uxCurrentPriority;
+#ifdef TD_FAST_TASK_SNAPSHOT
+        BaseType_t core = s_status[i].core;
+        t->stack_free = UINT32_MAX;
+#else
+        BaseType_t core = xTaskGetCoreID(task->xHandle);
+        t->stack_free = (uint32_t)task->usStackHighWaterMark;    /* bytes on ESP-IDF */
+#endif
         t->core = (int8_t)(core == tskNO_AFFINITY || core < 0 ? -1 : core);
-        t->stack_free = (uint32_t)st[i].usStackHighWaterMark;    /* bytes on ESP-IDF */
         t->cpu_tenths = -1;
         for (int j = 0; have_prev && j < s_prev_count; j++)
         {
-            if (s_prev[j].handle != st[i].xHandle)
+            if (s_prev[j].handle != task->xHandle || s_prev[j].number != task->xTaskNumber)
                 continue;
-            uint64_t ran = (uint64_t)(configRUN_TIME_COUNTER_TYPE)(st[i].ulRunTimeCounter - s_prev[j].run);
+            uint64_t ran = (uint64_t)(configRUN_TIME_COUNTER_TYPE)(task->ulRunTimeCounter - s_prev[j].run);
             uint64_t tenths = ran * 1000u / ((uint64_t)elapsed * portNUM_PROCESSORS);
             t->cpu_tenths = (int16_t)(tenths > 1000 ? 1000 : tenths);
             break;
@@ -352,6 +382,25 @@ static char s_chip[48];
 static char s_sdk[32];
 static td_sysinfo_t s_info;
 
+static int user_list(int index,td_user_info_t *out)
+{
+    tdsh_user_info_t user;int rc=tdsh_user_list(index,&user);if(rc)return rc;
+    snprintf(out->name,sizeof(out->name),"%s",user.name);out->role=(int)user.role;out->rights=user.rights;return 0;
+}
+static int user_role(const char *name){return (int)tdsh_user_role(name);}
+static int user_create(const char *actor,const char *name,const char *password,int role,uint32_t rights){return tdsh_user_create(actor,name,password,(tdsh_role_t)role,rights);}
+static int user_access_set(const char *actor,const char *name,int role,uint32_t rights){return tdsh_user_access_set(actor,name,(tdsh_role_t)role,rights);}
+static uint32_t user_remembered(char *name,int cap){return tdsh_remembered_login(name,(size_t)cap);}
+static int user_boot_set(const char *actor,const char *name){return actor&&!strcmp(actor,"root")?tdsh_boot_user_set(name):-1;}
+static int user_require_password(const char *actor){return actor&&!strcmp(actor,"root")?tdsh_boot_login_require_password():-1;}
+static const td_user_ops_t s_user_ops={
+    .list=user_list,.role=user_role,.rights=tdsh_user_rights,.generation=tdsh_user_generation,.create=user_create,
+    .access_set=user_access_set,.password_set=tdsh_user_password_set,
+    .remembered=user_remembered,.remember_allowed=tdsh_user_remember_allowed,
+    .login=tdsh_user_login,.boot_user_set=user_boot_set,
+    .require_password=user_require_password,
+};
+
 /* The chip's name as Espressif writes it (About). */
 static const char *chip_model(esp_chip_model_t model)
 {
@@ -419,9 +468,11 @@ static void fill_sysinfo(void)
     }
     s_info.user_exists = tdsh_user_exists;
     s_info.authenticate = tdsh_user_authenticate;
+    s_info.users = &s_user_ops;
     s_info.settings_load = settings_load;
     s_info.settings_save = settings_save;
     s_info.fs = td_fs_stdio(TDSH_MOUNT_POINT);
+    td_fs_stdio_guard(td_session_path_allowed);
     /* A mounted SD card (sd mount) shows up in Files as the folder "sd". */
     td_fs_stdio_redirect(TDSH_MOUNT_POINT "/sd", "/sd", tdsh_sdcard_mounted);
     s_info.extra = "Shell:     TinyDesk Shell " TDSH_VERSION;
@@ -626,10 +677,22 @@ void app_main(void)
         {
             snprintf(s_kiosk_app, sizeof(s_kiosk_app), "%s", kiosk);
             s_info.kiosk_app = s_kiosk_app;
+            static char splash[TDSH_MAX_PATH];
+            const char *configured_splash = tdsh_board_get("kiosk.splash");
+            if (configured_splash && configured_splash[0])
+            {
+                snprintf(splash, sizeof(splash), "%s", configured_splash);
+                s_info.kiosk_splash = splash;
+            }
+            s_info.kiosk_hide_status = tdsh_board_int("kiosk.status", 1) == 0;
         }
     }
 
+#if defined(TD_CROWPANEL_RENDER_CORE) && TD_CROWPANEL_RENDER_CORE >= 0
+    xTaskCreatePinnedToCore(ui_task, "tinydesk", UI_TASK_STACK, NULL, UI_TASK_PRIORITY, NULL, TD_CROWPANEL_RENDER_CORE);
+#else
     xTaskCreate(ui_task, "tinydesk", UI_TASK_STACK, NULL, UI_TASK_PRIORITY, NULL);
+#endif
 
     /* A new firmware runs on trial: confirm it once it has run for 30 s,
      * otherwise a crash or a reset makes the bootloader go back. */

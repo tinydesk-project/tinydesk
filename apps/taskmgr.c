@@ -25,6 +25,7 @@ typedef struct
     bool tasks_failed;          /* the port could not list them (memory) */
     int cpu_tenths;             /* whole system, -1 unknown */
     td_window_t *wins[WINS_MAX];
+    uint32_t win_generation[WINS_MAX];
     int win_count;
     char item[128];
     char note[64];
@@ -63,8 +64,17 @@ static int task_cmp(const void *a, const void *b)
 static void refresh(void)
 {
     const td_sysinfo_t *si = td_sysinfo();
+    int selected = td_list_selected(s_apps), scroll = s_apps ? s_apps->scroll : 0;
+    td_window_t *chosen = selected >= 0 && selected < T->win_count ? T->wins[selected] : NULL;
+    uint32_t generation = chosen ? T->win_generation[selected] : 0;
     T->win_count = td_wm_windows(T->wins, WINS_MAX);
     td_list_set_count(s_apps, T->win_count);
+    selected = -1;
+    for (int i = 0; i < T->win_count; i++) {
+        T->win_generation[i] = T->wins[i]->generation;
+        if (T->wins[i] == chosen && T->win_generation[i] == generation) selected = i;
+    }
+    td_list_set_view(s_apps, selected, scroll);
 
     T->task_count = si->tasks ? si->tasks(T->tasks, TASKS_MAX) : 0;
     T->tasks_failed = T->task_count < 0;
@@ -94,7 +104,8 @@ static const char *app_item(td_widget_t *w, int i, int *fg, void *user)
 {
     (void)w;
     (void)user;
-    if (!T || i >= T->win_count || !td_win_is_open(T->wins[i]))
+    if (!T || i < 0 || i >= T->win_count || !td_win_is_open(T->wins[i]) ||
+        T->wins[i]->generation != T->win_generation[i])
         return "";
     td_window_t *win = T->wins[i];
     bool hidden = (win->flags & TD_WIN_HIDDEN) != 0;
@@ -116,20 +127,23 @@ static const char *task_item(td_widget_t *w, int i, int *fg, void *user)
     if (!T || i >= T->task_count)
         return "";
     const td_task_info_t *t = &T->tasks[i];
-    char cpu[16] = "   -", core[12] = "any";
+    char cpu[16] = "   -", core[12] = "any", stack[16] = "-";
     if (t->cpu_tenths >= 0)
         snprintf(cpu, sizeof(cpu), "%3d.%d", t->cpu_tenths / 10, t->cpu_tenths % 10);
     if (t->core >= 0)
         snprintf(core, sizeof(core), "%d", t->core);
-    snprintf(T->item, sizeof(T->item), " %-16.16s %-9s %4u  %-4s %6s %7u", t->name, state_name(t->state),
-             (unsigned)t->priority, core, cpu, (unsigned)t->stack_free);
+    if (t->stack_free != UINT32_MAX)
+        snprintf(stack, sizeof(stack), "%u", (unsigned)t->stack_free);
+    snprintf(T->item, sizeof(T->item), " %-16.16s %-9s %4u  %-4s %6s %7s", t->name, state_name(t->state),
+             (unsigned)t->priority, core, cpu, stack);
     return T->item;
 }
 
 static td_window_t *selected_window(void)
 {
     int i = td_list_selected(s_apps);
-    if (!T || i < 0 || i >= T->win_count || !td_win_is_open(T->wins[i]))
+    if (!T || i < 0 || i >= T->win_count || !td_win_is_open(T->wins[i]) ||
+        T->wins[i]->generation != T->win_generation[i])
         return NULL;
     return T->wins[i];
 }
@@ -193,6 +207,11 @@ static void on_draw(td_window_t *win, int w, int h)
     else
         snprintf(line, sizeof(line), "n/a");
     td_textn(x, 0, line, w - x, t->win_fg, t->win_bg, 0);
+    for (int i = 0; i < T->task_count; i++)
+        if (T->tasks[i].stack_free == UINT32_MAX) {
+            td_textn(0, 1, "Stack watermarks not sampled during live LCD scanout.", w, t->dim, t->win_bg, 0);
+            break;
+        }
 
     td_text(0, 2, "Windows", t->win_fg, t->win_bg, TD_BOLD);
     snprintf(line, sizeof(line), "(%d)", T->win_count);
@@ -215,7 +234,7 @@ static void on_draw(td_window_t *win, int w, int h)
         td_textn(0, ty + 1, " The task list is not available on this platform.", w, t->dim, t->win_bg, 0);
     }
     if (T->note[0])
-        td_textn(22, 3 + APPS_ROWS, T->note, w - 22, t->accent, t->win_bg, 0);
+        td_textn(28, 3 + APPS_ROWS, T->note, w - 28, t->accent, t->win_bg, 0);
 }
 
 static void on_tick(td_window_t *win)
@@ -235,7 +254,7 @@ static void on_close(td_window_t *win)
 static bool on_event(td_window_t *win, const td_event_t *ev)
 {
     (void)win;
-    if (ev->type == TD_EV_KEY && ev->key == TD_KEY_DELETE && ev->mods == 0)
+    if (ev->type == TD_EV_KEY && ev->key == TD_KEY_DELETE && ev->mods == 0 && win->focus == s_apps)
     {
         on_end(NULL, NULL);
         return true;

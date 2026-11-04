@@ -352,7 +352,7 @@ static void launch(void)
         .title = "MQTT",
         .rect = td_rect(-1, -1, 76, 20),
         .flags = TD_WIN_DEFAULT,
-        .min_w = 60,
+        .min_w = 75,
         .min_h = 12,
         .on_draw = on_draw,
         .on_close = on_close,

@@ -4,9 +4,9 @@ tabs and panels drawn smooth at the screen's own resolution.
 
 Writes examples/python/ui_skin.ppm (binary PPM, 256 x 128 pixels): eight
 64 x 64 pieces on magenta (255, 0, 255), which scripts load as
-transparent (Image.load(..., key=(255, 0, 255))). Each is drawn four times
-larger and averaged, so its round corners are smooth; edge pixels blend
-into the dark blue a HMI usually stands on. Draw them with a nine-slice
+transparent (Image.load(..., key=(255, 0, 255), dither=False)). Each is drawn
+four times larger and averaged within the shape. Uncovered pixels stay
+transparent; no edge is blended with a guessed background. Draw with a nine-slice
 border of 16:
 
     x   0  y  0  button          x   0  y 64  panel
@@ -20,7 +20,6 @@ import os
 
 SIZE, SS, RADIUS = 64, 4, 14
 KEY = (255, 0, 255)
-EDGE_BG = (12, 20, 60)      # what partly covered edge pixels blend into
 
 
 def mix(a, b, t):
@@ -62,12 +61,11 @@ def piece(top, bottom, rim, shine, inset=False):
                         c = mix(c, bottom, 0.3)      # a little deeper below the middle
                     for i in range(3):
                         acc[i] += c[i]
-            if cover == 0:
+            if cover < SS * SS // 2:
                 row.append(KEY)
             else:
                 c = tuple(v / cover for v in acc)
-                a = cover / (SS * SS)
-                row.append(tuple(int(round(v)) for v in mix(EDGE_BG, c, a)))
+                row.append(tuple(int(round(v)) for v in c))
         out.append(row)
     return out
 

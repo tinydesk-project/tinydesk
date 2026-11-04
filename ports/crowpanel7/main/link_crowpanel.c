@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include "display.h"
+#include "tinydesk/td_picture.h"
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "esp_timer.h"
@@ -198,6 +199,10 @@ bool link_init(void)
         ESP_LOGE(TAG, "the LCD did not start");
         return false;
     }
+    td_picture_set_sink(!s_uart || !s_mirror ? display_picture : NULL, NULL);
+    td_picture_set_rgb_sink(!s_uart || !s_mirror ? display_picture_rgb : NULL,NULL);
+    td_picture_set_runs_sink(!s_uart || !s_mirror ? display_picture_runs : NULL,NULL);
+    td_picture_set_scanout_monitor(display_scanout_snapshot);
     s_touch = touch_init(inject);
     if (s_uart)
         snprintf(s_platform, sizeof(s_platform), "ESP32-S3 CrowPanel 7.0 (LCD%s, UART0 %d baud)",

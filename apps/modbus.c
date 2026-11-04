@@ -458,7 +458,7 @@ static void launch(void)
         .title = "Modbus",
         .rect = td_rect(-1, -1, 72, 21),
         .flags = TD_WIN_DEFAULT,
-        .min_w = 60,
+        .min_w = 68,
         .min_h = 12,
         .on_draw = on_draw,
         .on_close = on_close,

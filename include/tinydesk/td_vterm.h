@@ -46,6 +46,7 @@ typedef struct
     bool wrap_pending;    /* last column written; wrap before next char */
     bool autowrap;
     bool cursor_visible;
+    bool synchronized_output; /* DEC 2026: retain display until frame end */
     bool newline_mode;    /* LF also returns the carriage (default on) */
 
     uint8_t state;

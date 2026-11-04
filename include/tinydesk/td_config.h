@@ -126,7 +126,7 @@
 #define TD_MAX_TIMERS 24             /* one per window with on_tick, plus the desktop's own */
 #endif
 #ifndef TD_MAX_APPS
-#define TD_MAX_APPS 16
+#define TD_MAX_APPS 32
 #endif
 
 /* String sizes (bytes, including the terminating NUL). */

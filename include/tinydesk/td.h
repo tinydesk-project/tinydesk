@@ -62,6 +62,10 @@ void td_shutdown(void);
 /* Resend the terminal setup and redraw everything on the next frame. */
 void td_full_redraw(void);
 
+/* Desktop loop only: defer every frame for at most timeout_ms (0 releases
+ * it). Input and timers keep running. Used for bounded drawing batches. */
+void td_frame_hold(uint32_t timeout_ms);
+
 /* Milliseconds from the HAL. */
 uint32_t td_millis(void);
 

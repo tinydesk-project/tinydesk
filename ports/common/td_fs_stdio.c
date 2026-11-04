@@ -23,6 +23,9 @@
 
 static td_fs_ops_t s_ops;
 static char s_root[TD_PATH_MAX];
+static bool (*s_allow)(const char *path,int action);
+void td_fs_stdio_guard(bool (*allow)(const char *,int)){s_allow=allow;}
+static bool allowed(const char *path,int action){return path&&(!s_allow||s_allow(path,action));}
 
 static char s_from[TD_PATH_MAX], s_to[TD_PATH_MAX];
 static bool (*s_active)(void);
@@ -58,6 +61,7 @@ static int fs_list(const char *dir_in,
                    void (*fn)(const char *name, bool is_dir, uint32_t size, void *user),
                    void *user)
 {
+    if(!allowed(dir_in,TD_FS_LIST))return -1;
     char mapped[TD_PATH_MAX + 16];
     const char *dir = map(dir_in, mapped, sizeof(mapped));
     DIR *d = opendir(dir);
@@ -80,6 +84,8 @@ static int fs_list(const char *dir_in,
             is_dir = S_ISDIR(st.st_mode);
             size = (uint32_t)st.st_size;
         }
+        char visible[TD_PATH_MAX+64];
+        if(snprintf(visible,sizeof(visible),"%s/%s",dir_in,e->d_name)>=(int)sizeof(visible)||!allowed(visible,is_dir?TD_FS_LIST:TD_FS_READ))continue;
         fn(e->d_name, is_dir, size, user);
         n++;
     }
@@ -89,6 +95,7 @@ static int fs_list(const char *dir_in,
 
 static int fs_read(const char *path_in, char *buf, int cap)
 {
+    if(!allowed(path_in,TD_FS_READ))return -1;
     char mapped[TD_PATH_MAX + 16];
     const char *path = map(path_in, mapped, sizeof(mapped));
     FILE *f = fopen(path, "rb");
@@ -101,6 +108,7 @@ static int fs_read(const char *path_in, char *buf, int cap)
 
 static int fs_read_at(const char *path_in, uint32_t offset, char *buf, int cap)
 {
+    if(!allowed(path_in,TD_FS_READ))return -1;
     char mapped[TD_PATH_MAX + 16];
     const char *path = map(path_in, mapped, sizeof(mapped));
     FILE *f = fopen(path, "rb");
@@ -146,6 +154,7 @@ static int remove_tree(const char *path, int depth)
 
 static int fs_remove(const char *path_in)
 {
+    if(!allowed(path_in,TD_FS_REMOVE))return -1;
     if (is_redirect_root(path_in))
         return -1;
     char mapped[TD_PATH_MAX + 16];
@@ -154,12 +163,14 @@ static int fs_remove(const char *path_in)
 
 static int fs_mkdir(const char *path_in)
 {
+    if(!allowed(path_in,TD_FS_WRITE))return -1;
     char mapped[TD_PATH_MAX + 16];
     return make_dir(map(path_in, mapped, sizeof(mapped)));
 }
 
 static int fs_write(const char *path_in, const char *data, int len)
 {
+    if(!allowed(path_in,TD_FS_WRITE))return -1;
     char mapped[TD_PATH_MAX + 16];
     const char *path = map(path_in, mapped, sizeof(mapped));
     FILE *f = fopen(path, "wb");
@@ -173,6 +184,7 @@ static int fs_write(const char *path_in, const char *data, int len)
 
 static int fs_exists(const char *path_in)
 {
+    if(!allowed(path_in,TD_FS_EXISTS))return 0;
     char mapped[TD_PATH_MAX + 16];
     struct stat st;
     return stat(map(path_in, mapped, sizeof(mapped)), &st) == 0;
@@ -180,6 +192,7 @@ static int fs_exists(const char *path_in)
 
 static int fs_rename(const char *from_in, const char *to_in)
 {
+    if(!allowed(from_in,TD_FS_REMOVE)||!allowed(to_in,TD_FS_WRITE))return -1;
     if (is_redirect_root(from_in) || is_redirect_root(to_in))
         return -1;
     if (fs_exists(to_in))

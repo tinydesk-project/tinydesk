@@ -2,7 +2,7 @@
  * td_py.c - the `py` command: MicroPython inside TinyDesk Shell.
  *
  *   py                     interactive prompt (Ctrl+D or exit() leaves it)
- *   py FILE [ARG...]       run a script (.py, or .mpy from mpy-cross);
+ *   py FILE [ARG...]       run a script (.py, .mpy or a Studio .tdapp);
  *                          sys.argv is [FILE, ARG...]
  *   py -c CODE [ARG...]    run CODE
  *   py -m KB ...           use a KB-kilobyte heap instead of the default
@@ -350,7 +350,7 @@ static void set_stack(void *top)
 static void usage(void)
 {
     printf("usage: py                    interactive prompt (Ctrl+D leaves)\n"
-           "       py FILE [ARG...]      run a script (.py or .mpy)\n"
+           "       py FILE [ARG...]      run a script (.py, .mpy or .tdapp)\n"
            "       py -c CODE [ARG...]   run CODE\n"
            "       py -m KB ...          heap size in KB\n");
 }
@@ -498,7 +498,7 @@ static int run(const char *code, const char *file, int argc, char **argv)
     {
         set_path(file);
         set_argv(file, argc, argv);
-        if (has_suffix(file, ".mpy"))
+        if (has_suffix(file, ".mpy") || has_suffix(file, ".tdapp"))
             return run_mpy(file);
         return pyexec_file(file) & 0xff;
     }
@@ -636,7 +636,7 @@ static const tdsh_command_t s_cmd = {
     "py [-m KB] [FILE [ARG...] | -c CODE [ARG...]]",
     "MicroPython: run a script, or the interactive prompt",
     cmd_py,
-    0,
+    TDSH_CMD_RIGHT(TDSH_RIGHT_APPS),
 };
 
 int td_py_register_shell_command(void)

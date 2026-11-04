@@ -60,6 +60,7 @@ static void reset_state(td_vterm_t *vt)
     vt->wrap_pending = false;
     vt->autowrap = true;
     vt->cursor_visible = true;
+    vt->synchronized_output = false;
     vt->newline_mode = true;
     vt->state = VS_GROUND;
     vt->plen = 0;
@@ -344,6 +345,9 @@ static void set_mode(td_vterm_t *vt, const int *p, int n, bool on)
     {
         switch (p[i])
         {
+        case 2026:
+            vt->synchronized_output = on;
+            break;
         case 7:
             vt->autowrap = on;
             break;

@@ -65,6 +65,17 @@ int main(void)
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
 
+    /* A local LCD kiosk with no serial console can use UART0 for Modbus. */
+    CHECK_EQ(tdsh_board_load("console.uart = -1\nconsole.tx = 43\nconsole.rx = 44\n"
+                             "usb.host = 1\nrs485.1.tx = 17\n",
+                             NULL),
+             0);
+    CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, NULL));
+    CHECK(owner_is(44, TD_HW_CHIP_ESP32S3, NULL));
+    CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
+    CHECK(owner_is(19, TD_HW_CHIP_ESP32S3, "usb.host"));
+    CHECK(owner_is(17, TD_HW_CHIP_ESP32S3, "rs485.1.tx"));
+
     CHECK(td_hw_pin_strapping(0, TD_HW_CHIP_ESP32));
     CHECK(td_hw_pin_strapping(12, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_pin_strapping(25, TD_HW_CHIP_ESP32));

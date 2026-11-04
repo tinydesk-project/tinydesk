@@ -13,3 +13,13 @@
 Q(/lib)
 Q(sha1)
 Q(md5)
+
+// Native bitmap-font resource loader.
+Q(font_load)
+Q(enable_rgb_pictures)
+Q(graphics_info)
+Q(render_cache)
+Q(render_cache_info)
+Q(scanout_info)
+Q(scanout_timing)
+Q(SUPPORTS_RGB_PICTURES)

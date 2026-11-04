@@ -18,9 +18,13 @@
  *   move=X,Y           mouse movement without a button (hover)
  *   wheel=X,Y,up|down  mouse wheel
  *   shot               print the screen
+ *   sixel=WxH          after size=, advertise Sixel and cell pixels (capture only)
+ *   rgbshot=PATH       save the native RGB picture plane as a P6 image
  *   save=FILE          write everything the desktop sent so far to FILE
  *                      (render it with: vtshot FILE COLS ROWS --svg out.svg)
+ *   cells=FILE         write a complete TDCF v1 native cell frame
  *   stats              print traffic statistics
+ *   redraw             rebuild the complete desktop and picture frame
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,12 +38,21 @@
 #else
 #include <time.h>
 #include <unistd.h>
+#include <sys/select.h>
 #endif
 
 #include "net_fake.h"
 #include "td_apps.h"
 #include "td_host_hal.h"
 #include "tinydesk/td_vterm.h"
+#include "tinydesk/td_picture.h"
+
+#ifdef TD_SIM_LCD
+bool sim_lcd_init(void);
+void sim_lcd_step(void);
+bool sim_lcd_capture(const char *path);
+void display_write(const uint8_t *buf,int len);
+#endif
 
 static td_vterm_t s_term;          /* what the user would see */
 static uint8_t s_in[8192];
@@ -96,6 +109,9 @@ static int sim_write(void *ctx, const uint8_t *buf, int len)
     (void)ctx;
     log_output(buf, len);
     td_vterm_write(&s_term, buf, len);
+#ifdef TD_SIM_LCD
+    display_write(buf,len);
+#endif
     s_written += (uint32_t)len;
     return len;
 }
@@ -149,6 +165,9 @@ static void run_for(uint32_t ms)
     while ((int32_t)(end - sim_millis(NULL)) > 0)
     {
         td_step();
+#ifdef TD_SIM_LCD
+        sim_lcd_step();
+#endif
         sim_sleep(NULL, 5);
     }
 }
@@ -175,6 +194,66 @@ static void shot(void)
         fprintf(s_out, "-");
     fprintf(s_out, "+\n");
     fflush(s_out);
+}
+
+/* A complete native cell frame, independent of a browser's ANSI renderer.
+ * Native pictures still travel as Sixel; these cells are its normal layer. */
+static uint16_t *s_rgb_capture;
+static uint8_t *s_rgb_alpha;
+static bool s_rgb_live;
+static int s_rgb_width,s_rgb_height,s_rgb_cw,s_rgb_ch;
+static bool capture_rgb(void *user,int x,int y,const uint16_t *px,int w,int h)
+{
+    (void)user;x*=s_rgb_cw;y*=s_rgb_ch;
+    if(!s_rgb_capture||x<0||y<0||x+w>s_rgb_width||y+h>s_rgb_height)return false;
+    for(int row=0;row<h;row++){
+        memcpy(s_rgb_capture+(size_t)(y+row)*s_rgb_width+x,px+(size_t)row*w,(size_t)w*sizeof(*px));
+        if(s_rgb_alpha)memset(s_rgb_alpha+(size_t)(y+row)*s_rgb_width+x,255,(size_t)w);
+    }
+    return true;
+}
+
+static void save_rgb(const char *path,bool rgba)
+{
+    td_term_cell_px(&s_rgb_cw,&s_rgb_ch);
+    int w=s_term.cols*s_rgb_cw,h=s_term.rows*s_rgb_ch;
+    if(w!=s_rgb_width||h!=s_rgb_height){free(s_rgb_capture);free(s_rgb_alpha);s_rgb_capture=NULL;s_rgb_alpha=NULL;}
+    s_rgb_width=w;s_rgb_height=h;
+    if(s_rgb_width<1||s_rgb_height<1)return;
+    if(!s_rgb_capture)s_rgb_capture=calloc((size_t)w*h,sizeof(uint16_t));
+    if(!s_rgb_alpha)s_rgb_alpha=malloc((size_t)w*h);
+    if(!s_rgb_capture||!s_rgb_alpha){free(s_rgb_capture);free(s_rgb_alpha);s_rgb_capture=NULL;s_rgb_alpha=NULL;return;}
+    memset(s_rgb_alpha,0,(size_t)w*h);
+    td_picture_set_rgb_sink(capture_rgb,NULL);td_pictures_forget();td_wm_invalidate();run_for(20);
+    FILE *f=fopen(path,"wb");
+    if(f){
+        if(rgba){uint8_t header[8]={'T','D','R','G',(uint8_t)w,(uint8_t)(w>>8),(uint8_t)h,(uint8_t)(h>>8)};fwrite(header,1,8,f);}
+        else fprintf(f,"P6\n%d %d\n255\n",w,h);
+        for(int i=0;i<w*h;i++){uint8_t rgb[4];td_rgb565_rgb(s_rgb_capture[i],rgb);rgb[3]=s_rgb_alpha[i];fwrite(rgb,1,rgba?4:3,f);}fclose(f);
+    }
+    s_rgb_live=s_rgb_live||rgba;
+    if(!s_rgb_live){td_picture_set_rgb_sink(NULL,NULL);free(s_rgb_capture);free(s_rgb_alpha);s_rgb_capture=NULL;s_rgb_alpha=NULL;}
+}
+
+static void save_cells(const char *path)
+{
+    FILE *out = fopen(path, "wb");
+    if (!out)
+        return;
+    const uint8_t header[16] = {'T','D','C','F',1,0,
+        (uint8_t)s_term.cols,(uint8_t)(s_term.cols >> 8),
+        (uint8_t)s_term.rows,(uint8_t)(s_term.rows >> 8),
+        (uint8_t)s_term.cx,(uint8_t)(s_term.cx >> 8),
+        (uint8_t)s_term.cy,(uint8_t)(s_term.cy >> 8),s_term.cursor_visible,0};
+    fwrite(header, 1, sizeof(header), out);
+    for (int y = 0; y < s_term.rows; y++)
+        for (int x = 0; x < s_term.cols; x++)
+        {
+            td_vcell_t cell = s_term.cells[y * TD_VT_MAX_COLS + x];
+            const uint8_t data[4] = {(uint8_t)cell.ch,(uint8_t)(cell.ch >> 8),cell.fg,cell.bg};
+            fwrite(data, 1, sizeof(data), out);
+        }
+    fclose(out);
 }
 
 static void send_text(const char *s)
@@ -288,19 +367,92 @@ int main(int argc, char **argv)
     s_out = fdopen(dup(1), "w");
     if (!s_out)
         return 1;
+    /* The embedded shell can replace the process-wide standard streams.
+     * Preserve our command pipe before starting any desktop/shell threads. */
+    FILE *commands = fdopen(dup(0), "r");
+    if (commands)
+        setvbuf(commands, NULL, _IONBF, 0);
     s_term.reply = term_reply;
     td_vterm_init(&s_term, cols, rows);
+    /* Optional terminal capabilities before the desktop's first query.
+     * Captures include the Sixel bytes; the text emulator skips them. */
+    int cw, ch;
+    if (argc > first && sscanf(argv[first], "sixel=%dx%d", &cw, &ch) == 2 && cw > 0 && ch > 0)
+    {
+        s_term.sixel = true;
+        s_term.cell_w = cw;
+        s_term.cell_h = ch;
+        first++;
+    }
+    /* Automation and App Builder launch apps directly. Login UI tests can
+     * opt into the simulator-only root/secret and bob/pw test accounts. */
+    bool accounts = argc > first && !strcmp(argv[first], "auth=on");
+    if (argc > first && (!strcmp(argv[first],"auth=off") || accounts)) first++;
+#ifdef TD_SIM_LCD
+    if(!sim_lcd_init())return 2;
+#endif
     td_host_use_net(td_net_fake());
-    td_host_use_users(sim_user_exists, sim_auth);
+    td_host_use_users(accounts?sim_user_exists:NULL, accounts?sim_auth:NULL);
     td_host_setup(&s_hal, "simulated host");
     run_for(100);
 
-    for (int i = first; i < argc; i++)
+    bool interactive = false;
+    char command[16384];
+    for (int i = first; i < argc || interactive; i++)
     {
-        const char *a = argv[i];
+        const char *a;
+        if (i < argc)
+            a = argv[i];
+        else
+        {
+            if (!commands)
+                break;
+#ifdef _WIN32
+            DWORD available = 0;
+            if (!PeekNamedPipe((HANDLE)_get_osfhandle(_fileno(commands)), NULL, 0, NULL, &available, NULL))
+                break;
+            if (!available) { run_for(20); continue; }
+#else
+            fd_set ready;
+            FD_ZERO(&ready);
+            FD_SET(fileno(commands), &ready);
+            struct timeval timeout = {0, 0};
+            if (select(fileno(commands) + 1, &ready, NULL, NULL, &timeout) <= 0)
+            { run_for(20); continue; }
+#endif
+            if (!fgets(command, sizeof(command), commands))
+                break;
+            command[strcspn(command, "\r\n")] = 0;
+            a = command;
+        }
         int x, y, x2, y2;
         char dir[8];
-        if (strncmp(a, "wait=", 5) == 0)
+        if (strcmp(a, "interactive") == 0)
+            interactive = true;
+        else if (strncmp(a, "cells=", 6) == 0)
+            save_cells(a + 6);
+        else if (strncmp(a,"rgbshot=",8)==0)
+            save_rgb(a+8,false);
+        else if (strncmp(a,"rgbframe=",9)==0)
+            save_rgb(a+9,true);
+        else if (strcmp(a, "done") == 0)
+        {
+            fprintf(s_out, "SIM_READY\n");
+            fflush(s_out);
+        }
+        else if (strncmp(a, "input=", 6) == 0)
+        {
+            for (const char *p = a + 6; p[0] && p[1]; p += 2)
+            {
+                unsigned int byte;
+                if (sscanf(p, "%2x", &byte) != 1)
+                    break;
+                char b = (char)byte;
+                push_input(&b, 1);
+            }
+            run_for(20);
+        }
+        else if (strncmp(a, "wait=", 5) == 0)
         {
             run_for((uint32_t)atoi(a + 5));
         }
@@ -358,6 +510,12 @@ int main(int argc, char **argv)
         {
             shot();
         }
+#ifdef TD_SIM_LCD
+        else if(strncmp(a,"lcdshot=",8)==0){
+            run_for(50);
+            if(!sim_lcd_capture(a+8))return 2;
+        }
+#endif
         else if (strncmp(a, "save=", 5) == 0)
         {
             FILE *f = fopen(a + 5, "wb");
@@ -368,6 +526,7 @@ int main(int argc, char **argv)
             }
             fclose(f);
         }
+        else if(strcmp(a,"redraw")==0){td_full_redraw();run_for(50);}
         else if (strcmp(a, "stats") == 0)
         {
             const td_stats_t *st = td_stats();

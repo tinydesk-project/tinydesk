@@ -72,9 +72,9 @@ static void save(void)
 
 static bool may_change(void)
 {
-    if (td_session_is_root())
+    if (td_session_has_right(TD_RIGHT_SYSTEM))
         return true;
-    td_widget_set_text(s_note, "Only root can change these.");
+    td_widget_set_text(s_note, "The system permission is required to change these.");
     return false;
 }
 
@@ -198,7 +198,7 @@ static void launch(void)
     td_label(s_win, 2, 10, 0, "Try it:");
     td_widget_t *try_box = td_textbox(s_win, 11, 10, 44, 200, NULL, NULL);
     td_button(s_win, 2, 12, "Defaults", on_defaults, NULL);
-    s_note = td_label(s_win, 17, 12, 0, td_session_is_root() ? "" : "Only root can change these.");
+    s_note = td_label(s_win, 17, 12, 0, td_session_has_right(TD_RIGHT_SYSTEM) ? "" : "The system permission is required to change these.");
     td_widget_set_color(s_note, td_theme()->dim, TD_COLOR_DEFAULT);
     td_widget_focus(try_box);
     show();

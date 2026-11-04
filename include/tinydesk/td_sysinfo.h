@@ -7,6 +7,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#define TD_FS_READ 0
+#define TD_FS_WRITE 1
+#define TD_FS_LIST 2
+#define TD_FS_EXISTS 3
+#define TD_FS_REMOVE 4
 
 /* Minimal filesystem access for the Files app. */
 typedef struct
@@ -231,7 +236,7 @@ typedef struct
     char state;                /* 'R' running, 'r' ready, 'B' blocked, 'S' suspended, 'D' deleted */
     uint8_t priority;
     int8_t core;               /* pinned to this core, -1 any */
-    uint32_t stack_free;       /* bytes of stack never used so far */
+    uint32_t stack_free;       /* bytes never used; UINT32_MAX if not sampled */
     int16_t cpu_tenths;        /* share of all cores since the previous call, in 0.1 %; -1 unknown */
 } td_task_info_t;
 
@@ -242,6 +247,32 @@ typedef struct
     const char *text;          /* the file's contents */
 } td_desktop_file_t;
 
+#define TD_USER_ROLE_USER 0
+#define TD_USER_ROLE_ADMIN 1
+#define TD_USER_ROLE_ROOT 2
+#define TD_RIGHT_USERS    (1u<<0)
+#define TD_RIGHT_SYSTEM   (1u<<1)
+#define TD_RIGHT_NETWORK  (1u<<2)
+#define TD_RIGHT_HARDWARE (1u<<3)
+#define TD_RIGHT_SHARED   (1u<<4)
+#define TD_RIGHT_TIME     (1u<<5)
+#define TD_RIGHT_APPS     (1u<<6)
+#define TD_RIGHT_ALL      127u
+typedef struct {char name[32];int role;uint32_t rights;} td_user_info_t;
+typedef struct {
+    int (*list)(int index,td_user_info_t *out);
+    int (*role)(const char *username);
+    uint32_t (*rights)(const char *username);
+    uint32_t (*generation)(const char *username);
+    int (*create)(const char *actor,const char *name,const char *password,int role,uint32_t rights);
+    int (*access_set)(const char *actor,const char *name,int role,uint32_t rights);
+    int (*password_set)(const char *actor,const char *name,const char *old_password,const char *password);
+    uint32_t (*remembered)(char *name,int cap);
+    bool (*remember_allowed)(const char *name);
+    uint32_t (*login)(const char *name,const char *password);
+    int (*boot_user_set)(const char *actor,const char *name);
+    int (*require_password)(const char *actor);
+} td_user_ops_t;
 typedef struct
 {
     const char *platform;     /* "ESP32-C6", "Windows host", ... */
@@ -294,6 +325,7 @@ typedef struct
     /* User accounts (optional; without them the desktop is root's). */
     bool (*user_exists)(const char *user);
     bool (*authenticate)(const char *user, const char *password);
+    const td_user_ops_t *users;
 
     /* Persist the Settings app blob (NVS on ESP32, a file on the host). */
     bool (*settings_load)(void *data, int len);
@@ -319,6 +351,9 @@ typedef struct
      * "/root/hmi.py") the desktop runs full screen at start, with no
      * taskbar, Start menu or desktop (apps/kiosk.c). NULL or "": off. */
     const char *kiosk_app;
+    /* Optional startup artwork; app-independent and never compiled into firmware. */
+    const char *kiosk_splash;
+    bool kiosk_hide_status;
 } td_sysinfo_t;
 
 /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

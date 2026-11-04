@@ -410,6 +410,9 @@ static void on_close(td_window_t *win)
 
 static void launch(void)
 {
+    if(!td_session_has_right(TD_RIGHT_APPS)){
+        td_msgbox("Terminal","This account does not have Apps / Terminal permission.","OK",NULL,NULL);return;
+    }
     if (td_win_is_open(s_win))
     {
         td_win_focus(s_win);
@@ -534,14 +537,21 @@ bool td_is_python(const char *name)
 
 bool td_is_runnable(const char *name)
 {
-    return td_is_script(name) || td_is_python(name);
+    return td_is_script(name) || td_is_python(name) || td_is_compiled_app(name);
+}
+
+bool td_is_compiled_app(const char *name)
+{
+    size_t n = strlen(name);
+    return (n > 4 && strcmp(name + n - 4, ".mpy") == 0) ||
+           (n > 6 && strcmp(name + n - 6, ".tdapp") == 0);
 }
 
 bool td_script_run(const char *path)
 {
     const char *p = td_shell_path(path);
     char cmd[TD_PATH_MAX + 16];
-    const char *fmt = td_is_python(path) ? "py \"%s\"" : "tdsh run \"%s\"";
+    const char *fmt = td_is_script(path) ? "tdsh run \"%s\"" : "py \"%s\"";
     if (strchr(p, '"') || snprintf(cmd, sizeof(cmd), fmt, p) >= (int)sizeof(cmd))
     {
         td_msgbox("Run", "This file name cannot be passed to the shell.", "OK", NULL, NULL);

@@ -393,7 +393,15 @@ static void refresh(void)
     zone_text(tz, zone, sizeof(zone));
     format_offset(tz, off, sizeof(off));
     td_widget_printf(s_zone_info, "%s, the time zone of %.24s", off, td_session_user());
-    td_widget_set_text(s_zone_btn, zone);
+    if (s_zone_btn) {
+        char caption[64];
+        int available = td_win_client(s_win).w - s_zone_btn->rect.x - 4;
+        if (available < 0) available = 0;
+        bool shorten = td_utf8_len(zone) > available && available >= 3;
+        td_utf8_copy(caption, sizeof(caption), zone, shorten ? available - 3 : available);
+        if (shorten) strcat(caption, "...");
+        td_widget_set_text(s_zone_btn, caption);
+    }
     if (s_auto)
         td_checkbox_set(s_auto, si->time_auto_get && si->time_auto_get());
     td_checkbox_set(s_show, !p->hide_clock);
@@ -521,9 +529,9 @@ static void on_auto(td_widget_t *w, void *user)
     (void)user;
     const td_sysinfo_t *si = td_sysinfo();
     bool want = td_checkbox_get(w);
-    if (!td_session_is_root())
+    if (!td_session_has_right(TD_RIGHT_TIME))
     {
-        say("Only root can change how the device sets its clock.");
+        say("The time permission is required to change how the device sets its clock.");
     }
     else if (!si->time_auto_set || !si->time_auto_set(want))
     {
@@ -578,9 +586,9 @@ static void on_manual(td_widget_t *w, void *user)
         say("This device takes its time from the host.");
         return;
     }
-    if (!td_session_is_root())
+    if (!td_session_has_right(TD_RIGHT_TIME))
     {
-        say("Only root can change the system clock.");
+        say("The time permission is required to change the system clock.");
         return;
     }
     if (si->time_auto_get && si->time_auto_get())
@@ -685,7 +693,7 @@ void td_datetime_open(void)
     s_h12 = td_checkbox(s_win, 30, 12, "12-hour", false, on_hours, (void *)(intptr_t)1);
     td_label(s_win, 1, 13, 0, "Date format");
     s_fmt_btn = td_button(s_win, 16, 13, "DD-MM-YYYY", on_format, NULL);
-    td_label(s_win, 1, 15, 0, td_session_is_root() ? "Clock settings apply to the whole device." : "Only root can set the clock; the rest is yours.");
+    td_label(s_win, 1, 15, 0, td_session_has_right(TD_RIGHT_TIME) ? "Clock settings apply to the whole device." : "The time permission is required to set the clock; the rest is yours.");
 
     s_msg = td_label(s_win, 1, -2, 64, "");
     td_button(s_win, 1, -1, "Close", on_close_btn, NULL);

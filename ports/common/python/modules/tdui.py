@@ -17,6 +17,41 @@ import _tdui
 import os
 import time
 from micropython import const
+SUPPORTS_GRADIENT_FILLS = const(1)
+SUPPORTS_RGB_PICTURES = bool(getattr(_tdui, "SUPPORTS_RGB_PICTURES", False))
+
+def enable_rgb_pictures():
+    # Opt in before creating images/canvases. Existing apps keep their budget.
+    if not SUPPORTS_RGB_PICTURES:
+        return False
+    return _tdui.enable_rgb_pictures()
+
+def graphics_info():
+    # Cumulative renders/allocation failures/local-sink failures, free PSRAM,
+    # largest free PSRAM block, and the last completed frame time in ms.
+    return _tdui.graphics_info()
+
+def scanout_info():
+    # Local RGB scanout pressure counters, separate from drawing statistics.
+    info = getattr(_tdui, "scanout_info", None)
+    return info() if info is not None else (0,) * 8
+
+def scanout_timing():
+    # Last LCD submission time (monotonic ms), last/peak/total paint work us.
+    info = getattr(_tdui, "scanout_timing", None)
+    return info() if info is not None else (0,) * 4
+
+def render_cache(kb=128, warm=True):
+    # Optional bounded, lossless RGB artwork cache. Zero disables it.
+    configure = getattr(_tdui, "render_cache", None)
+    if configure is not None:
+        return configure(kb, warm)
+
+def render_cache_info():
+    # capacity, bytes used, hits, misses, evictions, warmed pictures,
+    # raster ms, decode ms, picture frames, total/peak/last picture-frame ms.
+    info = getattr(_tdui, "render_cache_info", None)
+    return info() if info is not None else (0,) * 12
 
 # Requests and events (td_apps.h TD_PYUI_*).
 _OPEN = const(1)
@@ -49,6 +84,11 @@ _GRADIENT = const(27)
 _CIRCLE = const(28)
 _PTEXT = const(29)
 _PICTURE = const(30)
+_BATCH_BEGIN = const(31)
+_BATCH_END = const(32)
+_BAR = const(33)
+_FONT = const(34)
+_FONT_TEXT = const(35)
 
 _W_LABEL = const(1)
 _W_BUTTON = const(2)
@@ -72,6 +112,8 @@ MAX_WIDGETS = const(48)
 MAX_CELLS = _tdui.MAX_CELLS   # all canvases together, pages counted: 2000, more with PSRAM
 MAX_PAGES = const(16)         # pages of one canvas
 MAX_PIXELS = _tdui.MAX_PIXELS # bytes of images and canvas pixels together
+MAX_PICTURES = getattr(_tdui, "MAX_PICTURES", 192 if MAX_CELLS > 2000 else 48)
+MAX_VISIBLE_PICTURES = getattr(_tdui, "MAX_VISIBLE_PICTURES", 64)
 CLEAR = const(-2)             # a colour: none of its own (text and blanks over a
                               # canvas's pixels show them; in an image, transparent)
 
@@ -449,24 +491,70 @@ def _part(w, h, border):
     return bytes((w & 255, (w >> 8) & 255, h & 255, (h >> 8) & 255, border & 255, (border >> 8) & 255))
 
 
+class _Batch:
+    # One reusable context, no list of requests or per-update context object.
+    # Nested uses share the session's outer boundary on the desktop.
+    def __enter__(self):
+        _tdui.send(_BATCH_BEGIN, 0)
+        return self
+
+    def __exit__(self, kind, value, traceback):
+        _tdui.send(_BATCH_END, 0)
+        return False
+
+
+_batch = _Batch()
+
+
+def batch():
+    # All tdui drawing in this session is held until the outer end, at most
+    # 1000 ms (5000 ms for first-window construction). Keep its work bounded.
+    # Exceptions release the drawing; this is not a rollback transaction.
+    return _batch
+
+
 class _Pixels:
+    def _gradient_data(self, gradient):
+        if gradient is None:
+            return b''
+        values=tuple(gradient['rgb1'])+tuple(gradient['rgb2'])
+        if len(values)!=6 or any(not 0<=v<=255 for v in values):
+            raise ValueError('gradient RGB range')
+        return bytes(values+(int(bool(gradient.get('across',False))),))
     # Drawing in pixels, done on the desktop: one call draws a whole shape,
     # picture or panel, however large. A canvas has 2 x 2 pixels to a cell
     # (pwidth x pheight in all); a cell drawn in shows its pixels until text
     # is put there. Colours are palette numbers 0..255 (rgb() finds one);
     # CLEAR in an image is transparent.
 
-    def rect(self, x, y, w, h, color, radius=0, outline=False):
+    def batch(self):
+        return _batch
+
+    def bar(self, x, y, w, h, value, maximum=100, color=40, track=237, edge=-1, radius=0, gradient=None):
+        # Pixel coordinates; value is clamped to 0..maximum. One request
+        # repaints the track and fill, without clearing its background.
+        # Even x and width give symmetric whole columns in Normal pictures.
+        if maximum <= 0 or radius < 0 or not 0 <= color <= 255 or not 0 <= track <= 255 or not -1 <= edge <= 255:
+            raise ValueError("bar range or colour")
         if self._alive():
-            _tdui.send(_RECT, self.id, 0, 1 if outline else 0, x, y, w, h, color, radius)
+            amount = min(1000, max(0, int(value * 1000 // maximum)))
+            colors = self._bar_colors
+            if not colors or colors[0] != color or colors[1] != track or colors[2] != max(0, edge):
+                colors = self._bar_colors = bytes((color, track, max(0, edge)))
+            _tdui.send(_BAR, self.id, 0, 1 if edge >= 0 else 0, x, y, w, h, amount, radius,
+                       colors+self._gradient_data(gradient))
+
+    def rect(self, x, y, w, h, color, radius=0, outline=False, gradient=None):
+        if self._alive():
+            _tdui.send(_RECT, self.id, 0, (1 if outline else 0)|(2 if gradient else 0), x, y, w, h, color, radius,self._gradient_data(gradient))
 
     def line(self, x0, y0, x1, y1, color):
         if self._alive():
             _tdui.send(_LINE, self.id, 0, 0, x0, y0, x1, y1, color, 0)
 
-    def circle(self, x, y, r, color, outline=False):
+    def circle(self, x, y, r, color, outline=False, gradient=None):
         if self._alive():
-            _tdui.send(_CIRCLE, self.id, 0, 1 if outline else 0, x, y, r, 0, color, 0)
+            _tdui.send(_CIRCLE, self.id, 0, (1 if outline else 0)|(2 if gradient else 0), x, y, r, 0, color, 0,self._gradient_data(gradient))
 
     def gradient(self, x, y, w, h, rgb1, rgb2, across=False):
         # From one (r, g, b) colour to another, top to bottom (across: left
@@ -521,13 +609,18 @@ class CanvasButton:
     # button is held on it and calls on_click(button) when let go on it.
     # Cells: x, y, w, h. The look is a few desktop calls; nothing per pixel.
 
-    def __init__(self, cv, x, y, w, h, text, on_click, color, down, rim, fg, radius, scale, sheet, src, src_down, border):
+    def __init__(self, cv, x, y, w, h, text, on_click, color, down, rim, fg, radius, scale, sheet, src, src_down, border,
+                 on_press=None, on_release=None, on_cancel=None, font=None, gradient=None):
         self.cv = cv
+        self.page = cv.drawing
         self.x, self.y, self.w, self.h = x, y, w, h
         self._text = str(text)
         self.on_click = on_click
+        self.on_press, self.on_release, self.on_cancel = on_press, on_release, on_cancel
         self.color, self.down, self.rim, self.fg = color, down, rim, fg
+        self.gradient=gradient
         self.radius, self.scale = radius, scale
+        self.font = font
         self.sheet, self.src, self.src_down, self.border = sheet, src, src_down, border
         self.enabled = True
         cv._buttons.append(self)
@@ -542,7 +635,20 @@ class CanvasButton:
         self._text = str(t)
         self.draw()
 
-    def draw(self, pressed=False):
+    def draw(self, pressed=None):
+        if pressed is None:
+            pressed = self.cv._held is self
+        with self.cv.batch():
+            previous = self.cv.drawing
+            if previous != self.page:
+                self.cv.draw_to(self.page)
+            try:
+                self._draw(pressed)
+            finally:
+                if previous != self.page:
+                    self.cv.draw_to(previous)
+
+    def _draw(self, pressed=False):
         # Drawn again: after a background was drawn over it, say.
         cv = self.cv
         px, py, pw, ph = 2 * self.x, 2 * self.y, 2 * self.w, 2 * self.h
@@ -550,12 +656,17 @@ class CanvasButton:
             # A picture: at the terminal's own resolution where it can.
             src = self.src_down if pressed and self.src_down else self.src
             cv.picture(self.sheet, self.x, self.y, self.w, self.h, src=src, border=self.border, text=self._text,
-                       fg=self.fg, scale=self.scale)
+                       fg=self.fg, scale=self.scale, font=self.font)
             return
-        cv.rect(px, py, pw, ph, self.down if pressed else self.color, self.radius)
+        gradient=self.gradient
+        if pressed and gradient:
+            gradient={'rgb1':gradient['rgb2'],'rgb2':gradient['rgb1'],'across':gradient.get('across',False)}
+        cv.rect(px, py, pw, ph, self.down if pressed else self.color, self.radius,gradient=gradient)
         if self.rim is not None:
             cv.rect(px, py, pw, ph, self.rim, self.radius, outline=True)
-        if self.scale:
+        if self.font:
+            cv.font_text(self.font,self.x,self.y,self.w,self.h,self._text,fg=self.fg,align="center",valign="middle")
+        elif self.scale:
             tw, th = text_size(self._text, self.scale)
             cv.draw_text(px + (pw - tw) // 2, py + (ph - th) // 2 + (1 if pressed else 0), self._text, self.fg,
                     scale=self.scale)
@@ -566,9 +677,14 @@ class CanvasButton:
         # It no longer takes clicks (what is drawn stays).
         if self in self.cv._buttons:
             self.cv._buttons.remove(self)
+        if self.cv._held is self:
+            self.cv._held = None
+            if self.on_cancel:
+                self.on_cancel(self)
 
     def _hit(self, x, y):
-        return self.enabled and self.x <= x < self.x + self.w and self.y <= y < self.y + self.h
+        return (self.enabled and self.page == self.cv.showing and
+                self.x <= x < self.x + self.w and self.y <= y < self.y + self.h)
 
 
 class Image(_Pixels):
@@ -578,6 +694,7 @@ class Image(_Pixels):
 
     def __init__(self, w, h, color=0, _file=None):
         _tdui.open()
+        self._bar_colors = None
         self.id = _new_id()
         _objs[self.id] = self
         try:
@@ -614,6 +731,30 @@ class Image(_Pixels):
         pass
 
 
+class Font:
+    # Generated bitmap resource, loaded once into native graphics memory.
+    # Glyphs are rendered in C; no per-character Python drawing messages.
+    def __init__(self, path):
+        _tdui.open()
+        self.id = _new_id()
+        if not path.startswith("/"):
+            path = os.getcwd().rstrip("/") + "/" + path
+        self.height,self.ascent,self.glyphs,self.size,self.bpp = _tdui.font_load(self.id,path)
+        _objs[self.id] = self
+
+    @staticmethod
+    def load(path):
+        return Font(path)
+
+    def free(self):
+        if self.id in _objs:
+            _send(_CLOSE,self.id)
+            del _objs[self.id]
+
+    def _event(self, op, a, b, c, d, t):
+        pass
+
+
 class Canvas(_Widget, _Pixels):
     # A grid of character cells. Colours are palette numbers 0..255, -1 for
     # the window's own. With pages > 1 it keeps that many pictures on the
@@ -641,6 +782,7 @@ class Canvas(_Widget, _Pixels):
         self.showing = 0      # the page the window shows
         self.on_mouse = on_mouse
         self._buttons = []    # CanvasButton
+        self._bar_colors = None
         self._held = None     # the one pressed
         super().__init__(win, _W_CANVAS, x, y, w, h, pages, "")
 
@@ -708,7 +850,7 @@ class Canvas(_Widget, _Pixels):
     def _alive(self):
         return self.win.is_open
 
-    def picture(self, img, x, y, w, h, src=None, border=0, text="", fg=231, scale=0):
+    def picture(self, img, x, y, w, h, src=None, border=0, text="", fg=231, scale=0, font=None):
         # img (or its part src = (sx, sy, sw, sh)) over cells x, y, w x h, at
         # the terminal's own resolution where it can show pictures (the
         # CrowPanel's LCD, the web terminal, Windows Terminal): smooth
@@ -721,7 +863,20 @@ class Canvas(_Widget, _Pixels):
             sx, sy, sw, sh = src or (0, 0, 0, 0)
             head = bytes(v & 255 if i % 2 == 0 else (v >> 8) & 255
                          for v in (sw, sh, border, fg, scale) for i in (0, 1))
-            _tdui.send(_PICTURE, self.id, img.id, 1 if border else 0, x, y, w, h, sx, sy, head + str(text).encode())
+            if font is not None:
+                head += bytes((font.id & 255,font.id >> 8))
+            _tdui.send(_PICTURE, self.id, img.id, (1 if border else 0) | (2 if font else 0), x, y, w, h, sx, sy, head + str(text).encode())
+
+    def font_text(self, font, x, y, w, h, text, fg=231, bg=CLEAR, align="left", valign="top", wrap=False):
+        # Cell-bounded native-resolution text using a generated font's pixels.
+        if not isinstance(font, Font) or font.id not in _objs:
+            raise ValueError("font_text needs a loaded Font")
+        horizontal={"left":0,"center":1,"right":2}
+        vertical={"top":0,"middle":1,"bottom":2}
+        if align not in horizontal or valign not in vertical or w<1 or h<1:
+            raise ValueError("font_text bounds or alignment")
+        if self.win.is_open:
+            _tdui.send(_FONT_TEXT,self.id,font.id,horizontal[align] | vertical[valign]<<2 | (16 if wrap else 0),x,y,w,h,fg,bg,str(text))
 
     @property
     def pwidth(self):
@@ -737,17 +892,23 @@ class Canvas(_Widget, _Pixels):
         # Buttons drawn in pixels first: a press on one is theirs, and so is
         # the release that follows (wherever it is).
         held = self._held
-        if c == 0 and d == 0:
+        if c == 0 and d == 0 and not held:
             for btn in self._buttons:
                 if btn._hit(a, b):
                     self._held = btn
                     btn.draw(True)
+                    if btn.on_press:
+                        btn.on_press(btn)
                     return
-        elif d == 1 and held:
+        elif c == 0 and d == 1 and held:
             self._held = None
             held.draw()
+            if held.on_release:
+                held.on_release(held)
             if held._hit(a, b) and held.on_click:
                 held.on_click(held)
+            elif not held._hit(a, b) and held.on_cancel:
+                held.on_cancel(held)
             return
         elif held:
             return
@@ -755,18 +916,20 @@ class Canvas(_Widget, _Pixels):
             self.on_mouse(self, a, b, c, d)
 
     def button(self, x, y, w, h, text, on_click=None, color=None, down=None, rim=None, fg=231, radius=6, scale=0,
-               sheet=None, src=None, src_down=None, border=4):
+               sheet=None, src=None, src_down=None, border=4, on_press=None, on_release=None, on_cancel=None, font=None, gradient=None):
         # A CanvasButton at cell x, y, w x h cells. In colours: color (a
         # blue by default), down when pressed (darker), rim an outline;
         # radius rounds the corners (pixels). From a sprite sheet: sheet and
         # its pieces src and src_down, border pixels kept at the edges.
         # scale > 0: the text in pixels (draw_text()), that big.
+        # All callbacks receive the button. Release fires even outside;
+        # click follows release inside, cancel follows release outside.
         if color is None:
             color = rgb(40, 110, 210)
         if down is None:
             down = rgb(20, 60, 140)
         return CanvasButton(self, x, y, w, h, text, on_click, color, down, rim, fg, radius, scale, sheet, src,
-                            src_down, border)
+                            src_down, border, on_press, on_release, on_cancel, font, gradient)
 
 
 def big_size(text, scale=1):

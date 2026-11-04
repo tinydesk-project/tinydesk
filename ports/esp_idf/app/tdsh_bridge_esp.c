@@ -37,6 +37,11 @@ static bool s_started;
  * Ctrl+C; the shell reads them next. Only the shell task touches these. */
 static char s_typed[64];              /* typing during a repeat is rare */
 static size_t s_typed_len;
+static void flush_input(void)
+{
+    s_typed_len=0;char discard[64];
+    while(xStreamBufferReceive(s_in,discard,sizeof(discard),0)>0){}
+}
 
 /* ---------------------------------------------- shell-side stream */
 
@@ -144,6 +149,7 @@ static int backend_start(void *ctx, int cols, int rows)
     if (s_started)
         return 0;
     tdsh_espidf_set_console_columns(console_columns);
+    tdsh_espidf_set_console_flush(flush_input);
     s_in = xStreamBufferCreate(IN_BUFFER, 1);
     s_out = xStreamBufferCreate(OUT_BUFFER, 1);
     s_out_lock = xSemaphoreCreateMutex();

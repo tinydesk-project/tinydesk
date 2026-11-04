@@ -169,11 +169,12 @@ static const char *get_item(td_widget_t *w, int index, int *fg, void *user)
         *fg = td_theme()->accent == 1 ? 11 : td_theme()->accent;
         snprintf(s_item, sizeof(s_item), "%s/", e->name);
     }
-    else if (td_is_script(e->name))
+    else if (td_is_runnable(e->name))
     {
         *fg = td_script_colour(td_theme()->input_bg);   /* shell scripts stand out */
         td_utf8_pad(name, sizeof(name), e->name, 32);
-        snprintf(s_item, sizeof(s_item), "%s %8u  #!", name, (unsigned)e->size);
+        snprintf(s_item, sizeof(s_item), "%s %8u  %s", name, (unsigned)e->size,
+                 td_is_script(e->name) ? "#!" : "py");
     }
     else
     {
@@ -225,6 +226,10 @@ static void open_selected(void)
     else if (td_is_image(e->name))
     {
         td_imageview_open(path);
+    }
+    else if (td_is_compiled_app(e->name))
+    {
+        td_script_run(path); /* Binary apps cannot be edited as text. */
     }
     else
     {
@@ -435,7 +440,7 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
     if (on_entry && strcmp(s_entries[row].name, "..") != 0)
     {
         static const char *const items[] = {
-            "Run",
+            "Run (F9)",
             "Open",
             "Rename (F2)",
             "Delete (Del)",
@@ -482,6 +487,9 @@ static bool on_event(td_window_t *win, const td_event_t *ev)
         return true;
     case TD_KEY_F5:
         reload();
+        return true;
+    case TD_KEY_F9:
+        run_selected();
         return true;
     default:
         return false;
@@ -573,7 +581,7 @@ static void open_window(void)
         .title = "Files",
         .rect = td_rect(6, 2, 58, 18),
         .flags = TD_WIN_DEFAULT,
-        .min_w = 50,
+        .min_w = 52,
         .min_h = 8,
         .on_event = on_event,
         .on_close = on_close,

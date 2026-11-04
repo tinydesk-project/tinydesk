@@ -174,7 +174,7 @@ static const char *prov_icon(int i, void *user)
         return "ââ"; /* the Image Viewer's icon */
     if (td_is_script(s_items[i].name))
         return "#!";   /* shell scripts */
-    return td_is_python(s_items[i].name) ? "py" : "\xC2\xB6 ";
+    return td_is_python(s_items[i].name) || td_is_compiled_app(s_items[i].name) ? "py" : "\xC2\xB6 ";
 }
 
 static int prov_icon_fg(int i, void *user)
@@ -193,6 +193,8 @@ static void open_item(int i)
         td_files_open(path);
     else if (td_is_image(s_items[i].name))
         td_imageview_open(path);
+    else if (td_is_compiled_app(s_items[i].name))
+        td_script_run(path);
     else
         td_editor_open(path);
 }

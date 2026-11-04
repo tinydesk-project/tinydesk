@@ -54,11 +54,12 @@ static void hal_sleep(void *ctx, uint32_t ms)
 
 static bool s_remote;
 static char s_local_user[32];    /* whose desktop the local link had before Telnet took it */
+static bool s_local_locked;
 
 /* Switch the desktop's user unless it is already theirs. */
 static void become(const char *user)
 {
-    if (user && user[0] && strcmp(user, td_session_user()) != 0)
+    if (user && user[0] && (td_session_locked() || strcmp(user, td_session_user()) != 0))
         td_session_switch(user, true);
 }
 
@@ -81,11 +82,13 @@ static void follow_session(void)
                  peer ? " from " : "", peer ? peer : "");
         link_write((const uint8_t *)note, (int)strlen(note));
         snprintf(s_local_user, sizeof(s_local_user), "%s", td_session_user());
+        s_local_locked = td_session_locked();
         become(telnet_user());
     }
     else
     {
-        become(s_local_user[0] ? s_local_user : "root");
+        if (s_local_locked) td_session_lock();
+        else become(s_local_user[0] ? s_local_user : "root");
     }
     td_full_redraw();
 }

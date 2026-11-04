@@ -122,6 +122,14 @@ static void test_utf8_and_resize(void)
 
 int main(void)
 {
+    td_vterm_init(&s_vt, 10, 4);
+    put("\x1b[?2026hHELLO");
+    CHECK(s_vt.synchronized_output);
+    CHECK(row_is(0, "HELLO"));
+    put("\x1b[?2026l");
+    CHECK(!s_vt.synchronized_output);
+    put("\x1b[?2026h\x1b" "c");
+    CHECK(!s_vt.synchronized_output);
     test_text_and_newlines();
     test_wrap_and_scroll();
     test_csi();

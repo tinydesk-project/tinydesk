@@ -140,6 +140,7 @@ void td_host_setup(const td_hal_t *hal, const char *platform_name)
     s_info.settings_load = settings_load;
     s_info.settings_save = settings_save;
     s_info.fs = td_fs_stdio(fs_root);
+    td_fs_stdio_guard(td_session_path_allowed);
     s_info.time_now = time_now;
     s_info.get_tz = get_tz;
     s_info.set_tz = set_tz;
@@ -147,6 +148,8 @@ void td_host_setup(const td_hal_t *hal, const char *platform_name)
     s_info.extra = "Shell:     TinyDesk Shell " TDSH_VERSION;
 #endif
     s_info.kiosk_app = getenv("TINYDESK_KIOSK");   /* kiosk mode: a Python app's shell path */
+    s_info.kiosk_splash = getenv("TINYDESK_KIOSK_SPLASH");
+    s_info.kiosk_hide_status = getenv("TINYDESK_KIOSK_HIDE_STATUS") != NULL;
     td_set_sysinfo(&s_info);
 
     td_init(hal);

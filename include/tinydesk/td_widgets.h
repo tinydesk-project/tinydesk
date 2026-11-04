@@ -131,6 +131,9 @@ void td_progress_set(td_widget_t *w, int percent);
 /* List. */
 void td_list_set_count(td_widget_t *w, int count);
 int td_list_selected(const td_widget_t *w);
+/* Restore a live list without scrolling its selection into view. -1 clears
+ * selection when the previously selected object has disappeared. */
+void td_list_set_view(td_widget_t *w, int selected, int scroll);
 void td_list_select(td_widget_t *w, int index);
 
 /* Modal message box. `buttons` is a '|' separated list such as "OK" or

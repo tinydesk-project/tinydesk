@@ -26,6 +26,9 @@
 
 typedef struct td_window td_window_t;
 typedef struct td_widget td_widget_t;
+/* Authentication gate: only this window receives input and is composed.
+ * Unlike a modal dialog it also blocks taskbar and global shortcuts. */
+void td_wm_set_input_gate(bool locked,td_window_t *window);
 
 /* A file or folder being dragged with the mouse. */
 typedef struct
@@ -82,6 +85,7 @@ struct td_window
 {
     bool used;
     uint8_t id;
+    uint32_t generation;    /* changes when a closed pool slot is reused */
     char title[TD_TITLE_MAX];
     td_rect_t rect;          /* outer frame in screen cells */
     td_rect_t restore_rect;  /* rect before maximise / fullscreen */

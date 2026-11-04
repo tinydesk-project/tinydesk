@@ -262,7 +262,7 @@ static void launch(void)
         .title = "Network",
         .rect = td_rect(-1, -1, 68, 23),
         .flags = TD_WIN_DEFAULT,
-        .min_w = 60,
+        .min_w = 64,
         .min_h = 14,
         .on_close = on_close,
         .on_tick = on_tick,

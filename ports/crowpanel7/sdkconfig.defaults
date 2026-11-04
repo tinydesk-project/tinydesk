@@ -36,12 +36,13 @@ CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
 # --- The LCD ---------------------------------------------------------------
 # Code and constants run from PSRAM, so the picture keeps going while the
 # flash is written (files, settings); the data cache is made larger for the
-# frame buffer, and a scan-out that slipped restarts at the next frame.
+# frame buffer. Recover a scan-out underrun on demand: forcing a restart
+# every VSYNC can itself shift a frame when the interrupt arrives late.
 CONFIG_SPIRAM_FETCH_INSTRUCTIONS=y
 CONFIG_SPIRAM_RODATA=y
 CONFIG_ESP32S3_DATA_CACHE_64KB=y
 CONFIG_ESP32S3_DATA_CACHE_LINE_64B=y
-CONFIG_LCD_RGB_RESTART_IN_VSYNC=y
+CONFIG_LCD_RGB_RESTART_IN_VSYNC=n
 
 CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
 CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192

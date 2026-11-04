@@ -17,6 +17,12 @@ option(TD_WITH_TDSH "Embed TinyDesk Shell in the Terminal app" ON)
 option(TD_WITH_PYTHON "Add MicroPython to TinyDesk Shell (the py command)" ON)
 option(TD_BUILD_TESTS "Build unit tests" ON)
 option(TD_BUILD_EXAMPLES "Build examples" ON)
+option(TD_RENDER_OPTIMIZE "Optimize native rendering hot paths" ON)
+if(TD_RENDER_OPTIMIZE AND CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+    set_source_files_properties(apps/pyui.c apps/pyui_cache.c src/picture.c
+        src/canvas.c src/screen.c src/render.c src/wm.c
+        tools/sim_lcd.c tests/test_crowpanel_display.c PROPERTIES COMPILE_OPTIONS "-O2")
+endif()
 
 set(TDSH_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third_party/tdsh)
 
@@ -30,6 +36,7 @@ endif()
 add_library(tinydesk_core STATIC
     src/canvas.c
     src/picture.c
+    src/font.c
     src/draw.c
     src/event.c
     src/input.c
@@ -44,6 +51,7 @@ add_library(tinydesk_core STATIC
     src/wm.c
 )
 target_include_directories(tinydesk_core PUBLIC include)
+target_compile_definitions(tinydesk_core PUBLIC TD_PICTURE_MAX=128)
 set_target_properties(tinydesk_core PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
 target_compile_options(tinydesk_core PRIVATE ${TD_WARNINGS})
 
@@ -121,10 +129,13 @@ add_library(tinydesk_apps STATIC
     apps/mqtt.c
     apps/network.c
     apps/pyui.c
+    apps/pyui_cache.c
     apps/pyui_font.c
     apps/trash.c
     apps/kiosk.c
     apps/session.c
+    apps/login.c
+    apps/users.c
     apps/settings.c
     apps/sysmon.c
     apps/taskmgr.c
@@ -134,7 +145,9 @@ add_library(tinydesk_apps STATIC
 target_include_directories(tinydesk_apps PUBLIC apps)
 # Python canvases may cover a whole large terminal several times (pages), and
 # have pixels and images, as with PSRAM on a board.
-target_compile_definitions(tinydesk_apps PUBLIC TD_PYUI_MAX_CELLS=32000 TD_PYUI_MAX_PIXELS=2097152)
+set(TD_HOST_PYUI_MAX_CELLS 32000 CACHE STRING "Host canvas cells (2000 to exercise small-board limits)")
+set(TD_HOST_PYUI_MAX_PIXELS 2097152 CACHE STRING "Host pixel bytes (16384 to exercise small-board limits)")
+target_compile_definitions(tinydesk_apps PUBLIC TD_PYUI_MAX_CELLS=${TD_HOST_PYUI_MAX_CELLS} TD_PYUI_MAX_PIXELS=${TD_HOST_PYUI_MAX_PIXELS})
 target_link_libraries(tinydesk_apps PUBLIC tinydesk_core tinydesk_proto)
 set_target_properties(tinydesk_apps PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON C_EXTENSIONS OFF)
 target_compile_options(tinydesk_apps PRIVATE ${TD_WARNINGS})
@@ -286,6 +299,26 @@ if(TD_WITH_TDSH)
 endif()
 
 # Render a raw capture from real hardware (see tools/serial_probe.py).
+if(TD_BUILD_TESTS)
+    add_executable(tdsim_lcd tools/tdsim.c tools/sim_lcd.c tools/net_fake.c
+        ports/common/host_main.c ports/common/td_fs_stdio.c
+        ports/crowpanel7/main/font8x16.c ports/crowpanel7/main/font10x20.c
+        ports/crowpanel7/main/font12x24.c ports/crowpanel7/main/font16x32.c)
+    target_include_directories(tdsim_lcd PRIVATE tests)
+    target_compile_definitions(tdsim_lcd PRIVATE TD_SIM_LCD)
+    target_link_libraries(tdsim_lcd PRIVATE tinydesk_apps tinydesk_hal)
+    set_target_properties(tdsim_lcd PROPERTIES C_STANDARD 11 C_EXTENSIONS ON)
+    target_compile_options(tdsim_lcd PRIVATE ${TD_WARNINGS})
+    if(TD_WITH_TDSH)
+        target_sources(tdsim_lcd PRIVATE ports/common/tdsh_bridge_host.c ports/common/td_proto_cmds.c)
+        target_compile_definitions(tdsim_lcd PRIVATE TD_WITH_TDSH)
+        target_link_libraries(tdsim_lcd PRIVATE tdsh)
+        if(TD_WITH_PYTHON)
+            target_link_libraries(tdsim_lcd PRIVATE td_python)
+        endif()
+    endif()
+endif()
+
 add_executable(vtshot tools/vtshot.c)
 target_link_libraries(vtshot PRIVATE tinydesk_core)
 set_target_properties(vtshot PROPERTIES C_STANDARD 11)
@@ -309,7 +342,17 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_console_access PROPERTIES C_STANDARD 11 C_STANDARD_REQUIRED ON)
     target_compile_options(test_console_access PRIVATE ${TD_WARNINGS})
     add_test(NAME test_console_access COMMAND test_console_access)
-    foreach(t test_utf8 test_input test_render test_vterm test_wm test_widgets test_canvas test_link)
+    add_executable(test_permissions ${TDSH_ROOT}/tests/test_permissions.c)
+    target_link_libraries(test_permissions PRIVATE tdsh)
+    add_test(NAME test_permissions COMMAND test_permissions)
+    if(TARGET mbedcrypto AND NOT MSVC)
+        add_executable(test_users_storage ${TDSH_ROOT}/tests/test_users_storage.c)
+        target_include_directories(test_users_storage PRIVATE ${TDSH_ROOT}/tests/users_stubs)
+        target_link_libraries(test_users_storage PRIVATE tdsh mbedcrypto)
+        target_compile_options(test_users_storage PRIVATE -Wall -Wextra -Werror)
+        add_test(NAME test_users_storage COMMAND test_users_storage)
+    endif()
+    foreach(t test_utf8 test_input test_render test_vterm test_wm test_widgets test_canvas test_link test_font)
         add_executable(${t} tests/${t}.c)
         target_link_libraries(${t} PRIVATE tinydesk_core)
         set_target_properties(${t} PROPERTIES C_STANDARD 11)
@@ -355,10 +398,37 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_pyui PROPERTIES C_STANDARD 11)
     target_compile_options(test_pyui PRIVATE ${TD_WARNINGS})
     add_test(NAME test_pyui COMMAND test_pyui)
+    add_executable(test_session tests/test_session.c)
+    target_link_libraries(test_session PRIVATE tinydesk_apps)
+    target_compile_options(test_session PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_session COMMAND test_session)
+    add_executable(test_remembered_login tests/test_remembered_login.c)
+    target_link_libraries(test_remembered_login PRIVATE tinydesk_apps)
+    target_compile_options(test_remembered_login PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_remembered_login COMMAND test_remembered_login)
+    add_test(NAME test_remembered_timeout COMMAND test_remembered_login timeout)
     add_executable(test_image tests/test_image.c ports/common/td_fs_stdio.c)
     target_include_directories(test_image PRIVATE ports/common)
     target_link_libraries(test_image PRIVATE tinydesk_apps)
     set_target_properties(test_image PROPERTIES C_STANDARD 11)
     target_compile_options(test_image PRIVATE ${TD_WARNINGS})
     add_test(NAME test_image COMMAND test_image)
+    add_executable(test_native_apps tests/test_native_apps.c)
+    target_link_libraries(test_native_apps PRIVATE tinydesk_apps)
+    add_test(NAME test_native_apps COMMAND test_native_apps)
+    add_executable(test_task_snapshot tests/test_task_snapshot.c)
+    target_include_directories(test_task_snapshot PRIVATE tests)
+    target_link_libraries(test_task_snapshot PRIVATE tinydesk_core)
+    add_test(NAME test_task_snapshot COMMAND test_task_snapshot)
+    add_executable(test_crowpanel_display tests/test_crowpanel_display.c)
+    target_include_directories(test_crowpanel_display PRIVATE tests)
+    target_link_libraries(test_crowpanel_display PRIVATE tinydesk_core)
+    set_target_properties(test_crowpanel_display PROPERTIES C_STANDARD 11)
+    target_compile_options(test_crowpanel_display PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_crowpanel_display COMMAND test_crowpanel_display)
+    add_executable(test_pyui_cache tests/test_pyui_cache.c apps/pyui_cache.c)
+    target_include_directories(test_pyui_cache PRIVATE tests apps)
+    set_target_properties(test_pyui_cache PROPERTIES C_STANDARD 11)
+    target_compile_options(test_pyui_cache PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_pyui_cache COMMAND test_pyui_cache)
 endif()

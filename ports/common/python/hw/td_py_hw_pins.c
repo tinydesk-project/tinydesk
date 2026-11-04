@@ -30,6 +30,9 @@ const char *td_hw_pin_owner(int pin, td_hw_chip_t chip)
     tdsh_board_origin_t origin;
     for (int i = 0; tdsh_board_at(i, &key, &value, &origin); i++)
     {
+        if (tdsh_board_int("console.uart", 0) < 0 &&
+            (!strcmp(key, "console.tx") || !strcmp(key, "console.rx")))
+            continue;
         char *end = NULL;
         long v = strtol(value, &end, 10);
         if (pin_key(key) && end && end != value && !*end && v == pin)
@@ -38,7 +41,8 @@ const char *td_hw_pin_owner(int pin, td_hw_chip_t chip)
     if (chip == TD_HW_CHIP_ESP32 || chip == TD_HW_CHIP_ESP32S3)
     {   /* the desktop's UART0 on its default pins */
         int tx = chip == TD_HW_CHIP_ESP32 ? 1 : 43, rx = chip == TD_HW_CHIP_ESP32 ? 3 : 44;
-        if ((pin == tx && !tdsh_board_get("console.tx")) || (pin == rx && !tdsh_board_get("console.rx")))
+        if (tdsh_board_int("console.uart", 0) >= 0 &&
+            ((pin == tx && !tdsh_board_get("console.tx")) || (pin == rx && !tdsh_board_get("console.rx"))))
             return "the desktop's serial link";
         if (chip == TD_HW_CHIP_ESP32S3 && (pin == 19 || pin == 20) && tdsh_board_int("usb.host", 0) == 1)
             return "usb.host";
