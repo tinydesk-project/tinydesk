@@ -2,7 +2,7 @@
  * td_py.c - the `py` command: MicroPython inside TinyDesk Shell.
  *
  *   py                     interactive prompt (Ctrl+D or exit() leaves it)
- *   py FILE [ARG...]       run a script (.py, .mpy or a Studio .tdapp);
+ *   py FILE [ARG...]       run a script (.py, .mpy or an App Builder .tdapp);
  *                          sys.argv is [FILE, ARG...]
  *   py -c CODE [ARG...]    run CODE
  *   py -m KB ...           use a KB-kilobyte heap instead of the default

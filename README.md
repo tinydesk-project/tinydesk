@@ -42,7 +42,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
   the terminal.
 * Apps: Terminal (the shell), Files, Editor, Network, MQTT, Modbus (TCP and
-  RTU), Task Manager, System Monitor, Log Viewer, Settings, Recycle Bin
+  RTU), Task Manager, System Monitor, Log Viewer, Settings, Users
+  (accounts, Admin and User roles, rights), Recycle Bin
   (restore what was deleted), Software Update
   (OTA), Pixels, Image Viewer (BMP, PPM, PGM), Mouse and Keyboard (with USB
   on the ESP32-S3), and a small API for writing your own, with a pixel
@@ -98,7 +99,7 @@ Maintained by their authors, not built or tested here:
 ## First connection
 
 Open the board's serial port (any speed on the ESP32-C6; 921600 baud for
-the desktop on the ESP32 and ESP32-S3, 115200 for the shell) and press a key. You start
+the desktop on the ESP32 and ESP32-S3, 115200 for the shell) and press a key. Sign in
 as root. Run `passwd` locally (old password: **`TinyDesk`**) before enabling
 remote access. Telnet starts **disabled** and requires an explicit Network
 setting. Telnet, SSH and FTP refuse remote authentication while the factory
