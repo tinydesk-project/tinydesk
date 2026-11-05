@@ -60,13 +60,42 @@ static void test_keys(void)
     td_osk_init(&k, td_rect(0, 0, 96, 20), "Sign in", true);
     CHECK_EQ(tap(&k, 2, 1), '1');
     CHECK_EQ(tap(&k, 2, 5), 'q');
-    CHECK_EQ(tap(&k, 7, 1), TD_OSK_NONE);   /* the gap between keys */
+    CHECK_EQ(tap(&k, 7, 1), '1');   /* the gap column after a key is still that key */
+    CHECK_EQ(tap(&k, 2, 3), '1');   /* and so is the gap line under it */
     CHECK_EQ(tap(&k, 85, 1), TD_KEY_BACKSPACE);
     CHECK_EQ(tap(&k, 85, 5), TD_KEY_ENTER);
-    CHECK_EQ(tap(&k, 85, 9), TD_OSK_NONE);   /* Shift */
-    CHECK(k.shift);
+
+    /* Shift as on a phone: one tap shifts the next character only. */
+    CHECK_EQ(tap(&k, 85, 9), TD_OSK_NONE);
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_ONCE);
     CHECK_EQ(tap(&k, 2, 1), '!');
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_OFF);
+    CHECK_EQ(tap(&k, 2, 5), 'q');
+    /* Keys that are no characters leave it on. */
+    s_now += 1000;
+    tap(&k, 85, 9);
+    CHECK_EQ(tap(&k, 85, 1), TD_KEY_BACKSPACE);
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_ONCE);
     CHECK_EQ(tap(&k, 2, 5), 'Q');
+    CHECK_EQ(tap(&k, 2, 5), 'q');
+    /* Two quick taps lock it until the next tap. */
+    s_now += 1000;
+    tap(&k, 85, 9);
+    s_now += 200;
+    tap(&k, 85, 9);
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_LOCK);
+    CHECK_EQ(tap(&k, 2, 5), 'Q');
+    CHECK_EQ(tap(&k, 10, 5), 'W');
+    s_now += 1000;
+    tap(&k, 85, 9);
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_OFF);
+    CHECK_EQ(tap(&k, 2, 5), 'q');
+    /* Two slow taps: on, then off again. */
+    tap(&k, 85, 9);
+    s_now += 1000;
+    tap(&k, 85, 9);
+    CHECK_EQ(k.shift, TD_OSK_SHIFT_OFF);
+
     CHECK_EQ(tap(&k, 85, 13), TD_OSK_NONE);   /* #+= */
     CHECK(k.sym);
     CHECK_EQ(tap(&k, 2, 9), '-');

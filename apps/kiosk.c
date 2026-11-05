@@ -255,10 +255,11 @@ static void kb_draw(td_window_t *win, int w, int h)
     td_text(2, 3, s_note, t->accent, t->win_bg, TD_BOLD);
     if (s_osk.area.w != w || s_osk.area.h != h - 5)
     {
-        bool shift = s_osk.shift, sym = s_osk.sym;
+        td_osk_t was = s_osk;   /* keep Shift (also a lock) and the symbols */
         td_osk_init(&s_osk, td_rect(0, 5, w, h - 5), "Unlock", true);
-        s_osk.shift = shift;
-        s_osk.sym = sym;
+        s_osk.shift = was.shift;
+        s_osk.shift_ms = was.shift_ms;
+        s_osk.sym = was.sym;
     }
     td_osk_draw(&s_osk);
 }

@@ -4,17 +4,22 @@
  * On-screen keyboard app, which types into the window that has the focus.
  *
  * The keys sit on a grid 12 units wide and 5 rows high; a unit is as many
- * columns as the area allows (3 to 8) and a row as many lines (1 to 4),
+ * columns as the area allows (3 to 8) and a row as many lines (1 to 6),
  * so a large screen gets large keys. A key types when it is released on
- * the key it was pressed on: a finger that slides off types nothing.
+ * the key it was pressed on: a finger that slides off types nothing. The
+ * gap drawn between keys belongs to the key before it, so every cell of
+ * the keyboard is some key. Shift works as on a phone: one tap shifts the
+ * next character, a second tap within SHIFT_LOCK_MS locks it (CAPS), and
+ * a tap on a locked Shift releases it.
  */
 #include "td_apps.h"
 
 #include <stdio.h>
 #include <string.h>
 
-#define UNITS 12
-#define ROWS  5
+#define UNITS         12
+#define ROWS          5
+#define SHIFT_LOCK_MS 400
 
 /* Ten character keys per row, three sets. Together with Space they hold
  * every printable ASCII character. */
@@ -71,18 +76,26 @@ static int unit_w(const td_osk_t *k)
 static int row_h(const td_osk_t *k)
 {
     int h = k->area.h / ROWS;
-    return h < 1 ? 1 : h > 4 ? 4
+    return h < 1 ? 1 : h > 6 ? 6
                              : h;
 }
 
-/* The cells a key covers: a gap column between keys from 3 columns a
- * unit, a gap line between rows from 2 lines a row. */
-static td_rect_t key_rect(const td_osk_t *k, const key_t_ *key)
+/* The cells a key takes on the grid, its gap included (where a touch
+ * counts), and the ones drawn: without the gap column between keys (from
+ * 3 columns a unit) and the gap line between rows (from 2 lines a row). */
+static td_rect_t key_cell(const td_osk_t *k, const key_t_ *key)
 {
     int u = unit_w(k), h = row_h(k);
     int x0 = k->area.x + (k->area.w - UNITS * u) / 2, y0 = k->area.y + (k->area.h - ROWS * h) / 2;
-    int gap_x = u >= 3 ? 1 : 0, gap_y = h >= 2 ? 1 : 0;
-    return td_rect(x0 + key->unit * u, y0 + key->row * h, key->units * u - gap_x, h - gap_y);
+    return td_rect(x0 + key->unit * u, y0 + key->row * h, key->units * u, h);
+}
+
+static td_rect_t key_rect(const td_osk_t *k, const key_t_ *key)
+{
+    td_rect_t r = key_cell(k, key);
+    r.w -= unit_w(k) >= 3 ? 1 : 0;
+    r.h -= row_h(k) >= 2 ? 1 : 0;
+    return r;
 }
 
 static const char *key_label(const td_osk_t *k, const key_t_ *key, char *buf, int width)
@@ -95,7 +108,8 @@ static const char *key_label(const td_osk_t *k, const key_t_ *key, char *buf, in
     case TD_KEY_ENTER:
         return k->enter ? k->enter : "Enter";
     case K_SHIFT:
-        return k->shift ? (wide ? "SHIFT" : "SHF") : (wide ? "Shift" : "Shf");
+        return k->shift == TD_OSK_SHIFT_LOCK ? "CAPS" : k->shift ? (wide ? "SHIFT" : "SHF")
+                                                                 : (wide ? "Shift" : "Shf");
     case K_SYM:
         return k->sym ? "abc" : "#+=";
     case TD_KEY_LEFT:
@@ -146,7 +160,7 @@ static int key_under(const td_osk_t *k, int x, int y)
     for (int i = 0; i < KEY_COUNT; i++)
     {
         key_t_ key = key_at(k, i);
-        if (td_rect_contains(key_rect(k, &key), x, y))
+        if (td_rect_contains(key_cell(k, &key), x, y))
             return i;
     }
     return -1;
@@ -177,7 +191,12 @@ int td_osk_mouse(td_osk_t *k, const td_event_t *ev, bool *used)
     key_t_ key = key_at(k, i);
     if (key.code == K_SHIFT)
     {
-        k->shift = !k->shift;
+        uint32_t now = td_millis();
+        if (k->shift == TD_OSK_SHIFT_ONCE && now - k->shift_ms < SHIFT_LOCK_MS)
+            k->shift = TD_OSK_SHIFT_LOCK;   /* a double tap */
+        else
+            k->shift = k->shift == TD_OSK_SHIFT_OFF ? TD_OSK_SHIFT_ONCE : TD_OSK_SHIFT_OFF;
+        k->shift_ms = now;
         k->sym = false;
         return TD_OSK_NONE;
     }
@@ -186,6 +205,8 @@ int td_osk_mouse(td_osk_t *k, const td_event_t *ev, bool *used)
         k->sym = !k->sym;
         return TD_OSK_NONE;
     }
+    if (i < 40 && k->shift == TD_OSK_SHIFT_ONCE && !k->sym)
+        k->shift = TD_OSK_SHIFT_OFF;   /* one character, then lower case again */
     return key.code;
 }
 
@@ -209,10 +230,11 @@ static void osk_draw(td_window_t *win, int w, int h)
     td_fill(td_rect(0, 0, w, h), ' ', t->win_fg, t->win_bg);
     if (s_osk.area.w != w || s_osk.area.h != h)
     {
-        bool shift = s_osk.shift, sym = s_osk.sym;
+        td_osk_t was = s_osk;   /* keep Shift (also a lock) and the symbols */
         osk_layout(w, h);
-        s_osk.shift = shift;
-        s_osk.sym = sym;
+        s_osk.shift = was.shift;
+        s_osk.shift_ms = was.shift_ms;
+        s_osk.sym = was.sym;
     }
     td_osk_draw(&s_osk);
 }
@@ -251,7 +273,7 @@ static void osk_open(bool automatic)
     const td_stats_t *st = td_stats();
     int rows = td_wm_desktop_rows();
     int w = st->cols - 2 < 98 ? st->cols - 2 : 98;
-    int h = st->rows * 2 / 3 < 19 ? st->rows * 2 / 3 : 19;   /* 3 lines a key row from 30 rows */
+    int h = st->rows * 3 / 4 < 22 ? st->rows * 3 / 4 : 22;   /* 4 lines a key row from 30 rows */
     if (h < 7)
         h = 7;
     /* Below the text being typed into if it fits, else above it, else

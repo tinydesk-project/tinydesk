@@ -42,16 +42,27 @@ void td_store_sha256(const void *data, uint32_t len, char out[65]);
 /* ------------------------------------------------- on-screen keyboard */
 
 /* Keys drawn into part of a window and sized to it (apps/osk.c): a grid
- * 12 units wide and 5 rows high, a unit 3 to 8 columns and a row 1 to 4
+ * 12 units wide and 5 rows high, a unit 3 to 8 columns and a row 1 to 6
  * lines as the area allows. The owner calls td_osk_draw() from on_draw
  * and hands td_osk_mouse() its mouse events (client cells). A key types
- * when released on the key it was pressed on. */
+ * when released on the key it was pressed on; the gaps between keys
+ * belong to the keys, so a finger between two still lands on one. Shift
+ * works as on a phone: one tap for the next character, two quick taps
+ * to lock it (CAPS), one more to release it. */
+enum
+{
+    TD_OSK_SHIFT_OFF,
+    TD_OSK_SHIFT_ONCE,   /* the next character only */
+    TD_OSK_SHIFT_LOCK    /* until Shift is tapped again */
+};
 typedef struct
 {
     td_rect_t area;      /* client cells the keys use */
     const char *enter;   /* the Enter key's label ("Enter", "Sign in", ...) */
     bool password;       /* a Clear key instead of Esc */
-    bool shift, sym;     /* upper case; the symbols */
+    uint8_t shift;       /* TD_OSK_SHIFT_* */
+    bool sym;            /* the symbols */
+    uint32_t shift_ms;   /* when Shift was last tapped (double tap) */
     int held;            /* the key pressed and not released yet, or -1 */
 } td_osk_t;
 
