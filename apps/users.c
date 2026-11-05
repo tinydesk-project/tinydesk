@@ -3,11 +3,13 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 
 static td_window_t *s_win;
 static td_widget_t *s_list,*s_name,*s_admin,*s_rights[7],*s_status;
-static td_widget_t *s_old,*s_new,*s_confirm;
+static td_widget_t *s_old,*s_new,*s_confirm,*s_hint_box;
 static char s_old_password[129],s_new_password[129],s_confirm_password[129];
+static char s_hint[TD_HINT_MAX];   /* the hint box's text */
 static td_user_info_t s_selected;
 static bool s_creating;
 static int s_last_index;
@@ -22,6 +24,20 @@ static void wipe(void)
     if(s_old)s_old->value=s_old->scroll=0;
     if(s_new)s_new->value=s_new->scroll=0;
     if(s_confirm)s_confirm->value=s_confirm->scroll=0;
+}
+/* A hint shown at Sign in must not give the password away. */
+static bool hint_reveals(const char *hint,const char *password)
+{
+    size_t n=strlen(password),m=strlen(hint);
+    if(!n||!m)return false;
+    if(n<3)return n==m&&!strcasecmp(hint,password);
+    for(size_t i=0;i+n<=m;i++)if(!strncasecmp(hint+i,password,n))return true;
+    return false;
+}
+static void set_hint_box(const char *text)
+{
+    if(!s_hint_box)return;
+    snprintf(s_hint,sizeof(s_hint),"%s",text);s_hint_box->value=(int)strlen(s_hint);s_hint_box->scroll=0;
 }
 static void note(const char *message){td_widget_set_text(s_status,message);if(td_win_is_open(s_win))td_win_invalidate(s_win);}
 static int visible_user(int index,td_user_info_t *out)
@@ -45,6 +61,7 @@ static void select_user(td_widget_t *list,void *user)
     (void)user;s_creating=false;s_last_index=list->value;wipe();
     if(visible_user(list->value,&s_selected)){note("No account selected.");return;}
     td_widget_set_text(s_name,s_selected.name);s_name->focusable=false;
+    char hint[TD_HINT_MAX]="";if(ops()->hint_get)(void)ops()->hint_get(s_selected.name,hint,sizeof(hint));set_hint_box(hint);
     td_checkbox_set(s_admin,s_selected.role>=TD_USER_ROLE_ADMIN);
     for(int i=0;i<7;i++)td_checkbox_set(s_rights[i],s_selected.rights&(1u<<i));
     note(s_selected.role==TD_USER_ROLE_ROOT?"Root is protected. Its own password may be changed below.":manager()?"Change role / permissions, or set a new password.":"Your permissions are set by an administrator.");
@@ -66,7 +83,7 @@ static void rights_changed(td_widget_t *w,void *user)
 static void new_account(td_widget_t *w,void *user)
 {
     (void)w;(void)user;if(!manager()){note("An account administrator is required.");return;}
-    s_creating=true;wipe();memset(&s_selected,0,sizeof(s_selected));td_widget_set_text(s_name,"");s_name->focusable=true;
+    s_creating=true;wipe();memset(&s_selected,0,sizeof(s_selected));td_widget_set_text(s_name,"");s_name->focusable=true;set_hint_box("");
     td_checkbox_set(s_admin,false);for(int i=0;i<7;i++)td_checkbox_set(s_rights[i],(1u<<i)==TD_RIGHT_APPS&&td_session_has_right(TD_RIGHT_APPS));
     note("Enter a name, new password and confirmation; then Create / Apply.");td_widget_focus(s_name);
 }
@@ -84,7 +101,10 @@ static void apply(td_widget_t *w,void *user)
     int role=td_checkbox_get(s_admin)?TD_USER_ROLE_ADMIN:TD_USER_ROLE_USER,rc=-1;
     if(s_creating){
         if(!s_new_password[0]||strcmp(s_new_password,s_confirm_password)){note("Enter matching new passwords.");return;}
-        if(ops()->create)rc=ops()->create(td_session_user(),td_widget_text(s_name),s_new_password,role,requested_rights());
+        if(hint_reveals(s_hint,s_new_password)){note("The hint must not contain the password.");return;}
+        char name[32];snprintf(name,sizeof(name),"%s",td_widget_text(s_name));
+        if(ops()->create)rc=ops()->create(td_session_user(),name,s_new_password,role,requested_rights());
+        if(!rc&&s_hint[0]&&ops()->hint_set)rc=ops()->hint_set(td_session_user(),name,s_hint);
         wipe();if(!rc){refresh_count();select_user(s_list,NULL);}result(rc);
     }else{
         if(ops()->access_set)rc=ops()->access_set(td_session_user(),s_selected.name,role,requested_rights());
@@ -95,8 +115,16 @@ static void apply(td_widget_t *w,void *user)
 static void password(td_widget_t *w,void *user)
 {
     (void)w;(void)user;if(s_creating){apply(w,user);return;}
+    char old_hint[TD_HINT_MAX]="";if(ops()->hint_get)(void)ops()->hint_get(s_selected.name,old_hint,sizeof(old_hint));
+    bool hint_changed=ops()->hint_set&&strcmp(old_hint,s_hint);
+    if(!s_new_password[0]&&!s_confirm_password[0]&&hint_changed){   /* the hint alone */
+        int rc=ops()->hint_set(td_session_user(),s_selected.name,s_hint);if(!rc){note("Hint saved.");return;}result(rc);return;
+    }
     if(!s_new_password[0]||strcmp(s_new_password,s_confirm_password)){note("Enter matching new passwords.");return;}
-    int rc=ops()->password_set?ops()->password_set(td_session_user(),s_selected.name,s_old_password,s_new_password):-1;wipe();result(rc);
+    if(hint_reveals(s_hint,s_new_password)){note("The hint must not contain the password.");return;}
+    int rc=ops()->password_set?ops()->password_set(td_session_user(),s_selected.name,s_old_password,s_new_password):-1;
+    if(!rc&&hint_changed)rc=ops()->hint_set(td_session_user(),s_selected.name,s_hint);
+    wipe();result(rc);
 }
 static void remember(td_widget_t *w,void *user)
 {
@@ -113,7 +141,7 @@ static void tick(td_window_t *win)
 }
 static void closed(td_window_t *win)
 {
-    (void)win;wipe();s_win=NULL;s_list=s_name=s_admin=s_status=s_old=s_new=s_confirm=NULL;memset(&s_selected,0,sizeof(s_selected));
+    (void)win;wipe();s_win=NULL;s_list=s_name=s_admin=s_status=s_old=s_new=s_confirm=s_hint_box=NULL;s_hint[0]=0;memset(&s_selected,0,sizeof(s_selected));
 }
 static void launch(void)
 {
@@ -137,6 +165,11 @@ static void launch(void)
     (void)td_button(s_win,1,16,"New account",new_account,NULL);
     (void)td_button(s_win,1,17,"Remember login",remember,NULL);
     (void)td_button(s_win,25,17,"Require password at boot",require_password,NULL);
+    if(ops()->hint_get){
+        td_label(s_win,25,18,44,"Password hint (shown at Sign in; optional)");
+        s_hint_box=td_textbox(s_win,25,19,44,TD_HINT_MAX-1,NULL,NULL);
+        if(s_hint_box)td_textbox_set_buffer(s_hint_box,s_hint,sizeof(s_hint));
+    }
     s_status=td_label(s_win,1,-1,0,"");
     if(s_win->incomplete){td_win_close(s_win);return;}
     refresh_count();select_user(s_list,NULL);

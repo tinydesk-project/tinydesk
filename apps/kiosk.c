@@ -208,103 +208,31 @@ static bool kiosk_hook(const td_event_t *ev)
 
 /* ------------------------------------------------- the unlock keyboard */
 
-#define KEY_W 7
-#define KEY_H 3
-#define KB_W  (10 * KEY_W + 4)
-#define KB_H  22
-
-enum
-{
-    K_CHAR,
-    K_SHIFT,
-    K_SYM,
-    K_BACK,
-    K_CANCEL,
-    K_OK
-};
-
-typedef struct
-{
-    int x, y, w;                  /* cells, in the client area */
-    int kind;
-    char ch;
-} kbkey_t;
-
-static const char *const s_rows_lower[4] = {"1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm"};
-static const char *const s_rows_upper[4] = {"1234567890", "QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"};
-static const char *const s_rows_sym[4] = {"1234567890", "!@#$%^&*()", "-_=+[]{};:", "'\",.<>/?\\|"};
-
+/* The shared touch keys (apps/osk.c), as large as the screen allows. */
 static td_window_t *s_kb;
 static char s_pw[PW_MAX + 1];
-static bool s_shift, s_sym;
 static char s_note[48];
 static int s_fails;
 static uint32_t s_pause_until;
-static kbkey_t s_keys[48];
-static int s_key_count;
-static int s_pressed = -1;
-
-static void layout(void)
-{
-    const char *const *rows = s_sym ? s_rows_sym : (s_shift ? s_rows_upper : s_rows_lower);
-    s_key_count = 0;
-    for (int r = 0; r < 4; r++)
-    {
-        int n = (int)strlen(rows[r]);
-        int x0 = 2 + (10 - n) * KEY_W / 2;
-        for (int i = 0; i < n; i++)
-            s_keys[s_key_count++] = (kbkey_t){x0 + i * KEY_W, 5 + r * KEY_H, KEY_W - 1, K_CHAR, rows[r][i]};
-    }
-    int y = 5 + 4 * KEY_H;
-    s_keys[s_key_count++] = (kbkey_t){2, y, 10, K_SHIFT, 0};
-    s_keys[s_key_count++] = (kbkey_t){13, y, 10, K_SYM, 0};
-    s_keys[s_key_count++] = (kbkey_t){24, y, 13, K_BACK, 0};
-    s_keys[s_key_count++] = (kbkey_t){38, y, 15, K_CANCEL, 0};
-    s_keys[s_key_count++] = (kbkey_t){54, y, 18, K_OK, 0};
-}
-
-static const char *key_label(const kbkey_t *k, char *buf)
-{
-    switch (k->kind)
-    {
-    case K_SHIFT:
-        return s_shift ? "SHIFT*" : "Shift";
-    case K_SYM:
-        return s_sym ? "abc" : "#+=";
-    case K_BACK:
-        return "\xE2\x86\x90 Del";     /* U+2190 */
-    case K_CANCEL:
-        return "Cancel";
-    case K_OK:
-        return "Unlock";
-    default:
-        buf[0] = k->ch;
-        buf[1] = '\0';
-        return buf;
-    }
-}
+static td_osk_t s_osk;
 
 static void kb_draw(td_window_t *win, int w, int h)
 {
     (void)win;
-    (void)h;
     const td_theme_t *t = td_theme();
     td_text(2, 0, "Root's password leaves kiosk mode until the next restart.", t->win_fg, t->win_bg, 0);
     td_fill(td_rect(2, 2, w - 4, 1), ' ', t->input_fg, t->input_bg);
     for (int i = 0; s_pw[i] && i < w - 6; i++)
         td_putc(3 + i, 2, '*', t->input_fg, t->input_bg, 0);
     td_text(2, 3, s_note, t->accent, t->win_bg, TD_BOLD);
-    for (int i = 0; i < s_key_count; i++)
+    if (s_osk.area.w != w || s_osk.area.h != h - 5)
     {
-        const kbkey_t *k = &s_keys[i];
-        bool hot = (i == s_pressed);
-        uint8_t fg = hot ? t->select_fg : t->button_fg, bg = hot ? t->select_bg : t->button_bg;
-        td_fill(td_rect(k->x, k->y, k->w, KEY_H - 1), ' ', fg, bg);
-        char one[2];
-        const char *label = key_label(k, one);
-        int len = td_utf8_len(label);
-        td_text(k->x + (k->w - len) / 2, k->y + (KEY_H - 1) / 2, label, fg, bg, TD_BOLD);
+        bool shift = s_osk.shift, sym = s_osk.sym;
+        td_osk_init(&s_osk, td_rect(0, 5, w, h - 5), "Unlock", true);
+        s_osk.shift = shift;
+        s_osk.sym = sym;
     }
+    td_osk_draw(&s_osk);
 }
 
 static void kb_close(void)
@@ -343,78 +271,42 @@ static void unlock(void)
     td_logf('I', "kiosk: left kiosk mode (until the next restart)");
 }
 
-static void press_key(const kbkey_t *k)
+/* A key, from the touch keys or a keyboard (Telnet, SSH). */
+static void type_key(int code)
 {
     size_t n = strlen(s_pw);
     s_note[0] = '\0';
-    switch (k->kind)
-    {
-    case K_CHAR:
-        if (n < PW_MAX)
-            s_pw[n] = k->ch;
-        if (s_shift && !s_sym)
-            s_shift = false;
-        break;
-    case K_SHIFT:
-        s_shift = !s_shift;
-        s_sym = false;
-        break;
-    case K_SYM:
-        s_sym = !s_sym;
-        break;
-    case K_BACK:
-        if (n > 0)
-            s_pw[n - 1] = '\0';
-        break;
-    case K_CANCEL:
-        kb_close();
-        return;
-    case K_OK:
+    if (code == TD_KEY_ENTER)
         unlock();
-        break;
-    }
-    layout();
+    else if (code == TD_KEY_ESC || code == TD_OSK_HIDE)
+        kb_close();
+    else if (code == TD_OSK_CLEAR)
+        memset(s_pw, 0, sizeof(s_pw));
+    else if (code == TD_KEY_BACKSPACE && n > 0)
+        s_pw[n - 1] = '\0';
+    else if (code >= 32 && code < 127 && n < PW_MAX)
+        s_pw[n] = (char)code;
 }
 
 static bool kb_event(td_window_t *win, const td_event_t *ev)
 {
     if (ev->type == TD_EV_MOUSE)
     {
-        int hit = -1;
-        for (int i = 0; i < s_key_count; i++)
-            if (ev->x >= s_keys[i].x && ev->x < s_keys[i].x + s_keys[i].w && ev->y >= s_keys[i].y &&
-                ev->y < s_keys[i].y + KEY_H - 1)
-                hit = i;
-        if (ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_LEFT)
-            s_pressed = hit;
-        else if (ev->action == TD_MOUSE_RELEASE)
-        {
-            int was = s_pressed;
-            s_pressed = -1;
-            if (was >= 0 && was == hit)
-                press_key(&s_keys[was]);   /* may close the window */
-        }
-        if (td_win_is_open(win))
-            td_win_invalidate(win);
-        return true;
+        bool used;
+        int code = td_osk_mouse(&s_osk, ev, &used);
+        if (code != TD_OSK_NONE)
+            type_key(code);   /* may close the window */
     }
-    if (ev->type == TD_EV_KEY)
+    else if (ev->type == TD_EV_KEY)
     {
-        /* A keyboard (Telnet, SSH) works too. */
-        size_t n = strlen(s_pw);
-        if (ev->key == TD_KEY_ENTER)
-            unlock();
-        else if (ev->key == TD_KEY_ESC)
-            kb_close();
-        else if (ev->key == TD_KEY_BACKSPACE && n > 0)
-            s_pw[n - 1] = '\0';
-        else if (ev->key >= 32 && ev->key < 127 && n < PW_MAX && !(ev->mods & (TD_MOD_CTRL | TD_MOD_ALT)))
-            s_pw[n] = (char)ev->key;
-        if (td_win_is_open(win))
-            td_win_invalidate(win);
-        return true;
+        if (!(ev->mods & (TD_MOD_CTRL | TD_MOD_ALT)))
+            type_key((int)ev->key);
     }
-    return false;
+    else
+        return false;
+    if (td_win_is_open(win))
+        td_win_invalidate(win);
+    return true;
 }
 
 static void kb_closed(td_window_t *win)
@@ -429,13 +321,13 @@ static void open_unlock(void)
     if (td_win_is_open(s_kb))
         return;
     memset(s_pw, 0, sizeof(s_pw));
-    s_shift = s_sym = false;
     s_note[0] = '\0';
-    s_pressed = -1;
-    layout();
+    const td_stats_t *st = td_stats();
+    int w = st->cols - 4 < 100 ? st->cols - 4 : 100, h = st->rows - 2 < 26 ? st->rows - 2 : 26;
+    td_osk_init(&s_osk, td_rect(0, 5, w - 2, h - 7), "Unlock", true);
     td_window_desc_t d = {
         .title = "Leave kiosk mode",
-        .rect = td_rect(-1, -1, KB_W + 2, KB_H),
+        .rect = td_rect(-1, -1, w, h),
         .flags = TD_WIN_MODAL | TD_WIN_RAW_KEYS,
         .on_draw = kb_draw,
         .on_event = kb_event,

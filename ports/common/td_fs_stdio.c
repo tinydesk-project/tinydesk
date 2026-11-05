@@ -182,6 +182,19 @@ static int fs_write(const char *path_in, const char *data, int len)
     return ok ? 0 : -1;
 }
 
+static int fs_append(const char *path_in, const char *data, int len)
+{
+    if(!allowed(path_in,TD_FS_WRITE))return -1;
+    char mapped[TD_PATH_MAX + 16];
+    FILE *f = fopen(map(path_in, mapped, sizeof(mapped)), "ab");
+    if (!f)
+        return -1;
+    bool ok = len <= 0 || fwrite(data, 1, (size_t)len, f) == (size_t)len;
+    if (fclose(f) != 0)
+        ok = false;
+    return ok ? 0 : -1;
+}
+
 static int fs_exists(const char *path_in)
 {
     if(!allowed(path_in,TD_FS_EXISTS))return 0;
@@ -211,6 +224,7 @@ const td_fs_ops_t *td_fs_stdio(const char *root)
     s_ops.remove = fs_remove;
     s_ops.mkdir = fs_mkdir;
     s_ops.write = fs_write;
+    s_ops.append = fs_append;
     s_ops.rename = fs_rename;
     s_ops.exists = fs_exists;
     return &s_ops;

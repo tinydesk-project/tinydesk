@@ -40,13 +40,14 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   (`kiosk.app`), for operator panels; root's password leaves it.
 * Windows with z-order, drag, resize, minimise, maximise; taskbar, start
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
-  the terminal.
+  the terminal. Desktop icons that stay where they are dragged, shortcuts
+  (Send to Desktop), each user's Start menu entries and `~/Apps` folder.
 * Apps: Terminal (the shell), Files, Editor, Network, MQTT, Modbus (TCP and
   RTU), Task Manager, System Monitor, Log Viewer, Settings, Users
-  (accounts, Admin and User roles, rights), Recycle Bin
+  (accounts, Admin and User roles, rights, password hints), Recycle Bin
   (restore what was deleted), Software Update
   (OTA), Pixels, Image Viewer (BMP, PPM, PGM), Mouse and Keyboard (with USB
-  on the ESP32-S3), and a small API for writing your own, with a pixel
+  on the ESP32-S3), On-screen keyboard (large touch keys), and a small API for writing your own, with a pixel
   canvas (`td_canvas.h`: two pixels per cell in any terminal, four with a
   font that has the quadrant characters).
 * Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes

@@ -162,7 +162,11 @@ static int prov_count(void *user)
 static const char *prov_label(int i, void *user)
 {
     (void)user;
-    return s_items[i].name;
+    if (!td_is_shortcut(s_items[i].name))
+        return s_items[i].name;
+    static char label[NAME_LEN];   /* used at once by the caller */
+    snprintf(label, sizeof(label), "%.*s", (int)(strlen(s_items[i].name) - 7), s_items[i].name);
+    return label;
 }
 
 static const char *prov_icon(int i, void *user)
@@ -170,6 +174,8 @@ static const char *prov_icon(int i, void *user)
     (void)user;
     if (s_items[i].is_dir)
         return "[/";
+    if (td_is_shortcut(s_items[i].name))
+        return "->";
     if (td_is_image(s_items[i].name))
         return "ââ"; /* the Image Viewer's icon */
     if (td_is_script(s_items[i].name))
@@ -189,14 +195,7 @@ static void open_item(int i)
         return;
     char path[PATH_LEN];
     item_path(path, s_items[i].name);
-    if (s_items[i].is_dir)
-        td_files_open(path);
-    else if (td_is_image(s_items[i].name))
-        td_imageview_open(path);
-    else if (td_is_compiled_app(s_items[i].name))
-        td_script_run(path);
-    else
-        td_editor_open(path);
+    td_open_path(path, s_items[i].is_dir);
 }
 
 static void prov_open(int i, void *user)
@@ -304,7 +303,12 @@ static void item_menu_chosen(int item, void *user)
         ask_delete(true);
         break;
     default:
+    {
+        char path[PATH_LEN];
+        item_path(path, s_target_name);
+        td_shortcut_menu_chosen(path, true, item - 4);   /* Start menu, Apps */
         break;
+    }
     }
 }
 
@@ -332,6 +336,10 @@ static void desktop_menu_chosen(int item, void *user)
     case 7:
         td_app_launch("Settings");
         break;
+    case 9:
+        td_wm_set_icon_arrange(!td_wm_icon_arrange());
+        (void)td_settings_save();
+        break;
     default:
         break;
     }
@@ -342,11 +350,14 @@ static void prov_context(int i, int x, int y, void *user)
     (void)user;
     if (i >= 0 && i < s_count)
     {
-        static const char *const items[] = {"Run", "Open", "Rename", "Delete", "Delete for good"};
+        const char *items[9] = {"Run", "Open", "Rename", "Delete", "Delete for good"};
         bool script = !s_items[i].is_dir && td_is_runnable(s_items[i].name);
         s_target = i;
         snprintf(s_target_name, sizeof(s_target_name), "%s", s_items[i].name);
-        td_menu_popup(x, y, script ? items : items + 1, script ? 5 : 4, item_menu_chosen, NULL);
+        char path[PATH_LEN];
+        item_path(path, s_target_name);
+        int extra = td_shortcut_menu(path, true, items + 5, 4);
+        td_menu_popup(x, y, script ? items : items + 1, (script ? 5 : 4) + extra, item_menu_chosen, NULL);
     }
     else
     {
@@ -359,8 +370,19 @@ static void prov_context(int i, int x, int y, void *user)
             "-",
             "Refresh",
             "Settings",
+            "-",
+            "[x] Auto arrange icons",
         };
-        td_menu_popup(x, y, items, 8, desktop_menu_chosen, NULL);
+        static const char *items_off[sizeof(items) / sizeof(items[0])];
+        const char *const *shown = items;
+        if (!td_wm_icon_arrange())
+        {
+            /* Unticked: icons stay where they are dragged. */
+            memcpy(items_off, items, sizeof(items));
+            items_off[9] = "[ ] Auto arrange icons";
+            shown = items_off;
+        }
+        td_menu_popup(x, y, shown, 10, desktop_menu_chosen, NULL);
     }
 }
 
@@ -461,6 +483,7 @@ void td_desktop_folder_init(void)
         }
     }
     s_count = 0;                 /* a different user: forget the old icons */
+    td_shortcuts_session();      /* ~/Apps, ~/Start menu */
     td_desktop_set_provider(&s_provider);
     td_desktop_refresh();
     if (!s_timer_started)

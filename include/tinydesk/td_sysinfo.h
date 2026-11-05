@@ -47,6 +47,10 @@ typedef struct
      * files too large to read at once (the Image Viewer). Returns the bytes
      * read (0 at the end of the file) or -1. */
     int (*read_at)(const char *path, uint32_t offset, char *buf, int cap);
+
+    /* Optional: add len bytes to the end of a file (made if missing), for
+     * copying files too large to hold in memory. Returns 0 on success. */
+    int (*append)(const char *path, const char *data, int len);
 } td_fs_ops_t;
 
 /* ------------------------------------------------------------ network */
@@ -272,7 +276,13 @@ typedef struct {
     uint32_t (*login)(const char *name,const char *password);
     int (*boot_user_set)(const char *actor,const char *name);
     int (*require_password)(const char *actor);
+    /* Optional password hints, shown at Sign in to anyone at the device:
+     * get fills out ("" none); set is allowed for the account itself and
+     * whoever may manage it, "" removes it. 0 or a negative errno. */
+    int (*hint_get)(const char *name,char *out,int cap);
+    int (*hint_set)(const char *actor,const char *name,const char *hint);
 } td_user_ops_t;
+#define TD_HINT_MAX 64   /* bytes, with the ending 0 */
 typedef struct
 {
     const char *platform;     /* "ESP32-C6", "Windows host", ... */

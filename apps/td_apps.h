@@ -29,6 +29,39 @@ void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set *
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);
+void td_osk_register(void);        /* the On-screen keyboard app */
+
+/* ------------------------------------------------- on-screen keyboard */
+
+/* Keys drawn into part of a window and sized to it (apps/osk.c): a grid
+ * 12 units wide and 5 rows high, a unit 3 to 8 columns and a row 1 to 4
+ * lines as the area allows. The owner calls td_osk_draw() from on_draw
+ * and hands td_osk_mouse() its mouse events (client cells). A key types
+ * when released on the key it was pressed on. */
+typedef struct
+{
+    td_rect_t area;      /* client cells the keys use */
+    const char *enter;   /* the Enter key's label ("Enter", "Sign in", ...) */
+    bool password;       /* a Clear key instead of Esc */
+    bool shift, sym;     /* upper case; the symbols */
+    int held;            /* the key pressed and not released yet, or -1 */
+} td_osk_t;
+
+#define TD_OSK_NONE  0     /* nothing to type (also Shift and #+=) */
+#define TD_OSK_HIDE  (-1)  /* the Hide key */
+#define TD_OSK_CLEAR (-2)  /* the Clear key (password keyboards) */
+
+void td_osk_init(td_osk_t *k, td_rect_t area, const char *enter, bool password);
+void td_osk_draw(const td_osk_t *k);
+/* What a released key types: a character, TD_KEY_BACKSPACE, TD_KEY_ENTER,
+ * TD_KEY_LEFT, TD_KEY_RIGHT, TD_KEY_ESC, TD_OSK_HIDE, TD_OSK_CLEAR, or
+ * TD_OSK_NONE. *used: the event was on the keys. */
+int td_osk_mouse(td_osk_t *k, const td_event_t *ev, bool *used);
+
+/* The On-screen keyboard app opens by itself while a text box has the
+ * focus (the "Keyboard for text fields" setting). */
+void td_osk_follow_focus(bool on);
+bool td_osk_follows_focus(void);
 
 /* ------------------------------------------------- files & desktop */
 
@@ -327,6 +360,31 @@ bool td_is_compiled_app(const char *name);
 
 /* Files with a Run command: shell, Python source, .mpy and .tdapp. */
 bool td_is_runnable(const char *name);
+
+/* Shortcuts (apps/shortcut.c): NAME.tdlink files whose "target=" line
+ * names a file or folder by its shell path. On the Desktop they are
+ * icons, in ~/Start menu entries of the Start menu; opening one opens its
+ * target. ~/Apps holds a user's app packages (.tdapp). Paths are real. */
+bool td_is_shortcut(const char *name);
+bool td_shortcut_target(const char *link, char *target, int cap);
+const char *td_shortcut_make(const char *dir, const char *target);   /* NULL or an error */
+const char *td_apps_dir(void);
+const char *td_start_dir(void);
+bool td_in_start_menu(const char *target);
+const char *td_start_menu_remove(const char *target);              /* NULL or an error */
+/* Copy a file into ~/Apps (copy: its real path there). NULL or an error. */
+const char *td_copy_to_apps(const char *path, char *copy, int cap);
+/* Open a file or folder as the Desktop and Files do: folders in Files,
+ * pictures in the Image Viewer, app packages run, shortcuts their target,
+ * other files in the Editor. */
+void td_open_path(const char *path, bool is_dir);
+/* At sign-in: make ~/Apps and ~/Start menu, list the user's entries. */
+void td_shortcuts_session(void);
+/* Right-click entries for a file or folder: Send to Desktop (when not on
+ * it), and for .tdapp packages Add to / Remove from Start menu and Copy
+ * to Apps. Fills items and returns how many; the chosen one by index. */
+int td_shortcut_menu(const char *path, bool on_desktop, const char **items, int max);
+void td_shortcut_menu_chosen(const char *path, bool on_desktop, int index);
 
 /* Run the script at `path` (a real path, as the Files app and the Desktop
  * use) in the Terminal: `tdsh run "<shell path>"`, or `py "<shell path>"`

@@ -8,6 +8,7 @@
  * versions saved for everyone, or the built-in defaults.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "td_apps.h"
@@ -35,7 +36,9 @@ typedef struct
     uint8_t picture_detail; /* 0 half blocks (and in older blobs), 1 quadrants */
     uint8_t trash_size;     /* Recycle Bin size code (0: 1 MB, also in older blobs) */
     uint8_t trash_keep;     /* Recycle Bin keep code (0: for ever) */
-    uint8_t reserved2[1];
+    uint8_t desk;           /* bit 0: the on-screen keyboard opens for text
+                             * fields; bit 1: icons stay where they are put
+                             * (not arranged); 0 in older blobs */
 } settings_blob_t;
 
 #define LEGACY_SIZE 8   /* magic + theme, ascii, pattern, hide_icons */
@@ -48,7 +51,7 @@ static td_clock_prefs_t s_clock;
 static td_editor_prefs_t s_editor;
 static td_trash_prefs_t s_trash;
 static td_window_t *s_win;
-static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_pattern_label, *s_status;
+static td_widget_t *s_theme_box[2], *s_ascii, *s_icons, *s_osk_box, *s_pattern_label, *s_status;
 static td_widget_t *s_size_btn[4];      /* desktop icons, start menu, taskbar, windows */
 static td_widget_t *s_detail_btn;       /* pictures: Normal / Fine */
 
@@ -113,6 +116,55 @@ static bool load_blob(settings_blob_t *b)
     return false;
 }
 
+/* Desktop icon places (td_wm_icon_places), per user: ~/.tinydesk_icons. */
+#define ICONS_FILE  "/.tinydesk_icons"
+#define ICONS_MAGIC 0x54444931u   /* "TDI1" */
+typedef struct
+{
+    uint32_t magic, count;
+    td_icon_place_t places[TD_MAX_ICON_PLACES];
+} icons_file_t;
+/* Allocated while loading or saving only: no RAM while idle. */
+
+static void icons_path(char *out, size_t cap)
+{
+    snprintf(out, cap, "%.200s" ICONS_FILE, td_session_home());
+}
+
+static void icons_load(void)
+{
+    const td_sysinfo_t *si = td_sysinfo();
+    int n = 0;
+    icons_file_t *f = calloc(1, sizeof(*f));
+    if (f && si->fs && si->fs->read && td_session_home()[0])
+    {
+        char path[240];
+        icons_path(path, sizeof(path));
+        n = si->fs->read(path, (char *)f, (int)sizeof(*f));
+    }
+    bool ok = f && n >= 8 && f->magic == ICONS_MAGIC && f->count <= TD_MAX_ICON_PLACES &&
+              (size_t)n >= 8 + f->count * sizeof(td_icon_place_t);
+    td_wm_set_icon_places(f ? f->places : NULL, ok ? (int)f->count : 0);
+    free(f);
+}
+
+/* An icon was moved: keep the places and that arranging is off. */
+static void icons_moved(void)
+{
+    const td_sysinfo_t *si = td_sysinfo();
+    icons_file_t *f = malloc(sizeof(*f));
+    if (f && si->fs && si->fs->write && td_session_home()[0])
+    {
+        f->magic = ICONS_MAGIC;
+        f->count = (uint32_t)td_wm_icon_places(f->places, TD_MAX_ICON_PLACES);
+        char path[240];
+        icons_path(path, sizeof(path));
+        (void)si->fs->write(path, (const char *)f, (int)(8 + f->count * sizeof(td_icon_place_t)));
+    }
+    free(f);
+    (void)td_settings_save();
+}
+
 void td_settings_apply_saved(void)
 {
     settings_blob_t b;
@@ -144,6 +196,10 @@ void td_settings_apply_saved(void)
     td_canvas_set_detail(b.picture_detail == 1 ? TD_CANVAS_QUAD : TD_CANVAS_HALF);
     s_trash.size = b.trash_size < TD_TRASH_SIZES ? b.trash_size : 0;
     s_trash.keep = b.trash_keep < TD_TRASH_KEEPS ? b.trash_keep : 0;
+    td_osk_follow_focus(b.desk & 1u);
+    icons_load();
+    td_wm_on_icons_moved(icons_moved);
+    td_wm_set_icon_arrange(!(b.desk & 2u));
     td_wm_invalidate();
     td_trash_purge();   /* this user's bin, with this user's limits */
 }
@@ -169,6 +225,7 @@ bool td_settings_save(void)
         .picture_detail = td_canvas_detail() == TD_CANVAS_QUAD ? 1 : 0,
         .trash_size = s_trash.size,
         .trash_keep = s_trash.keep,
+        .desk = (uint8_t)((td_osk_follows_focus() ? 1u : 0u) | (td_wm_icon_arrange() ? 0u : 2u)),
     };
     if (!si->fs || !si->fs->write || !td_session_home()[0])
         return false;
@@ -184,6 +241,7 @@ static void update_labels(void)
     td_checkbox_set(s_theme_box[1], idx == 1);
     td_checkbox_set(s_ascii, td_get_ascii_mode());
     td_checkbox_set(s_icons, td_desktop_icons());
+    td_checkbox_set(s_osk_box, td_osk_follows_focus());
     td_widget_set_text(s_size_btn[0], td_ui_size_name(td_wm_icon_size()));
     td_widget_set_text(s_size_btn[1], td_ui_size_name(td_wm_start_menu_size()));
     td_widget_set_text(s_size_btn[2], td_ui_size_name(td_wm_taskbar_size()));
@@ -226,6 +284,13 @@ static void on_icons(td_widget_t *w, void *user)
 {
     (void)user;
     td_desktop_set_icons(td_checkbox_get(w));
+    changed();
+}
+
+static void on_osk(td_widget_t *w, void *user)
+{
+    (void)user;
+    td_osk_follow_focus(td_checkbox_get(w));
     changed();
 }
 
@@ -349,6 +414,7 @@ static void launch(void)
     s_theme_box[1] = td_checkbox(s_win, 20, 2, td_theme_get(1)->name, false, on_theme, (void *)(intptr_t)1);
     s_ascii = td_checkbox(s_win, 1, 4, "ASCII-only drawing (no UTF-8)", false, on_ascii, NULL);
     s_icons = td_checkbox(s_win, 1, 5, "Desktop icons", true, on_icons, NULL);
+    s_osk_box = td_checkbox(s_win, 1, 6, "On-screen keyboard for text fields", false, on_osk, NULL);
     for (int i = 0; i < 4; i++)
         s_size_btn[i] = td_button(s_win, 18, 8 + i, "Medium", on_size, (void *)(intptr_t)i);
     s_detail_btn = td_button(s_win, 18, 12, "Normal", on_detail, NULL);

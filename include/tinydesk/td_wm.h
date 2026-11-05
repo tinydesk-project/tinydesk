@@ -21,6 +21,9 @@
 #define TD_WIN_HIDDEN     0x0100u  /* minimised to the taskbar */
 #define TD_WIN_MAXIMIZED  0x0200u
 #define TD_WIN_FULLSCREEN 0x0400u  /* no frame, covers the taskbar */
+#define TD_WIN_NO_FOCUS   0x0800u  /* a tool (the on-screen keyboard): stays above
+                                    * the others, also dialogs, and gets clicks,
+                                    * but never the focus or the keys */
 
 #define TD_WIN_DEFAULT (TD_WIN_MOVABLE | TD_WIN_RESIZABLE | TD_WIN_CLOSABLE)
 
@@ -174,6 +177,19 @@ void td_wm_toggle_start_menu(void);
 /* Add an entry to the start menu's lower section (e.g. "Switch user..."). */
 void td_wm_add_start_item(const char *label, void (*fn)(void));
 
+/* The user's own start menu entries (shortcuts to their apps), listed
+ * under the built-in apps. Asked each time the menu opens. */
+#define TD_START_USER_MAX 16
+typedef struct
+{
+    int (*count)(void *user);
+    const char *(*label)(int i, void *user);
+    const char *(*icon)(int i, void *user);   /* two cells, or NULL */
+    void (*open)(int i, void *user);
+    void *user;
+} td_start_provider_t;
+void td_wm_set_start_provider(const td_start_provider_t *provider);
+
 /* Close every window at once, without asking (used when the user changes). */
 void td_wm_close_all(void);
 
@@ -215,6 +231,27 @@ typedef enum
 } td_ui_size_t;
 void td_wm_set_icon_size(td_ui_size_t size);
 td_ui_size_t td_wm_icon_size(void);
+
+/* Desktop icon places. Arranged (the default): icons fill columns from
+ * the top left, and a pinned icon (the Recycle Bin) sits at the bottom
+ * right. Dragging an icon to an empty place, or onto another icon to swap
+ * them, stops arranging: then every icon stays where it is. A place is a
+ * column and row of icon slots, kept by a key made from the icon's name
+ * (td_wm_icon_key). The owner saves and loads them for each user and is
+ * told when they change. */
+typedef struct
+{
+    uint32_t key;
+    int16_t col, row;
+} td_icon_place_t;
+#define TD_MAX_ICON_PLACES 96
+void td_wm_set_icon_arrange(bool on);
+bool td_wm_icon_arrange(void);
+int td_wm_icon_places(td_icon_place_t *out, int max);   /* returns the count */
+void td_wm_set_icon_places(const td_icon_place_t *places, int count);
+void td_wm_on_icons_moved(void (*fn)(void));
+void td_wm_pin_icon(const char *app_name);   /* bottom right while arranged */
+uint32_t td_wm_icon_key(bool file, const char *name);
 void td_wm_set_start_menu_size(td_ui_size_t size);
 td_ui_size_t td_wm_start_menu_size(void);
 void td_wm_set_taskbar_size(td_ui_size_t size);

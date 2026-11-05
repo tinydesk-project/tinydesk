@@ -140,9 +140,10 @@ static void test_drag_and_drop(void)
     td_desktop_set_provider(&s_prov);
     td_wm_compose(&back);
     /* 2 apps -> provider item 0 is icon 2 (slot 2, column 0 row 2) and
-     * item 1 is icon 3 (column 1, row 0). Slot centres: */
-    int folder_x = 6, folder_y = 1 + 2 * 6 + 1;
-    int file_x = 6 + 12, file_y = 2;
+     * item 1 is icon 3 (column 1, row 0). Slots are spread over the 80 x 24
+     * desktop: 6 columns from x 1 to 68, 3 rows at y 1, 9 and 18. */
+    int folder_x = 6, folder_y = 19;
+    int file_x = 14 + 5, file_y = 2;
 
     /* Drag the file onto the folder. */
     mouse(TD_MOUSE_PRESS, TD_BUTTON_LEFT, file_x, file_y);
@@ -154,11 +155,24 @@ static void test_drag_and_drop(void)
     CHECK_EQ(s_dropped_on, 0);
     CHECK(strcmp(s_dropped_name, "file.txt") == 0);
 
-    /* Dropping on the empty desktop reports index -1. */
+    /* A desktop icon dropped on the empty desktop moves there: arranging
+     * stops and every icon gets a place; the provider is not asked. */
+    td_icon_place_t places[8];
+    s_dropped_on = -2;
+    CHECK(td_wm_icon_arrange());
     mouse(TD_MOUSE_PRESS, TD_BUTTON_LEFT, file_x, file_y);
     mouse(TD_MOUSE_DRAG, TD_BUTTON_LEFT, 60, 12);
     mouse(TD_MOUSE_RELEASE, TD_BUTTON_LEFT, 60, 12);
-    CHECK_EQ(s_dropped_on, -1);
+    CHECK_EQ(s_dropped_on, -2);
+    CHECK(!td_wm_icon_arrange());
+    CHECK_EQ(td_wm_icon_places(places, 8), 4);
+    /* It is there now: a drag from its new place carries the same file. */
+    mouse(TD_MOUSE_PRESS, TD_BUTTON_LEFT, 60, 11);
+    mouse(TD_MOUSE_DRAG, TD_BUTTON_LEFT, folder_x, folder_y);
+    mouse(TD_MOUSE_RELEASE, TD_BUTTON_LEFT, folder_x, folder_y);
+    CHECK_EQ(s_dropped_on, 0);
+    td_wm_set_icon_places(NULL, 0);
+    td_wm_set_icon_arrange(true);
 
     /* A plain click (no movement) does not start a drag. */
     s_dropped_on = -2;

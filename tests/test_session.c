@@ -35,12 +35,14 @@ int main(void)
     CHECK(password!=NULL);td_widget_set_text(password,"wrong");
     td_widget_t *keyboard=widget(login,"Keyboard");CHECK(keyboard!=NULL);keyboard->on_activate(keyboard,keyboard->user);
     td_widget_set_text(password,"");
-    td_event_t touch={.type=TD_EV_MOUSE,.button=TD_BUTTON_LEFT,.x=8,.y=7,.action=TD_MOUSE_PRESS};td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
+    /* The shared keys (apps/osk.c) at 80 x 25: units of 6 columns from x 4,
+     * rows of 3 lines from y 5. "1" (6,6), Shift (68,12), Clear (56,18). */
+    td_event_t touch={.type=TD_EV_MOUSE,.button=TD_BUTTON_LEFT,.x=6,.y=6,.action=TD_MOUSE_PRESS};td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
     CHECK(!strcmp(td_widget_text(password),"1"));
-    touch.y=15;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
-    touch.y=7;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
+    touch.x=68;touch.y=12;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
+    touch.x=6;touch.y=6;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);
     CHECK(!strcmp(td_widget_text(password),"1!"));
-    touch.x=56;touch.y=15;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);CHECK(!td_widget_text(password)[0]);
+    touch.x=56;touch.y=18;touch.action=TD_MOUSE_PRESS;td_wm_dispatch(&touch);touch.action=TD_MOUSE_RELEASE;td_wm_dispatch(&touch);CHECK(!td_widget_text(password)[0]);
     keyboard->on_activate(keyboard,keyboard->user);td_widget_set_text(password,"wrong");
     sign_in->on_activate(sign_in,sign_in->user);CHECK(td_session_locked());CHECK_EQ(verified,0);CHECK(!td_widget_text(password)[0]);
     now+=1500;td_widget_set_text(password,"test-password");sign_in->on_activate(sign_in,sign_in->user);

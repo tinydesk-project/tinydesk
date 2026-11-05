@@ -136,6 +136,8 @@ add_library(tinydesk_apps STATIC
     apps/session.c
     apps/login.c
     apps/users.c
+    apps/osk.c
+    apps/shortcut.c
     apps/settings.c
     apps/sysmon.c
     apps/taskmgr.c
@@ -398,6 +400,11 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_trash PROPERTIES C_STANDARD 11)
     target_compile_options(test_trash PRIVATE ${TD_WARNINGS})
     add_test(NAME test_trash COMMAND test_trash)
+    add_executable(test_osk tests/test_osk.c)
+    target_link_libraries(test_osk PRIVATE tinydesk_apps)
+    set_target_properties(test_osk PROPERTIES C_STANDARD 11)
+    target_compile_options(test_osk PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_osk COMMAND test_osk)
     add_executable(test_pyui tests/test_pyui.c)
     target_link_libraries(test_pyui PRIVATE tinydesk_apps)
     set_target_properties(test_pyui PROPERTIES C_STANDARD 11)

@@ -755,5 +755,6 @@ static void purge_tick(void *user)
 void td_trash_register(void)
 {
     td_app_register(&s_app);
+    td_wm_pin_icon(s_app.name);   /* the bottom right of the desktop */
     td_timer_start(PURGE_MS, true, purge_tick, NULL, td_millis());
 }

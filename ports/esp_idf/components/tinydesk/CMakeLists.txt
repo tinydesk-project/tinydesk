@@ -44,6 +44,8 @@ idf_component_register(
         "${TD_ROOT}/apps/session.c"
         "${TD_ROOT}/apps/login.c"
         "${TD_ROOT}/apps/users.c"
+        "${TD_ROOT}/apps/osk.c"
+        "${TD_ROOT}/apps/shortcut.c"
         "${TD_ROOT}/apps/settings.c"
         "${TD_ROOT}/apps/sysmon.c"
         "${TD_ROOT}/apps/taskmgr.c"

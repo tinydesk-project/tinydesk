@@ -78,6 +78,9 @@ static void layouts(bool audit){
         td_wm_set_window_size(large?TD_UI_LARGE:TD_UI_SMALL);td_wm_set_taskbar_size(large?TD_UI_LARGE:TD_UI_MEDIUM);
         for(int i=0;i<td_app_count();i++){
             const char *name=td_app_get(i)->name;
+            /* The keyboard never takes the focus and draws its own keys
+             * (no widgets to clip): tests/test_wm.c covers it. */
+            if(!strcmp(name,"On-screen keyboard"))continue;
             td_wm_close_all();CHECK(td_app_launch(name));tick(1000);
             td_window_t *w=td_win_focused();CHECK(w!=NULL);if(!w)continue;
             check_controls(w,name,audit);

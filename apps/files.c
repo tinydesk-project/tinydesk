@@ -223,17 +223,9 @@ static void open_selected(void)
         snprintf(s_cwd, sizeof(s_cwd), "%s", path);
         reload();
     }
-    else if (td_is_image(e->name))
-    {
-        td_imageview_open(path);
-    }
-    else if (td_is_compiled_app(e->name))
-    {
-        td_script_run(path); /* Binary apps cannot be edited as text. */
-    }
     else
     {
-        td_editor_open(path);
+        td_open_path(path, false);   /* pictures, app packages, shortcuts, text */
     }
 }
 
@@ -364,7 +356,10 @@ static void run_selected(void)
     td_script_run(path);
 }
 
-/* Right-click menus. A script's menu starts with "Run". */
+/* Right-click menus. A script's menu starts with "Run"; after "Delete
+ * for good" come s_extra entries (Send to Desktop, Start menu, Apps). */
+static int s_extra;
+
 static void entry_menu_chosen(int item, void *user)
 {
     (void)user;
@@ -392,16 +387,20 @@ static void entry_menu_chosen(int item, void *user)
     case 3:
         do_delete(true);
         break;
-    case 5:
-        do_new_file();
-        break;
-    case 6:
-        do_new_folder();
-        break;
-    case 7:
-        reload();
-        break;
     default:
+        if (item < 4 + s_extra && e)
+        {
+            char path[PATH_MAX_];
+            join(path, s_cwd, e->name);
+            td_shortcut_menu_chosen(path, false, item - 4);
+            reload();
+        }
+        else if (item == 5 + s_extra)
+            do_new_file();
+        else if (item == 6 + s_extra)
+            do_new_folder();
+        else if (item == 7 + s_extra)
+            reload();
         break;
     }
 }
@@ -439,19 +438,23 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
 
     if (on_entry && strcmp(s_entries[row].name, "..") != 0)
     {
-        static const char *const items[] = {
+        const char *items[13] = {
             "Run (F9)",
             "Open",
             "Rename (F2)",
             "Delete (Del)",
             "Delete for good (Shift+Del)",
-            "-",
-            "New file",
-            "New folder",
-            "Refresh",
         };
+        char path[PATH_MAX_];
+        join(path, s_cwd, s_entries[row].name);
+        s_extra = td_shortcut_menu(path, false, items + 5, 4);
+        int n = 5 + s_extra;
+        items[n++] = "-";
+        items[n++] = "New file";
+        items[n++] = "New folder";
+        items[n++] = "Refresh";
         bool script = !s_entries[row].is_dir && td_is_runnable(s_entries[row].name);
-        td_menu_popup(ax, ay, script ? items : items + 1, script ? 9 : 8, entry_menu_chosen, NULL);
+        td_menu_popup(ax, ay, script ? items : items + 1, script ? n : n - 1, entry_menu_chosen, NULL);
     }
     else
     {

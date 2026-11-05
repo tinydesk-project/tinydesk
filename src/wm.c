@@ -133,6 +133,8 @@ static td_window_t *top_window(bool include_hidden)
     for (int i = s_order_count - 1; i >= 0; i--)
     {
         td_window_t *w = &s_wins[s_order[i]];
+        if (w->flags & TD_WIN_NO_FOCUS)
+            continue;   /* tools never have the focus */
         if (include_hidden || !(w->flags & TD_WIN_HIDDEN))
             return w;
     }
@@ -246,6 +248,20 @@ static int win_index(const td_window_t *w)
     return (int)(w - s_wins);
 }
 
+/* Tool windows (TD_WIN_NO_FOCUS) stay above all others, in their order. */
+static void tools_on_top(void)
+{
+    int tools[TD_MAX_WINDOWS], n = 0, k = 0;
+    for (int i = 0; i < s_order_count; i++)
+    {
+        if (s_wins[s_order[i]].flags & TD_WIN_NO_FOCUS)
+            tools[n++] = s_order[i];
+        else
+            s_order[k++] = s_order[i];
+    }
+    memcpy(&s_order[k], tools, (size_t)n * sizeof(int));
+}
+
 /* Put a new window on top, except that an open modal dialog stays above
  * ordinary windows (otherwise it would be hidden yet still hold the input). */
 static void order_push(int idx)
@@ -266,6 +282,7 @@ static void order_push(int idx)
     memmove(&s_order[at + 1], &s_order[at], (size_t)(s_order_count - at) * sizeof(int));
     s_order[at] = idx;
     s_order_count++;
+    tools_on_top();
 }
 
 /* Window frames (td_wm_set_window_size): small = one title row and
@@ -542,6 +559,7 @@ void td_win_focus(td_window_t *win)
     int idx = win_index(win);
     order_remove(idx);
     s_order[s_order_count++] = idx;
+    tools_on_top();
     s_dirty = true;
 }
 
@@ -771,7 +789,7 @@ bool td_app_launch(const char *name)
 
 /* One popup at a time: the start menu or a right-click (context) menu.
  * Labels are copied; "-" is a separator line. */
-#define MENU_MAX   (TD_MAX_APPS + START_EXTRA_MAX + 3)
+#define MENU_MAX   (TD_MAX_APPS + START_EXTRA_MAX + TD_START_USER_MAX + 4)
 #define MENU_LABEL 28
 
 static struct
@@ -937,13 +955,27 @@ static void menu_activate(int i)
         fn(i, user);
 }
 
-/* The start menu: every app, then the extra entries. */
+/* The start menu: every app, the user's entries, then the extra ones.
+ * Where each part starts is noted when the menu opens. */
+static const td_start_provider_t *s_start_provider;
+static int s_start_user_first, s_start_user_count, s_start_extra_first;
+
+void td_wm_set_start_provider(const td_start_provider_t *provider)
+{
+    s_start_provider = provider;
+}
+
 static void start_menu_chosen(int i, void *user)
 {
     (void)user;
-    int extra = i - s_app_count - 1;       /* after the separator */
+    int extra = i - s_start_extra_first;
     if (i < s_app_count)
         launch_app(s_apps[i]);
+    else if (i >= s_start_user_first && i < s_start_user_first + s_start_user_count)
+    {
+        if (s_start_provider && s_start_provider->open)
+            s_start_provider->open(i - s_start_user_first, s_start_provider->user);
+    }
     else if (extra >= 0 && extra < s_start_extra_count)
         s_start_extra[extra].fn();
     else if (extra == s_start_extra_count)
@@ -1052,8 +1084,26 @@ void td_wm_toggle_start_menu(void)
         glyphs[n] = s_apps[i]->icon;
         items[n++] = s_apps[i]->name;
     }
+    s_start_user_first = n + 1;
+    s_start_user_count = 0;
+    int users = s_start_provider && s_start_provider->count ? s_start_provider->count(s_start_provider->user) : 0;
+    if (users > TD_START_USER_MAX)
+        users = TD_START_USER_MAX;
+    if (users > 0)
+    {
+        glyphs[n] = NULL;
+        items[n++] = "-";
+        for (int i = 0; i < users; i++)
+        {
+            const char *label = s_start_provider->label ? s_start_provider->label(i, s_start_provider->user) : NULL;
+            glyphs[n] = s_start_provider->icon ? s_start_provider->icon(i, s_start_provider->user) : NULL;
+            items[n++] = label ? label : "?";
+            s_start_user_count++;
+        }
+    }
     glyphs[n] = NULL;
     items[n++] = "-";
+    s_start_extra_first = n;
     for (int i = 0; i < s_start_extra_count; i++)
     {
         glyphs[n] = NULL;
@@ -1537,12 +1587,198 @@ static int icons_per_column(void)
     return n < 1 ? 1 : n;
 }
 
+static int icon_columns(void)
+{
+    int n = (s_cols - 1) / icon_w();
+    return n < 1 ? 1 : n;
+}
+
+/* Icon places (td_wm_set_icon_arrange): s_slot[i] is icon i's slot,
+ * column * icons_per_column() + row, or -1 when it has none. */
+#define ICON_MAX   TD_MAX_ICON_PLACES
+#define SLOT_MAX   256
+static bool s_arrange = true;
+static td_icon_place_t s_places[TD_MAX_ICON_PLACES];
+static int s_place_count;
+static void (*s_icons_moved)(void);
+static char s_pinned[32];
+static int s_slot[ICON_MAX];
+
+uint32_t td_wm_icon_key(bool file, const char *name)
+{
+    uint32_t h = 2166136261u;
+    h = (h ^ (file ? 'f' : 'a')) * 16777619u;
+    for (const unsigned char *p = (const unsigned char *)name; p && *p; p++)
+        h = (h ^ *p) * 16777619u;
+    return h ? h : 1;
+}
+
+static uint32_t icon_key(int i)
+{
+    return td_wm_icon_key(i >= s_app_count, icon_name(i));
+}
+
+static td_icon_place_t *place_find(uint32_t key)
+{
+    for (int i = 0; i < s_place_count; i++)
+        if (s_places[i].key == key)
+            return &s_places[i];
+    return NULL;
+}
+
+static bool place_set(uint32_t key, int slot, int per)
+{
+    td_icon_place_t *p = place_find(key);
+    if (!p && s_place_count < TD_MAX_ICON_PLACES)
+        p = &s_places[s_place_count++];
+    if (!p)
+        return false;
+    *p = (td_icon_place_t){key, (int16_t)(slot / per), (int16_t)(slot % per)};
+    return true;
+}
+
+/* Give every icon a slot: its own place when not arranged, the pinned
+ * icon the bottom right, the rest the first free slots down the columns. */
+static void layout_icons(void)
+{
+    static bool used[SLOT_MAX];
+    int n = icon_count() < ICON_MAX ? icon_count() : ICON_MAX;
+    int per = icons_per_column(), cap = per * icon_columns();
+    if (cap > SLOT_MAX)
+        cap = SLOT_MAX;
+    memset(used, 0, sizeof(used));
+    for (int i = 0; i < n; i++)
+        s_slot[i] = -1;
+    if (!s_arrange)
+        for (int i = 0; i < n; i++)
+        {
+            const td_icon_place_t *p = place_find(icon_key(i));
+            int slot = p && p->row >= 0 && p->row < per && p->col >= 0 ? p->col * per + p->row : -1;
+            if (slot >= 0 && slot < cap && !used[slot])
+            {
+                s_slot[i] = slot;
+                used[slot] = true;
+            }
+        }
+    for (int i = 0; i < n && i < s_app_count; i++)
+        if (s_slot[i] < 0 && s_pinned[0] && !strcmp(s_apps[i]->name, s_pinned) && !used[cap - 1])
+        {
+            s_slot[i] = cap - 1;
+            used[cap - 1] = true;
+        }
+    int next = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (s_slot[i] >= 0)
+            continue;
+        while (next < cap && used[next])
+            next++;
+        if (next >= cap)
+            break;
+        s_slot[i] = next;
+        used[next] = true;
+    }
+}
+
+/* Slots are spread over the whole desktop, so the last column and row
+ * touch its right and bottom edges (where the pinned icon goes). */
+static int slot_x(int col)
+{
+    int cols = icon_columns(), span = s_cols - 1 - icon_w();
+    return 1 + (cols > 1 && span > 0 ? col * span / (cols - 1) : col * icon_w());
+}
+
+static int slot_y(int row)
+{
+    int per = icons_per_column(), span = td_wm_desktop_rows() - 1 - icon_h();
+    return 1 + (per > 1 && span > 0 ? row * span / (per - 1) : row * icon_h());
+}
+
 static td_rect_t icon_rect(int i)
 {
-    int per = icons_per_column();
+    int per = icons_per_column(), slot = i < ICON_MAX ? s_slot[i] : -1;
+    if (slot < 0)
+        return td_rect(-1, -1, 0, 0);   /* no room: not shown */
     bool small = icon_eff() == TD_UI_SMALL;
     int h = small ? 1 : icon_h() - 1;
-    return td_rect(1 + (i / per) * icon_w(), 1 + (i % per) * icon_h(), icon_w() - (small ? 1 : 0), h);
+    return td_rect(slot_x(slot / per), slot_y(slot % per), icon_w() - (small ? 1 : 0), h);
+}
+
+/* The slot whose cell (up to the next slot) holds x, y, or -1. */
+static int slot_at(int x, int y)
+{
+    int per = icons_per_column(), cols = icon_columns(), col = -1, row = -1;
+    for (int c = 0; c < cols && slot_x(c) <= x; c++)
+        col = c;
+    for (int r = 0; r < per && slot_y(r) <= y; r++)
+        row = r;
+    if (col < 0 || row < 0 || y >= td_wm_desktop_rows() || col * per + row >= SLOT_MAX)
+        return -1;
+    return col * per + row;
+}
+
+/* Icon i dragged to the slot under x, y (swapping with an icon there).
+ * The others keep where they are: arranging stops. */
+static void move_icon(int i, int x, int y)
+{
+    int slot = slot_at(x, y), per = icons_per_column();
+    layout_icons();
+    if (slot < 0 || i >= ICON_MAX || s_slot[i] == slot)
+        return;
+    int n = icon_count() < ICON_MAX ? icon_count() : ICON_MAX;
+    if (s_arrange)
+    {
+        s_arrange = false;
+        s_place_count = 0;
+        for (int j = 0; j < n; j++)
+            if (s_slot[j] >= 0)
+                (void)place_set(icon_key(j), s_slot[j], per);
+    }
+    for (int j = 0; j < n; j++)
+        if (j != i && s_slot[j] == slot && s_slot[i] >= 0)
+            (void)place_set(icon_key(j), s_slot[i], per);
+    if (!place_set(icon_key(i), slot, per))
+        return;
+    s_dirty = true;
+    if (s_icons_moved)
+        s_icons_moved();
+}
+
+void td_wm_set_icon_arrange(bool on)
+{
+    s_arrange = on;
+    s_dirty = true;
+}
+
+bool td_wm_icon_arrange(void)
+{
+    return s_arrange;
+}
+
+int td_wm_icon_places(td_icon_place_t *out, int max)
+{
+    int n = s_place_count < max ? s_place_count : max;
+    memcpy(out, s_places, (size_t)n * sizeof(*out));
+    return n;
+}
+
+void td_wm_set_icon_places(const td_icon_place_t *places, int count)
+{
+    s_place_count = count < TD_MAX_ICON_PLACES ? (count > 0 ? count : 0) : TD_MAX_ICON_PLACES;
+    if (s_place_count)
+        memcpy(s_places, places, (size_t)s_place_count * sizeof(*places));
+    s_dirty = true;
+}
+
+void td_wm_on_icons_moved(void (*fn)(void))
+{
+    s_icons_moved = fn;
+}
+
+void td_wm_pin_icon(const char *app_name)
+{
+    snprintf(s_pinned, sizeof(s_pinned), "%s", app_name ? app_name : "");
+    s_dirty = true;
 }
 
 /* Icon under the cell, or -1. Windows cover icons. */
@@ -1550,6 +1786,7 @@ static int icon_at(int x, int y)
 {
     if (!td_desktop_icons() || td_wm_window_at(x, y))
         return -1;
+    layout_icons();
     for (int i = 0; i < icon_count(); i++)
         if (td_rect_contains(icon_rect(i), x, y))
             return i;
@@ -1729,8 +1966,9 @@ static void desktop_press(const td_event_t *ev)
         launch_icon(i);
         return;
     }
-    /* Files and folders on the desktop can be dragged. */
-    if (i >= s_app_count && s_provider && s_provider->drag)
+    /* Icons can be dragged: to another place, and files and folders also
+     * into folders and windows. */
+    if (i >= 0)
     {
         s_dnd.armed = true;
         s_dnd.icon = i;
@@ -1899,8 +2137,11 @@ void td_wm_compose(td_buffer_t *back)
     }else{
     td_fill(td_rect(0, 0, s_cols, s_rows), td_desktop_pattern(), t->desktop_fg, t->desktop_bg);
     if (td_desktop_icons() && !s_kiosk)
+    {
+        layout_icons();
         for (int i = 0; i < icon_count(); i++)
             draw_icon(i);
+    }
 
     td_window_t *focused = td_win_focused();
     for (int i = 0; i < s_order_count; i++)
@@ -2048,6 +2289,12 @@ static bool dnd_try_start(const td_event_t *ev)
     {
         ok = s_provider->drag(s_dnd.icon - s_app_count, &s_dnd.item, s_provider->user);
     }
+    else if (s_dnd.icon >= 0 && s_dnd.icon < s_app_count)
+    {
+        /* An app icon only moves on the desktop: no path for windows. */
+        snprintf(s_dnd.item.name, sizeof(s_dnd.item.name), "%s", icon_name(s_dnd.icon));
+        ok = true;
+    }
     else if (td_win_is_open(s_dnd.win) && s_dnd.win->on_drag_start)
     {
         td_rect_t c = td_win_client(s_dnd.win);
@@ -2064,6 +2311,25 @@ static void dnd_drop(int x, int y)
     if (in_taskbar(y))
         return;
     td_window_t *w = td_wm_window_at(x, y);
+    bool app = s_dnd.icon >= 0 && s_dnd.icon < s_app_count;
+    if (w && app)
+        return;
+    if (!w && s_dnd.icon >= 0 && td_desktop_icons() && !s_kiosk)
+    {
+        /* A desktop icon dropped on the desktop: a new place, or a swap,
+         * unless a file goes onto a folder (then it moves into it). */
+        int target = icon_at(x, y);
+        td_drag_item_t onto = {0};
+        bool folder = target >= s_app_count && s_provider && s_provider->drag &&
+                      s_provider->drag(target - s_app_count, &onto, s_provider->user) && onto.is_dir;
+        if (target != s_dnd.icon && !(folder && !app))
+        {
+            move_icon(s_dnd.icon, x, y);
+            return;
+        }
+        if (target == s_dnd.icon)
+            return;
+    }
     if (w)
     {
         td_rect_t c = td_win_client(w);
@@ -2149,8 +2415,8 @@ static void dispatch_mouse(const td_event_t *ev)
             desktop_context(ev);
         return;
     }
-    if (modal && w != modal)
-        return;
+    if (modal && w != modal && !(w->flags & TD_WIN_NO_FOCUS))
+        return;   /* the on-screen keyboard still types into a dialog */
 
     bool wheel = ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN;
     if (ev->action == TD_MOUSE_PRESS && !wheel)

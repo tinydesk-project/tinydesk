@@ -393,12 +393,14 @@ static int user_access_set(const char *actor,const char *name,int role,uint32_t 
 static uint32_t user_remembered(char *name,int cap){return tdsh_remembered_login(name,(size_t)cap);}
 static int user_boot_set(const char *actor,const char *name){return actor&&!strcmp(actor,"root")?tdsh_boot_user_set(name):-1;}
 static int user_require_password(const char *actor){return actor&&!strcmp(actor,"root")?tdsh_boot_login_require_password():-1;}
+static int user_hint_get(const char *name,char *out,int cap){return cap>0?tdsh_user_hint_get(name,out,(size_t)cap):-22;}
 static const td_user_ops_t s_user_ops={
     .list=user_list,.role=user_role,.rights=tdsh_user_rights,.generation=tdsh_user_generation,.create=user_create,
     .access_set=user_access_set,.password_set=tdsh_user_password_set,
     .remembered=user_remembered,.remember_allowed=tdsh_user_remember_allowed,
     .login=tdsh_user_login,.boot_user_set=user_boot_set,
     .require_password=user_require_password,
+    .hint_get=user_hint_get,.hint_set=tdsh_user_hint_set,
 };
 
 /* The chip's name as Espressif writes it (About). */
