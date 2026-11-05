@@ -19,6 +19,7 @@
  * Its windows close when it ends (td_tdui_release).
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "py/mphal.h"
