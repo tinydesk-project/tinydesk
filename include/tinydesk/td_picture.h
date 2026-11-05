@@ -40,15 +40,15 @@ void td_picture_set_rgb_sink(td_picture_rgb_sink_fn sink, void *user);
 bool td_picture_local_rgb(void);
 /* Optional synchronous lossless-run path. The borrowed pairs must expand
  * to exactly w*h RGB565 pixels. A false return uses normal RGB rendering. */
-typedef bool (*td_picture_runs_fn)(void *user,int w,int h,const uint16_t **runs,size_t *words);
-typedef bool (*td_picture_runs_sink_fn)(void *user,int x,int y,const uint16_t *runs,size_t words,int w,int h);
-void td_picture_set_runs_sink(td_picture_runs_sink_fn sink,void *user);
-void td_picture_add_rgb_runs(int x,int y,int cols,int rows,uint32_t id,
-                            td_picture_render_fn fallback,td_picture_render_rgb_fn render,
-                            td_picture_runs_fn cached,void *user);
+typedef bool (*td_picture_runs_fn)(void *user, int w, int h, const uint16_t **runs, size_t *words);
+typedef bool (*td_picture_runs_sink_fn)(void *user, int x, int y, const uint16_t *runs, size_t words, int w, int h);
+void td_picture_set_runs_sink(td_picture_runs_sink_fn sink, void *user);
+void td_picture_add_rgb_runs(int x, int y, int cols, int rows, uint32_t id,
+                             td_picture_render_fn fallback, td_picture_render_rgb_fn render,
+                             td_picture_runs_fn cached, void *user);
 uint32_t td_picture_runs_ms(void);
 /* Cumulative diagnostics, sampled without stopping the renderer. */
-void td_picture_stats(uint32_t *renders,uint32_t *allocation_failures,uint32_t *sink_failures);
+void td_picture_stats(uint32_t *renders, uint32_t *allocation_failures, uint32_t *sink_failures);
 void td_picture_profile_reset(void);
 void td_picture_profile(uint32_t out[4]); /* frames, total ms, peak ms, last ms */
 /* Optional platform scanout telemetry. Zeroes when no local RGB display:

@@ -369,43 +369,88 @@ static bool local_picture(void *user, int x, int y, const uint8_t *pixels, int w
 static unsigned font_white;
 static bool font_picture(void *user, int x, int y, const uint8_t *px, int w, int h)
 {
-    (void)user;(void)x;(void)y;
-    if(w==200&&h==80){font_white=0;for(int i=0;i<w*h;i++)font_white+=px[i]==231;}
+    (void)user;
+    (void)x;
+    (void)y;
+    if (w == 200 && h == 80)
+    {
+        font_white = 0;
+        for (int i = 0; i < w * h; i++)
+            font_white += px[i] == 231;
+    }
     return true;
 }
 static void test_generated_fonts(void)
 {
     /* One portable glyph, repeated beyond the old 48-byte picture label.
      * Exercise native pixels, retained page copies and refcounted text. */
-    const uint8_t bytes[51]={'T','D','F','O','N','T','0','1',32,0,1,0,3,0,2,0,1,0,8,0,
-        32,0,0,0,48,0,0,0,51,0,0,0,63,0,0,0,48,0,0,0,1,0,0,0,2,0,0,0,128,128,128};
-    size_t size=sizeof(td_pyui_font_t)+sizeof(bytes);
-    CHECK(td_pyui_pixels_take((long)size));td_pyui_font_t *font=malloc(size);CHECK(font!=NULL);
-    if(!font){td_pyui_pixels_give((long)size);return;}
-    font->bytes=size;memcpy(font->data,bytes,sizeof(bytes));CHECK(td_font_open(&font->face,font->data,sizeof(bytes)));
-    td_pyui_send_font(90,font,NULL);
-    send(TD_PYUI_OPEN,79,0,24,6,0,0,0,0,"Fonts");
-    td_pyui_msg_t add={.op=TD_PYUI_ADD,.id=80,.win=79,.flags=TD_PYUI_W_CANVAS,.c=20,.d=4,.e=3};
-    CHECK(td_pyui_send(&add,""));td_term_set_sixel(true);td_term_set_cell_px(10,20);
-    td_pyui_msg_t m={.op=TD_PYUI_FONT_TEXT,.id=80,.win=90,.c=20,.d=4,.e=231,.f=17};
-    char long_text[201];memset(long_text,'?',200);long_text[200]=0;m.len=200;
-    CHECK(td_pyui_send(&m,long_text));td_picture_set_sink(font_picture,NULL);font_white=0;settle();CHECK_EQ(font_white,300);
-    send(TD_PYUI_PAGE_COPY,80,0,0,1,0,0,0,0,NULL);
-    send(TD_PYUI_PAGE,80,0,1,1,0,0,0,0,NULL);settle();CHECK_EQ(font_white,300);
-    m.len=1;CHECK(td_pyui_send(&m,"?"));settle();CHECK_EQ(font_white,3);
-    send(TD_PYUI_PAGE,80,0,0,0,0,0,0,0,NULL);settle();CHECK_EQ(font_white,300);
+    const uint8_t bytes[51] = {'T', 'D', 'F', 'O', 'N', 'T', '0', '1', 32, 0, 1, 0, 3, 0, 2, 0, 1, 0, 8, 0,
+                               32, 0, 0, 0, 48, 0, 0, 0, 51, 0, 0, 0, 63, 0, 0, 0, 48, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 128, 128, 128};
+    size_t size = sizeof(td_pyui_font_t) + sizeof(bytes);
+    CHECK(td_pyui_pixels_take((long)size));
+    td_pyui_font_t *font = malloc(size);
+    CHECK(font != NULL);
+    if (!font)
+    {
+        td_pyui_pixels_give((long)size);
+        return;
+    }
+    font->bytes = size;
+    memcpy(font->data, bytes, sizeof(bytes));
+    CHECK(td_font_open(&font->face, font->data, sizeof(bytes)));
+    td_pyui_send_font(90, font, NULL);
+    send(TD_PYUI_OPEN, 79, 0, 24, 6, 0, 0, 0, 0, "Fonts");
+    td_pyui_msg_t add = {.op = TD_PYUI_ADD, .id = 80, .win = 79, .flags = TD_PYUI_W_CANVAS, .c = 20, .d = 4, .e = 3};
+    CHECK(td_pyui_send(&add, ""));
+    td_term_set_sixel(true);
+    td_term_set_cell_px(10, 20);
+    td_pyui_msg_t m = {.op = TD_PYUI_FONT_TEXT, .id = 80, .win = 90, .c = 20, .d = 4, .e = 231, .f = 17};
+    char long_text[201];
+    memset(long_text, '?', 200);
+    long_text[200] = 0;
+    m.len = 200;
+    CHECK(td_pyui_send(&m, long_text));
+    td_picture_set_sink(font_picture, NULL);
+    font_white = 0;
+    settle();
+    CHECK_EQ(font_white, 300);
+    send(TD_PYUI_PAGE_COPY, 80, 0, 0, 1, 0, 0, 0, 0, NULL);
+    send(TD_PYUI_PAGE, 80, 0, 1, 1, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK_EQ(font_white, 300);
+    m.len = 1;
+    CHECK(td_pyui_send(&m, "?"));
+    settle();
+    CHECK_EQ(font_white, 3);
+    send(TD_PYUI_PAGE, 80, 0, 0, 0, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK_EQ(font_white, 300);
     /* A transparent multiline fallback must not escape its text rectangle.
      * Native image delivery covers only that box; stray cells stay visible. */
-    send(TD_PYUI_FILL,80,0,0,0,20,4,231,17,".");
-    m.a=4;m.b=1;m.c=8;m.d=2;m.f=TD_PYUI_CLEAR;m.flags=16;
-    const char *overflow="????????????????????\n????????????????????";
-    m.len=(uint16_t)strlen(overflow);CHECK(td_pyui_send(&m,overflow));settle();
-    static td_buffer_t font_back;td_buffer_init(&font_back,80,25);td_wm_compose(&font_back);
-    td_rect_t client=td_win_client(td_win_focused());
-    for(int y=0;y<4;y++)for(int x=0;x<20;x++)
-        if(x<4||x>=12||y<1||y>=3)CHECK_EQ(td_buffer_cell(&font_back,client.x+x,client.y+y)->ch,'.');
-    send(TD_PYUI_CLOSE,90,0,0,0,0,0,0,0,NULL);send(TD_PYUI_CLOSE,79,0,0,0,0,0,0,0,NULL);settle();
-    td_picture_set_sink(NULL,NULL);td_term_set_sixel(false);
+    send(TD_PYUI_FILL, 80, 0, 0, 0, 20, 4, 231, 17, ".");
+    m.a = 4;
+    m.b = 1;
+    m.c = 8;
+    m.d = 2;
+    m.f = TD_PYUI_CLEAR;
+    m.flags = 16;
+    const char *overflow = "????????????????????\n????????????????????";
+    m.len = (uint16_t)strlen(overflow);
+    CHECK(td_pyui_send(&m, overflow));
+    settle();
+    static td_buffer_t font_back;
+    td_buffer_init(&font_back, 80, 25);
+    td_wm_compose(&font_back);
+    td_rect_t client = td_win_client(td_win_focused());
+    for (int y = 0; y < 4; y++)
+        for (int x = 0; x < 20; x++)
+            if (x < 4 || x >= 12 || y < 1 || y >= 3)
+                CHECK_EQ(td_buffer_cell(&font_back, client.x + x, client.y + y)->ch, '.');
+    send(TD_PYUI_CLOSE, 90, 0, 0, 0, 0, 0, 0, 0, NULL);
+    send(TD_PYUI_CLOSE, 79, 0, 0, 0, 0, 0, 0, 0, NULL);
+    settle();
+    td_picture_set_sink(NULL, NULL);
+    td_term_set_sixel(false);
 }
 
 static void test_pictures(void)
@@ -455,7 +500,9 @@ static void test_pictures(void)
     CHECK(strstr(s_out, "\x1bP") != NULL);
     CHECK(strstr(s_out, "\xe2\x96\x80") == NULL);
     CHECK(strstr(s_out, "DOWN") == NULL);
-    CHECK(strncmp(s_out, "\x1b[?2026h\x1b" "7", 10) == 0);
+    CHECK(strncmp(s_out, "\x1b[?2026h\x1b"
+                         "7",
+                  10) == 0);
     CHECK(strstr(s_out, "\x1b[?2026l") != NULL);
 
     /* A local LCD consumes the exact rendered pixels without a Sixel
@@ -653,104 +700,184 @@ static void test_bar(void)
 
 static void test_gradient_fills(void)
 {
-    const uint8_t vertical[7]={255,0,0,0,0,255,0};
-    td_pyui_msg_t m={.op=TD_PYUI_RECT,.id=CANVAS,.flags=2,.a=0,.b=0,.c=20,.d=4,.len=7};
-    CHECK(td_pyui_send(&m,(const char *)vertical));settle();
-    CHECK_EQ(cell(3,0).fg,td_rgb256(255,0,0));
-    CHECK_EQ(cell(3,1).bg,td_rgb256(0,0,255));
-    CHECK(cell(3,0).fg!=cell(3,1).bg);
+    const uint8_t vertical[7] = {255, 0, 0, 0, 0, 255, 0};
+    td_pyui_msg_t m = {.op = TD_PYUI_RECT, .id = CANVAS, .flags = 2, .a = 0, .b = 0, .c = 20, .d = 4, .len = 7};
+    CHECK(td_pyui_send(&m, (const char *)vertical));
+    settle();
+    CHECK_EQ(cell(3, 0).fg, td_rgb256(255, 0, 0));
+    CHECK_EQ(cell(3, 1).bg, td_rgb256(0, 0, 255));
+    CHECK(cell(3, 0).fg != cell(3, 1).bg);
     /* Rounded fills retain their underlying corners and symmetric ends. */
-    send(TD_PYUI_RECT,CANVAS,0,0,0,20,8,17,0,NULL);
-    m.d=8;m.f=4;CHECK(td_pyui_send(&m,(const char *)vertical));settle();
-    CHECK_EQ(cell(0,0).fg,17);
-    for(int y=0;y<4;y++)for(int x=0;x<5;x++){
-        CHECK_EQ(cell(x,y).fg,cell(9-x,y).fg);CHECK_EQ(cell(x,y).bg,cell(9-x,y).bg);
-    }
+    send(TD_PYUI_RECT, CANVAS, 0, 0, 0, 20, 8, 17, 0, NULL);
+    m.d = 8;
+    m.f = 4;
+    CHECK(td_pyui_send(&m, (const char *)vertical));
+    settle();
+    CHECK_EQ(cell(0, 0).fg, 17);
+    for (int y = 0; y < 4; y++)
+        for (int x = 0; x < 5; x++)
+        {
+            CHECK_EQ(cell(x, y).fg, cell(9 - x, y).fg);
+            CHECK_EQ(cell(x, y).bg, cell(9 - x, y).bg);
+        }
     /* A shrinking gradient bar clears old fill with its solid track. */
-    const uint8_t bar[10]={40,17,120,255,0,0,0,0,255,0};
-    m.op=TD_PYUI_BAR;m.flags=0;m.e=1000;m.f=0;m.len=10;
-    CHECK(td_pyui_send(&m,(const char *)bar));settle();CHECK_EQ(cell(3,0).fg,td_rgb256(255,0,0));
-    m.e=0;CHECK(td_pyui_send(&m,(const char *)bar));settle();CHECK_EQ(cell(3,0).fg,17);
-    m.op=TD_PYUI_CIRCLE;m.flags=2;m.a=6;m.b=4;m.c=3;m.len=7;
-    CHECK(td_pyui_send(&m,(const char *)vertical));settle();CHECK(!*error_event());
+    const uint8_t bar[10] = {40, 17, 120, 255, 0, 0, 0, 0, 255, 0};
+    m.op = TD_PYUI_BAR;
+    m.flags = 0;
+    m.e = 1000;
+    m.f = 0;
+    m.len = 10;
+    CHECK(td_pyui_send(&m, (const char *)bar));
+    settle();
+    CHECK_EQ(cell(3, 0).fg, td_rgb256(255, 0, 0));
+    m.e = 0;
+    CHECK(td_pyui_send(&m, (const char *)bar));
+    settle();
+    CHECK_EQ(cell(3, 0).fg, 17);
+    m.op = TD_PYUI_CIRCLE;
+    m.flags = 2;
+    m.a = 6;
+    m.b = 4;
+    m.c = 3;
+    m.len = 7;
+    CHECK(td_pyui_send(&m, (const char *)vertical));
+    settle();
+    CHECK(!*error_event());
 }
 
-static uint16_t rgb_frame[800*500];
+static uint16_t rgb_frame[800 * 500];
 static int rgb_max_height;
-static bool rgb_capture(void *user,int x,int y,const uint16_t *px,int w,int h)
+static bool rgb_capture(void *user, int x, int y, const uint16_t *px, int w, int h)
 {
     (void)user;
-    if(h>rgb_max_height)rgb_max_height=h;
-    for(int row=0;row<h;row++)memcpy(rgb_frame+(y*20+row)*800+x*10,px+(size_t)row*w,(size_t)w*sizeof(*px));
+    if (h > rgb_max_height)
+        rgb_max_height = h;
+    for (int row = 0; row < h; row++)
+        memcpy(rgb_frame + (y * 20 + row) * 800 + x * 10, px + (size_t)row * w, (size_t)w * sizeof(*px));
     return true;
 }
 static int rejected_run_calls;
-static bool reject_runs(void *user,int x,int y,const uint16_t *runs,size_t words,int w,int h)
-{(void)user;(void)x;(void)y;(void)runs;(void)words;(void)w;(void)h;rejected_run_calls++;return false;}
+static bool reject_runs(void *user, int x, int y, const uint16_t *runs, size_t words, int w, int h)
+{
+    (void)user;
+    (void)x;
+    (void)y;
+    (void)runs;
+    (void)words;
+    (void)w;
+    (void)h;
+    rejected_run_calls++;
+    return false;
+}
 
 static void test_rgb_pictures(void)
 {
-    CHECK(td_pyui_attach());CHECK(!td_pyui_rgb_enabled());
-    if(TD_PYUI_MAX_CELLS<=2000){CHECK(!td_pyui_enable_rgb());td_pyui_detach_begin();for(int i=0;i<20&&!td_pyui_detach_done();i++)settle();return;}
+    CHECK(td_pyui_attach());
+    CHECK(!td_pyui_rgb_enabled());
+    if (TD_PYUI_MAX_CELLS <= 2000)
+    {
+        CHECK(!td_pyui_enable_rgb());
+        td_pyui_detach_begin();
+        for (int i = 0; i < 20 && !td_pyui_detach_done(); i++)
+            settle();
+        return;
+    }
     CHECK(td_pyui_enable_rgb());
-    s_terminal.sixel=true;s_terminal.cell_w=10;s_terminal.cell_h=20;
-    send(TD_PYUI_OPEN,WIN,0,30,10,WIN_X,WIN_Y,0,0,"RGB");
-    send(TD_PYUI_ADD,CANVAS,TD_PYUI_W_CANVAS,0,0,12,4,2,0,NULL);
-    uint8_t colors[7]={13,45,77,17,60,98,0};
-    td_pyui_msg_t m={.op=TD_PYUI_RECT,.id=CANVAS,.flags=2,.c=24,.d=8,.len=7};
-    CHECK(td_pyui_send(&m,(const char *)colors));
-    td_term_set_sixel(true);td_term_set_cell_px(10,20);td_picture_set_rgb_sink(rgb_capture,NULL);settle();
-    CHECK(rgb_max_height>0&&rgb_max_height<=40); /* bounded regions, never an 80-pixel canvas allocation */
-    CHECK_EQ(rgb_frame[CY*20*800+CX*10],td_rgb565(13,45,77));
+    s_terminal.sixel = true;
+    s_terminal.cell_w = 10;
+    s_terminal.cell_h = 20;
+    send(TD_PYUI_OPEN, WIN, 0, 30, 10, WIN_X, WIN_Y, 0, 0, "RGB");
+    send(TD_PYUI_ADD, CANVAS, TD_PYUI_W_CANVAS, 0, 0, 12, 4, 2, 0, NULL);
+    uint8_t colors[7] = {13, 45, 77, 17, 60, 98, 0};
+    td_pyui_msg_t m = {.op = TD_PYUI_RECT, .id = CANVAS, .flags = 2, .c = 24, .d = 8, .len = 7};
+    CHECK(td_pyui_send(&m, (const char *)colors));
+    td_term_set_sixel(true);
+    td_term_set_cell_px(10, 20);
+    td_picture_set_rgb_sink(rgb_capture, NULL);
+    settle();
+    CHECK(rgb_max_height > 0 && rgb_max_height <= 40); /* bounded regions, never an 80-pixel canvas allocation */
+    CHECK_EQ(rgb_frame[CY * 20 * 800 + CX * 10], td_rgb565(13, 45, 77));
     /* A dark-blue image must not turn gray; its keyed corner must keep the
      * original RGB gradient beneath, including after text/pressed redraws. */
-    td_pyui_image_t *img=td_pyui_image_new_rgb(6,6,true,true);CHECK(img!=NULL);
-    for(int i=0;i<36;i++){img->px[i]=td_rgb256(13,45,77);img->rgb[i]=td_rgb565(13,45,77);img->mask[i]=i==0;}
-    img->rgb[13]=td_rgb565(0,100,170);
+    td_pyui_image_t *img = td_pyui_image_new_rgb(6, 6, true, true);
+    CHECK(img != NULL);
+    for (int i = 0; i < 36; i++)
+    {
+        img->px[i] = td_rgb256(13, 45, 77);
+        img->rgb[i] = td_rgb565(13, 45, 77);
+        img->mask[i] = i == 0;
+    }
+    img->rgb[13] = td_rgb565(0, 100, 170);
     CHECK(td_pyui_pixels_take(td_pyui_image_bytes(img)));
-    td_pyui_send_image(TD_PYUI_IMAGE,30,0,0,img,NULL);send_picture(30,2,1,4,2,"");settle();
-    uint16_t corner=rgb_frame[(CY+1)*20*800+(CX+2)*10];
-    CHECK_EQ(rgb_frame[((CY+2)*20+19)*800+(CX+5)*10+9],td_rgb565(13,45,77));
-    send_picture(30,2,1,4,2,"ON");settle();
-    CHECK_EQ(rgb_frame[(CY+1)*20*800+(CX+2)*10],corner);
-    send_picture(30,2,1,4,2,"");settle();
-    uint16_t detail=rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3];
-    CHECK_EQ(detail,td_rgb565(0,100,170));
-    send_picture(30,5,1,2,1,"");settle();
-    CHECK_EQ(rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3],detail);
+    td_pyui_send_image(TD_PYUI_IMAGE, 30, 0, 0, img, NULL);
+    send_picture(30, 2, 1, 4, 2, "");
+    settle();
+    uint16_t corner = rgb_frame[(CY + 1) * 20 * 800 + (CX + 2) * 10];
+    CHECK_EQ(rgb_frame[((CY + 2) * 20 + 19) * 800 + (CX + 5) * 10 + 9], td_rgb565(13, 45, 77));
+    send_picture(30, 2, 1, 4, 2, "ON");
+    settle();
+    CHECK_EQ(rgb_frame[(CY + 1) * 20 * 800 + (CX + 2) * 10], corner);
+    send_picture(30, 2, 1, 4, 2, "");
+    settle();
+    uint16_t detail = rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3];
+    CHECK_EQ(detail, td_rgb565(0, 100, 170));
+    send_picture(30, 5, 1, 2, 1, "");
+    settle();
+    CHECK_EQ(rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3], detail);
     /* Showing an unrelated page must erase the earlier image everywhere,
      * without a capture forcing a full redraw. */
-    send(TD_PYUI_PAGE,CANVAS,0,1,-1,0,0,0,0,NULL);
-    send(TD_PYUI_FILL,CANVAS,0,0,0,12,4,231,18," ");
-    send(TD_PYUI_PAGE,CANVAS,0,1,1,0,0,0,0,NULL);settle();
-    CHECK_EQ(rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3],td_palette_rgb565(18));
-    send(TD_PYUI_PAGE,CANVAS,0,0,0,0,0,0,0,NULL);settle();
-    CHECK_EQ(rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3],detail);
-    send(TD_PYUI_PAGE_COPY,CANVAS,0,0,1,0,0,0,0,NULL);
-    send(TD_PYUI_PAGE,CANVAS,0,1,1,0,0,0,0,NULL);settle();
-    CHECK_EQ(rgb_frame[(CY+1)*20*800+(CX+2)*10],corner);
-    send(TD_PYUI_RESIZE,CANVAS,0,14,5,0,0,0,0,NULL);settle();CHECK(!*error_event());
-    td_picture_set_rgb_sink(NULL,NULL);s_out_len=0;td_pictures_forget();td_win_invalidate(NULL);settle();
-    CHECK(strstr(s_out,";2;3;17;29")!=NULL); /* 13/45/77 preserved as RGB565 then Sixel percentages */
+    send(TD_PYUI_PAGE, CANVAS, 0, 1, -1, 0, 0, 0, 0, NULL);
+    send(TD_PYUI_FILL, CANVAS, 0, 0, 0, 12, 4, 231, 18, " ");
+    send(TD_PYUI_PAGE, CANVAS, 0, 1, 1, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK_EQ(rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3], td_palette_rgb565(18));
+    send(TD_PYUI_PAGE, CANVAS, 0, 0, 0, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK_EQ(rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3], detail);
+    send(TD_PYUI_PAGE_COPY, CANVAS, 0, 0, 1, 0, 0, 0, 0, NULL);
+    send(TD_PYUI_PAGE, CANVAS, 0, 1, 1, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK_EQ(rgb_frame[(CY + 1) * 20 * 800 + (CX + 2) * 10], corner);
+    send(TD_PYUI_RESIZE, CANVAS, 0, 14, 5, 0, 0, 0, 0, NULL);
+    settle();
+    CHECK(!*error_event());
+    td_picture_set_rgb_sink(NULL, NULL);
+    s_out_len = 0;
+    td_pictures_forget();
+    td_win_invalidate(NULL);
+    settle();
+    CHECK(strstr(s_out, ";2;3;17;29") != NULL); /* 13/45/77 preserved as RGB565 then Sixel percentages */
     /* A changed source image must replace its already-cached appearance,
      * including pictures on copied/hidden pages. */
     /* Resizing deliberately removed picture objects; recreate a cached
      * reference before changing the source image. */
-    td_picture_set_rgb_sink(rgb_capture,NULL);send_picture(30,2,1,4,2,"");settle();
-    td_pictures_forget();td_win_invalidate(NULL);settle();
-    uint32_t cache[12];td_pyui_cache_stats(cache);CHECK(cache[2]>0);
-    const uint8_t changed[7]={27,147,86,27,147,86,0};
-    m=(td_pyui_msg_t){.op=TD_PYUI_RECT,.id=30,.flags=2,.c=6,.d=6,.len=7};
-    CHECK(td_pyui_send(&m,(const char *)changed));settle();
-    CHECK_EQ(img->rgb[13],td_rgb565(27,147,86));CHECK(!*error_event());
-    CHECK_EQ(rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3],td_rgb565(27,147,86));
-    td_picture_set_runs_sink(reject_runs,NULL);
-    td_win_invalidate(NULL);settle();
-    CHECK(rejected_run_calls>0);
-    CHECK_EQ(rgb_frame[((CY+1)*20+12)*800+(CX+2)*10+3],td_rgb565(27,147,86));
-    td_picture_set_runs_sink(NULL,NULL);
-    td_pyui_detach_begin();for(int i=0;i<20&&!td_pyui_detach_done();i++)settle();
-    CHECK(td_pyui_pixels_take(TD_PYUI_MAX_PIXELS));td_pyui_pixels_give(TD_PYUI_MAX_PIXELS);
+    td_picture_set_rgb_sink(rgb_capture, NULL);
+    send_picture(30, 2, 1, 4, 2, "");
+    settle();
+    td_pictures_forget();
+    td_win_invalidate(NULL);
+    settle();
+    uint32_t cache[12];
+    td_pyui_cache_stats(cache);
+    CHECK(cache[2] > 0);
+    const uint8_t changed[7] = {27, 147, 86, 27, 147, 86, 0};
+    m = (td_pyui_msg_t){.op = TD_PYUI_RECT, .id = 30, .flags = 2, .c = 6, .d = 6, .len = 7};
+    CHECK(td_pyui_send(&m, (const char *)changed));
+    settle();
+    CHECK_EQ(img->rgb[13], td_rgb565(27, 147, 86));
+    CHECK(!*error_event());
+    CHECK_EQ(rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3], td_rgb565(27, 147, 86));
+    td_picture_set_runs_sink(reject_runs, NULL);
+    td_win_invalidate(NULL);
+    settle();
+    CHECK(rejected_run_calls > 0);
+    CHECK_EQ(rgb_frame[((CY + 1) * 20 + 12) * 800 + (CX + 2) * 10 + 3], td_rgb565(27, 147, 86));
+    td_picture_set_runs_sink(NULL, NULL);
+    td_pyui_detach_begin();
+    for (int i = 0; i < 20 && !td_pyui_detach_done(); i++)
+        settle();
+    CHECK(td_pyui_pixels_take(TD_PYUI_MAX_PIXELS));
+    td_pyui_pixels_give(TD_PYUI_MAX_PIXELS);
 }
 
 static void test_limits(void)

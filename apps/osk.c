@@ -41,14 +41,19 @@ static key_t_ key_at(const td_osk_t *k, int i)
 {
     if (i < 40)
     {
-        const char *const *set = k->sym ? s_symbols : k->shift ? s_upper : s_lower;
+        const char *const *set = k->sym ? s_symbols : k->shift ? s_upper
+                                                               : s_lower;
         return (key_t_){i / 10, i % 10, 1, (unsigned char)set[i / 10][i % 10]};
     }
     static const int right[4] = {TD_KEY_BACKSPACE, TD_KEY_ENTER, K_SHIFT, K_SYM};
     if (i < 44)
         return (key_t_){i - 40, 10, 2, right[i - 40]};
     static const key_t_ bottom[5] = {
-        {4, 0, 1, TD_KEY_LEFT}, {4, 1, 1, TD_KEY_RIGHT}, {4, 2, 6, ' '}, {4, 8, 2, TD_OSK_CLEAR}, {4, 10, 2, TD_OSK_HIDE},
+        {4, 0, 1, TD_KEY_LEFT},
+        {4, 1, 1, TD_KEY_RIGHT},
+        {4, 2, 6, ' '},
+        {4, 8, 2, TD_OSK_CLEAR},
+        {4, 10, 2, TD_OSK_HIDE},
     };
     key_t_ key = bottom[i - 44];
     if (key.code == TD_OSK_CLEAR && !k->password)
@@ -59,13 +64,15 @@ static key_t_ key_at(const td_osk_t *k, int i)
 static int unit_w(const td_osk_t *k)
 {
     int u = k->area.w / UNITS;
-    return u < 1 ? 1 : u > 8 ? 8 : u;
+    return u < 1 ? 1 : u > 8 ? 8
+                             : u;
 }
 
 static int row_h(const td_osk_t *k)
 {
     int h = k->area.h / ROWS;
-    return h < 1 ? 1 : h > 4 ? 4 : h;
+    return h < 1 ? 1 : h > 4 ? 4
+                             : h;
 }
 
 /* The cells a key covers: a gap column between keys from 3 columns a

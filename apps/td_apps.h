@@ -536,7 +536,8 @@ typedef struct
 
 /* One allocation; file bytes and parsed view remain valid until free(). */
 #include "tinydesk/td_font.h"
-typedef struct {
+typedef struct
+{
     size_t bytes;
     td_font_t face;
     uint8_t data[];
@@ -644,8 +645,8 @@ int td_session_role(void);
 void td_session_lock(void);
 void td_kiosk_stop_for_login(void);
 void td_session_accept_authenticated(const char *user);
-void td_session_accept_login(const char *user,uint32_t generation);
-bool td_session_path_allowed(const char *path,int action);
+void td_session_accept_login(const char *user, uint32_t generation);
+bool td_session_path_allowed(const char *path, int action);
 void td_login_open(void);
 void td_login_status(const char *message);
 void td_users_register(void);

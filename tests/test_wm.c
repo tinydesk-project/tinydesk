@@ -383,27 +383,27 @@ int main(void)
     /* Authentication gate: unrelated windows, global shortcuts and even
      * a reused login-window slot stay inaccessible until explicitly unlocked. */
     td_wm_close_all();
-    td_window_desc_t gd = {.title="Gate", .rect={0,0,80,25}, .flags=TD_WIN_FULLSCREEN};
+    td_window_desc_t gd = {.title = "Gate", .rect = {0, 0, 80, 25}, .flags = TD_WIN_FULLSCREEN};
     td_window_t *gate = td_win_create(&gd);
     td_button(gate, 2, 2, "Sign in", on_click, NULL);
     td_wm_set_input_gate(true, gate);
-    td_window_desc_t hd = {.title="Private", .rect={5,5,30,10}};
+    td_window_desc_t hd = {.title = "Private", .rect = {5, 5, 30, 10}};
     td_window_t *hidden = td_win_create(&hd);
     td_button(hidden, 1, 1, "Private action", on_click, NULL);
     int clicks = s_clicks;
-    key(TD_KEY_F10,0);
+    key(TD_KEY_F10, 0);
     CHECK(!td_menu_is_open());
-    key(TD_KEY_F6,0);
-    key(TD_KEY_ENTER,0);
-    CHECK_EQ(s_clicks,clicks+1);
+    key(TD_KEY_F6, 0);
+    key(TD_KEY_ENTER, 0);
+    CHECK_EQ(s_clicks, clicks + 1);
     td_win_close(gate);
     td_window_t *reuse = td_win_create(&gd);
     CHECK(reuse == gate);
-    td_button(reuse,2,2,"Other action",on_click,NULL);
-    key(TD_KEY_ENTER,0);
-    CHECK_EQ(s_clicks,clicks+1);
-    td_wm_set_input_gate(false,NULL);
-    key(TD_KEY_ENTER,0);
-    CHECK_EQ(s_clicks,clicks+2);
+    td_button(reuse, 2, 2, "Other action", on_click, NULL);
+    key(TD_KEY_ENTER, 0);
+    CHECK_EQ(s_clicks, clicks + 1);
+    td_wm_set_input_gate(false, NULL);
+    key(TD_KEY_ENTER, 0);
+    CHECK_EQ(s_clicks, clicks + 2);
     return TD_TEST_RESULT();
 }

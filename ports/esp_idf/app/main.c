@@ -153,7 +153,8 @@ static int list_tasks(td_task_info_t *out, int max)
     int64_t sample_start = esp_timer_get_time();
     UBaseType_t n = td_task_snapshot_fast(s_status, s_task_cap, &total);
     static bool measured;
-    if (!measured) {
+    if (!measured)
+    {
         ESP_LOGI(TAG, "LCD-safe task snapshot: %u tasks in %lld us (no stack scans)",
                  (unsigned)n, (long long)(esp_timer_get_time() - sample_start));
         measured = true;
@@ -382,25 +383,60 @@ static char s_chip[48];
 static char s_sdk[32];
 static td_sysinfo_t s_info;
 
-static int user_list(int index,td_user_info_t *out)
+static int user_list(int index, td_user_info_t *out)
 {
-    tdsh_user_info_t user;int rc=tdsh_user_list(index,&user);if(rc)return rc;
-    snprintf(out->name,sizeof(out->name),"%s",user.name);out->role=(int)user.role;out->rights=user.rights;return 0;
+    tdsh_user_info_t user;
+    int rc = tdsh_user_list(index, &user);
+    if (rc)
+        return rc;
+    snprintf(out->name, sizeof(out->name), "%s", user.name);
+    out->role = (int)user.role;
+    out->rights = user.rights;
+    return 0;
 }
-static int user_role(const char *name){return (int)tdsh_user_role(name);}
-static int user_create(const char *actor,const char *name,const char *password,int role,uint32_t rights){return tdsh_user_create(actor,name,password,(tdsh_role_t)role,rights);}
-static int user_access_set(const char *actor,const char *name,int role,uint32_t rights){return tdsh_user_access_set(actor,name,(tdsh_role_t)role,rights);}
-static uint32_t user_remembered(char *name,int cap){return tdsh_remembered_login(name,(size_t)cap);}
-static int user_boot_set(const char *actor,const char *name){return actor&&!strcmp(actor,"root")?tdsh_boot_user_set(name):-1;}
-static int user_require_password(const char *actor){return actor&&!strcmp(actor,"root")?tdsh_boot_login_require_password():-1;}
-static int user_hint_get(const char *name,char *out,int cap){return cap>0?tdsh_user_hint_get(name,out,(size_t)cap):-22;}
-static const td_user_ops_t s_user_ops={
-    .list=user_list,.role=user_role,.rights=tdsh_user_rights,.generation=tdsh_user_generation,.create=user_create,
-    .access_set=user_access_set,.password_set=tdsh_user_password_set,
-    .remembered=user_remembered,.remember_allowed=tdsh_user_remember_allowed,
-    .login=tdsh_user_login,.boot_user_set=user_boot_set,
-    .require_password=user_require_password,
-    .hint_get=user_hint_get,.hint_set=tdsh_user_hint_set,
+static int user_role(const char *name)
+{
+    return (int)tdsh_user_role(name);
+}
+static int user_create(const char *actor, const char *name, const char *password, int role, uint32_t rights)
+{
+    return tdsh_user_create(actor, name, password, (tdsh_role_t)role, rights);
+}
+static int user_access_set(const char *actor, const char *name, int role, uint32_t rights)
+{
+    return tdsh_user_access_set(actor, name, (tdsh_role_t)role, rights);
+}
+static uint32_t user_remembered(char *name, int cap)
+{
+    return tdsh_remembered_login(name, (size_t)cap);
+}
+static int user_boot_set(const char *actor, const char *name)
+{
+    return actor && !strcmp(actor, "root") ? tdsh_boot_user_set(name) : -1;
+}
+static int user_require_password(const char *actor)
+{
+    return actor && !strcmp(actor, "root") ? tdsh_boot_login_require_password() : -1;
+}
+static int user_hint_get(const char *name, char *out, int cap)
+{
+    return cap > 0 ? tdsh_user_hint_get(name, out, (size_t)cap) : -22;
+}
+static const td_user_ops_t s_user_ops = {
+    .list = user_list,
+    .role = user_role,
+    .rights = tdsh_user_rights,
+    .generation = tdsh_user_generation,
+    .create = user_create,
+    .access_set = user_access_set,
+    .password_set = tdsh_user_password_set,
+    .remembered = user_remembered,
+    .remember_allowed = tdsh_user_remember_allowed,
+    .login = tdsh_user_login,
+    .boot_user_set = user_boot_set,
+    .require_password = user_require_password,
+    .hint_get = user_hint_get,
+    .hint_set = tdsh_user_hint_set,
 };
 
 /* The chip's name as Espressif writes it (About). */

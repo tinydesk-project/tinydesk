@@ -165,16 +165,20 @@ static void refresh(void)
     uint32_t first = first_visible(total), lost = first - s_seen_first;
     int count = (int)(total - first);
     bool follow = td_checkbox_get(s_follow);
-    if (count != s_list->count || total != s_seen_total || follow != s_was_following) {
+    if (count != s_list->count || total != s_seen_total || follow != s_was_following)
+    {
         int selected = td_list_selected(s_list), scroll = s_list->scroll;
         td_list_set_count(s_list, count);
         if (follow)
             td_list_select(s_list, count - 1);
         else if (lost)
-            td_list_set_view(s_list, selected < 0 ? -1 : lost > (uint32_t)selected ? 0 : selected - (int)lost,
+            td_list_set_view(s_list, selected < 0 ? -1 : lost > (uint32_t)selected ? 0
+                                                                                   : selected - (int)lost,
                              lost > (uint32_t)scroll ? 0 : scroll - (int)lost);
     }
-    s_seen_total = total;s_seen_first = first;s_was_following = follow;
+    s_seen_total = total;
+    s_seen_first = first;
+    s_was_following = follow;
     td_widget_printf(s_count, "%u lines", (unsigned)total);
 }
 
@@ -232,7 +236,9 @@ static void launch(void)
     td_button(s_win, 0, -1, "Clear", on_clear, NULL);
     s_follow = td_checkbox(s_win, 10, -1, "Follow", true, NULL, NULL);
     s_count = td_label(s_win, 22, -1, 0, "");
-    s_seen_first = first_visible(s_total);s_seen_total = s_total;s_was_following = false;
+    s_seen_first = first_visible(s_total);
+    s_seen_total = s_total;
+    s_was_following = false;
     refresh();
 }
 

@@ -9,7 +9,8 @@
 #include "freertos/task.h"
 #endif
 
-typedef struct {
+typedef struct
+{
     TaskStatus_t task;
     char name[configMAX_TASK_NAME_LEN];
     BaseType_t core;
@@ -18,5 +19,5 @@ typedef struct {
 /* Names and core affinity are copied under the kernel lock as well: no
  * dereferencing a task handle or borrowed task-name pointer after return. */
 UBaseType_t td_task_snapshot_fast(td_task_snapshot_t *out, UBaseType_t capacity,
-                                configRUN_TIME_COUNTER_TYPE *total);
+                                  configRUN_TIME_COUNTER_TYPE *total);
 #endif

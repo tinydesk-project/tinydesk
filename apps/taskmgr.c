@@ -70,9 +70,11 @@ static void refresh(void)
     T->win_count = td_wm_windows(T->wins, WINS_MAX);
     td_list_set_count(s_apps, T->win_count);
     selected = -1;
-    for (int i = 0; i < T->win_count; i++) {
+    for (int i = 0; i < T->win_count; i++)
+    {
         T->win_generation[i] = T->wins[i]->generation;
-        if (T->wins[i] == chosen && T->win_generation[i] == generation) selected = i;
+        if (T->wins[i] == chosen && T->win_generation[i] == generation)
+            selected = i;
     }
     td_list_set_view(s_apps, selected, scroll);
 
@@ -208,7 +210,8 @@ static void on_draw(td_window_t *win, int w, int h)
         snprintf(line, sizeof(line), "n/a");
     td_textn(x, 0, line, w - x, t->win_fg, t->win_bg, 0);
     for (int i = 0; i < T->task_count; i++)
-        if (T->tasks[i].stack_free == UINT32_MAX) {
+        if (T->tasks[i].stack_free == UINT32_MAX)
+        {
             td_textn(0, 1, "Stack watermarks not sampled during live LCD scanout.", w, t->dim, t->win_bg, 0);
             break;
         }

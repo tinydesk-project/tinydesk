@@ -213,7 +213,8 @@ static bool load_pnm(td_image_t *img, const uint8_t *h, int n, char *err, int ca
     int samples = img->kind == KIND_PPM ? 3 : 1, bytes = img->maxval > 255 ? 2 : 1;
     img->stride = img->plain ? 0 : (uint32_t)img->w * (uint32_t)(samples * bytes);
     snprintf(img->format, sizeof(img->format), "%s%s", img->kind == KIND_PPM ? "PPM" : "PGM",
-             img->plain ? " text" : bytes == 2 ? " 16-bit" : "");
+             img->plain ? " text" : bytes == 2 ? " 16-bit"
+                                               : "");
     return true;
 }
 

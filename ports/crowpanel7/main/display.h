@@ -16,8 +16,8 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define DISPLAY_W    800
-#define DISPLAY_H    480
+#define DISPLAY_W        800
+#define DISPLAY_H        480
 #define DISPLAY_MAX_COLS (DISPLAY_W / 8)    /* with the smallest font */
 #define DISPLAY_MAX_ROWS (DISPLAY_H / 16)
 
@@ -35,8 +35,8 @@ bool display_init(display_reply_fn reply);
 /* Desktop output (the UI task). */
 void display_write(const uint8_t *buf, int len);
 bool display_picture(void *user, int x, int y, const uint8_t *pixels, int w, int h);
-bool display_picture_rgb(void *user,int x,int y,const uint16_t *pixels,int w,int h);
-bool display_picture_runs(void *user,int x,int y,const uint16_t *runs,size_t words,int w,int h);
+bool display_picture_rgb(void *user, int x, int y, const uint16_t *pixels, int w, int h);
+bool display_picture_runs(void *user, int x, int y, const uint16_t *runs, size_t words, int w, int h);
 void display_scanout_info(uint32_t out[8]);
 void display_scanout_snapshot(uint32_t out[12]);
 

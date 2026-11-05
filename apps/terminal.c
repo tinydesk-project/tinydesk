@@ -410,8 +410,10 @@ static void on_close(td_window_t *win)
 
 static void launch(void)
 {
-    if(!td_session_has_right(TD_RIGHT_APPS)){
-        td_msgbox("Terminal","This account does not have Apps / Terminal permission.","OK",NULL,NULL);return;
+    if (!td_session_has_right(TD_RIGHT_APPS))
+    {
+        td_msgbox("Terminal", "This account does not have Apps / Terminal permission.", "OK", NULL, NULL);
+        return;
     }
     if (td_win_is_open(s_win))
     {

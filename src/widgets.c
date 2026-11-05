@@ -352,7 +352,8 @@ int td_list_selected(const td_widget_t *w)
 
 void td_list_set_view(td_widget_t *w, int selected, int scroll)
 {
-    if (!w) return;
+    if (!w)
+        return;
     w->value = selected < 0 || w->count <= 0 ? -1 : clamp(selected, 0, w->count - 1);
     w->scroll = scroll;
     list_clamp_scroll(w);

@@ -128,7 +128,8 @@ int main(void)
     CHECK(row_is(0, "HELLO"));
     put("\x1b[?2026l");
     CHECK(!s_vt.synchronized_output);
-    put("\x1b[?2026h\x1b" "c");
+    put("\x1b[?2026h\x1b"
+        "c");
     CHECK(!s_vt.synchronized_output);
     test_text_and_newlines();
     test_wrap_and_scroll();

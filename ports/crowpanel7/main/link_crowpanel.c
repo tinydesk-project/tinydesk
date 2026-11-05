@@ -200,8 +200,8 @@ bool link_init(void)
         return false;
     }
     td_picture_set_sink(!s_uart || !s_mirror ? display_picture : NULL, NULL);
-    td_picture_set_rgb_sink(!s_uart || !s_mirror ? display_picture_rgb : NULL,NULL);
-    td_picture_set_runs_sink(!s_uart || !s_mirror ? display_picture_runs : NULL,NULL);
+    td_picture_set_rgb_sink(!s_uart || !s_mirror ? display_picture_rgb : NULL, NULL);
+    td_picture_set_runs_sink(!s_uart || !s_mirror ? display_picture_runs : NULL, NULL);
     td_picture_set_scanout_monitor(display_scanout_snapshot);
     s_touch = touch_init(inject);
     if (s_uart)

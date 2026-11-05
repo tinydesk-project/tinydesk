@@ -393,13 +393,16 @@ static void refresh(void)
     zone_text(tz, zone, sizeof(zone));
     format_offset(tz, off, sizeof(off));
     td_widget_printf(s_zone_info, "%s, the time zone of %.24s", off, td_session_user());
-    if (s_zone_btn) {
+    if (s_zone_btn)
+    {
         char caption[64];
         int available = td_win_client(s_win).w - s_zone_btn->rect.x - 4;
-        if (available < 0) available = 0;
+        if (available < 0)
+            available = 0;
         bool shorten = td_utf8_len(zone) > available && available >= 3;
         td_utf8_copy(caption, sizeof(caption), zone, shorten ? available - 3 : available);
-        if (shorten) strcat(caption, "...");
+        if (shorten)
+            strcat(caption, "...");
         td_widget_set_text(s_zone_btn, caption);
     }
     if (s_auto)

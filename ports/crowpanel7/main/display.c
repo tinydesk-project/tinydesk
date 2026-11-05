@@ -65,9 +65,16 @@ static uint32_t s_prepared_at, s_previous_prepared;
 static int64_t s_last_prepared_us;
 
 void display_scanout_info(uint32_t out[8])
-{for(int i=0;i<8;i++)out[i]=atomic_load(&s_scanout[i]);}
+{
+    for (int i = 0; i < 8; i++)
+        out[i] = atomic_load(&s_scanout[i]);
+}
 void display_scanout_snapshot(uint32_t out[12])
-{display_scanout_info(out);for(int i=0;i<4;i++)out[8+i]=atomic_load(&s_paint_timing[i]);}
+{
+    display_scanout_info(out);
+    for (int i = 0; i < 4; i++)
+        out[8 + i] = atomic_load(&s_paint_timing[i]);
+}
 static td_vterm_t *s_vt;            /* in PSRAM */
 static SemaphoreHandle_t s_lock;    /* s_vt between the UI task and the painter */
 static display_reply_fn s_reply;
@@ -152,7 +159,7 @@ static uint16_t blend(uint8_t fg, uint8_t bg, int quarters)
 #define IMG_SLOTS 128
 #define TILE_BASE 0xE000          /* Unicode's private use area */
 #define TILE_MAX  6400
-#define RGB_SLOT 255
+#define RGB_SLOT  255
 
 typedef struct
 {
@@ -169,23 +176,34 @@ static SemaphoreHandle_t s_img_lock;   /* the slots, between decoding and painti
  * once at screen coordinates instead of retaining every overlapping panel,
  * label, background and old page in separate full-size allocations. */
 static uint16_t *s_rgb_plane;
-static uint32_t *s_rgb_generation,*s_rgb_shown[2],s_rgb_sequence;
+static uint32_t *s_rgb_generation, *s_rgb_shown[2], s_rgb_sequence;
 static bool s_have_slots;
 
 /* Caller holds s_img_lock and s_lock. */
 static void release_unused_slots(void)
 {
-    if(!s_have_slots)return;
-    bool used[IMG_SLOTS]={false};
-    for(int r=0;r<s_rows;r++)for(int c=0;c<s_cols;c++){
-        td_vcell_t v=s_vt->cells[r*TD_VT_MAX_COLS+c];
-        if(v.ch>=TILE_BASE&&v.ch<TILE_BASE+TILE_MAX&&v.fg<IMG_SLOTS)used[v.fg]=true;
-    }
-    s_have_slots=false;
-    for(int i=0;i<IMG_SLOTS;i++)if(s_slots[i].px){
-        if(!used[i]){heap_caps_free(s_slots[i].px);s_slots[i].px=NULL;}
-        else s_have_slots=true;
-    }
+    if (!s_have_slots)
+        return;
+    bool used[IMG_SLOTS] = {false};
+    for (int r = 0; r < s_rows; r++)
+        for (int c = 0; c < s_cols; c++)
+        {
+            td_vcell_t v = s_vt->cells[r * TD_VT_MAX_COLS + c];
+            if (v.ch >= TILE_BASE && v.ch < TILE_BASE + TILE_MAX && v.fg < IMG_SLOTS)
+                used[v.fg] = true;
+        }
+    s_have_slots = false;
+    for (int i = 0; i < IMG_SLOTS; i++)
+        if (s_slots[i].px)
+        {
+            if (!used[i])
+            {
+                heap_caps_free(s_slots[i].px);
+                s_slots[i].px = NULL;
+            }
+            else
+                s_have_slots = true;
+        }
 }
 
 static struct
@@ -272,7 +290,7 @@ static bool six_finish(void)
                 continue;
             td_vcell_t v = s_vt->cells[r * TD_VT_MAX_COLS + c];
             if (v.ch >= TILE_BASE && v.ch < TILE_BASE + TILE_MAX && v.fg < IMG_SLOTS)
-                protected[v.fg] = true;
+            protected[v.fg] = true;
         }
     int slot = -1;
     for (int i = 0; i < IMG_SLOTS; i++)
@@ -294,7 +312,7 @@ static bool six_finish(void)
     s_next_slot = (slot + 1) % IMG_SLOTS;
     heap_caps_free(s_slots[slot].px);
     s_slots[slot] = (slot_t){s_six.buf, s_six.w, s_six.h, cols, ++s_slot_generation};
-    s_have_slots=true;
+    s_have_slots = true;
     s_six.buf = NULL;
     for (int r = 0; r < rows && s_six.cy + r < s_rows; r++)
         for (int c = 0; c < cols && s_six.cx + c < s_cols; c++)
@@ -308,64 +326,102 @@ static bool six_finish(void)
 
 /* Local kiosk output avoids encoding pixels as terminal bytes only to
  * decode them back on the same CPU. Serial mirror mode keeps Sixel. */
-static bool direct_picture(int x,int y,const uint8_t *indexed,const uint16_t *rgb,int w,int h,const uint16_t *runs,size_t words)
+static bool direct_picture(int x, int y, const uint8_t *indexed, const uint16_t *rgb, int w, int h, const uint16_t *runs, size_t words)
 {
     if (!s_vt || !s_img_lock || x < 0 || y < 0 || w <= 0 || h <= 0 ||
-        x * s_cw + w > s_cols*s_cw || y * s_ch + h > s_rows*s_ch ||
+        x * s_cw + w > s_cols * s_cw || y * s_ch + h > s_rows * s_ch ||
         ((w + s_cw - 1) / s_cw) * ((h + s_ch - 1) / s_ch) > TILE_MAX)
         return false;
-    if(runs){
-        size_t total=(size_t)w*h,expanded=0;
-        if(!words||(words&1u)||words>total*2)return false;
-        for(size_t i=0;i<words;i+=2){
-            if(!runs[i]||runs[i]>total-expanded)return false;
-            expanded+=runs[i];
+    if (runs)
+    {
+        size_t total = (size_t)w * h, expanded = 0;
+        if (!words || (words & 1u) || words > total * 2)
+            return false;
+        for (size_t i = 0; i < words; i += 2)
+        {
+            if (!runs[i] || runs[i] > total - expanded)
+                return false;
+            expanded += runs[i];
         }
-        if(expanded!=total)return false;
+        if (expanded != total)
+            return false;
     }
-    if(rgb||runs){
-        xSemaphoreTake(s_lock,portMAX_DELAY);
-        if(s_six.buf){xSemaphoreGive(s_lock);return false;}
-        xSemaphoreTake(s_img_lock,portMAX_DELAY);
-        if(!s_rgb_plane){
-            size_t pixels=(size_t)DISPLAY_W*DISPLAY_H,cells=(size_t)s_cols*s_rows;
-            s_rgb_plane=heap_caps_calloc(1,pixels*sizeof(uint16_t)+3*cells*sizeof(uint32_t),MALLOC_CAP_SPIRAM);
-            if(s_rgb_plane){
-                s_rgb_generation=(uint32_t *)(s_rgb_plane+pixels);
-                s_rgb_shown[0]=s_rgb_generation+cells;s_rgb_shown[1]=s_rgb_shown[0]+cells;
+    if (rgb || runs)
+    {
+        xSemaphoreTake(s_lock, portMAX_DELAY);
+        if (s_six.buf)
+        {
+            xSemaphoreGive(s_lock);
+            return false;
+        }
+        xSemaphoreTake(s_img_lock, portMAX_DELAY);
+        if (!s_rgb_plane)
+        {
+            size_t pixels = (size_t)DISPLAY_W * DISPLAY_H, cells = (size_t)s_cols * s_rows;
+            s_rgb_plane = heap_caps_calloc(1, pixels * sizeof(uint16_t) + 3 * cells * sizeof(uint32_t), MALLOC_CAP_SPIRAM);
+            if (s_rgb_plane)
+            {
+                s_rgb_generation = (uint32_t *)(s_rgb_plane + pixels);
+                s_rgb_shown[0] = s_rgb_generation + cells;
+                s_rgb_shown[1] = s_rgb_shown[0] + cells;
             }
         }
-        if(!s_rgb_plane){xSemaphoreGive(s_img_lock);xSemaphoreGive(s_lock);return false;}
-        int px=x*s_cw,py=y*s_ch;
-        int cols=(w+s_cw-1)/s_cw,rows=(h+s_ch-1)/s_ch;
-        if(w%s_cw||h%s_ch)for(int row=0;row<rows*s_ch;row++)memset(s_rgb_plane+(size_t)(py+row)*DISPLAY_W+px,0,(size_t)cols*s_cw*sizeof(uint16_t));
-        if(runs){
-            size_t at=0;
-            for(size_t i=0;i<words;i+=2){
-                size_t left=runs[i];uint16_t color=runs[i+1];
-                while(left){
-                    size_t row=at/(size_t)w,col=at%(size_t)w,n=(size_t)w-col;
-                    if(n>left)n=left;
-                    uint16_t *dst=s_rgb_plane+((size_t)py+row)*DISPLAY_W+px+col;
-                    if((color&255u)==(color>>8))memset(dst,color&255u,n*sizeof(*dst));
-                    else for(size_t k=0;k<n;k++)dst[k]=color;
-                    at+=n;left-=n;
+        if (!s_rgb_plane)
+        {
+            xSemaphoreGive(s_img_lock);
+            xSemaphoreGive(s_lock);
+            return false;
+        }
+        int px = x * s_cw, py = y * s_ch;
+        int cols = (w + s_cw - 1) / s_cw, rows = (h + s_ch - 1) / s_ch;
+        if (w % s_cw || h % s_ch)
+            for (int row = 0; row < rows * s_ch; row++)
+                memset(s_rgb_plane + (size_t)(py + row) * DISPLAY_W + px, 0, (size_t)cols * s_cw * sizeof(uint16_t));
+        if (runs)
+        {
+            size_t at = 0;
+            for (size_t i = 0; i < words; i += 2)
+            {
+                size_t left = runs[i];
+                uint16_t color = runs[i + 1];
+                while (left)
+                {
+                    size_t row = at / (size_t)w, col = at % (size_t)w, n = (size_t)w - col;
+                    if (n > left)
+                        n = left;
+                    uint16_t *dst = s_rgb_plane + ((size_t)py + row) * DISPLAY_W + px + col;
+                    if ((color & 255u) == (color >> 8))
+                        memset(dst, color & 255u, n * sizeof(*dst));
+                    else
+                        for (size_t k = 0; k < n; k++)
+                            dst[k] = color;
+                    at += n;
+                    left -= n;
                 }
             }
-        }else for(int row=0;row<h;row++)memcpy(s_rgb_plane+(size_t)(py+row)*DISPLAY_W+px,rgb+(size_t)row*w,(size_t)w*sizeof(*rgb));
-        uint32_t generation=++s_rgb_sequence;
-        for(int r=y;r<y+rows;r++)for(int c=x;c<x+cols;c++){
-            int tile=r*s_cols+c;s_rgb_generation[tile]=generation;
-            s_vt->cells[r*TD_VT_MAX_COLS+c]=(td_vcell_t){(uint16_t)(TILE_BASE+tile),RGB_SLOT,0};
         }
-        release_unused_slots();s_vt->dirty=true;
-        xSemaphoreGive(s_img_lock);xSemaphoreGive(s_lock);return true;
+        else
+            for (int row = 0; row < h; row++)
+                memcpy(s_rgb_plane + (size_t)(py + row) * DISPLAY_W + px, rgb + (size_t)row * w, (size_t)w * sizeof(*rgb));
+        uint32_t generation = ++s_rgb_sequence;
+        for (int r = y; r < y + rows; r++)
+            for (int c = x; c < x + cols; c++)
+            {
+                int tile = r * s_cols + c;
+                s_rgb_generation[tile] = generation;
+                s_vt->cells[r * TD_VT_MAX_COLS + c] = (td_vcell_t){(uint16_t)(TILE_BASE + tile), RGB_SLOT, 0};
+            }
+        release_unused_slots();
+        s_vt->dirty = true;
+        xSemaphoreGive(s_img_lock);
+        xSemaphoreGive(s_lock);
+        return true;
     }
     uint16_t *buf = heap_caps_malloc((size_t)w * h * sizeof(uint16_t), MALLOC_CAP_SPIRAM);
     if (!buf)
         return false;
     for (int i = 0; i < w * h; i++)
-        buf[i] = rgb?rgb[i]:s_palette[indexed[i]];
+        buf[i] = rgb ? rgb[i] : s_palette[indexed[i]];
     xSemaphoreTake(s_lock, portMAX_DELAY);
     if (s_six.buf) /* Do not disturb an unfinished terminal picture. */
     {
@@ -383,14 +439,23 @@ static bool direct_picture(int x,int y,const uint8_t *indexed,const uint16_t *rg
     return completed;
 }
 
-bool display_picture(void *user,int x,int y,const uint8_t *pixels,int w,int h)
-{(void)user;return direct_picture(x,y,pixels,NULL,w,h,NULL,0);}
+bool display_picture(void *user, int x, int y, const uint8_t *pixels, int w, int h)
+{
+    (void)user;
+    return direct_picture(x, y, pixels, NULL, w, h, NULL, 0);
+}
 
-bool display_picture_rgb(void *user,int x,int y,const uint16_t *pixels,int w,int h)
-{(void)user;return direct_picture(x,y,NULL,pixels,w,h,NULL,0);}
+bool display_picture_rgb(void *user, int x, int y, const uint16_t *pixels, int w, int h)
+{
+    (void)user;
+    return direct_picture(x, y, NULL, pixels, w, h, NULL, 0);
+}
 
-bool display_picture_runs(void *user,int x,int y,const uint16_t *runs,size_t words,int w,int h)
-{(void)user;return runs&&direct_picture(x,y,NULL,NULL,w,h,runs,words);}
+bool display_picture_runs(void *user, int x, int y, const uint16_t *runs, size_t words, int w, int h)
+{
+    (void)user;
+    return runs && direct_picture(x, y, NULL, NULL, w, h, runs, words);
+}
 
 /* td_vterm_t.dcs: the bytes of a DCS string; -1 before, -2 after. */
 static void six_byte(void *user, int b)
@@ -460,11 +525,14 @@ static void six_byte(void *user, int b)
 static bool paint_tile(int col, int row, td_vcell_t c)
 {
     bool ok = false;
-    if(c.fg==RGB_SLOT&&s_rgb_plane){
-        int tile=c.ch-TILE_BASE;
-        if(tile>=s_cols*s_rows)return false;
-        int tx=tile%s_cols,ty=tile/s_cols;
-        for(int y=0;y<s_ch;y++)memcpy(s_fb+(size_t)(row*s_ch+y)*DISPLAY_W+col*s_cw,s_rgb_plane+(size_t)(ty*s_ch+y)*DISPLAY_W+tx*s_cw,(size_t)s_cw*sizeof(uint16_t));
+    if (c.fg == RGB_SLOT && s_rgb_plane)
+    {
+        int tile = c.ch - TILE_BASE;
+        if (tile >= s_cols * s_rows)
+            return false;
+        int tx = tile % s_cols, ty = tile / s_cols;
+        for (int y = 0; y < s_ch; y++)
+            memcpy(s_fb + (size_t)(row * s_ch + y) * DISPLAY_W + col * s_cw, s_rgb_plane + (size_t)(ty * s_ch + y) * DISPLAY_W + tx * s_cw, (size_t)s_cw * sizeof(uint16_t));
         return true;
     }
     if (c.fg >= IMG_SLOTS)
@@ -530,29 +598,35 @@ static bool same(td_vcell_t a, td_vcell_t b)
 }
 
 static bool native_cell(td_vcell_t cell)
-{return s_rgb_plane&&cell.fg==RGB_SLOT&&cell.ch>=TILE_BASE&&cell.ch<TILE_BASE+s_cols*s_rows;}
-
-static bool cell_pixels_changed(unsigned frame,int r,int c,td_vcell_t cell)
 {
-    if(native_cell(cell)&&s_rgb_shown[frame][r*s_cols+c]!=s_rgb_generation[cell.ch-TILE_BASE])return true;
-    if(cell.ch>=TILE_BASE&&cell.ch<TILE_BASE+TILE_MAX&&cell.fg<IMG_SLOTS&&
-       s_shown_generation[frame][cell.fg]!=s_slots[cell.fg].generation)return true;
-    return !same(cell,s_shown[frame][r][c]);
+    return s_rgb_plane && cell.fg == RGB_SLOT && cell.ch >= TILE_BASE && cell.ch < TILE_BASE + s_cols * s_rows;
 }
-static bool cell_changed(unsigned frame,int r,int c,td_vcell_t cell,int cx,int cy)
-{return (c==cx&&r==cy)||(c==s_cur_x[frame]&&r==s_cur_y[frame])||cell_pixels_changed(frame,r,c,cell);}
+
+static bool cell_pixels_changed(unsigned frame, int r, int c, td_vcell_t cell)
+{
+    if (native_cell(cell) && s_rgb_shown[frame][r * s_cols + c] != s_rgb_generation[cell.ch - TILE_BASE])
+        return true;
+    if (cell.ch >= TILE_BASE && cell.ch < TILE_BASE + TILE_MAX && cell.fg < IMG_SLOTS &&
+        s_shown_generation[frame][cell.fg] != s_slots[cell.fg].generation)
+        return true;
+    return !same(cell, s_shown[frame][r][c]);
+}
+static bool cell_changed(unsigned frame, int r, int c, td_vcell_t cell, int cx, int cy)
+{
+    return (c == cx && r == cy) || (c == s_cur_x[frame] && r == s_cur_y[frame]) || cell_pixels_changed(frame, r, c, cell);
+}
 
 /* Adjacent native cells are adjacent pixels in the shared composition
  * plane. Copy each horizontal row once instead of walking 20 tiny rows
  * per character tile; source-row boundaries still stop a run after VT
  * scrolling/moves. All writes remain in the off-screen framebuffer. */
-static void paint_rgb_span(int col,int row,td_vcell_t cell,int cols)
+static void paint_rgb_span(int col, int row, td_vcell_t cell, int cols)
 {
-    int tile=cell.ch-TILE_BASE,tx=tile%s_cols,ty=tile/s_cols;
-    for(int y=0;y<s_ch;y++)
-        memcpy(s_fb+(size_t)(row*s_ch+y)*DISPLAY_W+col*s_cw,
-               s_rgb_plane+(size_t)(ty*s_ch+y)*DISPLAY_W+tx*s_cw,
-               (size_t)cols*s_cw*sizeof(uint16_t));
+    int tile = cell.ch - TILE_BASE, tx = tile % s_cols, ty = tile / s_cols;
+    for (int y = 0; y < s_ch; y++)
+        memcpy(s_fb + (size_t)(row * s_ch + y) * DISPLAY_W + col * s_cw,
+               s_rgb_plane + (size_t)(ty * s_ch + y) * DISPLAY_W + tx * s_cw,
+               (size_t)cols * s_cw * sizeof(uint16_t));
 }
 
 /* Copy the cells under the lock, paint outside it. */
@@ -594,7 +668,7 @@ static void paint(void)
         return;
     }
     s_vt->dirty = false;
-    int64_t paint_began=esp_timer_get_time();
+    int64_t paint_began = esp_timer_get_time();
     /* Pin the image slots used by this snapshot until all its tiles have
      * been painted. Writers take s_lock then s_img_lock in the same order. */
     xSemaphoreTake(s_img_lock, portMAX_DELAY);
@@ -608,11 +682,20 @@ static void paint(void)
     xSemaphoreGive(s_lock);
 
     unsigned frame = s_draw_frame;
-    unsigned front=frame^1u;
-    bool visible_change=cx!=s_cur_x[front]||cy!=s_cur_y[front];
-    for(int r=0;r<s_rows&&!visible_change;r++)for(int c=0;c<s_cols;c++)
-        if(cell_pixels_changed(front,r,c,s_snap[r][c])){visible_change=true;break;}
-    if(!visible_change){xSemaphoreGive(s_img_lock);return;}
+    unsigned front = frame ^ 1u;
+    bool visible_change = cx != s_cur_x[front] || cy != s_cur_y[front];
+    for (int r = 0; r < s_rows && !visible_change; r++)
+        for (int c = 0; c < s_cols; c++)
+            if (cell_pixels_changed(front, r, c, s_snap[r][c]))
+            {
+                visible_change = true;
+                break;
+            }
+    if (!visible_change)
+    {
+        xSemaphoreGive(s_img_lock);
+        return;
+    }
     /* A retained backbuffer may already contain the requested scene.
      * Compare visibility against the front, then update against the back;
      * it still needs presenting even when no destination pixels changed. */
@@ -622,29 +705,36 @@ static void paint(void)
         {
             td_vcell_t cell = s_snap[r][c];
             bool cur = (c == cx && r == cy);
-            bool native=native_cell(cell);
-            if (cell_changed(frame,r,c,cell,cx,cy))
+            bool native = native_cell(cell);
+            if (cell_changed(frame, r, c, cell, cx, cy))
             {
-                if(native){
-                    int cols=1,source_col=(cell.ch-TILE_BASE)%s_cols;
-                    while(c+cols<s_cols&&source_col+cols<s_cols){
-                        td_vcell_t next=s_snap[r][c+cols];
-                        if(!native_cell(next)||next.ch!=cell.ch+cols||!cell_changed(frame,r,c+cols,next,cx,cy))break;
+                if (native)
+                {
+                    int cols = 1, source_col = (cell.ch - TILE_BASE) % s_cols;
+                    while (c + cols < s_cols && source_col + cols < s_cols)
+                    {
+                        td_vcell_t next = s_snap[r][c + cols];
+                        if (!native_cell(next) || next.ch != cell.ch + cols || !cell_changed(frame, r, c + cols, next, cx, cy))
+                            break;
                         cols++;
                     }
-                    paint_rgb_span(c,r,cell,cols);
-                    for(int n=0;n<cols;n++){
-                        td_vcell_t next=s_snap[r][c+n];
-                        s_shown[frame][r][c+n]=next;
-                        s_rgb_shown[frame][r*s_cols+c+n]=s_rgb_generation[next.ch-TILE_BASE];
+                    paint_rgb_span(c, r, cell, cols);
+                    for (int n = 0; n < cols; n++)
+                    {
+                        td_vcell_t next = s_snap[r][c + n];
+                        s_shown[frame][r][c + n] = next;
+                        s_rgb_shown[frame][r * s_cols + c + n] = s_rgb_generation[next.ch - TILE_BASE];
                     }
-                    changed=true;c+=cols-1;continue;
+                    changed = true;
+                    c += cols - 1;
+                    continue;
                 }
                 paint_cell(c, r, cell, cur);
                 s_shown[frame][r][c] = cell;
                 changed = true;
             }
-            if(s_rgb_plane)s_rgb_shown[frame][r*s_cols+c]=native?s_rgb_generation[cell.ch-TILE_BASE]:0;
+            if (s_rgb_plane)
+                s_rgb_shown[frame][r * s_cols + c] = native ? s_rgb_generation[cell.ch - TILE_BASE] : 0;
         }
     for (int i = 0; i < IMG_SLOTS; i++)
         s_shown_generation[frame][i] = s_slots[i].generation;
@@ -664,12 +754,14 @@ static void paint(void)
             memset(s_shown[frame], 0xFF, sizeof(s_shown[frame]));
             return;
         }
-        int64_t submitted=esp_timer_get_time();uint32_t work_us=(uint32_t)(submitted-paint_began);
-        atomic_store(&s_paint_timing[0],(uint32_t)(submitted/1000));
-        atomic_store(&s_paint_timing[1],work_us);
-        if(work_us>atomic_load(&s_paint_timing[2]))atomic_store(&s_paint_timing[2],work_us);
-        atomic_fetch_add(&s_paint_timing[3],work_us);
-        atomic_fetch_add(&s_scanout[4],1);
+        int64_t submitted = esp_timer_get_time();
+        uint32_t work_us = (uint32_t)(submitted - paint_began);
+        atomic_store(&s_paint_timing[0], (uint32_t)(submitted / 1000));
+        atomic_store(&s_paint_timing[1], work_us);
+        if (work_us > atomic_load(&s_paint_timing[2]))
+            atomic_store(&s_paint_timing[2], work_us);
+        atomic_fetch_add(&s_paint_timing[3], work_us);
+        atomic_fetch_add(&s_scanout[4], 1);
         /* Arm after draw_bitmap commits the requested buffer. A callback
          * racing before this point is ignored, so it cannot release the
          * previous buffer before the driver has stopped reading it. */
@@ -711,19 +803,21 @@ void display_write(const uint8_t *buf, int len)
 /* -------------------------------------------------------------- panel */
 
 static bool IRAM_ATTR frame_complete(esp_lcd_panel_handle_t panel,
-                                    const esp_lcd_rgb_panel_event_data_t *event, void *user)
+                                     const esp_lcd_rgb_panel_event_data_t *event, void *user)
 {
     (void)panel;
     (void)event;
     (void)user;
-    int64_t now=esp_timer_get_time();
-    if(s_last_prepared_us){
-        uint32_t gap=(uint32_t)(now-s_last_prepared_us);
-        if(gap>atomic_load(&s_scanout[3]))atomic_store(&s_scanout[3],gap);
+    int64_t now = esp_timer_get_time();
+    if (s_last_prepared_us)
+    {
+        uint32_t gap = (uint32_t)(now - s_last_prepared_us);
+        if (gap > atomic_load(&s_scanout[3]))
+            atomic_store(&s_scanout[3], gap);
     }
-    s_last_prepared_us=now;
+    s_last_prepared_us = now;
     s_prepared_at++;
-    atomic_fetch_add(&s_scanout[1],1);
+    atomic_fetch_add(&s_scanout[1], 1);
     portENTER_CRITICAL_ISR(&s_swap_lock);
     bool waiting = s_swap_waiting;
     s_swap_waiting = false;
@@ -735,14 +829,17 @@ static bool IRAM_ATTR frame_complete(esp_lcd_panel_handle_t panel,
 }
 
 static bool IRAM_ATTR scanout_vsync(esp_lcd_panel_handle_t panel,
-                                  const esp_lcd_rgb_panel_event_data_t *event,void *user)
+                                    const esp_lcd_rgb_panel_event_data_t *event, void *user)
 {
-    (void)panel;(void)event;(void)user;
-    unsigned frames=atomic_fetch_add(&s_scanout[0],1);
+    (void)panel;
+    (void)event;
+    (void)user;
+    unsigned frames = atomic_fetch_add(&s_scanout[0], 1);
     /* Skip startup phase alignment; completion should advance once between
      * successive VSYNCs. This callback precedes IDF's underrun recovery. */
-    if(frames>2&&s_prepared_at==s_previous_prepared)atomic_fetch_add(&s_scanout[2],1);
-    s_previous_prepared=s_prepared_at;
+    if (frames > 2 && s_prepared_at == s_previous_prepared)
+        atomic_fetch_add(&s_scanout[2], 1);
+    s_previous_prepared = s_prepared_at;
     return false;
 }
 
@@ -751,9 +848,9 @@ static bool panel_init(void)
     int mhz = tdsh_board_int("lcd.pclk_mhz", PCLK_MHZ);
     if (mhz < 10 || mhz > 40)
         mhz = PCLK_MHZ;
-    atomic_store(&s_scanout[5],(unsigned)mhz*1000000u);
-    atomic_store(&s_scanout[6],xPortGetCoreID());
-    atomic_store(&s_scanout[7],BOUNCE_LINES);
+    atomic_store(&s_scanout[5], (unsigned)mhz * 1000000u);
+    atomic_store(&s_scanout[6], xPortGetCoreID());
+    atomic_store(&s_scanout[7], BOUNCE_LINES);
     esp_lcd_rgb_panel_config_t cfg = {
         .clk_src = LCD_CLK_SRC_DEFAULT,
         .timings =
@@ -795,7 +892,7 @@ static bool panel_init(void)
     {
         memset(s_frames[0], 0, (size_t)DISPLAY_W * DISPLAY_H * sizeof(uint16_t));
         memset(s_frames[1], 0, (size_t)DISPLAY_W * DISPLAY_H * sizeof(uint16_t));
-        esp_lcd_rgb_panel_event_callbacks_t callbacks = {.on_bounce_frame_finish = frame_complete,.on_vsync=scanout_vsync};
+        esp_lcd_rgb_panel_event_callbacks_t callbacks = {.on_bounce_frame_finish = frame_complete, .on_vsync = scanout_vsync};
         err = esp_lcd_rgb_panel_register_event_callbacks(panel, &callbacks, NULL);
     }
     if (err == ESP_OK)

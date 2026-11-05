@@ -7,9 +7,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#define TD_FS_READ 0
-#define TD_FS_WRITE 1
-#define TD_FS_LIST 2
+#define TD_FS_READ   0
+#define TD_FS_WRITE  1
+#define TD_FS_LIST   2
 #define TD_FS_EXISTS 3
 #define TD_FS_REMOVE 4
 
@@ -251,36 +251,42 @@ typedef struct
     const char *text;          /* the file's contents */
 } td_desktop_file_t;
 
-#define TD_USER_ROLE_USER 0
+#define TD_USER_ROLE_USER  0
 #define TD_USER_ROLE_ADMIN 1
-#define TD_USER_ROLE_ROOT 2
-#define TD_RIGHT_USERS    (1u<<0)
-#define TD_RIGHT_SYSTEM   (1u<<1)
-#define TD_RIGHT_NETWORK  (1u<<2)
-#define TD_RIGHT_HARDWARE (1u<<3)
-#define TD_RIGHT_SHARED   (1u<<4)
-#define TD_RIGHT_TIME     (1u<<5)
-#define TD_RIGHT_APPS     (1u<<6)
-#define TD_RIGHT_ALL      127u
-typedef struct {char name[32];int role;uint32_t rights;} td_user_info_t;
-typedef struct {
-    int (*list)(int index,td_user_info_t *out);
+#define TD_USER_ROLE_ROOT  2
+#define TD_RIGHT_USERS     (1u << 0)
+#define TD_RIGHT_SYSTEM    (1u << 1)
+#define TD_RIGHT_NETWORK   (1u << 2)
+#define TD_RIGHT_HARDWARE  (1u << 3)
+#define TD_RIGHT_SHARED    (1u << 4)
+#define TD_RIGHT_TIME      (1u << 5)
+#define TD_RIGHT_APPS      (1u << 6)
+#define TD_RIGHT_ALL       127u
+typedef struct
+{
+    char name[32];
+    int role;
+    uint32_t rights;
+} td_user_info_t;
+typedef struct
+{
+    int (*list)(int index, td_user_info_t *out);
     int (*role)(const char *username);
     uint32_t (*rights)(const char *username);
     uint32_t (*generation)(const char *username);
-    int (*create)(const char *actor,const char *name,const char *password,int role,uint32_t rights);
-    int (*access_set)(const char *actor,const char *name,int role,uint32_t rights);
-    int (*password_set)(const char *actor,const char *name,const char *old_password,const char *password);
-    uint32_t (*remembered)(char *name,int cap);
+    int (*create)(const char *actor, const char *name, const char *password, int role, uint32_t rights);
+    int (*access_set)(const char *actor, const char *name, int role, uint32_t rights);
+    int (*password_set)(const char *actor, const char *name, const char *old_password, const char *password);
+    uint32_t (*remembered)(char *name, int cap);
     bool (*remember_allowed)(const char *name);
-    uint32_t (*login)(const char *name,const char *password);
-    int (*boot_user_set)(const char *actor,const char *name);
+    uint32_t (*login)(const char *name, const char *password);
+    int (*boot_user_set)(const char *actor, const char *name);
     int (*require_password)(const char *actor);
     /* Optional password hints, shown at Sign in to anyone at the device:
      * get fills out ("" none); set is allowed for the account itself and
      * whoever may manage it, "" removes it. 0 or a negative errno. */
-    int (*hint_get)(const char *name,char *out,int cap);
-    int (*hint_set)(const char *actor,const char *name,const char *hint);
+    int (*hint_get)(const char *name, char *out, int cap);
+    int (*hint_set)(const char *actor, const char *name, const char *hint);
 } td_user_ops_t;
 #define TD_HINT_MAX 64   /* bytes, with the ending 0 */
 typedef struct

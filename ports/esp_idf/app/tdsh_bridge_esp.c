@@ -39,8 +39,11 @@ static char s_typed[64];              /* typing during a repeat is rare */
 static size_t s_typed_len;
 static void flush_input(void)
 {
-    s_typed_len=0;char discard[64];
-    while(xStreamBufferReceive(s_in,discard,sizeof(discard),0)>0){}
+    s_typed_len = 0;
+    char discard[64];
+    while (xStreamBufferReceive(s_in, discard, sizeof(discard), 0) > 0)
+    {
+    }
 }
 
 /* ---------------------------------------------- shell-side stream */

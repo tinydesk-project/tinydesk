@@ -113,8 +113,7 @@ static bool tool_event(td_window_t *w, const td_event_t *ev)
 static void test_no_focus(void)
 {
     td_window_desc_t a = {.title = "Text", .rect = td_rect(2, 2, 30, 10), .flags = TD_WIN_DEFAULT, .on_event = text_event};
-    td_window_desc_t t = {.title = "Keys", .rect = td_rect(10, 6, 40, 10), .flags = TD_WIN_MOVABLE | TD_WIN_NO_FOCUS,
-                          .on_event = tool_event};
+    td_window_desc_t t = {.title = "Keys", .rect = td_rect(10, 6, 40, 10), .flags = TD_WIN_MOVABLE | TD_WIN_NO_FOCUS, .on_event = tool_event};
     td_window_t *text = td_win_create(&a);
     td_window_t *tool = td_win_create(&t);
     CHECK(td_win_focused() == text);   /* the tool did not take it */

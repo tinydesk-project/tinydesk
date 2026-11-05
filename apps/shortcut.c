@@ -14,10 +14,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LINK_EXT   ".tdlink"
-#define START_DIR  "Start menu"
-#define APPS_DIR   "Apps"
-#define PATH_LEN_  TD_PATH_MAX
+#define LINK_EXT  ".tdlink"
+#define START_DIR "Start menu"
+#define APPS_DIR  "Apps"
+#define PATH_LEN_ TD_PATH_MAX
 
 static const td_fs_ops_t *fs(void)
 {
@@ -195,7 +195,10 @@ const char *td_copy_to_apps(const char *path, char *copy, int cap)
     if (f->exists(copy))
         return "Apps already has a file of that name.";
     f->mkdir(td_apps_dir());
-    enum { CHUNK = 2048 };
+    enum
+    {
+        CHUNK = 2048
+    };
     char *buf = malloc(CHUNK);
     if (!buf)
         return "Not enough memory.";

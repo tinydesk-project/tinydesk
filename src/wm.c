@@ -157,9 +157,12 @@ static td_window_t *modal_window(void)
 static bool s_kiosk;
 static td_window_t *s_input_gate;
 static bool s_input_locked;
-void td_wm_set_input_gate(bool locked,td_window_t *w)
+void td_wm_set_input_gate(bool locked, td_window_t *w)
 {
-    s_input_locked=locked;s_input_gate=locked?w:NULL;s_menu_open=false;s_dirty=true;
+    s_input_locked = locked;
+    s_input_gate = locked ? w : NULL;
+    s_menu_open = false;
+    s_dirty = true;
 }
 static bool (*s_kiosk_hook)(const td_event_t *ev);
 
@@ -678,8 +681,8 @@ static void cycle_windows(void)
 
 void td_wm_init(int cols, int rows)
 {
-    s_input_gate=NULL;
-    s_input_locked=false;
+    s_input_gate = NULL;
+    s_input_locked = false;
     for (int i = 0; i < TD_MAX_WINDOWS; i++)
     {
         if (s_wins[i].used)
@@ -834,7 +837,8 @@ static int menu_item_y(int i)
 static int menu_index_at(int y)
 {
     int top = s_menu.rect.y + 1;
-    if (y <= s_menu.rect.y || y >= s_menu.rect.y + s_menu.rect.h - 1) return -1;
+    if (y <= s_menu.rect.y || y >= s_menu.rect.y + s_menu.rect.h - 1)
+        return -1;
     for (int i = s_menu.first; i < s_menu.count; i++)
     {
         int h = menu_item_rows(i);
@@ -859,7 +863,8 @@ static int menu_step(int i, int dir)
 
 static void menu_ensure_visible(void)
 {
-    if (s_menu_sel < s_menu.first) s_menu.first = s_menu_sel;
+    if (s_menu_sel < s_menu.first)
+        s_menu.first = s_menu_sel;
     while (s_menu.first < s_menu_sel &&
            menu_item_y(s_menu_sel) + menu_item_rows(s_menu_sel) > s_menu.rect.y + s_menu.rect.h - 1)
         s_menu.first++;
@@ -868,15 +873,19 @@ static void menu_ensure_visible(void)
 static bool menu_more_below(void)
 {
     return s_menu.count > 0 && menu_item_y(s_menu.count - 1) + menu_item_rows(s_menu.count - 1) >
-           s_menu.rect.y + s_menu.rect.h - 1;
+                                   s_menu.rect.y + s_menu.rect.h - 1;
 }
 
 static void menu_scroll(int direction)
 {
-    if (direction < 0 && s_menu.first > 0) s_menu.first--;
-    else if (direction > 0 && menu_more_below()) s_menu.first++;
-    else return;
-    if (s_menu_sel < s_menu.first) s_menu_sel = menu_step(s_menu.first - 1, 1);
+    if (direction < 0 && s_menu.first > 0)
+        s_menu.first--;
+    else if (direction > 0 && menu_more_below())
+        s_menu.first++;
+    else
+        return;
+    if (s_menu_sel < s_menu.first)
+        s_menu_sel = menu_step(s_menu.first - 1, 1);
     while (s_menu_sel > s_menu.first &&
            menu_item_y(s_menu_sel) + menu_item_rows(s_menu_sel) > s_menu.rect.y + s_menu.rect.h - 1)
         s_menu_sel = menu_step(s_menu_sel, -1);
@@ -1184,7 +1193,8 @@ static void menu_key(const td_event_t *ev)
     default:
         break;
     }
-    if (s_menu_open) menu_ensure_visible();
+    if (s_menu_open)
+        menu_ensure_visible();
     s_dirty = true;
 }
 
@@ -1205,14 +1215,25 @@ static bool menu_mouse(const td_event_t *ev)
         }
         return false;
     }
-    if (ev->action == TD_MOUSE_PRESS) {
-        if (ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN) {
+    if (ev->action == TD_MOUSE_PRESS)
+    {
+        if (ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN)
+        {
             menu_scroll(ev->button == TD_BUTTON_WHEEL_UP ? -1 : 1);
             return true;
         }
-        if (ev->button == TD_BUTTON_LEFT && ev->x >= r.x + r.w - 5) {
-            if (ev->y == r.y) { menu_scroll(-1);return true; }
-            if (ev->y == r.y + r.h - 1) { menu_scroll(1);return true; }
+        if (ev->button == TD_BUTTON_LEFT && ev->x >= r.x + r.w - 5)
+        {
+            if (ev->y == r.y)
+            {
+                menu_scroll(-1);
+                return true;
+            }
+            if (ev->y == r.y + r.h - 1)
+            {
+                menu_scroll(1);
+                return true;
+            }
         }
     }
     int i = menu_index_at(ev->y);
@@ -1595,8 +1616,8 @@ static int icon_columns(void)
 
 /* Icon places (td_wm_set_icon_arrange): s_slot[i] is icon i's slot,
  * column * icons_per_column() + row, or -1 when it has none. */
-#define ICON_MAX   TD_MAX_ICON_PLACES
-#define SLOT_MAX   256
+#define ICON_MAX TD_MAX_ICON_PLACES
+#define SLOT_MAX 256
 static bool s_arrange = true;
 static td_icon_place_t s_places[TD_MAX_ICON_PLACES];
 static int s_place_count;
@@ -2131,42 +2152,46 @@ void td_wm_compose(td_buffer_t *back)
         td_buffer_init(back, s_cols, s_rows);
     td_draw_target(back);
 
-    if(s_input_locked){
-        td_fill(td_rect(0,0,s_cols,s_rows),' ',t->win_fg,0);
-        if(td_win_is_open(s_input_gate))draw_window(s_input_gate,true);
-    }else{
-    td_fill(td_rect(0, 0, s_cols, s_rows), td_desktop_pattern(), t->desktop_fg, t->desktop_bg);
-    if (td_desktop_icons() && !s_kiosk)
+    if (s_input_locked)
     {
-        layout_icons();
-        for (int i = 0; i < icon_count(); i++)
-            draw_icon(i);
+        td_fill(td_rect(0, 0, s_cols, s_rows), ' ', t->win_fg, 0);
+        if (td_win_is_open(s_input_gate))
+            draw_window(s_input_gate, true);
     }
+    else
+    {
+        td_fill(td_rect(0, 0, s_cols, s_rows), td_desktop_pattern(), t->desktop_fg, t->desktop_bg);
+        if (td_desktop_icons() && !s_kiosk)
+        {
+            layout_icons();
+            for (int i = 0; i < icon_count(); i++)
+                draw_icon(i);
+        }
 
-    td_window_t *focused = td_win_focused();
-    for (int i = 0; i < s_order_count; i++)
-    {
-        td_window_t *w = &s_wins[s_order[i]];
-        if (w->flags & TD_WIN_HIDDEN)
-            continue;
-        draw_window(w, w == focused);
-    }
-    if (taskbar_visible())
-    {
-        draw_taskbar();
-        if (s_menu_open)
-            draw_menu();
-    }
-    if (s_dnd.active)
-    {
+        td_window_t *focused = td_win_focused();
+        for (int i = 0; i < s_order_count; i++)
+        {
+            td_window_t *w = &s_wins[s_order[i]];
+            if (w->flags & TD_WIN_HIDDEN)
+                continue;
+            draw_window(w, w == focused);
+        }
+        if (taskbar_visible())
+        {
+            draw_taskbar();
+            if (s_menu_open)
+                draw_menu();
+        }
+        if (s_dnd.active)
+        {
         /* The dragged item follows the pointer. */
-        char label[64];
-        snprintf(label, sizeof(label), " %s %s ", s_dnd.item.is_dir ? "[/" : "\xC2\xB6", s_dnd.item.name);
-        int len = td_utf8_len(label);
-        int x = clamp(s_mouse_x + 1, 0, s_cols - len);
-        int y = clamp(s_mouse_y, 0, s_rows - 1);
-        td_text(x, y, label, t->select_fg, t->select_bg, TD_BOLD);
-    }
+            char label[64];
+            snprintf(label, sizeof(label), " %s %s ", s_dnd.item.is_dir ? "[/" : "\xC2\xB6", s_dnd.item.name);
+            int len = td_utf8_len(label);
+            int x = clamp(s_mouse_x + 1, 0, s_cols - len);
+            int y = clamp(s_mouse_y, 0, s_rows - 1);
+            td_text(x, y, label, t->select_fg, t->select_bg, TD_BOLD);
+        }
     }
     if (s_pointer && s_mouse_x >= 0 && s_mouse_x < s_cols && s_mouse_y < s_rows)
     {
@@ -2624,16 +2649,28 @@ static void dispatch_paste(const td_event_t *ev)
 
 void td_wm_dispatch(const td_event_t *ev)
 {
-    if(s_input_locked){
-        if(!td_win_is_open(s_input_gate))return;
-        td_window_t *w=s_input_gate;
-        if(ev->type==TD_EV_MOUSE){s_mouse_x=ev->x;s_mouse_y=ev->y;client_event(w,ev);}
-        else if(ev->type==TD_EV_PASTE)(void)td_widgets_paste(w);
-        else if(ev->type==TD_EV_KEY){
-            if(ev->key==TD_KEY_TAB&&!(ev->mods&~TD_MOD_SHIFT))td_widgets_focus_next(w,ev->mods&TD_MOD_SHIFT?-1:1);
-            else client_event(w,ev);
+    if (s_input_locked)
+    {
+        if (!td_win_is_open(s_input_gate))
+            return;
+        td_window_t *w = s_input_gate;
+        if (ev->type == TD_EV_MOUSE)
+        {
+            s_mouse_x = ev->x;
+            s_mouse_y = ev->y;
+            client_event(w, ev);
         }
-        s_dirty=true;return;
+        else if (ev->type == TD_EV_PASTE)
+            (void)td_widgets_paste(w);
+        else if (ev->type == TD_EV_KEY)
+        {
+            if (ev->key == TD_KEY_TAB && !(ev->mods & ~TD_MOD_SHIFT))
+                td_widgets_focus_next(w, ev->mods & TD_MOD_SHIFT ? -1 : 1);
+            else
+                client_event(w, ev);
+        }
+        s_dirty = true;
+        return;
     }
     switch (ev->type)
     {

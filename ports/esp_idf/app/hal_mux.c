@@ -87,8 +87,10 @@ static void follow_session(void)
     }
     else
     {
-        if (s_local_locked) td_session_lock();
-        else become(s_local_user[0] ? s_local_user : "root");
+        if (s_local_locked)
+            td_session_lock();
+        else
+            become(s_local_user[0] ? s_local_user : "root");
     }
     td_full_redraw();
 }

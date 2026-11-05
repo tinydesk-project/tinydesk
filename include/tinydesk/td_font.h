@@ -6,7 +6,8 @@
 #include <stdint.h>
 
 #define TD_FONT_MAX_BYTES (256u * 1024u)
-typedef struct {
+typedef struct
+{
     const uint8_t *data;
     size_t size;
     uint16_t height, ascent, count, pixels;
@@ -17,6 +18,6 @@ void td_font_measure(const td_font_t *font, const char *text, int width, bool wr
 /* Draw into an existing palette buffer; 0/1/2 alignment = start/center/end. */
 void td_font_draw(const td_font_t *font, const char *text, uint8_t *pixels,
                   int width, int height, uint8_t color, int align, int valign, bool wrap);
-void td_font_draw_rgb(const td_font_t *font,const char *text,uint16_t *pixels,
-                      int width,int height,uint8_t color,int align,int valign,bool wrap);
+void td_font_draw_rgb(const td_font_t *font, const char *text, uint16_t *pixels,
+                      int width, int height, uint8_t color, int align, int valign, bool wrap);
 #endif

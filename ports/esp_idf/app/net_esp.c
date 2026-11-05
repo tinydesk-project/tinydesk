@@ -176,7 +176,8 @@ static int net_scan_results(td_wifi_ap_t *out, int max)
 
 static bool net_connect(const char *ssid, const char *password)
 {
-    if (!td_session_has_right(TD_RIGHT_NETWORK)) return false;
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return false;
     if (s_busy)
         return false;
     snprintf(s_ssid, sizeof(s_ssid), "%s", ssid);
@@ -187,13 +188,15 @@ static bool net_connect(const char *ssid, const char *password)
 
 static bool net_disconnect(void)
 {
-    if (!td_session_has_right(TD_RIGHT_NETWORK)) return false;
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return false;
     return start_job(JOB_DISCONNECT);
 }
 
 static bool net_forget(const char *ssid)
 {
-    if (!td_session_has_right(TD_RIGHT_NETWORK)) return false;
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return false;
     int rc = tdsh_wifi_forget(ssid, td_session_user());
     if (rc == -2)
         set_msg("%s", "Shared network: only root can forget it");
@@ -218,7 +221,8 @@ static bool net_server_status(int which, int *port, int *clients)
 
 static bool net_server_set(int which, bool on)
 {
-    if (!td_session_has_right(TD_RIGHT_NETWORK)) return false;
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return false;
     if (on && !tdsh_remote_access_ready())
     {
         set_msg("%s", "First run passwd in Terminal (old: " TDSH_FACTORY_ROOT_PASSWORD ")");
@@ -245,7 +249,8 @@ static bool net_server_set(int which, bool on)
 
 static void net_telnet_enable(bool on)
 {
-    if (!td_session_has_right(TD_RIGHT_NETWORK)) return;
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return;
     telnet_set_enabled(on);
     set_msg("%s", on && !telnet_enabled()
                       ? "Telnet: run passwd in Terminal (old: " TDSH_FACTORY_ROOT_PASSWORD ")"

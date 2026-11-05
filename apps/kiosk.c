@@ -77,16 +77,19 @@ static void load_splash(void)
         td_image_close(&image);
         return;
     }
-    bool rgb=TD_PYUI_MAX_CELLS>2000;
-    uint8_t *pixels = malloc((size_t)image.w * image.h*(rgb?2:1));
+    bool rgb = TD_PYUI_MAX_CELLS > 2000;
+    uint8_t *pixels = malloc((size_t)image.w * image.h * (rgb ? 2 : 1));
     uint8_t *row = malloc((size_t)image.w * 3);
     int y, count = 0;
     if (pixels && row)
         while (td_image_row(&image, &y, row))
         {
-            for (int x = 0; x < image.w; x++){
-                if(rgb)((uint16_t *)pixels)[y*image.w+x]=td_rgb565(row[x*3],row[x*3+1],row[x*3+2]);
-                else pixels[y * image.w + x] = td_rgb256(row[x * 3], row[x * 3 + 1], row[x * 3 + 2]);
+            for (int x = 0; x < image.w; x++)
+            {
+                if (rgb)
+                    ((uint16_t *)pixels)[y * image.w + x] = td_rgb565(row[x * 3], row[x * 3 + 1], row[x * 3 + 2]);
+                else
+                    pixels[y * image.w + x] = td_rgb256(row[x * 3], row[x * 3 + 1], row[x * 3 + 2]);
             }
             count++;
         }
@@ -94,7 +97,7 @@ static void load_splash(void)
     if (pixels && count == image.h)
     {
         s_splash = pixels;
-        s_splash_rgb=rgb;
+        s_splash_rgb = rgb;
         s_splash_w = image.w;
         s_splash_h = image.h;
     }
@@ -108,33 +111,58 @@ static void splash_pixels(void *user, uint8_t *pixels, int w, int h)
     (void)user;
     memset(pixels, 0, (size_t)w * h);
     int dw = s_splash_w, dh = s_splash_h;
-    if (dw > w) { dh = dh * w / dw; dw = w; }
-    if (dh > h) { dw = dw * h / dh; dh = h; }
+    if (dw > w)
+    {
+        dh = dh * w / dw;
+        dw = w;
+    }
+    if (dh > h)
+    {
+        dw = dw * h / dh;
+        dh = h;
+    }
     if (dw < 1 || dh < 1)
         return;
     int ox = (w - dw) / 2, oy = (h - dh) / 2;
     for (int y = 0; y < dh; y++)
         for (int x = 0; x < dw; x++)
         {
-            int at=(y*s_splash_h/dh)*s_splash_w+x*s_splash_w/dw;
-            uint8_t color=s_splash[at];
-            if(s_splash_rgb){uint8_t rgb[3];td_rgb565_rgb(((uint16_t *)s_splash)[at],rgb);color=td_rgb256(rgb[0],rgb[1],rgb[2]);}
-            pixels[(y+oy)*w+x+ox]=color;
+            int at = (y * s_splash_h / dh) * s_splash_w + x * s_splash_w / dw;
+            uint8_t color = s_splash[at];
+            if (s_splash_rgb)
+            {
+                uint8_t rgb[3];
+                td_rgb565_rgb(((uint16_t *)s_splash)[at], rgb);
+                color = td_rgb256(rgb[0], rgb[1], rgb[2]);
+            }
+            pixels[(y + oy) * w + x + ox] = color;
         }
 }
 
-static void splash_pixels_rgb(void *user,uint16_t *pixels,int w,int h)
+static void splash_pixels_rgb(void *user, uint16_t *pixels, int w, int h)
 {
-    (void)user;memset(pixels,0,(size_t)w*h*sizeof(*pixels));
-    int dw=s_splash_w,dh=s_splash_h;
-    if(dw>w){dh=dh*w/dw;dw=w;}
-    if(dh>h){dw=dw*h/dh;dh=h;}
-    if(dw<1||dh<1)return;
-    int ox=(w-dw)/2,oy=(h-dh)/2;
-    for(int y=0;y<dh;y++)for(int x=0;x<dw;x++){
-        int at=(y*s_splash_h/dh)*s_splash_w+x*s_splash_w/dw;
-        pixels[(y+oy)*w+x+ox]=s_splash_rgb?((uint16_t *)s_splash)[at]:td_palette_rgb565(s_splash[at]);
+    (void)user;
+    memset(pixels, 0, (size_t)w * h * sizeof(*pixels));
+    int dw = s_splash_w, dh = s_splash_h;
+    if (dw > w)
+    {
+        dh = dh * w / dw;
+        dw = w;
     }
+    if (dh > h)
+    {
+        dw = dw * h / dh;
+        dh = h;
+    }
+    if (dw < 1 || dh < 1)
+        return;
+    int ox = (w - dw) / 2, oy = (h - dh) / 2;
+    for (int y = 0; y < dh; y++)
+        for (int x = 0; x < dw; x++)
+        {
+            int at = (y * s_splash_h / dh) * s_splash_w + x * s_splash_w / dw;
+            pixels[(y + oy) * w + x + ox] = s_splash_rgb ? ((uint16_t *)s_splash)[at] : td_palette_rgb565(s_splash[at]);
+        }
 }
 
 /* ----------------------------------------------------- the corner hold */
@@ -353,12 +381,16 @@ static void status_draw(td_window_t *win, int w, int h)
             int cw, ch;
             td_term_cell_px(&cw, &ch);
             int cols = (s_splash_w + cw - 1) / cw, rows = (s_splash_h + ch - 1) / ch;
-            if (cols > w) cols = w;
-            if (rows > h) rows = h;
+            if (cols > w)
+                cols = w;
+            if (rows > h)
+                rows = h;
             td_rect_t client = td_win_client(win);
-            if(s_splash_rgb)td_picture_add_rgb(client.x+(w-cols)/2,client.y+(h-rows)/2,cols,rows,0x53504c31u,splash_pixels,splash_pixels_rgb,NULL);
-            else td_picture_add(client.x + (w - cols) / 2, client.y + (h - rows) / 2, cols, rows,
-                                0x53504c31u, splash_pixels, NULL);
+            if (s_splash_rgb)
+                td_picture_add_rgb(client.x + (w - cols) / 2, client.y + (h - rows) / 2, cols, rows, 0x53504c31u, splash_pixels, splash_pixels_rgb, NULL);
+            else
+                td_picture_add(client.x + (w - cols) / 2, client.y + (h - rows) / 2, cols, rows,
+                               0x53504c31u, splash_pixels, NULL);
         }
         return;
     }
@@ -409,12 +441,15 @@ bool td_kiosk_active(void)
 {
     return s_active;
 }
-static int s_check_timer=-1;
+static int s_check_timer = -1;
 void td_kiosk_stop_for_login(void)
 {
-    s_active=false;s_launched=false;td_wm_set_kiosk(false,NULL);
-    if(td_win_is_open(s_status))td_win_close(s_status);
-    s_status=NULL;
+    s_active = false;
+    s_launched = false;
+    td_wm_set_kiosk(false, NULL);
+    if (td_win_is_open(s_status))
+        td_win_close(s_status);
+    s_status = NULL;
 }
 
 void td_kiosk_start(void)
@@ -422,7 +457,8 @@ void td_kiosk_start(void)
     const char *app = td_sysinfo()->kiosk_app;
     if (!td_session_has_right(TD_RIGHT_APPS) || s_active || !app || !app[0])
         return;
-    if(!td_session_is_root()&&!strncmp(app,"/root/",6))return;
+    if (!td_session_is_root() && !strncmp(app, "/root/", 6))
+        return;
     snprintf(s_cmd, sizeof(s_cmd), "py %s", app);
     s_active = true;
     load_splash();
@@ -434,6 +470,7 @@ void td_kiosk_start(void)
         .on_draw = status_draw,
     };
     s_status = td_win_create(&d);
-    if(s_check_timer<0)s_check_timer=td_timer_start(CHECK_MS, true, check, NULL, td_millis());
+    if (s_check_timer < 0)
+        s_check_timer = td_timer_start(CHECK_MS, true, check, NULL, td_millis());
     td_logf('I', "kiosk mode: %s", app);
 }
