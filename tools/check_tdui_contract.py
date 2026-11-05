@@ -5,7 +5,7 @@
 ports/common/python/tdui_contract.json is what app makers (TinyDesk App
 Builder) build against. This checks that its numbers are the ones of
 apps/td_apps.h and ports/common/python/modules/tdui.py: requests, widgets,
-events, limits, the api number and the capabilities. Run by ctest.
+events, limits, the api number (also apps/store.c's) and the capabilities. Run by ctest.
 """
 import json
 import re
@@ -77,6 +77,12 @@ def main():
 
     m = re.search(r"^API = \((\d+), (\d+)\)", tdui, re.M)
     same("tdui.API", contract["api"], [int(m.group(1)), int(m.group(2))] if m else None)
+    # The Store (apps/store.c) decides by the same number what a board runs.
+    store = (ROOT / "apps/store.c").read_text(encoding="utf-8")
+    major = re.search(r"#define TDUI_MAJOR\s+(\d+)", store)
+    minor = re.search(r"#define TDUI_MINOR\s+(\d+)", store)
+    same("store.c TDUI_MAJOR/MINOR", contract["api"],
+         [int(major.group(1)), int(minor.group(1))] if major and minor else None)
     caps = set(re.findall(r'"([a-z_]+)"', re.search(r"^CAPABILITIES = (.*)$", tdui, re.M).group(1)))
     same("tdui.CAPABILITIES", set(contract["capabilities"]), caps)
 

@@ -44,6 +44,7 @@
 #include "hal_mux.h"
 #include "link.h"
 #include "net_esp.h"
+#include "fetch_esp.h"
 #include "ota_esp.h"
 #include "td_modbus.h"
 #include "td_proto_cmds.h"
@@ -700,6 +701,20 @@ void app_main(void)
     s_info.mouse = usb_hid_mouse_ops();         /* the Mouse and Keyboard apps, when it is on */
     s_info.keyboard = usb_hid_keyboard_ops();
 #endif
+
+    /* Downloads (the Store app), and board key store.url: another catalog,
+     * a URL or a file on the device (a shell path), e.g. for testing. */
+    s_info.fetch = fetch_esp_ops();
+    static char s_store_url[TDSH_MAX_PATH];
+    const char *store = tdsh_board_get("store.url");
+    if (store && store[0])
+    {
+        if (store[0] == '/')
+            snprintf(s_store_url, sizeof(s_store_url), "%s%s", TDSH_MOUNT_POINT, store);
+        else
+            snprintf(s_store_url, sizeof(s_store_url), "%s", store);
+        s_info.store_url = s_store_url;
+    }
 
     /* Kiosk mode: board configuration key kiosk.app names the Python app,
      * unless this is a maintenance start (link.h; the BOOT button). */

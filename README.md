@@ -47,7 +47,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   (accounts, Admin and User roles, rights, password hints), Recycle Bin
   (restore what was deleted), Software Update
   (OTA), Pixels, Image Viewer (BMP, PPM, PGM), Mouse and Keyboard (with USB
-  on the ESP32-S3), On-screen keyboard (large touch keys), and a small API for writing your own, with a pixel
+  on the ESP32-S3), On-screen keyboard (large touch keys), Store (installs
+  apps from the tinydesk-apps catalog), and a small API for writing your own, with a pixel
   canvas (`td_canvas.h`: two pixels per cell in any terminal, four with a
   font that has the quadrant characters).
 * Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes

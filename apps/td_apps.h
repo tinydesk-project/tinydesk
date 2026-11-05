@@ -30,6 +30,14 @@ void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);
 void td_osk_register(void);        /* the On-screen keyboard app */
+void td_store_register(void);      /* the Store: apps from a catalog */
+/* The Store's parts, for tests: parse catalog.txt into an array of
+ * td_store_entry_size() bytes per entry (returns the count, -1: not a
+ * catalog), why the board cannot run one (NULL: it can), SHA-256 as hex. */
+int td_store_parse(char *text, void *list, int max);
+int td_store_entry_size(void);
+const char *td_store_cannot_run(const void *entry);
+void td_store_sha256(const void *data, uint32_t len, char out[65]);
 
 /* ------------------------------------------------- on-screen keyboard */
 

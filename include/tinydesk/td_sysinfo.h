@@ -233,6 +233,36 @@ typedef struct
     bool (*save_settings)(char *msg, int cap);
 } td_ota_ops_t;
 
+/* ------------------------------------------------------------ downloads */
+
+enum
+{
+    TD_FETCH_IDLE,
+    TD_FETCH_RUNNING,
+    TD_FETCH_DONE,
+    TD_FETCH_FAILED
+};
+
+typedef struct
+{
+    int state;                 /* TD_FETCH_* */
+    uint32_t done, total;      /* bytes; total 0 while unknown */
+    char message[96];          /* why it failed */
+} td_fetch_status_t;
+
+/* Downloads (optional; the Store uses them). start() copies source, an
+ * http(s):// URL or a real file path (also file://), into the real file
+ * path dest, replacing it, in the background; one at a time. HTTPS is
+ * checked against the port's trusted certificates and redirects are
+ * followed. A download larger than max bytes (0: no limit) fails. A failed
+ * or cancelled download removes dest. */
+typedef struct
+{
+    bool (*start)(const char *source, const char *dest, uint32_t max);
+    void (*status)(td_fetch_status_t *out);
+    void (*cancel)(void);
+} td_fetch_ops_t;
+
 /* One system task (thread), for the Task Manager. */
 typedef struct
 {
@@ -334,6 +364,11 @@ typedef struct
 
     const td_net_ops_t *net;
     const td_ota_ops_t *ota;   /* NULL: no updates on this platform */
+    /* Downloads (optional, NULL: none) and the Store's catalog, an
+     * http(s):// URL or a real file path of a catalog.txt (optional, NULL:
+     * the official one). */
+    const td_fetch_ops_t *fetch;
+    const char *store_url;
     /* With ota NULL (optional): why, and how to update instead; lines
      * separated by '\n'. Software Update shows it. */
     const char *no_ota_text;

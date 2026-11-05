@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include "td_apps.h"
+#include "host_fetch.h"
 #include "td_fs_stdio.h"
 #include "td_host_hal.h"
 
@@ -147,6 +148,8 @@ void td_host_setup(const td_hal_t *hal, const char *platform_name)
 #ifdef TD_WITH_TDSH
     s_info.extra = "Shell:     TinyDesk Shell " TDSH_VERSION;
 #endif
+    s_info.fetch = host_fetch_ops();
+    s_info.store_url = getenv("TINYDESK_STORE");   /* another catalog: a URL or a file path */
     s_info.kiosk_app = getenv("TINYDESK_KIOSK");   /* kiosk mode: a Python app's shell path */
     s_info.kiosk_splash = getenv("TINYDESK_KIOSK_SPLASH");
     s_info.kiosk_hide_status = getenv("TINYDESK_KIOSK_HIDE_STATUS") != NULL;

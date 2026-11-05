@@ -20,6 +20,7 @@ set(TD_ESP_APP_SRCS
     "${TD_ESP_APP_DIR}/net_esp.c"
     "${TD_ESP_APP_DIR}/telnet.c"
     "${TD_ESP_APP_DIR}/ota_esp.c"
+    "${TD_ESP_APP_DIR}/fetch_esp.c"
     "${TD_ESP_APP_DIR}/rs485.c"
     "${TD_ESP_APP_DIR}/../../common/td_proto_cmds.c"
 )

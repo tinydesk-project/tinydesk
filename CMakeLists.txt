@@ -137,6 +137,7 @@ add_library(tinydesk_apps STATIC
     apps/login.c
     apps/users.c
     apps/osk.c
+    apps/store.c
     apps/shortcut.c
     apps/settings.c
     apps/sysmon.c
@@ -258,12 +259,15 @@ if(TD_WITH_TDSH AND TD_WITH_PYTHON)
 endif()
 
 # ---------------------------------------------------------- executable
+# Downloads (ports/common/host_fetch.c) run in a thread.
+find_package(Threads REQUIRED)
 add_executable(tinydesk
     ports/common/host_main.c
     ports/common/td_fs_stdio.c
+    ports/common/host_fetch.c
     $<IF:$<BOOL:${WIN32}>,ports/windows/main.c,ports/posix/main.c>
 )
-target_link_libraries(tinydesk PRIVATE tinydesk_apps tinydesk_hal)
+target_link_libraries(tinydesk PRIVATE tinydesk_apps tinydesk_hal Threads::Threads)
 set_target_properties(tinydesk PROPERTIES C_STANDARD 11 C_EXTENSIONS ON)
 target_compile_options(tinydesk PRIVATE ${TD_WARNINGS})
 if(TD_WITH_TDSH)
@@ -287,8 +291,9 @@ add_executable(tdsim
     tools/net_fake.c
     ports/common/host_main.c
     ports/common/td_fs_stdio.c
+    ports/common/host_fetch.c
 )
-target_link_libraries(tdsim PRIVATE tinydesk_apps tinydesk_hal)
+target_link_libraries(tdsim PRIVATE tinydesk_apps tinydesk_hal Threads::Threads)
 set_target_properties(tdsim PROPERTIES C_STANDARD 11 C_EXTENSIONS ON)
 target_compile_options(tdsim PRIVATE ${TD_WARNINGS})
 if(TD_WITH_TDSH)
@@ -303,12 +308,12 @@ endif()
 # Render a raw capture from real hardware (see tools/serial_probe.py).
 if(TD_BUILD_TESTS)
     add_executable(tdsim_lcd tools/tdsim.c tools/sim_lcd.c tools/net_fake.c
-        ports/common/host_main.c ports/common/td_fs_stdio.c
+        ports/common/host_main.c ports/common/td_fs_stdio.c ports/common/host_fetch.c
         ports/crowpanel7/main/font8x16.c ports/crowpanel7/main/font10x20.c
         ports/crowpanel7/main/font12x24.c ports/crowpanel7/main/font16x32.c)
     target_include_directories(tdsim_lcd PRIVATE tests)
     target_compile_definitions(tdsim_lcd PRIVATE TD_SIM_LCD)
-    target_link_libraries(tdsim_lcd PRIVATE tinydesk_apps tinydesk_hal)
+    target_link_libraries(tdsim_lcd PRIVATE tinydesk_apps tinydesk_hal Threads::Threads)
     set_target_properties(tdsim_lcd PROPERTIES C_STANDARD 11 C_EXTENSIONS ON)
     target_compile_options(tdsim_lcd PRIVATE ${TD_WARNINGS})
     if(TD_WITH_TDSH)
@@ -405,6 +410,11 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_osk PROPERTIES C_STANDARD 11)
     target_compile_options(test_osk PRIVATE ${TD_WARNINGS})
     add_test(NAME test_osk COMMAND test_osk)
+    add_executable(test_store tests/test_store.c)
+    target_link_libraries(test_store PRIVATE tinydesk_apps)
+    set_target_properties(test_store PROPERTIES C_STANDARD 11)
+    target_compile_options(test_store PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_store COMMAND test_store)
     add_executable(test_pyui tests/test_pyui.c)
     target_link_libraries(test_pyui PRIVATE tinydesk_apps)
     set_target_properties(test_pyui PROPERTIES C_STANDARD 11)
