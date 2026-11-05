@@ -60,6 +60,11 @@ static SemaphoreHandle_t s_frame_done;
 static portMUX_TYPE s_swap_lock = portMUX_INITIALIZER_UNLOCKED;
 static bool s_swap_waiting, s_present_pending;
 static atomic_uint s_scanout[8];
+/* When the desktop last sent cells or a picture: a synchronised frame that
+ * is still arriving is waited for (see paint()). */
+static atomic_uint s_activity_tick;
+#define SYNC_IDLE_MS 1500   /* nothing new for this long: the sender is gone */
+#define SYNC_MAX_MS  8000   /* and never longer than this for one frame */
 static atomic_uint s_paint_timing[4];
 static uint32_t s_prepared_at, s_previous_prepared;
 static int64_t s_last_prepared_us;
@@ -328,6 +333,7 @@ static bool six_finish(void)
  * decode them back on the same CPU. Serial mirror mode keeps Sixel. */
 static bool direct_picture(int x, int y, const uint8_t *indexed, const uint16_t *rgb, int w, int h, const uint16_t *runs, size_t words)
 {
+    atomic_store(&s_activity_tick, (unsigned)xTaskGetTickCount());
     if (!s_vt || !s_img_lock || x < 0 || y < 0 || w <= 0 || h <= 0 ||
         x * s_cw + w > s_cols * s_cw || y * s_ch + h > s_rows * s_ch ||
         ((w + s_cw - 1) / s_cw) * ((h + s_ch - 1) / s_ch) > TILE_MAX)
@@ -653,8 +659,13 @@ static void paint(void)
         if (!waiting)
             sync_started = now;
         waiting = true;
-        /* Recover if a sender disappears mid-frame. */
-        if (now - sync_started < pdMS_TO_TICKS(1500))
+        /* Recover if a sender disappears mid-frame, but keep waiting while
+         * the frame is still arriving: a heavy first page (every strip and
+         * picture rendered cold) can take longer than SYNC_IDLE_MS in all,
+         * and painting it half done shows its blank cells for a moment
+         * (a logo that blinks). */
+        TickType_t idle = now - (TickType_t)atomic_load(&s_activity_tick);
+        if (idle < pdMS_TO_TICKS(SYNC_IDLE_MS) && now - sync_started < pdMS_TO_TICKS(SYNC_MAX_MS))
         {
             xSemaphoreGive(s_lock);
             return;
@@ -795,6 +806,7 @@ void display_write(const uint8_t *buf, int len)
 {
     if (!s_vt || len <= 0)
         return;
+    atomic_store(&s_activity_tick, (unsigned)xTaskGetTickCount());
     xSemaphoreTake(s_lock, portMAX_DELAY);
     td_vterm_write(s_vt, buf, len);
     xSemaphoreGive(s_lock);
