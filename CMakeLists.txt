@@ -375,6 +375,11 @@ if(TD_BUILD_TESTS)
     find_package(Python3 COMPONENTS Interpreter QUIET)
     if(Python3_Interpreter_FOUND)
         add_test(NAME tdui_contract COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdui_contract.py)
+        # The tdui frozen into the firmware is tdui.py (run in the simulator).
+        if(TD_WITH_TDSH AND TD_WITH_PYTHON)
+            add_test(NAME tdui_frozen COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdui_frozen.py
+                     $<TARGET_FILE:tdsim>)
+        endif()
     endif()
     add_executable(test_editor tests/test_editor.c)
     target_link_libraries(test_editor PRIVATE tinydesk_apps)

@@ -25,5 +25,172 @@
   },
   "widgets": {"LABEL": 1, "BUTTON": 2, "CHECKBOX": 3, "TEXTBOX": 4, "PROGRESS": 5, "LIST": 6, "CANVAS": 7},
   "events": {"CLICK": 1, "CHANGE": 2, "CLOSE": 3, "KEY": 4, "MOUSE": 5, "RESULT": 6, "ERROR": 7, "RESIZE": 8},
-  "policy": "Within one major api number nothing is removed or changed in meaning: requests, widgets and events keep their numbers, new ones are added at the end and announced by a higher minor number or a capability. Firmware runs every package whose format it lists and whose major api number it has, whichever App Builder version made it. A new major number keeps the old one working for one more major TinyDesk release."
+  "policy": "Within one major api number nothing is removed or changed in meaning: requests, widgets and events keep their numbers, new ones are added at the end and announced by a higher minor number or a capability. Firmware runs every package whose format it lists and whose major api number it has, whichever App Builder version made it. A new major number keeps the old one working for one more major TinyDesk release.",
+  "python": {
+    "module": {
+      "API": {"constant": true},
+      "Button": {"class": true},
+      "CAPABILITIES": {"constant": true},
+      "CLEAR": {"constant": true},
+      "Canvas": {"class": true},
+      "CanvasButton": {"class": true},
+      "Checkbox": {"class": true},
+      "Font": {"class": true},
+      "Image": {"class": true},
+      "Label": {"class": true},
+      "List": {"class": true},
+      "MAX_CELLS": {"constant": true},
+      "MAX_PAGES": {"constant": true},
+      "MAX_PICTURES": {"constant": true},
+      "MAX_PIXELS": {"constant": true},
+      "MAX_VISIBLE_PICTURES": {"constant": true},
+      "MAX_WIDGETS": {"constant": true},
+      "MAX_WINDOWS": {"constant": true},
+      "Progress": {"class": true},
+      "SUPPORTS_GRADIENT_FILLS": {"constant": true},
+      "SUPPORTS_RGB_PICTURES": {"constant": true},
+      "Textbox": {"class": true},
+      "Timer": {"class": true},
+      "Window": {"class": true},
+      "after": {"params": ["ms", "fn"], "required": 2},
+      "batch": {"params": [], "required": 0},
+      "big_size": {"params": ["text", "scale"], "required": 1},
+      "confirm": {"params": ["title", "text"], "required": 2},
+      "enable_rgb_pictures": {"params": [], "required": 0},
+      "every": {"params": ["ms", "fn"], "required": 2},
+      "graphics_info": {"params": [], "required": 0},
+      "inputbox": {"params": ["title", "prompt", "text", "secret"], "required": 2},
+      "menu": {"params": ["items"], "required": 1},
+      "msgbox": {"params": ["title", "text", "buttons"], "required": 2},
+      "poll": {"params": ["ms"], "required": 0},
+      "quit": {"params": [], "required": 0},
+      "render_cache": {"params": ["kb", "warm"], "required": 0},
+      "render_cache_info": {"params": [], "required": 0},
+      "rgb": {"params": ["r", "g", "b"], "required": 3},
+      "run": {"params": [], "required": 0},
+      "run_async": {"params": [], "required": 0},
+      "scanout_info": {"params": [], "required": 0},
+      "scanout_timing": {"params": [], "required": 0},
+      "text_size": {"params": ["text", "scale", "small"], "required": 1}
+    },
+    "classes": {
+      "Button": {
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "Canvas": {
+        "bar": {"params": ["x", "y", "w", "h", "value", "maximum", "color", "track", "edge", "radius", "gradient"], "required": 5},
+        "batch": {"params": [], "required": 0},
+        "big": {"params": ["x", "y", "text", "fg", "bg", "scale", "width"], "required": 3},
+        "button": {"params": ["x", "y", "w", "h", "text", "on_click", "color", "down", "rim", "fg", "radius", "scale", "sheet", "src", "src_down", "border", "on_press", "on_release", "on_cancel", "font", "gradient"], "required": 5},
+        "circle": {"params": ["x", "y", "r", "color", "outline", "gradient"], "required": 4},
+        "clear": {"params": ["fg", "bg"], "required": 0},
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "copy_page": {"params": ["src", "dst"], "required": 2},
+        "draw_text": {"params": ["x", "y", "text", "color", "bg", "scale", "small"], "required": 4},
+        "draw_to": {"params": ["page"], "required": 1},
+        "fill": {"params": ["x", "y", "w", "h", "ch", "fg", "bg"], "required": 4},
+        "focus": {"params": [], "required": 0},
+        "font_text": {"params": ["font", "x", "y", "w", "h", "text", "fg", "bg", "align", "valign", "wrap"], "required": 6},
+        "gradient": {"params": ["x", "y", "w", "h", "rgb1", "rgb2", "across"], "required": 6},
+        "image": {"params": ["img", "x", "y", "w", "h", "src"], "required": 3},
+        "line": {"params": ["x0", "y0", "x1", "y1", "color"], "required": 5},
+        "move": {"params": ["x", "y"], "required": 2},
+        "nine": {"params": ["img", "x", "y", "w", "h", "border", "src"], "required": 6},
+        "pheight": {"property": true},
+        "picture": {"params": ["img", "x", "y", "w", "h", "src", "border", "text", "fg", "scale", "font"], "required": 5},
+        "pixels": {"params": ["x", "y", "w", "h", "data", "rgb", "dither"], "required": 5},
+        "put": {"params": ["x", "y", "text", "fg", "bg"], "required": 3},
+        "pwidth": {"property": true},
+        "rect": {"params": ["x", "y", "w", "h", "color", "radius", "outline", "gradient"], "required": 5},
+        "resize": {"params": ["w", "h"], "required": 2},
+        "show": {"params": ["page"], "required": 1},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "CanvasButton": {
+        "draw": {"params": ["pressed"], "required": 0},
+        "remove": {"params": [], "required": 0},
+        "text": {"property": true}
+      },
+      "Checkbox": {
+        "checked": {"property": true},
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "Font": {
+        "free": {"params": [], "required": 0},
+        "load": {"params": ["path"], "required": 1}
+      },
+      "Image": {
+        "bar": {"params": ["x", "y", "w", "h", "value", "maximum", "color", "track", "edge", "radius", "gradient"], "required": 5},
+        "batch": {"params": [], "required": 0},
+        "circle": {"params": ["x", "y", "r", "color", "outline", "gradient"], "required": 4},
+        "draw_text": {"params": ["x", "y", "text", "color", "bg", "scale", "small"], "required": 4},
+        "free": {"params": [], "required": 0},
+        "gradient": {"params": ["x", "y", "w", "h", "rgb1", "rgb2", "across"], "required": 6},
+        "image": {"params": ["img", "x", "y", "w", "h", "src"], "required": 3},
+        "line": {"params": ["x0", "y0", "x1", "y1", "color"], "required": 5},
+        "load": {"params": ["path", "w", "h", "key", "dither"], "required": 1},
+        "nine": {"params": ["img", "x", "y", "w", "h", "border", "src"], "required": 6},
+        "pixels": {"params": ["x", "y", "w", "h", "data", "rgb", "dither"], "required": 5},
+        "rect": {"params": ["x", "y", "w", "h", "color", "radius", "outline", "gradient"], "required": 5}
+      },
+      "Label": {
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "List": {
+        "append": {"params": ["item"], "required": 1},
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "items": {"property": true},
+        "selected": {"property": true},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "Progress": {
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "text": {"property": true},
+        "value": {"property": true},
+        "visible": {"property": true}
+      },
+      "Textbox": {
+        "color": {"params": ["fg", "bg"], "required": 0},
+        "focus": {"params": [], "required": 0},
+        "text": {"property": true},
+        "visible": {"property": true}
+      },
+      "Timer": {
+        "cancel": {"params": [], "required": 0}
+      },
+      "Window": {
+        "after": {"params": ["ms", "fn"], "required": 2},
+        "button": {"params": ["x", "y", "text", "on_click"], "required": 3},
+        "canvas": {"params": ["x", "y", "w", "h", "on_mouse", "pages"], "required": 4},
+        "checkbox": {"params": ["x", "y", "text", "checked", "on_change"], "required": 3},
+        "close": {"params": [], "required": 0},
+        "every": {"params": ["ms", "fn"], "required": 2},
+        "focus": {"params": [], "required": 0},
+        "fullscreen": {"params": [], "required": 0},
+        "label": {"params": ["x", "y", "text", "width"], "required": 2},
+        "list": {"params": ["x", "y", "w", "h", "items", "on_select", "on_activate"], "required": 4},
+        "maximize": {"params": [], "required": 0},
+        "minimize": {"params": [], "required": 0},
+        "move": {"params": ["x", "y"], "required": 2},
+        "progress": {"params": ["x", "y", "width", "value"], "required": 3},
+        "resize": {"params": ["w", "h"], "required": 2},
+        "restore": {"params": [], "required": 0},
+        "textbox": {"params": ["x", "y", "width", "text", "secret", "on_enter", "on_change"], "required": 3},
+        "title": {"property": true}
+      }
+    }
+  }
 }

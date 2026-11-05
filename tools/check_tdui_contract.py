@@ -1,11 +1,19 @@
 """check_tdui_contract.py - the tdui contract file against the code.
 
-    python tools/check_tdui_contract.py
+    python tools/check_tdui_contract.py            check
+    python tools/check_tdui_contract.py --record   also write tdui.py's new
+                                                   public names into the contract
 
 ports/common/python/tdui_contract.json is what app makers (TinyDesk App
 Builder) build against. This checks that its numbers are the ones of
 apps/td_apps.h and ports/common/python/modules/tdui.py: requests, widgets,
-events, limits, the api number (also apps/store.c's) and the capabilities. Run by ctest.
+events, limits, the api number (also apps/store.c's) and the capabilities.
+Its "python" part is tdui's public Python surface (tools/tdui_surface.py):
+the code may only add to it. Removing or renaming a function, method,
+property or constant, changing a function's parameters or giving it a new
+required one fails, because apps already made call them. New names fail
+too until --record writes them into the contract (raise the api minor
+number with them). Run by ctest.
 """
 import json
 import re
@@ -13,6 +21,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+import tdui_surface  # noqa: E402
 
 
 def c_enum(text, first):
@@ -42,6 +52,23 @@ def subset(what, contract, code, errors):
 def py_consts(text, prefix):
     return {m.group(1): int(m.group(2))
             for m in re.finditer(r"^%s([A-Z0-9_]+) = const\((\d+)\)" % re.escape(prefix), text, re.M)}
+
+
+def write_python(path, code):
+    """Replace (or add) the contract's "python" part, one line per name, and
+    leave the rest of the file as it is."""
+    text = path.read_text(encoding="utf-8")
+    cut = text.find(',\n  "python":')
+    text = (text[:cut] if cut >= 0 else text.rstrip().rstrip("}").rstrip()) + ",\n"
+
+    def block(members, indent):
+        rows = ['%s"%s": %s' % (indent, k, json.dumps(v)) for k, v in sorted(members.items())]
+        return "{\n" + ",\n".join(rows) + "\n" + indent[:-2] + "}"
+
+    classes = ",\n".join('      "%s": %s' % (c, block(m, "        ")) for c, m in sorted(code["classes"].items()))
+    text += ('  "python": {\n    "module": %s,\n    "classes": {\n%s\n    }\n  }\n}\n'
+             % (block(code["module"], "      "), classes))
+    path.write_text(text, encoding="utf-8", newline="\n")
 
 
 def main():
@@ -85,6 +112,29 @@ def main():
          [int(major.group(1)), int(minor.group(1))] if major and minor else None)
     caps = set(re.findall(r'"([a-z_]+)"', re.search(r"^CAPABILITIES = (.*)$", tdui, re.M).group(1)))
     same("tdui.CAPABILITIES", set(contract["capabilities"]), caps)
+
+    # The Python surface only grows.
+    code = tdui_surface.surface()
+    path = ROOT / "ports/common/python/tdui_contract.json"
+    if "--record" in sys.argv:
+        recorded = contract.setdefault("python", {"module": {}, "classes": {}})
+        problems = []
+        tdui_surface.compatible(recorded["module"], code["module"], "tdui", problems)
+        for cls, members in recorded["classes"].items():
+            tdui_surface.compatible(members, code["classes"].get(cls, {}), "tdui." + cls, problems)
+        breaking = [p for p in problems if " is new:" not in p]
+        if breaking:
+            errors += breaking   # never record a break
+        else:
+            write_python(path, code)
+            print("check_tdui_contract: recorded the Python surface")
+    elif "python" not in contract:
+        errors.append("the contract has no python surface: run with --record")
+    else:
+        recorded = contract["python"]
+        tdui_surface.compatible(recorded["module"], code["module"], "tdui", errors)
+        for cls, members in recorded["classes"].items():
+            tdui_surface.compatible(members, code["classes"].get(cls, {}), "tdui." + cls, errors)
 
     for e in errors:
         print("check_tdui_contract:", e)

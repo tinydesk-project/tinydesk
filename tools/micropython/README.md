@@ -32,7 +32,10 @@ in the checkout, which compiles the frozen modules; the same `mpy-cross`
 (`mpy-cross/build/mpy-cross`) makes `.mpy` files for `py` (see the shell
 documentation). It replaces everything in
 `third_party/micropython` except its README. Commit the result with the
-change that needed it.
+change that needed it. The ctest `tdui_frozen` (`tools/check_tdui_frozen.py`)
+fails when `tdui.py` and the frozen `tdui` differ, that is when this was
+forgotten; after a change to `tdui`'s public names,
+`tools/check_tdui_contract.py --record` writes them into the contract.
 
 The preprocessor here runs without any platform macros, so code inside
 `#ifdef ESP_PLATFORM` or `#ifdef _WIN32` in the port files must not use
