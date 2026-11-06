@@ -38,6 +38,9 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   board itself (`usb.host = 1`), with Windows-key shortcuts.
 * Kiosk mode: one Python app on the whole screen instead of the desktop
   (`kiosk.app`), for operator panels; root's password leaves it.
+* A second screen over Telnet: the client takes the desktop over, sees the
+  same desktop as the board's own screen (duplicate), or is a second
+  monitor beside it (extend).
 * Windows with z-order, drag, resize, minimise, maximise; taskbar, start
   menu, mouse and keyboard; copy and paste with the PC; screen size follows
   the terminal. Desktop icons that stay where they are dragged, shortcuts
@@ -48,7 +51,8 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   (restore what was deleted), Software Update
   (OTA), Pixels, Image Viewer (BMP, PPM, PGM), Mouse and Keyboard (with USB
   on the ESP32-S3), On-screen keyboard (large touch keys), Store (installs
-  apps from the tinydesk-apps catalog), and a small API for writing your own, with a pixel
+  apps from the tinydesk-apps catalog), Remote Desktop (another TinyDesk's
+  desktop in a window, over Telnet), and a small API for writing your own, with a pixel
   canvas (`td_canvas.h`: two pixels per cell in any terminal, four with a
   font that has the quadrant characters).
 * Shell scripts (`.tdsh`): variables, `if`/`while`/`for`, functions, pipes

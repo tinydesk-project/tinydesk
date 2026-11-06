@@ -159,6 +159,14 @@ void td_wm_set_screen_size(int cols, int rows);
 /* The screen size in cells. */
 void td_wm_screen_size(int *cols, int *rows);
 
+/* An extended screen (td_screens_set_mode): its first main_cols columns
+ * are the main monitor, the rest a second one (0: one monitor). The
+ * taskbar, the desktop icons, new windows and dialogs stay on the main
+ * monitor; a window maximises, goes full screen or snaps to a half on the
+ * monitor that holds its centre. */
+void td_wm_set_main_cols(int main_cols);
+int td_wm_main_cols(void);   /* 0: one monitor */
+
 /* Route one event to the start menu, taskbar, windows and widgets. */
 void td_wm_dispatch(const td_event_t *ev);
 

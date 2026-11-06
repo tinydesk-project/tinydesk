@@ -152,7 +152,7 @@ static void put_char(td_renderer_t *r, uint32_t ch, int x, int cols)
         r->cur_x++;
 }
 
-bool td_render_diff(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back)
+bool td_render_diff_region(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back, int x0, int w)
 {
     int cols = back->cols;
     int rows = back->rows;
@@ -164,23 +164,33 @@ bool td_render_diff(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *bac
         front->rows = rows;
         td_buffer_invalidate(front);
     }
+    if (x0 < 0)
+        x0 = 0;
+    if (w <= 0 || x0 + w > cols)
+        w = cols - x0;
 
+    /* Screen column x is the terminal's column x - x0. */
     for (int y = 0; y < rows && !r->write_failed; y++)
     {
-        const td_cell_t *b = &back->cells[y * cols];
-        td_cell_t *f = &front->cells[y * cols];
-        for (int x = 0; x < cols; x++)
+        const td_cell_t *b = &back->cells[y * cols + x0];
+        td_cell_t *f = &front->cells[y * cols + x0];
+        for (int x = 0; x < w; x++)
         {
             if (memcmp(&b[x], &f[x], sizeof(td_cell_t)) == 0)
                 continue;
             move_to(r, x, y);
             set_style(r, &b[x]);
-            put_char(r, b[x].ch, x, cols);
+            put_char(r, b[x].ch, x, w);
             f[x] = b[x];
         }
     }
     td_render_flush(r);
     return !r->write_failed;
+}
+
+bool td_render_diff(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back)
+{
+    return td_render_diff_region(r, front, back, 0, back->cols);
 }
 
 void td_render_setup_terminal(td_renderer_t *r)

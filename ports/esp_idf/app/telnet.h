@@ -31,4 +31,11 @@ const char *telnet_peer(void);
 /* The account the client logged in with (while active). */
 const char *telnet_user(void);
 
+/* What a logged-in client gets (saved in NVS, "telnet_mode"): the desktop
+ * moves to it (TD_TELNET_ONLY, the default), or it is a second screen
+ * beside the board's own terminal showing the same desktop
+ * (TD_TELNET_DUPLICATE) or extending it (TD_TELNET_EXTEND). */
+int telnet_mode(void);
+void telnet_set_mode(int mode);
+
 #endif

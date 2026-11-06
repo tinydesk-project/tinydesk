@@ -90,5 +90,8 @@ int td_pictures_available(void);
 void td_pictures_mark(td_buffer_t *front, const td_buffer_t *back);
 void td_pictures_send(void (*write)(void *user, const char *s, int n), void *user, bool *cursor_moved);
 void td_pictures_forget(void);   /* the terminal was set up anew: send all again */
+/* Only pictures within the first cols columns go out (0: all): the primary
+ * terminal's part of an extended screen. */
+void td_pictures_clip(int cols);
 
 #endif

@@ -309,6 +309,12 @@ typedef struct
 
 static pic_t s_cur[MAX_PICS];
 static int s_ncur;
+static int s_clip_cols;   /* 0: all; else only pictures within these columns go out */
+
+void td_pictures_clip(int cols)
+{
+    s_clip_cols = cols > 0 ? cols : 0;
+}
 int td_pictures_available(void)
 {
     return MAX_PICS - s_ncur;
@@ -472,8 +478,10 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
     for (int i = 0; i < s_ncur; i++)
     {
         pic_t *p = &s_cur[i];
-        if (!p->send)
+        if (!p->send || (s_clip_cols && p->x + p->w > s_clip_cols))
         {
+            /* Nothing new, or on the extended part of the screen, which the
+             * second terminal shows (without pictures). */
             p->completed = true;
             continue;
         }

@@ -138,6 +138,7 @@ add_library(tinydesk_apps STATIC
     apps/users.c
     apps/osk.c
     apps/store.c
+    apps/remote.c
     apps/shortcut.c
     apps/settings.c
     apps/sysmon.c
@@ -415,6 +416,11 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_osk PROPERTIES C_STANDARD 11)
     target_compile_options(test_osk PRIVATE ${TD_WARNINGS})
     add_test(NAME test_osk COMMAND test_osk)
+    add_executable(test_screens tests/test_screens.c)
+    target_link_libraries(test_screens PRIVATE tinydesk_apps)
+    set_target_properties(test_screens PROPERTIES C_STANDARD 11)
+    target_compile_options(test_screens PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_screens COMMAND test_screens)
     add_executable(test_store tests/test_store.c)
     target_link_libraries(test_store PRIVATE tinydesk_apps)
     set_target_properties(test_store PROPERTIES C_STANDARD 11)

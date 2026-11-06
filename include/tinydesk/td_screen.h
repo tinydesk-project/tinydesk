@@ -204,6 +204,10 @@ bool td_render_flush(td_renderer_t *r);
  * and redraw later. */
 bool td_render_diff(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back);
 
+/* The same for the columns x0 .. x0 + w - 1 only, sent as the terminal's
+ * columns 0 .. w - 1 (a terminal that shows part of a wider screen). */
+bool td_render_diff_region(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back, int x0, int w);
+
 /* Terminal setup / teardown sequences (alternate screen, hidden cursor,
  * mouse reporting, no auto-wrap). */
 void td_render_setup_terminal(td_renderer_t *r);

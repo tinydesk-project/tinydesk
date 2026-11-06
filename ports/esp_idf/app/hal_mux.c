@@ -1,6 +1,9 @@
 /*
  * hal_mux.c - the tinydesk HAL for the ESP-IDF ports: the board's local
- * link (link.h), handed to a Telnet client while one is logged in.
+ * link (link.h), and a logged-in Telnet client. Depending on the Telnet
+ * mode (telnet_mode) the client takes the desktop over (TD_TELNET_ONLY:
+ * the local link shows a note until it leaves) or is a second screen beside
+ * the local one (TD_TELNET_DUPLICATE / _EXTEND: td_screen2_attach).
  */
 #include "hal_mux.h"
 
@@ -52,7 +55,9 @@ static void hal_sleep(void *ctx, uint32_t ms)
 
 /* ---------------------------------------------------- local or Telnet */
 
-static bool s_remote;
+static bool s_remote;            /* the client took the desktop over */
+static bool s_shared;            /* the client is a second screen */
+static int s_shared_mode;
 static char s_local_user[32];    /* whose desktop the local link had before Telnet took it */
 static bool s_local_locked;
 
@@ -63,12 +68,52 @@ static void become(const char *user)
         td_session_switch(user, true);
 }
 
-/* Follow the Telnet session: the desktop moves to the client (as the user
- * who logged in) and comes back to the local link and its user when it
- * leaves. */
+static int screen2_read(void *ctx)
+{
+    (void)ctx;
+    return telnet_read_byte();
+}
+
+static int screen2_write(void *ctx, const uint8_t *buf, int len)
+{
+    (void)ctx;
+    return telnet_write(buf, len);
+}
+
+/* Follow the Telnet session. As a second screen the client sees (and
+ * drives) the desktop as it is, beside the local terminal; it changes
+ * between duplicate and extend at once. Otherwise the desktop moves to the
+ * client (as the user who logged in) and comes back to the local link and
+ * its user when it leaves. Only root may log in over Telnet. */
 static void follow_session(void)
 {
-    bool remote = telnet_active();
+    bool active = telnet_active();
+    if (s_shared)
+    {
+        if (!active)
+        {
+            s_shared = false;
+            td_screen2_detach();
+        }
+        else if (telnet_mode() != s_shared_mode && telnet_mode() != TD_TELNET_ONLY)
+        {
+            s_shared_mode = telnet_mode();
+            td_screens_set_mode(s_shared_mode == TD_TELNET_EXTEND ? TD_SCREENS_EXTEND : TD_SCREENS_DUPLICATE);
+        }
+        return;
+    }
+    if (active && !s_remote && telnet_mode() != TD_TELNET_ONLY)
+    {
+        s_shared_mode = telnet_mode();
+        td_screens_set_mode(s_shared_mode == TD_TELNET_EXTEND ? TD_SCREENS_EXTEND : TD_SCREENS_DUPLICATE);
+        if (td_screen2_attach(screen2_read, screen2_write, NULL))
+        {
+            s_shared = true;
+            return;
+        }
+        /* No memory for a second screen: the client takes the desktop over. */
+    }
+    bool remote = active;
     if (remote == s_remote)
         return;
     s_remote = remote;

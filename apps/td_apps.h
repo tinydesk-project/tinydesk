@@ -31,6 +31,9 @@ void td_editor_register(void);
 void td_network_register(void);
 void td_osk_register(void);        /* the On-screen keyboard app */
 void td_store_register(void);      /* the Store: apps from a catalog */
+void td_remote_register(void);     /* Remote Desktop: another TinyDesk over Telnet */
+/* What a VT100/xterm sends for a key event (out: 16 bytes); 0: nothing. */
+int td_terminal_encode_key(const td_event_t *ev, char *out);
 /* The Store's parts, for tests: parse catalog.txt into an array of
  * td_store_entry_size() bytes per entry (returns the count, -1: not a
  * catalog), why the board cannot run one (NULL: it can), SHA-256 as hex. */

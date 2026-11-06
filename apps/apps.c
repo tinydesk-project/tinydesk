@@ -41,6 +41,7 @@ void td_apps_register_all(void)
     td_keyboard_register();
     td_osk_register();
     td_store_register();
+    td_remote_register();
     td_update_register();
     td_counter_register();
     td_pixels_register();

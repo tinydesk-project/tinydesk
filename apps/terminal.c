@@ -43,7 +43,13 @@ static void send(const char *bytes, int len)
 }
 
 /* Translate a key event into what a VT100/xterm would send. Returns the
- * byte count written to out (0 = nothing to send). */
+ * byte count written to out (0 = nothing to send); out holds 16 bytes.
+ * Also used by Remote Desktop (td_terminal_encode_key). */
+static int encode_key(const td_event_t *ev, char *out);
+int td_terminal_encode_key(const td_event_t *ev, char *out)
+{
+    return encode_key(ev, out);
+}
 static int encode_key(const td_event_t *ev, char *out)
 {
     uint32_t k = ev->key;

@@ -109,7 +109,19 @@ typedef struct
     void (*telnet_enable)(bool on);
     /* Address of the connected Telnet client, or NULL. */
     const char *(*telnet_peer)(void);
+    /* What a Telnet client gets (optional): TD_TELNET_ONLY (the desktop
+     * moves to it), TD_TELNET_DUPLICATE or TD_TELNET_EXTEND (a second
+     * screen beside the board's own; see td_screen2_attach). */
+    int (*telnet_mode)(void);
+    void (*telnet_set_mode)(int mode);
 } td_net_ops_t;
+
+enum
+{
+    TD_TELNET_ONLY = 0,
+    TD_TELNET_DUPLICATE = 1,
+    TD_TELNET_EXTEND = 2
+};
 
 /* ---------------------------------------------------------------- mouse */
 

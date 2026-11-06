@@ -257,6 +257,13 @@ static void net_telnet_enable(bool on)
                       : "Telnet is unencrypted; root login only");
 }
 
+static void net_telnet_set_mode(int mode)
+{
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+        return;
+    telnet_set_mode(mode);
+}
+
 static const td_net_ops_t s_ops = {
     .status = net_status,
     .scan = net_scan,
@@ -269,6 +276,8 @@ static const td_net_ops_t s_ops = {
     .telnet_enabled = telnet_enabled,
     .telnet_enable = net_telnet_enable,
     .telnet_peer = telnet_peer,
+    .telnet_mode = telnet_mode,
+    .telnet_set_mode = net_telnet_set_mode,
 };
 
 const td_net_ops_t *net_esp_ops(void)

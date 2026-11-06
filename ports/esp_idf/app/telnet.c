@@ -60,6 +60,7 @@ static const char *TAG = "telnet";
 
 static state_t s_state = ST_OFF;
 static bool s_enabled = false;
+static int s_mode = 0;   /* TD_TELNET_* */
 static int s_listen = -1;
 static int s_fd = -1;
 static int64_t s_next_try_us;
@@ -322,6 +323,9 @@ void telnet_start(void)
     if (nvs_open("tinydesk", NVS_READONLY, &h) == ESP_OK)
     {
         nvs_get_u8(h, "telnet", &v);
+        uint8_t m = 0;
+        if (nvs_get_u8(h, "telnet_mode", &m) == ESP_OK && m <= 2)
+            s_mode = m;
         nvs_close(h);
     }
     s_enabled = v != 0 && tdsh_remote_access_ready();
@@ -421,6 +425,25 @@ void telnet_set_enabled(bool on)
     {
         s_state = ST_LISTEN;
         s_next_try_us = 0;
+    }
+}
+
+int telnet_mode(void)
+{
+    return s_mode;
+}
+
+void telnet_set_mode(int mode)
+{
+    if (mode < 0 || mode > 2)
+        return;
+    s_mode = mode;
+    nvs_handle_t h;
+    if (nvs_open("tinydesk", NVS_READWRITE, &h) == ESP_OK)
+    {
+        nvs_set_u8(h, "telnet_mode", (uint8_t)mode);
+        nvs_commit(h);
+        nvs_close(h);
     }
 }
 

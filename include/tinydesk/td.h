@@ -62,6 +62,25 @@ void td_shutdown(void);
 /* Resend the terminal setup and redraw everything on the next frame. */
 void td_full_redraw(void);
 
+/* A second screen: another terminal, such as a Telnet client, attached
+ * beside the primary one (the HAL's). It shows the same screen
+ * (TD_SCREENS_DUPLICATE: the desktop takes the smaller of the two sizes) or
+ * extends it to the right (TD_SCREENS_EXTEND: the desktop is as wide as
+ * both, the primary's part being the main monitor). Each terminal has its
+ * own input, frame pacing and link watch. read_byte / write behave as the
+ * HAL's. Pictures go to the primary only. Attaching takes one screen
+ * buffer from the heap (TD_MAX_COLS x TD_MAX_ROWS x 8 bytes). */
+enum
+{
+    TD_SCREENS_DUPLICATE = 1,
+    TD_SCREENS_EXTEND = 2
+};
+bool td_screen2_attach(int (*read_byte)(void *ctx), int (*write)(void *ctx, const uint8_t *buf, int len), void *ctx);
+void td_screen2_detach(void);
+bool td_screen2_attached(void);
+void td_screens_set_mode(int mode);
+int td_screens_mode(void);
+
 /* Desktop loop only: defer every frame for at most timeout_ms (0 releases
  * it). Input and timers keep running. Used for bounded drawing batches. */
 void td_frame_hold(uint32_t timeout_ms);

@@ -18,6 +18,29 @@ static td_window_t s_wins[TD_MAX_WINDOWS];
 static int s_order[TD_MAX_WINDOWS];   /* pool indexes, bottom to top */
 static int s_order_count;
 static int s_cols = TD_DEFAULT_COLS, s_rows = TD_DEFAULT_ROWS;
+static int s_main_cols;   /* an extended screen: the main monitor's width (0: one monitor) */
+
+/* The main monitor's width: the taskbar, icons, new windows. */
+static int main_w(void)
+{
+    return s_main_cols > 0 && s_main_cols < s_cols ? s_main_cols : s_cols;
+}
+
+/* The monitor that holds r's centre: its first column and width. */
+static void monitor_of(td_rect_t r, int *x0, int *w)
+{
+    int m = main_w();
+    if (m < s_cols && r.x + r.w / 2 >= m)
+    {
+        *x0 = m;
+        *w = s_cols - m;
+    }
+    else
+    {
+        *x0 = 0;
+        *w = m;
+    }
+}
 static bool s_dirty = true;
 
 typedef enum
@@ -178,9 +201,9 @@ static int taskbar_h(void)
         return 0;
     return s_bar_size == TD_UI_LARGE ? 2 : 1;
 }
-static bool in_taskbar(int y)
+static bool in_taskbar(int x, int y)
 {
-    return taskbar_visible() && y >= s_rows - taskbar_h() && y < s_rows;
+    return taskbar_visible() && x < main_w() && y >= s_rows - taskbar_h() && y < s_rows;
 }
 
 int td_wm_desktop_rows(void)
@@ -231,7 +254,7 @@ static bool mouse_over(int x, int y, int w)
 /* Over a taskbar item: every row of the taskbar counts. */
 static bool mouse_over_bar(int x, int w)
 {
-    return in_taskbar(s_mouse_y) && s_mouse_x >= x && s_mouse_x < x + w;
+    return in_taskbar(s_mouse_x, s_mouse_y) && s_mouse_x >= x && s_mouse_x < x + w;
 }
 
 static void order_remove(int idx)
@@ -403,14 +426,16 @@ static void tick_cb(void *user)
 static void clamp_rect(td_window_t *w)
 {
     int desk = td_wm_desktop_rows();
+    int mx, mw;
+    monitor_of((w->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) ? w->restore_rect : w->rect, &mx, &mw);
     if (w->flags & TD_WIN_FULLSCREEN)
     {
-        w->rect = td_rect(0, 0, s_cols, s_rows);
+        w->rect = td_rect(mx, 0, mw, s_rows);
         return;
     }
     if (w->flags & TD_WIN_MAXIMIZED)
     {
-        w->rect = td_rect(0, 0, s_cols, desk);
+        w->rect = td_rect(mx, 0, mw, desk);
         return;
     }
     td_rect_t *r = &w->rect;
@@ -473,12 +498,12 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
         w->rect.h += title_h() - 1;   /* a taller title bar adds rows */
         w->min_h += title_h() - 1;
     }
-    if (w->rect.w > s_cols)
-        w->rect.w = s_cols;
+    if (w->rect.w > main_w())
+        w->rect.w = main_w();
     if (w->rect.h > td_wm_desktop_rows())
         w->rect.h = td_wm_desktop_rows();
     if (desc->rect.x < 0)
-        w->rect.x = (s_cols - w->rect.w) / 2;
+        w->rect.x = (main_w() - w->rect.w) / 2;
     if (desc->rect.y < 0)
         w->rect.y = (td_wm_desktop_rows() - w->rect.h) / 2;
     w->restore_rect = w->rect;
@@ -703,6 +728,17 @@ void td_wm_screen_size(int *cols, int *rows)
 {
     *cols = s_cols;
     *rows = s_rows;
+}
+
+void td_wm_set_main_cols(int main_cols)
+{
+    s_main_cols = main_cols > 0 ? main_cols : 0;
+    s_dirty = true;
+}
+
+int td_wm_main_cols(void)
+{
+    return s_main_cols;
 }
 
 void td_wm_set_screen_size(int cols, int rows)
@@ -1211,7 +1247,7 @@ static bool menu_mouse(const td_event_t *ev)
             s_menu_open = false;
             s_dirty = true;
             /* A click on [Start] while the start menu is open just closes it. */
-            return was_start && in_taskbar(ev->y) && ev->x < TASKBAR_START_W;
+            return was_start && in_taskbar(ev->x, ev->y) && ev->x < TASKBAR_START_W;
         }
         return false;
     }
@@ -1396,7 +1432,7 @@ static void draw_taskbar(void)
     const td_theme_t *t = td_theme();
     int h = taskbar_h();
     int y = s_rows - h;                       /* top row of the taskbar */
-    td_fill(td_rect(0, y, s_cols, h), ' ', t->taskbar_fg, t->taskbar_bg);
+    td_fill(td_rect(0, y, main_w(), h), ' ', t->taskbar_fg, t->taskbar_bg);
 
     bool start_open = s_menu_open && s_menu.is_start;
     uint8_t sfg = start_open ? t->taskbar_active_fg : t->taskbar_fg;
@@ -1410,7 +1446,7 @@ static void draw_taskbar(void)
      * over the date (large). */
     char clock[32], tm[16], dt[24];
     bool parts = s_clock && s_clock->parts && s_clock->parts(tm, sizeof(tm), dt, sizeof(dt));
-    int clock_x = s_cols - 1;
+    int clock_x = main_w() - 1;
     s_clock_x0 = s_clock_x1 = -1;
     bool have_clock = format_clock(clock, sizeof(clock));
     if (have_clock)
@@ -1427,7 +1463,7 @@ static void draw_taskbar(void)
         if (l2 && td_utf8_len(l2) > len)
             len = td_utf8_len(l2);
         int w = len + 2;
-        clock_x = s_cols - w;
+        clock_x = main_w() - w;
         uint8_t fg = t->taskbar_fg, bg = t->taskbar_bg;
         if (s_clock->click && mouse_over_bar(clock_x, w))
             hover_colours(&fg, &bg);
@@ -1587,7 +1623,7 @@ static int icon_glyph_fg(int i)
 static int icon_capacity(td_ui_size_t sz)
 {
     int per = (td_wm_desktop_rows() - 1) / s_icon_slot_h[sz];
-    int cols = (s_cols - 1) / s_icon_slot_w[sz];
+    int cols = (main_w() - 1) / s_icon_slot_w[sz];
     return (per < 1 ? 1 : per) * (cols < 1 ? 1 : cols);
 }
 
@@ -1610,7 +1646,7 @@ static int icons_per_column(void)
 
 static int icon_columns(void)
 {
-    int n = (s_cols - 1) / icon_w();
+    int n = (main_w() - 1) / icon_w();
     return n < 1 ? 1 : n;
 }
 
@@ -1705,7 +1741,7 @@ static void layout_icons(void)
  * touch its right and bottom edges (where the pinned icon goes). */
 static int slot_x(int col)
 {
-    int cols = icon_columns(), span = s_cols - 1 - icon_w();
+    int cols = icon_columns(), span = main_w() - 1 - icon_w();
     return 1 + (cols > 1 && span > 0 ? col * span / (cols - 1) : col * icon_w());
 }
 
@@ -2041,7 +2077,7 @@ static uintptr_t hover_id(int x, int y)
 {
     if (s_menu_open && td_rect_contains(menu_rect(), x, y))
         return 0x10000u + (uintptr_t)y;
-    if (in_taskbar(y))
+    if (in_taskbar(x, y))
     {
         if (x < TASKBAR_START_W)
             return 0x20000u;
@@ -2333,7 +2369,7 @@ static bool dnd_try_start(const td_event_t *ev)
 /* Hand the dragged item to whatever is under the pointer. */
 static void dnd_drop(int x, int y)
 {
-    if (in_taskbar(y))
+    if (in_taskbar(x, y))
         return;
     td_window_t *w = td_wm_window_at(x, y);
     bool app = s_dnd.icon >= 0 && s_dnd.icon < s_app_count;
@@ -2413,7 +2449,7 @@ static void dispatch_mouse(const td_event_t *ev)
         }
     }
 
-    if (in_taskbar(ev->y))
+    if (in_taskbar(ev->x, ev->y))
     {
         if (ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_LEFT)
             taskbar_click(ev->x);
@@ -2498,8 +2534,10 @@ static void super_key(const td_event_t *ev, td_window_t *w)
         {
             if (w->flags & TD_WIN_MAXIMIZED)
                 td_win_toggle_maximize(w);
-            int half = s_cols / 2;
-            td_win_move(w, ev->key == TD_KEY_LEFT ? 0 : s_cols - half, 0);
+            int mx, mw;
+            monitor_of(w->rect, &mx, &mw);
+            int half = mw / 2;
+            td_win_move(w, ev->key == TD_KEY_LEFT ? mx : mx + mw - half, 0);
             td_win_resize(w, half, td_wm_desktop_rows());
         }
         break;
