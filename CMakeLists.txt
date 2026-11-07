@@ -173,6 +173,7 @@ target_compile_options(tinydesk_hal PRIVATE ${TD_WARNINGS})
 if(TD_WITH_TDSH)
     set(TDSH_CORE_SRCS
         ${TDSH_ROOT}/src/core/tdsh_builtin.c
+        ${TDSH_ROOT}/src/core/tdsh_venv.c
         ${TDSH_ROOT}/src/core/tdsh_core.c
         ${TDSH_ROOT}/src/core/tdsh_parser.c
         ${TDSH_ROOT}/src/core/tdsh_path.c
@@ -396,6 +397,15 @@ if(TD_BUILD_TESTS)
         set_target_properties(test_py_pins PROPERTIES C_STANDARD 11)
         target_compile_options(test_py_pins PRIVATE ${TD_WARNINGS})
         add_test(NAME test_py_pins COMMAND test_py_pins)
+        # The same rules on a board whose desktop link is USB, not UART0 (the
+        # Nano ESP32, TD_LINK_USJ; from PR #15).
+        add_executable(test_py_pins_usj tests/test_py_pins.c ${TDSH_ROOT}/python/hw/td_py_hw_pins.c)
+        target_include_directories(test_py_pins_usj PRIVATE ${TDSH_ROOT}/python/hw)
+        target_link_libraries(test_py_pins_usj PRIVATE tdsh)
+        set_target_properties(test_py_pins_usj PROPERTIES C_STANDARD 11)
+        target_compile_options(test_py_pins_usj PRIVATE ${TD_WARNINGS})
+        target_compile_definitions(test_py_pins_usj PRIVATE TD_LINK_USJ TD_EXPECT_USJ)
+        add_test(NAME test_py_pins_usj COMMAND test_py_pins_usj)
     endif()
     add_executable(test_desktop tests/test_desktop.c)
     target_link_libraries(test_desktop PRIVATE tinydesk_apps)

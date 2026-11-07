@@ -11,6 +11,10 @@ idf_component_register(
     REQUIRES ${TD_ESP_APP_REQUIRES} esp_lcd esp_driver_i2c esp_driver_gpio
 )
 target_compile_options(${COMPONENT_LIB} PRIVATE -Wall -Wextra -Werror)
+# Its own update feed: the esp32s3 image would replace the LCD desktop with
+# a UART one (the board has one app slot today, so this only matters if it
+# ever gets two).
+target_compile_definitions(${COMPONENT_LIB} PRIVATE TD_UPDATE_BOARD="crowpanel7")
 # Keep bulk pixel writes on the same CPU that allocates/services RGB DMA.
 # Otherwise both CPUs can stream through the shared PSRAM cache while the
 # bounce interrupt is trying to refill its next internal-RAM buffer.

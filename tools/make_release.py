@@ -58,6 +58,8 @@ EDITIONS = [
         ("esp32", "ports/esp32", "esp32", "ESP32", "ESP32 with 16 MB flash and PSRAM (e.g. ESP32-WROVER-IE N16R8)"),
         ("esp32-4mb", "ports/esp32-4mb", "esp32", "ESP32", "ESP32 with 4 MB flash, no PSRAM (e.g. ESP32-WROOM-32 DevKitC)"),
         ("esp32s3", "ports/esp32s3", "esp32s3", "ESP32-S3", "ESP32-S3 with 16 MB flash and 8 MB Octal PSRAM (e.g. ESP32-S3-DevKitC-1-N16R8)"),
+        ("crowpanel7", "ports/crowpanel7", "esp32s3", "ESP32-S3", "Elecrow CrowPanel 7.0 (DIS08070H): the desktop on its touch screen"),
+        ("nanoesp32", "ports/nanoesp32", "esp32s3", "ESP32-S3", "Arduino Nano ESP32: the desktop on its USB-C port (community port)"),
     ]),
     ("shell", "TinyDesk Shell", False, [
         ("esp32c6", "third_party/tdsh", "esp32c6", "ESP32-C6", "ESP32-C6 with 8 MB flash"),
@@ -289,7 +291,9 @@ def main():
     licence = [(os.path.join(ROOT, "LICENSE"), "LICENSE")]
     shell_licence = [(os.path.join(ROOT, "third_party", "tdsh", "LICENSE"), "LICENSE-TinyDesk-Shell")]
     # The desktop programs include MicroPython (the py command).
-    python_licence = [(os.path.join(ROOT, "third_party", "micropython", "LICENSE"), "LICENSE-MicroPython")]
+    tdsh = os.path.join(ROOT, "third_party", "tdsh")
+    python_licence = [(os.path.join(tdsh, "third_party", "micropython", "LICENSE"), "LICENSE-MicroPython"),
+                      (os.path.join(tdsh, "licenses", "micropython-lib-LICENSE.txt"), "LICENSE-micropython-lib")]
     hosts = []
     if args.host_linux_desktop:
         hosts.append(("tinydesk-desktop-linux-x86_64", args.host_linux_desktop, "tinydesk", licence + shell_licence + python_licence, [

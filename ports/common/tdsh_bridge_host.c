@@ -278,8 +278,10 @@ static void build_prompt(const tdsh_session_t *s, char *out, size_t cap)
         snprintf(tilde, sizeof(tilde), "~%s", s->cwd + hl);
         shown = tilde;
     }
-    snprintf(out, cap, "\033[1;32m%s@%s\033[0m:\033[1;34m%s\033[0m%c ",
-             s->username, s->hostname, shown, strcmp(s->username, "root") == 0 ? '#' : '$');
+    char venv[TDSH_VAR_VALUE_MAX + 4];   /* "(name) " while a venv is active */
+    tdsh_prompt_prefix((tdsh_session_t *)s, venv, sizeof(venv));
+    snprintf(out, cap, "%s\033[1;32m%s@%s\033[0m:\033[1;34m%s\033[0m%c ",
+             venv, s->username, s->hostname, shown, strcmp(s->username, "root") == 0 ? '#' : '$');
 }
 
 static void run_sessions(void)

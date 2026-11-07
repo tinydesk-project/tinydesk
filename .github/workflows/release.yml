@@ -130,6 +130,8 @@ jobs:
           (cd ports/esp32 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd ports/esp32-4mb && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd ports/esp32s3 && idf.py set-target esp32s3 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
+          (cd ports/crowpanel7 && idf.py set-target esp32s3 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
+          (cd ports/nanoesp32 && idf.py set-target esp32s3 && idf.py -DTD_USE_EXAMPLE_BOARD=ON build)
           (cd third_party/tdsh && idf.py build)
           (cd third_party/tdsh/projects/esp32 && idf.py build)
           (cd third_party/tdsh/projects/esp32s3 && idf.py set-target esp32s3 && idf.py build)

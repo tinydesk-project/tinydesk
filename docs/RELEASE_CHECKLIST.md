@@ -40,7 +40,8 @@ https://tinydesk-project.github.io/.
 2. Record the tested submodule revision in the desktop repository and push.
    CI must succeed from a clean recursive checkout.
 3. Set the version: `include/tinydesk/td.h` (`TD_VERSION`), `PROJECT_VER`
-   in `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb` and `ports/esp32s3`, the README line,
+   in `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb`, `ports/esp32s3`,
+   `ports/crowpanel7` and `ports/nanoesp32`, the README line,
    `RELEASE_NOTES.md`, and the docs site's changelog and `api/core.md`. The
    site's cover and installer take theirs from the release when the Pages
    workflow runs. Then tag the tested revision. The release workflow calls
