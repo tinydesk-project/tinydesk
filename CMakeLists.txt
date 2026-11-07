@@ -228,12 +228,13 @@ if(TD_WITH_TDSH AND TD_WITH_PYTHON)
                    ${CMAKE_CURRENT_SOURCE_DIR}/ports/common/python/td_py_tdui.c
         LINK tdsh tinydesk_apps
         COMPAT_FLAG ${TDSH_COMPAT_FLAG}
+        BOARD_NAME TinyDesk
         HELP_EXTERNAL)   # td_py_mod.c's help() text
     target_include_directories(td_python PUBLIC ports/common/python)
     if(TD_MBEDTLS_DIR)
-        # hashlib: sha1 and md5 come from mbedTLS (sha256 without it too)
+        # ssl, and hashlib's sha1 and md5, come from mbedTLS (sha256 without it too)
         target_compile_definitions(td_python PRIVATE TD_PY_MBEDTLS)
-        target_link_libraries(td_python PRIVATE mbedcrypto)
+        target_link_libraries(td_python PRIVATE mbedtls mbedx509 mbedcrypto)
     endif()
 endif()
 

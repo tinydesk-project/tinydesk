@@ -48,6 +48,11 @@ static const char *const s_modules[][2] = {
     {"select", "poll POLLIN POLLOUT POLLERR POLLHUP"},
     {"machine", "Pin ADC PWM I2C SoftI2C SPI SoftSPI UART time_pulse_us bitstream unique_id freq idle"},
     {"neopixel", "NeoPixel"},
+    {"socket", "socket getaddrinfo AF_INET AF_INET6 SOCK_STREAM SOCK_DGRAM SOL_SOCKET SO_REUSEADDR IPPROTO_TCP TCP_NODELAY"},
+    {"ssl", "wrap_socket SSLContext CERT_NONE CERT_REQUIRED PROTOCOL_TLS_CLIENT"},
+    {"requests", "get post put patch delete head request"},
+    {"websocket", "create_connection WebSocket"},
+    {"aiohttp", "ClientSession"},
     {"tdui", "Window run poll run_async quit every after msgbox confirm inputbox menu Timer"},
 };
 #define MODULE_COUNT ((int)(sizeof(s_modules) / sizeof(s_modules[0])))

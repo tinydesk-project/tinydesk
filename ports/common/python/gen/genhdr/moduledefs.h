@@ -92,6 +92,10 @@ extern const struct _mp_obj_module_t mp_module_micropython;
 #undef MODULE_DEF_MICROPYTHON
 #define MODULE_DEF_MICROPYTHON { MP_ROM_QSTR(MP_QSTR_micropython), MP_ROM_PTR(&mp_module_micropython) },
 
+extern const struct _mp_obj_module_t td_socket_module;
+#undef MODULE_DEF_SOCKET
+#define MODULE_DEF_SOCKET { MP_ROM_QSTR(MP_QSTR_socket), MP_ROM_PTR(&td_socket_module) },
+
 extern const struct _mp_obj_module_t mp_module_sys;
 #undef MODULE_DEF_SYS
 #define MODULE_DEF_SYS { MP_ROM_QSTR(MP_QSTR_sys), MP_ROM_PTR(&mp_module_sys) },
@@ -100,6 +104,10 @@ extern const struct _mp_obj_module_t td_py_module;
 #undef MODULE_DEF_TINYDESK
 #define MODULE_DEF_TINYDESK { MP_ROM_QSTR(MP_QSTR_tinydesk), MP_ROM_PTR(&td_py_module) },
 
+extern const struct _mp_obj_module_t mp_module_tls;
+#undef MODULE_DEF_TLS
+#define MODULE_DEF_TLS { MP_ROM_QSTR(MP_QSTR_tls), MP_ROM_PTR(&mp_module_tls) },
+
 
 #define MICROPY_REGISTERED_MODULES \
     MODULE_DEF_BUILTINS \
@@ -107,8 +115,10 @@ extern const struct _mp_obj_module_t td_py_module;
     MODULE_DEF_GC \
     MODULE_DEF_MATH \
     MODULE_DEF_MICROPYTHON \
+    MODULE_DEF_SOCKET \
     MODULE_DEF_SYS \
     MODULE_DEF_TINYDESK \
+    MODULE_DEF_TLS \
     MODULE_DEF__ASYNCIO \
     MODULE_DEF__TDUI \
     MODULE_DEF___MAIN__ \

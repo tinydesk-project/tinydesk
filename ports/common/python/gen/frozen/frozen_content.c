@@ -43,25 +43,71 @@ typedef struct _mp_obj_complex_t {
 
 enum {
     MP_QSTR__0x00_ = MP_QSTRnumber_of,
+    MP_QSTR__0x0d__0x0a_,
+    MP_QSTR__bang_BB,
+    MP_QSTR__bang_BBH,
+    MP_QSTR__bang_BBQ,
+    MP_QSTR__bang_H,
+    MP_QSTR__bang_I,
+    MP_QSTR__bang_Q,
+    MP_QSTR__hash_,
     MP_QSTR__percent__dot__star_f,
     MP_QSTR__percent_s_0x00__percent_s_0x00__percent_s,
+    MP_QSTR__percent_s_colon__space__percent_s,
+    MP_QSTR__amp_,
     MP_QSTR__hyphen__hyphen_,
     MP_QSTR__dot__colon_,
+    MP_QSTR__slash__slash_,
+    MP_QSTR_0_0x0d__0x0a__0x0d__0x0a_,
+    MP_QSTR_0_dot_0_dot_8,
+    MP_QSTR_0_dot_2_dot_1,
+    MP_QSTR_1_dot_0_dot_3,
+    MP_QSTR_1_dot_1_dot_1,
+    MP_QSTR_1_dot_8_dot_0,
+    MP_QSTR_13,
     MP_QSTR_16,
+    MP_QSTR__colon_,
+    MP_QSTR__lt_ClientResponse_space__percent_d_space__percent_s_gt_,
     MP_QSTR__gt_f,
+    MP_QSTR__question_,
     MP_QSTR_API,
     MP_QSTR_App,
+    MP_QSTR_Authorization,
+    MP_QSTR_BINARY,
+    MP_QSTR_Basic_space__brace_open__brace_close_,
     MP_QSTR_Bit_space_must_space_be_space_0_space_or_space_1,
+    MP_QSTR_BodyStream,
     MP_QSTR_Button,
     MP_QSTR_CAPABILITIES,
     MP_QSTR_CLEAR,
+    MP_QSTR_CLOSE,
+    MP_QSTR_CONT,
     MP_QSTR_Canvas,
     MP_QSTR_CanvasButton,
     MP_QSTR_Checkbox,
+    MP_QSTR_ChunkedClientResponse,
+    MP_QSTR_ClientResponse,
+    MP_QSTR_ClientSession,
+    MP_QSTR_ClientWebSocketResponse,
+    MP_QSTR_Connection,
+    MP_QSTR_Content_hyphen_Length,
+    MP_QSTR_Content_hyphen_Type,
+    MP_QSTR_DEBUG,
+    MP_QSTR_DELAY,
+    MP_QSTR_DELETE,
+    MP_QSTR_DeflateIO,
     MP_QSTR_ERROR,
     MP_QSTR_Event,
     MP_QSTR_Field,
     MP_QSTR_Font,
+    MP_QSTR_GET,
+    MP_QSTR_GZIP,
+    MP_QSTR_HEAD,
+    MP_QSTR_HTTP_slash_1_dot_0,
+    MP_QSTR_HTTP_slash_1_dot_1,
+    MP_QSTR_Host,
+    MP_QSTR_HttpVersion10,
+    MP_QSTR_HttpVersion11,
     MP_QSTR_IOQueue,
     MP_QSTR_Image,
     MP_QSTR_Incomplete_space_UART_space_write,
@@ -75,42 +121,70 @@ enum {
     MP_QSTR_MAX_PAGES,
     MP_QSTR_MAX_WIDGETS,
     MP_QSTR_MAX_WINDOWS,
+    MP_QSTR_MQTTClient,
+    MP_QSTR_MQTTException,
     MP_QSTR_Modbus_space_exception_space__percent_d,
     MP_QSTR_NeoPixel,
     MP_QSTR_OK,
     MP_QSTR_ONLINE,
+    MP_QSTR_OPTIONS,
+    MP_QSTR_OP_BINARY,
+    MP_QSTR_OP_CLOSE,
+    MP_QSTR_OP_CONT,
+    MP_QSTR_OP_PING,
+    MP_QSTR_OP_PONG,
+    MP_QSTR_OP_TEXT,
     MP_QSTR_ORDER,
+    MP_QSTR_Origin,
     MP_QSTR_PAGED,
     MP_QSTR_PARK,
-    MP_QSTR_PROTOCOL_TLS_CLIENT,
+    MP_QSTR_PATCH,
+    MP_QSTR_PING,
+    MP_QSTR_PONG,
+    MP_QSTR_POST,
+    MP_QSTR_PUT,
     MP_QSTR_Page,
     MP_QSTR_Progress,
     MP_QSTR_RX_space_frame_space_overflow,
     MP_QSTR_Read_hyphen_only_space_register_space_table,
     MP_QSTR_Remote_space_exception_space__percent_s,
+    MP_QSTR_Response,
     MP_QSTR_SIMULATED,
-    MP_QSTR_SOCK_STREAM,
-    MP_QSTR_SOL_SOCKET,
-    MP_QSTR_SO_REUSEADDR,
-    MP_QSTR_SSLContext,
     MP_QSTR_STALE,
     MP_QSTR_STARTING,
     MP_QSTR_SUPPORTS_GRADIENT_FILLS,
+    MP_QSTR_Scheme_space__brace_open__brace_close__space_is_space_invalid,
+    MP_QSTR_Sec_hyphen_WebSocket_hyphen_Key,
+    MP_QSTR_Sec_hyphen_WebSocket_hyphen_Version,
     MP_QSTR_Server,
     MP_QSTR_SingletonGenerator,
     MP_QSTR_Stream,
     MP_QSTR_StreamReader,
     MP_QSTR_StreamWriter,
+    MP_QSTR_TEXT,
     MP_QSTR_TIMEOUT,
     MP_QSTR_Textbox,
     MP_QSTR_ThreadSafeFlag,
     MP_QSTR_TimeoutError,
     MP_QSTR_Timer,
+    MP_QSTR_Transfer_hyphen_Encoding,
+    MP_QSTR_URI,
+    MP_QSTR_URL_RE,
+    MP_QSTR_Unsupported_space_protocol_colon__space_,
+    MP_QSTR_Upgrade,
+    MP_QSTR_User_hyphen_Agent,
     MP_QSTR_VERSION,
     MP_QSTR_WAIT,
     MP_QSTR_WRITE_space_ERROR,
+    MP_QSTR_WSMsgType,
+    MP_QSTR_WebSocket,
+    MP_QSTR_WebSocketClient,
+    MP_QSTR_WebSocketConnectionClosedException,
+    MP_QSTR_WebSocketException,
+    MP_QSTR_WebSocketMessage,
     MP_QSTR_Window,
     MP_QSTR_Yes_pipe_No,
+    MP_QSTR_ZLIB,
     MP_QSTR__BIND_DEFAULTS,
     MP_QSTR__Batch,
     MP_QSTR__KEYS,
@@ -118,35 +192,48 @@ enum {
     MP_QSTR__NoBatch,
     MP_QSTR__Pixels,
     MP_QSTR__Remove,
+    MP_QSTR__RequestContextManager,
+    MP_QSTR__WSRequestContextManager,
     MP_QSTR__Widget,
     MP_QSTR___version__,
     MP_QSTR__add,
     MP_QSTR__alive,
     MP_QSTR__attrs,
     MP_QSTR__bar_colors,
+    MP_QSTR__base_headers,
+    MP_QSTR__base_url,
     MP_QSTR__batch,
     MP_QSTR__buttons,
+    MP_QSTR__cached,
     MP_QSTR__cells,
     MP_QSTR__checked,
     MP_QSTR__checked_store,
+    MP_QSTR__chunk,
+    MP_QSTR__context,
     MP_QSTR__controls,
+    MP_QSTR__decode,
     MP_QSTR__dequeue,
     MP_QSTR__dispatch,
     MP_QSTR__display,
     MP_QSTR__draw,
     MP_QSTR__encode,
+    MP_QSTR__encode_len,
+    MP_QSTR__encode_websocket_frame,
     MP_QSTR__enqueue,
     MP_QSTR__event,
     MP_QSTR__exc_context,
     MP_QSTR__exc_handler,
     MP_QSTR__file,
+    MP_QSTR__get_header,
     MP_QSTR__gone,
     MP_QSTR__gradient_data,
     MP_QSTR__groups,
     MP_QSTR__held,
     MP_QSTR__hit,
+    MP_QSTR__http_version,
     MP_QSTR__io_queue,
     MP_QSTR__items,
+    MP_QSTR__json,
     MP_QSTR__key_name,
     MP_QSTR__kids,
     MP_QSTR__link,
@@ -157,11 +244,19 @@ enum {
     MP_QSTR__no_batch,
     MP_QSTR__objs,
     MP_QSTR__page,
+    MP_QSTR__parse_frame_header,
     MP_QSTR__part,
     MP_QSTR__preparing,
+    MP_QSTR__process_websocket_frame,
     MP_QSTR__promote_to_task,
+    MP_QSTR__rand,
+    MP_QSTR__read_exact,
+    MP_QSTR__read_frame,
+    MP_QSTR__reader,
+    MP_QSTR__recv_len,
     MP_QSTR__refresh,
     MP_QSTR__refresh_all,
+    MP_QSTR__remaining,
     MP_QSTR__req,
     MP_QSTR__req2,
     MP_QSTR__request,
@@ -172,9 +267,13 @@ enum {
     MP_QSTR__run_timers,
     MP_QSTR__selected,
     MP_QSTR__send,
+    MP_QSTR__send_str,
+    MP_QSTR__send_subunsub,
     MP_QSTR__serve,
     MP_QSTR__show,
     MP_QSTR__slave_reply,
+    MP_QSTR__sock,
+    MP_QSTR__split_url,
     MP_QSTR__status,
     MP_QSTR__stop_task,
     MP_QSTR__stopper,
@@ -193,18 +292,25 @@ enum {
     MP_QSTR__windows,
     MP_QSTR__words,
     MP_QSTR__wrap,
+    MP_QSTR__ws_connect,
     MP_QSTR_a,
-    MP_QSTR_accept,
+    MP_QSTR_ack_n,
+    MP_QSTR_ack_op,
     MP_QSTR_aclose,
     MP_QSTR_acquire,
     MP_QSTR_across,
     MP_QSTR_action,
     MP_QSTR_address,
     MP_QSTR_after,
+    MP_QSTR_aiohttp_slash___init___dot_py,
+    MP_QSTR_aiohttp_slash_aiohttp_ws_dot_py,
+    MP_QSTR_aiohttp_ws,
     MP_QSTR_alias_canvas,
     MP_QSTR_align,
     MP_QSTR_alt_plus_,
     MP_QSTR_app,
+    MP_QSTR_application_slash_json,
+    MP_QSTR_application_slash_octet_hyphen_stream,
     MP_QSTR_ascent,
     MP_QSTR_asyncio,
     MP_QSTR_asyncio_slash___init___dot_py,
@@ -213,7 +319,9 @@ enum {
     MP_QSTR_asyncio_slash_funcs_dot_py,
     MP_QSTR_asyncio_slash_lock_dot_py,
     MP_QSTR_asyncio_slash_stream_dot_py,
+    MP_QSTR_attempts,
     MP_QSTR_attr,
+    MP_QSTR_auth,
     MP_QSTR_aw,
     MP_QSTR_awrite,
     MP_QSTR_awritestr,
@@ -224,12 +332,12 @@ enum {
     MP_QSTR_bar,
     MP_QSTR_bar_space_range_space_or_space_colour,
     MP_QSTR_base,
+    MP_QSTR_base_url,
     MP_QSTR_batch,
     MP_QSTR_baud,
     MP_QSTR_before_read,
     MP_QSTR_bg,
     MP_QSTR_big_size,
-    MP_QSTR_bind,
     MP_QSTR_bindings,
     MP_QSTR_border,
     MP_QSTR_bottom,
@@ -239,6 +347,8 @@ enum {
     MP_QSTR_buttons,
     MP_QSTR_c,
     MP_QSTR_cache,
+    MP_QSTR_cadata,
+    MP_QSTR_cafile,
     MP_QSTR_call_space_link_paren_open__paren_close__space_first,
     MP_QSTR_call_exception_handler,
     MP_QSTR_can_squot_t_space_gather,
@@ -249,22 +359,37 @@ enum {
     MP_QSTR_canvas_page,
     MP_QSTR_cb,
     MP_QSTR_cells,
+    MP_QSTR_cert,
+    MP_QSTR_cert_reqs,
+    MP_QSTR_certfile,
     MP_QSTR_ch,
     MP_QSTR_change,
+    MP_QSTR_check_msg,
     MP_QSTR_checkbox,
     MP_QSTR_checked,
+    MP_QSTR_chunk_size,
+    MP_QSTR_chunked,
     MP_QSTR_circle,
+    MP_QSTR_clean_session,
     MP_QSTR_click,
+    MP_QSTR_client,
     MP_QSTR_closed,
+    MP_QSTR_closed_space_by_space_the_space_server,
+    MP_QSTR_cls,
     MP_QSTR_co,
     MP_QSTR_coalesce,
     MP_QSTR_codec,
     MP_QSTR_codecModule,
     MP_QSTR_color,
+    MP_QSTR_compat,
     MP_QSTR_config,
     MP_QSTR_confirm,
-    MP_QSTR_connect,
+    MP_QSTR_connected,
+    MP_QSTR_connection_space_closed,
     MP_QSTR_constant,
+    MP_QSTR_content,
+    MP_QSTR_content_hyphen_encoding,
+    MP_QSTR_content_hyphen_length,
     MP_QSTR_context,
     MP_QSTR_control,
     MP_QSTR_control_mouse,
@@ -273,6 +398,7 @@ enum {
     MP_QSTR_coro_equals_,
     MP_QSTR_coroutine_space_expected,
     MP_QSTR_crc16,
+    MP_QSTR_create_connection,
     MP_QSTR_create_task,
     MP_QSTR_ctrl_plus_,
     MP_QSTR_current,
@@ -285,11 +411,14 @@ enum {
     MP_QSTR_deActive,
     MP_QSTR_decimals,
     MP_QSTR_default_exception_handler,
+    MP_QSTR_deflate,
+    MP_QSTR_delay,
     MP_QSTR_delete,
     MP_QSTR_di,
     MP_QSTR_direction,
+    MP_QSTR_disconnect,
     MP_QSTR_dither,
-    MP_QSTR_do_handshake_on_connect,
+    MP_QSTR_do_handshake,
     MP_QSTR_down,
     MP_QSTR_drain,
     MP_QSTR_draw,
@@ -313,7 +442,9 @@ enum {
     MP_QSTR_event,
     MP_QSTR_every,
     MP_QSTR_exc,
+    MP_QSTR_exc_tb,
     MP_QSTR_exc_type,
+    MP_QSTR_exc_val,
     MP_QSTR_exception,
     MP_QSTR_f,
     MP_QSTR_f1,
@@ -352,33 +483,50 @@ enum {
     MP_QSTR_get_event_loop,
     MP_QSTR_get_exception_handler,
     MP_QSTR_get_extra_info,
-    MP_QSTR_getaddrinfo,
     MP_QSTR_glyphs,
     MP_QSTR_gradient,
     MP_QSTR_gradient_space_RGB_space_range,
     MP_QSTR_gradient_fills,
     MP_QSTR_gradients,
+    MP_QSTR_gzip,
+    MP_QSTR_gzip_comma_deflate,
     MP_QSTR_h,
+    MP_QSTR_handshake,
+    MP_QSTR_handshake_space_failed_colon__space_,
+    MP_QSTR_handshake_request,
+    MP_QSTR_head,
+    MP_QSTR_header,
+    MP_QSTR_headers,
     MP_QSTR_height,
     MP_QSTR_hide_canvas,
     MP_QSTR_high_first,
     MP_QSTR_home,
     MP_QSTR_host,
+    MP_QSTR_hostname,
     MP_QSTR_hr,
+    MP_QSTR_http,
+    MP_QSTR_http_colon_,
+    MP_QSTR_https,
+    MP_QSTR_https_colon_,
     MP_QSTR_i,
     MP_QSTR_i16,
     MP_QSTR_i32,
     MP_QSTR_idx,
     MP_QSTR_img,
+    MP_QSTR_in_reconnect,
     MP_QSTR_initial,
     MP_QSTR_inputAlias,
     MP_QSTR_inputbox,
     MP_QSTR_invalid,
     MP_QSTR_ir,
+    MP_QSTR_is_handshake,
     MP_QSTR_is_open,
     MP_QSTR_is_set,
     MP_QSTR_item,
     MP_QSTR_kb,
+    MP_QSTR_keepalive,
+    MP_QSTR_keyfile,
+    MP_QSTR_keyname,
     MP_QSTR_kind,
     MP_QSTR_knob,
     MP_QSTR_label,
@@ -390,11 +538,14 @@ enum {
     MP_QSTR_line,
     MP_QSTR_link,
     MP_QSTR_list_space_size,
-    MP_QSTR_listen,
     MP_QSTR_lock,
     MP_QSTR_locked,
     MP_QSTR_loop,
     MP_QSTR_low_first,
+    MP_QSTR_lw_msg,
+    MP_QSTR_lw_qos,
+    MP_QSTR_lw_retain,
+    MP_QSTR_lw_topic,
     MP_QSTR_main_task,
     MP_QSTR_make_canvas,
     MP_QSTR_master,
@@ -410,7 +561,10 @@ enum {
     MP_QSTR_momentary,
     MP_QSTR_mouse,
     MP_QSTR_move,
+    MP_QSTR_mqtt_space_reconnect_colon__space__percent_r,
+    MP_QSTR_mqtt_colon__space__percent_r,
     MP_QSTR_ms,
+    MP_QSTR_msg,
     MP_QSTR_msgbox,
     MP_QSTR_n,
     MP_QSTR_neopixel_dot_py,
@@ -438,7 +592,9 @@ enum {
     MP_QSTR_on_select,
     MP_QSTR_on_write,
     MP_QSTR_op,
+    MP_QSTR_opcode,
     MP_QSTR_open_connection,
+    MP_QSTR_options,
     MP_QSTR_out_buf,
     MP_QSTR_outline,
     MP_QSTR_own,
@@ -446,6 +602,10 @@ enum {
     MP_QSTR_pages,
     MP_QSTR_paint,
     MP_QSTR_panel,
+    MP_QSTR_params,
+    MP_QSTR_parse_headers,
+    MP_QSTR_password,
+    MP_QSTR_patch,
     MP_QSTR_peername,
     MP_QSTR_pending,
     MP_QSTR_pgdn,
@@ -453,18 +613,25 @@ enum {
     MP_QSTR_pheight,
     MP_QSTR_picture,
     MP_QSTR_pictures,
+    MP_QSTR_pid,
     MP_QSTR_pin,
+    MP_QSTR_ping,
     MP_QSTR_pixel_widgets,
+    MP_QSTR_pkt,
     MP_QSTR_place_canvas,
     MP_QSTR_pollMs,
     MP_QSTR_poller,
     MP_QSTR_port,
+    MP_QSTR_post,
     MP_QSTR_prefix,
     MP_QSTR_preparing,
     MP_QSTR_press,
     MP_QSTR_pressed,
     MP_QSTR_progress,
     MP_QSTR_prompt,
+    MP_QSTR_protocol,
+    MP_QSTR_pswd,
+    MP_QSTR_publish,
     MP_QSTR_put,
     MP_QSTR_pwidth,
     MP_QSTR_queue,
@@ -472,13 +639,28 @@ enum {
     MP_QSTR_queue_write,
     MP_QSTR_quit,
     MP_QSTR_radius,
+    MP_QSTR_raw,
+    MP_QSTR_reader,
     MP_QSTR_readexactly,
+    MP_QSTR_reason,
+    MP_QSTR_receive,
+    MP_QSTR_receive_bytes,
+    MP_QSTR_receive_json,
+    MP_QSTR_receive_str,
+    MP_QSTR_reconnect,
+    MP_QSTR_recv_frame,
     MP_QSTR_registerCount,
     MP_QSTR_register_canvas,
     MP_QSTR_releaseValue,
+    MP_QSTR_remaining,
     MP_QSTR_rendered,
     MP_QSTR_repeat,
     MP_QSTR_req,
+    MP_QSTR_reqco,
+    MP_QSTR_request,
+    MP_QSTR_request_co,
+    MP_QSTR_request_raw,
+    MP_QSTR_requests_slash___init___dot_py,
     MP_QSTR_require,
     MP_QSTR_resizable,
     MP_QSTR_resize,
@@ -502,33 +684,43 @@ enum {
     MP_QSTR_secret,
     MP_QSTR_select_canvas,
     MP_QSTR_selected,
+    MP_QSTR_send_binary,
+    MP_QSTR_send_bytes,
+    MP_QSTR_send_frame,
+    MP_QSTR_send_json,
+    MP_QSTR_send_str,
     MP_QSTR_sequence,
-    MP_QSTR_server_hostname,
-    MP_QSTR_server_side,
+    MP_QSTR_server,
+    MP_QSTR_set_callback,
     MP_QSTR_set_exception_handler,
-    MP_QSTR_setblocking,
-    MP_QSTR_setsockopt,
+    MP_QSTR_set_last_will,
     MP_QSTR_sgen,
     MP_QSTR_sheet,
     MP_QSTR_shift_plus_,
     MP_QSTR_show,
     MP_QSTR_show_canvases,
     MP_QSTR_showing,
+    MP_QSTR_simple,
     MP_QSTR_simulated,
     MP_QSTR_size,
     MP_QSTR_slider,
     MP_QSTR_small,
-    MP_QSTR_socket,
+    MP_QSTR_sock,
     MP_QSTR_spec,
     MP_QSTR_src,
     MP_QSTR_src_down,
     MP_QSTR_ssl,
+    MP_QSTR_ssl_dot_py,
+    MP_QSTR_ssl_params,
     MP_QSTR_staleMs,
     MP_QSTR_start_server,
+    MP_QSTR_status,
     MP_QSTR_statusElement,
+    MP_QSTR_status_code,
     MP_QSTR_status_target,
     MP_QSTR_stream,
     MP_QSTR_stream_awrite,
+    MP_QSTR_subscribe,
     MP_QSTR_suffix,
     MP_QSTR_sz,
     MP_QSTR_t,
@@ -554,15 +746,25 @@ enum {
     MP_QSTR_traceback,
     MP_QSTR_track,
     MP_QSTR_tx_bytes,
+    MP_QSTR_typ,
     MP_QSTR_u16,
     MP_QSTR_u32,
     MP_QSTR_uart,
+    MP_QSTR_umqtt_slash_robust_dot_py,
+    MP_QSTR_umqtt_slash_simple_dot_py,
     MP_QSTR_unit,
     MP_QSTR_unknown_space_canvas_space_page,
     MP_QSTR_unknown_space_page,
+    MP_QSTR_unsubscribe,
     MP_QSTR_up,
+    MP_QSTR_uri,
+    MP_QSTR_url,
+    MP_QSTR_urlparse,
+    MP_QSTR_user,
     MP_QSTR_v,
+    MP_QSTR_val,
     MP_QSTR_valign,
+    MP_QSTR_verify,
     MP_QSTR_visible,
     MP_QSTR_visible_pictures,
     MP_QSTR_w,
@@ -571,10 +773,13 @@ enum {
     MP_QSTR_wait_for,
     MP_QSTR_wait_for_ms,
     MP_QSTR_wait_io_event,
+    MP_QSTR_wait_msg,
     MP_QSTR_waiter,
     MP_QSTR_waiting,
     MP_QSTR_waitq_len,
     MP_QSTR_warm,
+    MP_QSTR_websocket,
+    MP_QSTR_websocket_dot_py,
     MP_QSTR_widget,
     MP_QSTR_widgets,
     MP_QSTR_width,
@@ -583,37 +788,94 @@ enum {
     MP_QSTR_wordOrder,
     MP_QSTR_words,
     MP_QSTR_wrap,
-    MP_QSTR_wrap_socket,
     MP_QSTR_writeValue,
+    MP_QSTR_writer,
+    MP_QSTR_ws,
+    MP_QSTR_ws_colon__slash__slash_,
+    MP_QSTR_ws_connect,
+    MP_QSTR_wsclient,
+    MP_QSTR_wss,
+    MP_QSTR_wss_colon__slash__slash_,
     MP_QSTR_x,
     MP_QSTR_x0,
     MP_QSTR_x1,
     MP_QSTR_y,
     MP_QSTR_y0,
     MP_QSTR_y1,
+    MP_QSTR__brace_open__brace_close__colon__space__brace_open__brace_close_,
+    MP_QSTR__brace_open__brace_close__colon__slash__slash__brace_open__brace_close__colon__brace_open__brace_close_,
+    MP_QSTR__brace_open__brace_close__colon__slash__slash__brace_open__brace_close__colon__brace_open__brace_close__brace_open__brace_close_,
+    MP_QSTR__brace_open__brace_close__colon__brace_open__brace_close_,
+    MP_QSTR__brace_open__brace_close__equals__brace_open__brace_close_,
 };
 
 const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     46501,
+    27298,
+    12100,
+    6028,
+    6037,
+    26188,
+    26189,
+    26197,
+    46470,
     33698,
     9779,
+    50207,
+    46467,
     26277,
     26321,
+    26341,
+    1365,
+    25885,
+    23830,
+    27927,
+    26900,
+    19740,
+    26663,
     26658,
+    46495,
+    42218,
     26781,
+    46490,
     47357,
     46308,
+    40382,
+    21194,
+    57753,
     33726,
+    55177,
     58067,
     8787,
     40860,
+    34899,
+    55667,
     56237,
     42171,
     33078,
+    28005,
+    12671,
+    40706,
+    51658,
+    42451,
+    45021,
+    47385,
+    27956,
+    33968,
+    11292,
+    11960,
     6557,
     35561,
     43143,
     45174,
+    48915,
+    59137,
+    32237,
+    17469,
+    17468,
+    64005,
+    5830,
+    5831,
     26002,
     41058,
     57828,
@@ -627,42 +889,70 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     17966,
     63985,
     55025,
+    2816,
+    62926,
     9329,
     33641,
     29537,
     39786,
+    59349,
+    22698,
+    61747,
+    34515,
+    49269,
+    42995,
+    32184,
     26955,
+    32273,
     6066,
     61325,
-    10465,
+    55275,
+    4629,
+    6803,
+    6461,
+    3220,
     29974,
     44216,
     7598,
     10969,
     24512,
+    5830,
     3583,
-    48690,
-    57103,
-    21281,
-    48598,
     61226,
     17925,
     29123,
+    3261,
+    24914,
+    42975,
     2976,
     12601,
     55353,
     39580,
     35638,
+    53336,
     4446,
     3245,
     9558,
     19302,
     8098,
+    53440,
+    59307,
+    58150,
+    38204,
+    6069,
+    59840,
     20703,
     21902,
     26208,
+    53696,
+    37264,
+    31529,
+    30403,
+    45639,
+    30011,
     51305,
     32663,
+    7864,
     48956,
     41510,
     24574,
@@ -670,35 +960,48 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     33895,
     8513,
     37244,
+    49959,
+    54915,
     4246,
     38975,
     15579,
     46221,
     24346,
     58426,
+    13948,
+    16027,
     41478,
     30719,
+    6226,
     54639,
     58973,
     47197,
+    49025,
+    7717,
     2062,
+    48470,
     49770,
     48522,
     41216,
     8282,
     60348,
+    33604,
+    27284,
     26816,
     2134,
     13092,
     52355,
     7740,
+    30892,
     35417,
     61587,
     61046,
     63103,
     7983,
+    32199,
     43474,
     24380,
+    33026,
     26421,
     20879,
     13882,
@@ -709,11 +1012,19 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     55544,
     21966,
     33225,
+    53389,
     33581,
     12830,
+    64761,
     24914,
+    18531,
+    11772,
+    5546,
+    51135,
+    35040,
     43399,
     52953,
+    3974,
     58300,
     23310,
     1451,
@@ -724,9 +1035,13 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     55096,
     65235,
     56390,
+    14476,
+    53570,
     55469,
     43129,
     45754,
+    45870,
+    22972,
     3470,
     5648,
     12837,
@@ -745,18 +1060,25 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     49733,
     24359,
     13742,
+    59743,
     46532,
-    35205,
+    46973,
+    42636,
     24658,
     54045,
     10906,
     60251,
     21363,
     2913,
+    43848,
+    61910,
+    29313,
     39108,
     64424,
     40695,
     13508,
+    48680,
+    36904,
     4555,
     44357,
     63415,
@@ -765,7 +1087,9 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     46624,
     16486,
     35185,
+    26331,
     48310,
+    47277,
     28211,
     49657,
     2796,
@@ -776,12 +1100,12 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     18420,
     60286,
     18160,
+    25380,
     4121,
     17975,
     38449,
     28352,
     40499,
-    25732,
     1111,
     23017,
     11626,
@@ -791,6 +1115,8 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     32544,
     46534,
     51625,
+    26615,
+    19745,
     188,
     19688,
     4535,
@@ -801,22 +1127,37 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     63745,
     28388,
     56752,
+    45349,
+    15087,
+    53475,
     28398,
     36643,
+    39173,
     7766,
     4290,
+    62500,
+    3583,
     56759,
+    35073,
     27819,
+    10908,
     19959,
+    42992,
+    19545,
     28393,
     40596,
     9995,
     34961,
     1752,
+    23137,
     41551,
     60919,
-    15835,
+    9594,
+    21825,
     25083,
+    55724,
+    62722,
+    53597,
     55546,
     35394,
     43100,
@@ -825,6 +1166,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     21001,
     50473,
     59568,
+    36040,
     21139,
     39559,
     61868,
@@ -837,11 +1179,14 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     16840,
     34333,
     45889,
+    14974,
+    19536,
     59292,
     28040,
     29728,
+    34213,
     57187,
-    8697,
+    32646,
     1591,
     18805,
     4517,
@@ -865,7 +1210,9 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     27081,
     26200,
     9435,
+    24306,
     52220,
+    13695,
     60370,
     46531,
     28178,
@@ -904,33 +1251,50 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     19971,
     60604,
     16583,
-    6254,
     47708,
     43683,
     52651,
     51456,
     65392,
+    57153,
+    13366,
     46541,
+    55058,
+    33899,
+    31612,
+    24045,
+    39066,
+    43945,
     13306,
     1202,
     16878,
     13674,
     13605,
+    38338,
     28447,
+    39837,
+    3847,
+    3918,
+    63796,
     46540,
     24363,
     24429,
     21584,
     21286,
+    26196,
     29051,
     59173,
     38406,
     41492,
     28478,
+    48247,
     31764,
     58562,
     8592,
     28652,
+    1385,
+    62580,
+    13461,
     429,
     56589,
     59203,
@@ -942,11 +1306,14 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     7371,
     7365,
     53826,
-    3788,
     9134,
     47631,
     9273,
     13812,
+    17400,
+    21612,
+    34404,
+    58496,
     31740,
     59760,
     37369,
@@ -962,7 +1329,10 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     29855,
     2564,
     49780,
+    17533,
+    63572,
     28347,
+    18044,
     61225,
     46539,
     49582,
@@ -990,7 +1360,9 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     63283,
     18342,
     28538,
+    61975,
     25560,
+    25589,
     30085,
     63333,
     24435,
@@ -998,6 +1370,10 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     63365,
     12583,
     7763,
+    57977,
+    44963,
+    28570,
+    40587,
     8320,
     21434,
     47256,
@@ -1005,18 +1381,25 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     48810,
     49833,
     6074,
+    29688,
     29682,
+    62037,
     41549,
+    29610,
     46761,
     40708,
     42221,
     55388,
+    55357,
     16021,
     50689,
     38562,
     47875,
     26584,
     40417,
+    62771,
+    34485,
+    27228,
     28788,
     43891,
     4756,
@@ -1024,13 +1407,28 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     8726,
     63836,
     4093,
+    35809,
+    20288,
     23753,
+    59329,
+    46414,
+    50824,
+    39465,
+    36740,
+    4460,
+    64709,
     1679,
     4923,
     51623,
+    43417,
     16526,
     2546,
     35683,
+    60367,
+    45172,
+    8455,
+    41615,
+    26741,
     58184,
     35832,
     34487,
@@ -1054,33 +1452,43 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     55987,
     56250,
     56364,
+    41545,
+    51391,
+    4763,
+    14782,
+    22707,
     27482,
-    61272,
-    61284,
+    10432,
+    43409,
     5288,
-    6254,
-    59448,
+    6291,
     32154,
     14442,
     54798,
     43654,
     32103,
     36326,
+    19467,
     37791,
     42272,
     45152,
     31162,
-    52320,
+    40913,
     17984,
     36103,
     25354,
     36329,
+    48942,
+    30954,
     4692,
     63679,
+    2417,
     54575,
+    62819,
     52479,
     54361,
     59482,
+    2061,
     13266,
     28908,
     46545,
@@ -1106,15 +1514,25 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     45775,
     17322,
     36431,
+    24824,
     27703,
     27761,
     6775,
+    33545,
+    40458,
     18819,
     3542,
     45662,
+    41174,
     28576,
+    25483,
+    25486,
+    19963,
+    61780,
     46547,
+    31486,
     61374,
+    722,
     27275,
     23947,
     46546,
@@ -1123,10 +1541,13 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     40746,
     25035,
     6948,
+    43752,
     60665,
     31214,
     21895,
     21164,
+    36240,
+    6327,
     19017,
     37658,
     29987,
@@ -1135,37 +1556,94 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     15333,
     21496,
     64593,
-    62411,
     30547,
+    48106,
+    28769,
+    39579,
+    3552,
+    13816,
+    31986,
+    296,
     46557,
     29005,
     29004,
     46556,
     29036,
     29037,
+    51359,
+    58115,
+    42597,
+    14943,
+    18072,
 };
 
 const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     1,
+    2,
+    3,
+    4,
+    4,
+    2,
+    2,
+    2,
+    1,
     4,
     8,
+    6,
+    1,
     2,
     2,
     2,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
     2,
+    2,
+    1,
+    22,
+    2,
+    1,
     3,
     3,
+    13,
+    6,
+    8,
     18,
+    10,
     6,
     12,
     5,
+    5,
+    4,
     6,
     12,
     8,
+    21,
+    14,
+    13,
+    23,
+    10,
+    14,
+    12,
+    5,
+    5,
+    6,
+    9,
     5,
     5,
     5,
     4,
+    3,
+    4,
+    4,
+    8,
+    8,
+    4,
+    13,
+    13,
     7,
     5,
     21,
@@ -1179,42 +1657,70 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     11,
     11,
+    10,
+    13,
     19,
     8,
     2,
     6,
+    7,
+    9,
+    8,
+    7,
+    7,
+    7,
+    7,
     5,
+    6,
     5,
     4,
-    19,
+    5,
+    4,
+    4,
+    4,
+    3,
     4,
     8,
     17,
     24,
     19,
+    8,
     9,
-    11,
-    10,
-    12,
-    10,
     5,
     8,
     23,
+    20,
+    17,
+    21,
     6,
     18,
     6,
     12,
     12,
+    4,
     7,
     7,
     14,
     12,
     5,
+    17,
+    3,
+    6,
+    22,
+    7,
+    10,
     7,
     4,
     11,
+    9,
+    9,
+    15,
+    34,
+    18,
+    16,
     6,
     6,
+    4,
     14,
     6,
     5,
@@ -1222,35 +1728,48 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     7,
     7,
+    22,
+    24,
     7,
     11,
     4,
     6,
     6,
     11,
+    13,
+    9,
     6,
     8,
+    7,
     6,
     8,
     14,
+    6,
+    8,
     9,
+    7,
     8,
     9,
     8,
     5,
     7,
+    11,
+    23,
     8,
     6,
     12,
     12,
     5,
+    11,
     5,
     14,
     7,
     5,
     4,
+    13,
     9,
     6,
+    5,
     9,
     5,
     5,
@@ -1261,11 +1780,19 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     5,
     5,
+    19,
     5,
     10,
+    24,
     16,
+    5,
+    11,
+    11,
+    7,
+    9,
     8,
     12,
+    10,
     4,
     5,
     8,
@@ -1276,9 +1803,13 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     11,
     9,
     5,
+    9,
+    14,
     6,
     5,
     12,
+    5,
+    10,
     7,
     10,
     8,
@@ -1297,7 +1828,9 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     6,
     5,
+    11,
     1,
+    5,
     6,
     6,
     7,
@@ -1305,10 +1838,15 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     6,
     7,
     5,
+    19,
+    21,
+    10,
     12,
     5,
     4,
     3,
+    16,
+    24,
     6,
     7,
     19,
@@ -1317,6 +1855,8 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     16,
     15,
     17,
+    8,
+    4,
     4,
     2,
     6,
@@ -1328,12 +1868,12 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     3,
     19,
     4,
+    8,
     5,
     4,
     11,
     2,
     8,
-    4,
     8,
     6,
     6,
@@ -1343,6 +1883,8 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     7,
     1,
     5,
+    6,
+    6,
     17,
     22,
     12,
@@ -1353,22 +1895,37 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     11,
     2,
     5,
+    4,
+    9,
+    8,
     2,
     6,
+    9,
     8,
     7,
+    10,
+    7,
     6,
+    13,
     5,
     6,
+    6,
+    20,
+    3,
     2,
     8,
     5,
     11,
     5,
     6,
+    6,
     7,
-    7,
+    9,
+    17,
     8,
+    7,
+    16,
+    14,
     7,
     7,
     13,
@@ -1377,6 +1934,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     5,
     18,
     5,
+    17,
     11,
     5,
     7,
@@ -1389,11 +1947,14 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     8,
     25,
+    7,
+    5,
     6,
     2,
     9,
+    10,
     6,
-    23,
+    12,
     4,
     5,
     4,
@@ -1417,7 +1978,9 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     5,
     5,
     3,
+    6,
     8,
+    7,
     9,
     1,
     2,
@@ -1456,33 +2019,50 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     14,
     21,
     14,
-    11,
     6,
     8,
     18,
     14,
     9,
+    4,
+    12,
     1,
+    9,
+    18,
+    17,
+    4,
+    6,
+    7,
     6,
     11,
     10,
     4,
     4,
+    8,
     2,
+    4,
+    5,
+    5,
+    6,
     1,
     3,
     3,
     3,
     3,
+    12,
     7,
     10,
     8,
     7,
     2,
+    12,
     7,
     6,
     4,
     2,
+    9,
+    7,
+    7,
     4,
     4,
     5,
@@ -1494,11 +2074,14 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     4,
     4,
     9,
-    6,
     4,
     6,
     4,
     9,
+    6,
+    6,
+    9,
+    8,
     9,
     11,
     6,
@@ -1514,7 +2097,10 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     5,
     4,
+    18,
+    8,
     2,
+    3,
     6,
     1,
     11,
@@ -1542,26 +2128,36 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     8,
     2,
+    6,
     15,
     7,
     7,
+    7,
     3,
     4,
     5,
     5,
     5,
-    8,
-    7,
-    4,
-    4,
-    7,
-    7,
-    8,
-    3,
+    6,
     13,
+    8,
+    5,
+    8,
+    7,
+    4,
+    4,
+    7,
+    7,
+    8,
+    3,
+    3,
+    4,
+    13,
+    3,
     12,
     6,
     6,
+    4,
     4,
     6,
     9,
@@ -1569,6 +2165,9 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     7,
     8,
     6,
+    8,
+    4,
+    7,
     3,
     6,
     5,
@@ -1576,13 +2175,28 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     11,
     4,
     6,
+    3,
+    6,
     11,
+    6,
+    7,
+    13,
+    12,
+    11,
+    9,
+    10,
     13,
     15,
     12,
+    9,
     8,
     6,
     3,
+    5,
+    7,
+    10,
+    11,
+    20,
     7,
     9,
     6,
@@ -1606,33 +2220,43 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     6,
     13,
     8,
-    8,
-    15,
-    11,
-    21,
     11,
     10,
+    10,
+    9,
+    8,
+    8,
+    6,
+    12,
+    21,
+    13,
     4,
     5,
     6,
     4,
     13,
     7,
+    6,
     9,
     4,
     6,
     5,
-    6,
+    4,
     4,
     3,
     8,
     3,
+    6,
+    10,
     7,
     12,
+    6,
     13,
+    11,
     13,
     6,
     13,
+    9,
     6,
     2,
     1,
@@ -1660,12 +2284,22 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     3,
     3,
+    3,
     4,
+    15,
+    15,
     4,
     19,
     12,
+    11,
     2,
+    3,
+    3,
+    8,
+    4,
     1,
+    3,
+    6,
     6,
     7,
     16,
@@ -1675,10 +2309,13 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     8,
     11,
     13,
+    8,
     6,
     7,
     9,
     4,
+    9,
+    12,
     6,
     7,
     5,
@@ -1687,14 +2324,25 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     9,
     5,
     4,
-    11,
     10,
+    6,
+    2,
+    5,
+    10,
+    8,
+    3,
+    6,
     1,
     2,
     2,
     1,
     2,
     2,
+    6,
+    10,
+    12,
+    5,
+    5,
 };
 
 extern const qstr_pool_t mp_qstr_const_pool;
@@ -1703,30 +2351,76 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
     MP_QSTRnumber_of, // previous pool size
     true, // is_sorted
     10, // allocated entries
-    549, // used entries
+    765, // used entries
     (qstr_hash_t *)mp_qstr_frozen_const_hashes,
     (qstr_len_t *)mp_qstr_frozen_const_lengths,
     {
         "\x00",
+        "\x0d\x0a",
+        "!BB",
+        "!BBH",
+        "!BBQ",
+        "!H",
+        "!I",
+        "!Q",
+        "#",
         "%.*f",
         "\x25\x73\x00\x25\x73\x00\x25\x73",
+        "%s: %s",
+        "&",
         "--",
         ".:",
+        "//",
+        "\x30\x0d\x0a\x0d\x0a",
+        "0.0.8",
+        "0.2.1",
+        "1.0.3",
+        "1.1.1",
+        "1.8.0",
+        "13",
         "16",
+        ":",
+        "<ClientResponse %d %s>",
         ">f",
+        "?",
         "API",
         "App",
+        "Authorization",
+        "BINARY",
+        "Basic {}",
         "Bit must be 0 or 1",
+        "BodyStream",
         "Button",
         "CAPABILITIES",
         "CLEAR",
+        "CLOSE",
+        "CONT",
         "Canvas",
         "CanvasButton",
         "Checkbox",
+        "ChunkedClientResponse",
+        "ClientResponse",
+        "ClientSession",
+        "ClientWebSocketResponse",
+        "Connection",
+        "Content-Length",
+        "Content-Type",
+        "DEBUG",
+        "DELAY",
+        "DELETE",
+        "DeflateIO",
         "ERROR",
         "Event",
         "Field",
         "Font",
+        "GET",
+        "GZIP",
+        "HEAD",
+        "HTTP/1.0",
+        "HTTP/1.1",
+        "Host",
+        "HttpVersion10",
+        "HttpVersion11",
         "IOQueue",
         "Image",
         "Incomplete UART write",
@@ -1740,42 +2434,70 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "MAX_PAGES",
         "MAX_WIDGETS",
         "MAX_WINDOWS",
+        "MQTTClient",
+        "MQTTException",
         "Modbus exception %d",
         "NeoPixel",
         "OK",
         "ONLINE",
+        "OPTIONS",
+        "OP_BINARY",
+        "OP_CLOSE",
+        "OP_CONT",
+        "OP_PING",
+        "OP_PONG",
+        "OP_TEXT",
         "ORDER",
+        "Origin",
         "PAGED",
         "PARK",
-        "PROTOCOL_TLS_CLIENT",
+        "PATCH",
+        "PING",
+        "PONG",
+        "POST",
+        "PUT",
         "Page",
         "Progress",
         "RX frame overflow",
         "Read-only register table",
         "Remote exception %s",
+        "Response",
         "SIMULATED",
-        "SOCK_STREAM",
-        "SOL_SOCKET",
-        "SO_REUSEADDR",
-        "SSLContext",
         "STALE",
         "STARTING",
         "SUPPORTS_GRADIENT_FILLS",
+        "Scheme {} is invalid",
+        "Sec-WebSocket-Key",
+        "Sec-WebSocket-Version",
         "Server",
         "SingletonGenerator",
         "Stream",
         "StreamReader",
         "StreamWriter",
+        "TEXT",
         "TIMEOUT",
         "Textbox",
         "ThreadSafeFlag",
         "TimeoutError",
         "Timer",
+        "Transfer-Encoding",
+        "URI",
+        "URL_RE",
+        "Unsupported protocol: ",
+        "Upgrade",
+        "User-Agent",
         "VERSION",
         "WAIT",
         "WRITE ERROR",
+        "WSMsgType",
+        "WebSocket",
+        "WebSocketClient",
+        "WebSocketConnectionClosedException",
+        "WebSocketException",
+        "WebSocketMessage",
         "Window",
         "Yes|No",
+        "ZLIB",
         "_BIND_DEFAULTS",
         "_Batch",
         "_KEYS",
@@ -1783,35 +2505,48 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "_NoBatch",
         "_Pixels",
         "_Remove",
+        "_RequestContextManager",
+        "_WSRequestContextManager",
         "_Widget",
         "__version__",
         "_add",
         "_alive",
         "_attrs",
         "_bar_colors",
+        "_base_headers",
+        "_base_url",
         "_batch",
         "_buttons",
+        "_cached",
         "_cells",
         "_checked",
         "_checked_store",
+        "_chunk",
+        "_context",
         "_controls",
+        "_decode",
         "_dequeue",
         "_dispatch",
         "_display",
         "_draw",
         "_encode",
+        "_encode_len",
+        "_encode_websocket_frame",
         "_enqueue",
         "_event",
         "_exc_context",
         "_exc_handler",
         "_file",
+        "_get_header",
         "_gone",
         "_gradient_data",
         "_groups",
         "_held",
         "_hit",
+        "_http_version",
         "_io_queue",
         "_items",
+        "_json",
         "_key_name",
         "_kids",
         "_link",
@@ -1822,11 +2557,19 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "_no_batch",
         "_objs",
         "_page",
+        "_parse_frame_header",
         "_part",
         "_preparing",
+        "_process_websocket_frame",
         "_promote_to_task",
+        "_rand",
+        "_read_exact",
+        "_read_frame",
+        "_reader",
+        "_recv_len",
         "_refresh",
         "_refresh_all",
+        "_remaining",
         "_req",
         "_req2",
         "_request",
@@ -1837,9 +2580,13 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "_run_timers",
         "_selected",
         "_send",
+        "_send_str",
+        "_send_subunsub",
         "_serve",
         "_show",
         "_slave_reply",
+        "_sock",
+        "_split_url",
         "_status",
         "_stop_task",
         "_stopper",
@@ -1858,18 +2605,25 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "_windows",
         "_words",
         "_wrap",
+        "_ws_connect",
         "a",
-        "accept",
+        "ack_n",
+        "ack_op",
         "aclose",
         "acquire",
         "across",
         "action",
         "address",
         "after",
+        "aiohttp/__init__.py",
+        "aiohttp/aiohttp_ws.py",
+        "aiohttp_ws",
         "alias_canvas",
         "align",
         "alt+",
         "app",
+        "application/json",
+        "application/octet-stream",
         "ascent",
         "asyncio",
         "asyncio/__init__.py",
@@ -1878,7 +2632,9 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "asyncio/funcs.py",
         "asyncio/lock.py",
         "asyncio/stream.py",
+        "attempts",
         "attr",
+        "auth",
         "aw",
         "awrite",
         "awritestr",
@@ -1889,12 +2645,12 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "bar",
         "bar range or colour",
         "base",
+        "base_url",
         "batch",
         "baud",
         "before_read",
         "bg",
         "big_size",
-        "bind",
         "bindings",
         "border",
         "bottom",
@@ -1904,6 +2660,8 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "buttons",
         "c",
         "cache",
+        "cadata",
+        "cafile",
         "call link() first",
         "call_exception_handler",
         "can't gather",
@@ -1914,22 +2672,37 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "canvas_page",
         "cb",
         "cells",
+        "cert",
+        "cert_reqs",
+        "certfile",
         "ch",
         "change",
+        "check_msg",
         "checkbox",
         "checked",
+        "chunk_size",
+        "chunked",
         "circle",
+        "clean_session",
         "click",
+        "client",
         "closed",
+        "closed by the server",
+        "cls",
         "co",
         "coalesce",
         "codec",
         "codecModule",
         "color",
+        "compat",
         "config",
         "confirm",
-        "connect",
+        "connected",
+        "connection closed",
         "constant",
+        "content",
+        "content-encoding",
+        "content-length",
         "context",
         "control",
         "control_mouse",
@@ -1938,6 +2711,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "coro=",
         "coroutine expected",
         "crc16",
+        "create_connection",
         "create_task",
         "ctrl+",
         "current",
@@ -1950,11 +2724,14 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "deActive",
         "decimals",
         "default_exception_handler",
+        "deflate",
+        "delay",
         "delete",
         "di",
         "direction",
+        "disconnect",
         "dither",
-        "do_handshake_on_connect",
+        "do_handshake",
         "down",
         "drain",
         "draw",
@@ -1978,7 +2755,9 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "event",
         "every",
         "exc",
+        "exc_tb",
         "exc_type",
+        "exc_val",
         "exception",
         "f",
         "f1",
@@ -2017,33 +2796,50 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "get_event_loop",
         "get_exception_handler",
         "get_extra_info",
-        "getaddrinfo",
         "glyphs",
         "gradient",
         "gradient RGB range",
         "gradient_fills",
         "gradients",
+        "gzip",
+        "gzip,deflate",
         "h",
+        "handshake",
+        "handshake failed: ",
+        "handshake_request",
+        "head",
+        "header",
+        "headers",
         "height",
         "hide_canvas",
         "high_first",
         "home",
         "host",
+        "hostname",
         "hr",
+        "http",
+        "http:",
+        "https",
+        "https:",
         "i",
         "i16",
         "i32",
         "idx",
         "img",
+        "in_reconnect",
         "initial",
         "inputAlias",
         "inputbox",
         "invalid",
         "ir",
+        "is_handshake",
         "is_open",
         "is_set",
         "item",
         "kb",
+        "keepalive",
+        "keyfile",
+        "keyname",
         "kind",
         "knob",
         "label",
@@ -2055,11 +2851,14 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "line",
         "link",
         "list size",
-        "listen",
         "lock",
         "locked",
         "loop",
         "low_first",
+        "lw_msg",
+        "lw_qos",
+        "lw_retain",
+        "lw_topic",
         "main_task",
         "make_canvas",
         "master",
@@ -2075,7 +2874,10 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "momentary",
         "mouse",
         "move",
+        "mqtt reconnect: %r",
+        "mqtt: %r",
         "ms",
+        "msg",
         "msgbox",
         "n",
         "neopixel.py",
@@ -2103,7 +2905,9 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "on_select",
         "on_write",
         "op",
+        "opcode",
         "open_connection",
+        "options",
         "out_buf",
         "outline",
         "own",
@@ -2111,6 +2915,10 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "pages",
         "paint",
         "panel",
+        "params",
+        "parse_headers",
+        "password",
+        "patch",
         "peername",
         "pending",
         "pgdn",
@@ -2118,18 +2926,25 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "pheight",
         "picture",
         "pictures",
+        "pid",
         "pin",
+        "ping",
         "pixel_widgets",
+        "pkt",
         "place_canvas",
         "pollMs",
         "poller",
         "port",
+        "post",
         "prefix",
         "preparing",
         "press",
         "pressed",
         "progress",
         "prompt",
+        "protocol",
+        "pswd",
+        "publish",
         "put",
         "pwidth",
         "queue",
@@ -2137,13 +2952,28 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "queue_write",
         "quit",
         "radius",
+        "raw",
+        "reader",
         "readexactly",
+        "reason",
+        "receive",
+        "receive_bytes",
+        "receive_json",
+        "receive_str",
+        "reconnect",
+        "recv_frame",
         "registerCount",
         "register_canvas",
         "releaseValue",
+        "remaining",
         "rendered",
         "repeat",
         "req",
+        "reqco",
+        "request",
+        "request_co",
+        "request_raw",
+        "requests/__init__.py",
         "require",
         "resizable",
         "resize",
@@ -2167,33 +2997,43 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "secret",
         "select_canvas",
         "selected",
+        "send_binary",
+        "send_bytes",
+        "send_frame",
+        "send_json",
+        "send_str",
         "sequence",
-        "server_hostname",
-        "server_side",
+        "server",
+        "set_callback",
         "set_exception_handler",
-        "setblocking",
-        "setsockopt",
+        "set_last_will",
         "sgen",
         "sheet",
         "shift+",
         "show",
         "show_canvases",
         "showing",
+        "simple",
         "simulated",
         "size",
         "slider",
         "small",
-        "socket",
+        "sock",
         "spec",
         "src",
         "src_down",
         "ssl",
+        "ssl.py",
+        "ssl_params",
         "staleMs",
         "start_server",
+        "status",
         "statusElement",
+        "status_code",
         "status_target",
         "stream",
         "stream_awrite",
+        "subscribe",
         "suffix",
         "sz",
         "t",
@@ -2219,15 +3059,25 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "traceback",
         "track",
         "tx_bytes",
+        "typ",
         "u16",
         "u32",
         "uart",
+        "umqtt/robust.py",
+        "umqtt/simple.py",
         "unit",
         "unknown canvas page",
         "unknown page",
+        "unsubscribe",
         "up",
+        "uri",
+        "url",
+        "urlparse",
+        "user",
         "v",
+        "val",
         "valign",
+        "verify",
         "visible",
         "visible_pictures",
         "w",
@@ -2236,10 +3086,13 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "wait_for",
         "wait_for_ms",
         "wait_io_event",
+        "wait_msg",
         "waiter",
         "waiting",
         "waitq_len",
         "warm",
+        "websocket",
+        "websocket.py",
         "widget",
         "widgets",
         "width",
@@ -2248,14 +3101,25 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "wordOrder",
         "words",
         "wrap",
-        "wrap_socket",
         "writeValue",
+        "writer",
+        "ws",
+        "ws://",
+        "ws_connect",
+        "wsclient",
+        "wss",
+        "wss://",
         "x",
         "x0",
         "x1",
         "y",
         "y0",
         "y1",
+        "{}: {}",
+        "{}://{}:{}",
+        "{}://{}:{}{}",
+        "{}:{}",
+        "{}={}",
     },
 };
 
@@ -9573,6 +10437,13078 @@ static const mp_frozen_module_t frozen_module_neopixel = {
         .obj_table = (mp_obj_t *)&const_obj_table_data_neopixel,
     },
     .proto_fun = &proto_fun_neopixel__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module websocket
+// - original source file: build/frozen_mpy/websocket.mpy
+// - frozen file name: websocket.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file websocket.py, scope websocket__lt_module_gt_
+static const byte fun_data_websocket__lt_module_gt_[96] = {
+    0x18,0x02, // prelude
+    0x01, // names: <module>
+     // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'binascii'
+    0x16,0x02, // STORE_NAME 'binascii'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x03, // IMPORT_NAME 'random'
+    0x16,0x03, // STORE_NAME 'random'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x04, // IMPORT_NAME 'socket'
+    0x16,0x04, // STORE_NAME 'socket'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x05, // IMPORT_NAME 'struct'
+    0x16,0x05, // STORE_NAME 'struct'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x16,0x3e, // STORE_NAME 'OP_CONT'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x16,0x3f, // STORE_NAME 'OP_TEXT'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x16,0x40, // STORE_NAME 'OP_BINARY'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x16,0x41, // STORE_NAME 'OP_CLOSE'
+    0x89, // LOAD_CONST_SMALL_INT 9
+    0x16,0x42, // STORE_NAME 'OP_PING'
+    0x8a, // LOAD_CONST_SMALL_INT 10
+    0x16,0x43, // STORE_NAME 'OP_PONG'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x09, // STORE_NAME '_rand'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x10,0x06, // LOAD_CONST_STRING 'WebSocketException'
+    0x11,0x44, // LOAD_NAME 'Exception'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x16,0x06, // STORE_NAME 'WebSocketException'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x10,0x07, // LOAD_CONST_STRING 'WebSocketConnectionClosedException'
+    0x11,0x06, // LOAD_NAME 'WebSocketException'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x16,0x07, // STORE_NAME 'WebSocketConnectionClosedException'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x0a, // STORE_NAME '_split_url'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x10,0x08, // LOAD_CONST_STRING 'WebSocket'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x08, // STORE_NAME 'WebSocket'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x52, // LOAD_CONST_TRUE
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x53, // LOAD_NULL
+    0x33,0x05, // MAKE_FUNCTION_DEFARGS 5
+    0x16,0x12, // STORE_NAME 'create_connection'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket__rand
+static const byte fun_data_websocket__rand[19] = {
+    0x21,0x04, // prelude
+    0x09,0x45, // names: _rand, n
+     // code info
+    0x12,0x46, // LOAD_GLOBAL 'bytes'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x12,0x47, // LOAD_GLOBAL 'range'
+    0xb0, // LOAD_FAST 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x63, // RETURN_VALUE
+};
+// child of websocket__rand
+// frozen bytecode for file websocket.py, scope websocket__rand__lt_genexpr_gt_
+static const byte fun_data_websocket__rand__lt_genexpr_gt_[25] = {
+    0xc1,0x40,0x04, // prelude
+    0x27,0x53, // names: <genexpr>, *
+     // code info
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x0c, // FOR_ITER 12
+    0xc1, // STORE_FAST 1
+    0x12,0x03, // LOAD_GLOBAL 'random'
+    0x14,0x28, // LOAD_METHOD 'getrandbits'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x36,0x01, // CALL_METHOD 1
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x32, // JUMP -14
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket__rand__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_websocket__rand__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 25,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 39,
+        .line_info = fun_data_websocket__rand__lt_genexpr_gt_ + 5,
+        .line_info_top = fun_data_websocket__rand__lt_genexpr_gt_ + 5,
+        .opcodes = fun_data_websocket__rand__lt_genexpr_gt_ + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket__rand__lt_genexpr_gt_ fun_data_websocket__rand__lt_genexpr_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_websocket__rand[] = {
+    (const mp_raw_code_t *)&proto_fun_websocket__rand__lt_genexpr_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_websocket__rand = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket__rand,
+    .children = (void *)&children_websocket__rand,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 19,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 9,
+        .line_info = fun_data_websocket__rand + 4,
+        .line_info_top = fun_data_websocket__rand + 4,
+        .opcodes = fun_data_websocket__rand + 4,
+    },
+    #endif
+    #endif
+};
+
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket_WebSocketException
+static const byte fun_data_websocket_WebSocketException[13] = {
+    0x00,0x02, // prelude
+    0x06, // names: WebSocketException
+     // code info
+    0x11,0x48, // LOAD_NAME '__name__'
+    0x16,0x49, // STORE_NAME '__module__'
+    0x10,0x06, // LOAD_CONST_STRING 'WebSocketException'
+    0x16,0x4a, // STORE_NAME '__qualname__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocketException = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocketException,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 13,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 6,
+        .line_info = fun_data_websocket_WebSocketException + 3,
+        .line_info_top = fun_data_websocket_WebSocketException + 3,
+        .opcodes = fun_data_websocket_WebSocketException + 3,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocketException fun_data_websocket_WebSocketException[0]
+#endif
+
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket_WebSocketConnectionClosedException
+static const byte fun_data_websocket_WebSocketConnectionClosedException[13] = {
+    0x00,0x02, // prelude
+    0x07, // names: WebSocketConnectionClosedException
+     // code info
+    0x11,0x48, // LOAD_NAME '__name__'
+    0x16,0x49, // STORE_NAME '__module__'
+    0x10,0x07, // LOAD_CONST_STRING 'WebSocketConnectionClosedException'
+    0x16,0x4a, // STORE_NAME '__qualname__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocketConnectionClosedException = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocketConnectionClosedException,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 13,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 7,
+        .line_info = fun_data_websocket_WebSocketConnectionClosedException + 3,
+        .line_info_top = fun_data_websocket_WebSocketConnectionClosedException + 3,
+        .opcodes = fun_data_websocket_WebSocketConnectionClosedException + 3,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocketConnectionClosedException fun_data_websocket_WebSocketConnectionClosedException[0]
+#endif
+
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket__split_url
+static const byte fun_data_websocket__split_url[109] = {
+    0x61,0x04, // prelude
+    0x0a,0x4b, // names: _split_url, url
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x0b, // LOAD_METHOD 'startswith'
+    0x10,0x0c, // LOAD_CONST_STRING 'wss://'
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x51, // POP_JUMP_IF_FALSE 17
+    0x52, // LOAD_CONST_TRUE
+    0xb0, // LOAD_FAST 0
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0x51, // LOAD_CONST_NONE
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x22,0x83,0x3b, // LOAD_CONST_SMALL_INT 443
+    0x5b, // ROT_THREE
+    0x5a, // ROT_TWO
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0x42,0x61, // JUMP 33
+    0xb0, // LOAD_FAST 0
+    0x14,0x0b, // LOAD_METHOD 'startswith'
+    0x10,0x0d, // LOAD_CONST_STRING 'ws://'
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x51, // POP_JUMP_IF_FALSE 17
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x85, // LOAD_CONST_SMALL_INT 5
+    0x51, // LOAD_CONST_NONE
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x22,0x80,0x50, // LOAD_CONST_SMALL_INT 80
+    0x5b, // ROT_THREE
+    0x5a, // ROT_TWO
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0x42,0x47, // JUMP 7
+    0x12,0x4c, // LOAD_GLOBAL 'ValueError'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb2, // LOAD_FAST 2
+    0x14,0x0e, // LOAD_METHOD 'partition'
+    0x10,0x0f, // LOAD_CONST_STRING '/'
+    0x36,0x01, // CALL_METHOD 1
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xc4, // STORE_FAST 4
+    0xc5, // STORE_FAST 5
+    0xc6, // STORE_FAST 6
+    0x10,0x10, // LOAD_CONST_STRING ':'
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0xb4, // LOAD_FAST 4
+    0x14,0x11, // LOAD_METHOD 'rsplit'
+    0x10,0x10, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc4, // STORE_FAST 4
+    0xc7, // STORE_FAST 7
+    0x12,0x4d, // LOAD_GLOBAL 'int'
+    0xb7, // LOAD_FAST 7
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0xb1, // LOAD_FAST 1
+    0xb4, // LOAD_FAST 4
+    0xb3, // LOAD_FAST 3
+    0x10,0x0f, // LOAD_CONST_STRING '/'
+    0xb6, // LOAD_FAST 6
+    0xf2, // BINARY_OP 27 __add__
+    0x2a,0x04, // BUILD_TUPLE 4
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket__split_url = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket__split_url,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 109,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 13,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 10,
+        .line_info = fun_data_websocket__split_url + 4,
+        .line_info_top = fun_data_websocket__split_url + 4,
+        .opcodes = fun_data_websocket__split_url + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket__split_url fun_data_websocket__split_url[0]
+#endif
+
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket_WebSocket
+static const byte fun_data_websocket_WebSocket[77] = {
+    0x08,0x02, // prelude
+    0x08, // names: WebSocket
+     // code info
+    0x11,0x48, // LOAD_NAME '__name__'
+    0x16,0x49, // STORE_NAME '__module__'
+    0x10,0x08, // LOAD_CONST_STRING 'WebSocket'
+    0x16,0x4a, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x29, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x2c, // STORE_NAME '_read_exact'
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x02, // MAKE_FUNCTION_DEFARGS 2
+    0x16,0x2e, // STORE_NAME 'send_frame'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x33, // STORE_NAME 'send'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x16,0x34, // STORE_NAME 'send_binary'
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x05, // MAKE_FUNCTION_DEFARGS 5
+    0x16,0x35, // STORE_NAME 'ping'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x36, // STORE_NAME 'recv_frame'
+    0x32,0x07, // MAKE_FUNCTION 7
+    0x16,0x38, // STORE_NAME 'recv'
+    0x22,0x87,0x68, // LOAD_CONST_SMALL_INT 1000
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x08, // MAKE_FUNCTION_DEFARGS 8
+    0x16,0x26, // STORE_NAME 'close'
+    0x32,0x09, // MAKE_FUNCTION 9
+    0x16,0x15, // STORE_NAME 'settimeout'
+    0x32,0x0a, // MAKE_FUNCTION 10
+    0x16,0x3a, // STORE_NAME '__enter__'
+    0x32,0x0b, // MAKE_FUNCTION 11
+    0x16,0x3b, // STORE_NAME '__exit__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket___init__
+static const byte fun_data_websocket_WebSocket___init__[15] = {
+    0x1a,0x06, // prelude
+    0x29,0x54,0x2a, // names: __init__, self, sock
+     // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x2a, // STORE_ATTR 'sock'
+    0x52, // LOAD_CONST_TRUE
+    0xb0, // LOAD_FAST 0
+    0x18,0x2b, // STORE_ATTR 'connected'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 15,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 41,
+        .line_info = fun_data_websocket_WebSocket___init__ + 5,
+        .line_info_top = fun_data_websocket_WebSocket___init__ + 5,
+        .opcodes = fun_data_websocket_WebSocket___init__ + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket___init__ fun_data_websocket_WebSocket___init__[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket__read_exact
+static const byte fun_data_websocket_WebSocket__read_exact[54] = {
+    0x42,0x06, // prelude
+    0x2c,0x54,0x45, // names: _read_exact, self, n
+     // code info
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0xc2, // STORE_FAST 2
+    0x42,0x61, // JUMP 33
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'sock'
+    0x14,0x2d, // LOAD_METHOD 'read'
+    0xb1, // LOAD_FAST 1
+    0x12,0x55, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf3, // BINARY_OP 28 __sub__
+    0x36,0x01, // CALL_METHOD 1
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x43,0x4b, // POP_JUMP_IF_TRUE 11
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x18,0x2b, // STORE_ATTR 'connected'
+    0x12,0x07, // LOAD_GLOBAL 'WebSocketConnectionClosedException'
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc2, // STORE_FAST 2
+    0x12,0x55, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xb1, // LOAD_FAST 1
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x16, // POP_JUMP_IF_TRUE -42
+    0xb2, // LOAD_FAST 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket__read_exact = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket__read_exact,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 54,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 44,
+        .line_info = fun_data_websocket_WebSocket__read_exact + 5,
+        .line_info_top = fun_data_websocket_WebSocket__read_exact + 5,
+        .opcodes = fun_data_websocket_WebSocket__read_exact + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket__read_exact fun_data_websocket_WebSocket__read_exact[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_send_frame
+static const byte fun_data_websocket_WebSocket_send_frame[168] = {
+    0xfb,0x01,0x08, // prelude
+    0x2e,0x54,0x56,0x57, // names: send_frame, self, opcode, data
+     // code info
+    0x12,0x51, // LOAD_GLOBAL 'isinstance'
+    0xb2, // LOAD_FAST 2
+    0x12,0x58, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xb2, // LOAD_FAST 2
+    0x14,0x24, // LOAD_METHOD 'encode'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0x12,0x55, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0x12,0x59, // LOAD_GLOBAL 'bytearray'
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xb1, // LOAD_FAST 1
+    0xed, // BINARY_OP 22 __or__
+    0x2b,0x01, // BUILD_LIST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc4, // STORE_FAST 4
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7e, // LOAD_CONST_SMALL_INT 126
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0xb4, // LOAD_FAST 4
+    0x14,0x2f, // LOAD_METHOD 'append'
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xb3, // LOAD_FAST 3
+    0xed, // BINARY_OP 22 __or__
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x74, // JUMP 52
+    0xb3, // LOAD_FAST 3
+    0x22,0x84,0x80,0x00, // LOAD_CONST_SMALL_INT 65536
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x57, // POP_JUMP_IF_FALSE 23
+    0xb4, // LOAD_FAST 4
+    0x14,0x2f, // LOAD_METHOD 'append'
+    0x22,0x81,0x7e, // LOAD_CONST_SMALL_INT 254
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x12,0x05, // LOAD_GLOBAL 'struct'
+    0x14,0x30, // LOAD_METHOD 'pack'
+    0x10,0x31, // LOAD_CONST_STRING '!H'
+    0xb3, // LOAD_FAST 3
+    0x36,0x02, // CALL_METHOD 2
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc4, // STORE_FAST 4
+    0x42,0x55, // JUMP 21
+    0xb4, // LOAD_FAST 4
+    0x14,0x2f, // LOAD_METHOD 'append'
+    0x22,0x81,0x7f, // LOAD_CONST_SMALL_INT 255
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x12,0x05, // LOAD_GLOBAL 'struct'
+    0x14,0x30, // LOAD_METHOD 'pack'
+    0x10,0x32, // LOAD_CONST_STRING '!Q'
+    0xb3, // LOAD_FAST 3
+    0x36,0x02, // CALL_METHOD 2
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc4, // STORE_FAST 4
+    0x12,0x09, // LOAD_GLOBAL '_rand'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc5, // STORE_FAST 5
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc4, // STORE_FAST 4
+    0x12,0x59, // LOAD_GLOBAL 'bytearray'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc6, // STORE_FAST 6
+    0xb3, // LOAD_FAST 3
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x42,0x50, // JUMP 16
+    0x57, // DUP_TOP
+    0xc7, // STORE_FAST 7
+    0xb6, // LOAD_FAST 6
+    0xb7, // LOAD_FAST 7
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb5, // LOAD_FAST 5
+    0xb7, // LOAD_FAST 7
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xef, // BINARY_OP 24 __and__
+    0x55, // LOAD_SUBSCR
+    0xe1, // BINARY_OP 10 __ixor__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x58, // DUP_TOP_TWO
+    0x5a, // ROT_TWO
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x2b, // POP_JUMP_IF_TRUE -21
+    0x59, // POP_TOP
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'sock'
+    0x14,0x23, // LOAD_METHOD 'write'
+    0xb4, // LOAD_FAST 4
+    0xb6, // LOAD_FAST 6
+    0xf2, // BINARY_OP 27 __add__
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_send_frame = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_send_frame,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 168,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 16,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 46,
+        .line_info = fun_data_websocket_WebSocket_send_frame + 7,
+        .line_info_top = fun_data_websocket_WebSocket_send_frame + 7,
+        .opcodes = fun_data_websocket_WebSocket_send_frame + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_send_frame fun_data_websocket_WebSocket_send_frame[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_send
+static const byte fun_data_websocket_WebSocket_send[41] = {
+    0x32,0x06, // prelude
+    0x33,0x54,0x57, // names: send, self, data
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x2b, // LOAD_ATTR 'connected'
+    0x43,0x47, // POP_JUMP_IF_TRUE 7
+    0x12,0x07, // LOAD_GLOBAL 'WebSocketConnectionClosedException'
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x51, // LOAD_GLOBAL 'isinstance'
+    0xb1, // LOAD_FAST 1
+    0x12,0x58, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x12,0x3f, // LOAD_GLOBAL 'OP_TEXT'
+    0x42,0x42, // JUMP 2
+    0x12,0x40, // LOAD_GLOBAL 'OP_BINARY'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_send = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_send,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 41,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 51,
+        .line_info = fun_data_websocket_WebSocket_send + 5,
+        .line_info_top = fun_data_websocket_WebSocket_send + 5,
+        .opcodes = fun_data_websocket_WebSocket_send + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_send fun_data_websocket_WebSocket_send[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_send_binary
+static const byte fun_data_websocket_WebSocket_send_binary[16] = {
+    0x2a,0x06, // prelude
+    0x34,0x54,0x57, // names: send_binary, self, data
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x40, // LOAD_GLOBAL 'OP_BINARY'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_send_binary = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_send_binary,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 16,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 52,
+        .line_info = fun_data_websocket_WebSocket_send_binary + 5,
+        .line_info_top = fun_data_websocket_WebSocket_send_binary + 5,
+        .opcodes = fun_data_websocket_WebSocket_send_binary + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_send_binary fun_data_websocket_WebSocket_send_binary[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_ping
+static const byte fun_data_websocket_WebSocket_ping[17] = {
+    0xaa,0x01,0x06, // prelude
+    0x35,0x54,0x57, // names: ping, self, data
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x42, // LOAD_GLOBAL 'OP_PING'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_ping = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_ping,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 17,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 53,
+        .line_info = fun_data_websocket_WebSocket_ping + 6,
+        .line_info_top = fun_data_websocket_WebSocket_ping + 6,
+        .opcodes = fun_data_websocket_WebSocket_ping + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_ping fun_data_websocket_WebSocket_ping[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_recv_frame
+static const byte fun_data_websocket_WebSocket_recv_frame[157] = {
+    0x71,0x04, // prelude
+    0x36,0x54, // names: recv_frame, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2c, // LOAD_METHOD '_read_exact'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xef, // BINARY_OP 24 __and__
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7e, // LOAD_CONST_SMALL_INT 126
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x05, // LOAD_GLOBAL 'struct'
+    0x14,0x37, // LOAD_METHOD 'unpack'
+    0x10,0x31, // LOAD_CONST_STRING '!H'
+    0xb0, // LOAD_FAST 0
+    0x14,0x2c, // LOAD_METHOD '_read_exact'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x36,0x02, // CALL_METHOD 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc3, // STORE_FAST 3
+    0x42,0x5a, // JUMP 26
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x05, // LOAD_GLOBAL 'struct'
+    0x14,0x37, // LOAD_METHOD 'unpack'
+    0x10,0x32, // LOAD_CONST_STRING '!Q'
+    0xb0, // LOAD_FAST 0
+    0x14,0x2c, // LOAD_METHOD '_read_exact'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x36,0x01, // CALL_METHOD 1
+    0x36,0x02, // CALL_METHOD 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc3, // STORE_FAST 3
+    0x42,0x40, // JUMP 0
+    0xb2, // LOAD_FAST 2
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xef, // BINARY_OP 24 __and__
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0xb0, // LOAD_FAST 0
+    0x14,0x2c, // LOAD_METHOD '_read_exact'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x36,0x01, // CALL_METHOD 1
+    0x42,0x41, // JUMP 1
+    0x51, // LOAD_CONST_NONE
+    0xc4, // STORE_FAST 4
+    0xb3, // LOAD_FAST 3
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0xb0, // LOAD_FAST 0
+    0x14,0x2c, // LOAD_METHOD '_read_exact'
+    0xb3, // LOAD_FAST 3
+    0x36,0x01, // CALL_METHOD 1
+    0x42,0x42, // JUMP 2
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0xc5, // STORE_FAST 5
+    0xb4, // LOAD_FAST 4
+    0x44,0x67, // POP_JUMP_IF_FALSE 39
+    0x12,0x59, // LOAD_GLOBAL 'bytearray'
+    0xb5, // LOAD_FAST 5
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc5, // STORE_FAST 5
+    0xb3, // LOAD_FAST 3
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x42,0x50, // JUMP 16
+    0x57, // DUP_TOP
+    0xc6, // STORE_FAST 6
+    0xb5, // LOAD_FAST 5
+    0xb6, // LOAD_FAST 6
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb4, // LOAD_FAST 4
+    0xb6, // LOAD_FAST 6
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xef, // BINARY_OP 24 __and__
+    0x55, // LOAD_SUBSCR
+    0xe1, // BINARY_OP 10 __ixor__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x58, // DUP_TOP_TWO
+    0x5a, // ROT_TWO
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x2b, // POP_JUMP_IF_TRUE -21
+    0x59, // POP_TOP
+    0x59, // POP_TOP
+    0x12,0x46, // LOAD_GLOBAL 'bytes'
+    0xb5, // LOAD_FAST 5
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc5, // STORE_FAST 5
+    0xb1, // LOAD_FAST 1
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xef, // BINARY_OP 24 __and__
+    0xb1, // LOAD_FAST 1
+    0x8f, // LOAD_CONST_SMALL_INT 15
+    0xef, // BINARY_OP 24 __and__
+    0xb5, // LOAD_FAST 5
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_recv_frame = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_recv_frame,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 157,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 15,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 54,
+        .line_info = fun_data_websocket_WebSocket_recv_frame + 4,
+        .line_info_top = fun_data_websocket_WebSocket_recv_frame + 4,
+        .opcodes = fun_data_websocket_WebSocket_recv_frame + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_recv_frame fun_data_websocket_WebSocket_recv_frame[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_recv
+static const byte fun_data_websocket_WebSocket_recv[150] = {
+    0x65,0x04, // prelude
+    0x38,0x54, // names: recv, self
+     // code info
+    0x51, // LOAD_CONST_NONE
+    0x2b,0x00, // BUILD_LIST 0
+    0x5a, // ROT_TWO
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x14,0x36, // LOAD_METHOD 'recv_frame'
+    0x36,0x00, // CALL_METHOD 0
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xc3, // STORE_FAST 3
+    0xc4, // STORE_FAST 4
+    0xc5, // STORE_FAST 5
+    0xb4, // LOAD_FAST 4
+    0x12,0x42, // LOAD_GLOBAL 'OP_PING'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x43, // LOAD_GLOBAL 'OP_PONG'
+    0xb5, // LOAD_FAST 5
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x42,0xeb,0x80, // JUMP 107
+    0xb4, // LOAD_FAST 4
+    0x12,0x43, // LOAD_GLOBAL 'OP_PONG'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x42,0xe2,0x80, // JUMP 98
+    0xb4, // LOAD_FAST 4
+    0x12,0x41, // LOAD_GLOBAL 'OP_CLOSE'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x74, // POP_JUMP_IF_FALSE 52
+    0xb0, // LOAD_FAST 0
+    0x13,0x2b, // LOAD_ATTR 'connected'
+    0x44,0x5c, // POP_JUMP_IF_FALSE 28
+    0x48,0x10, // SETUP_EXCEPT 16
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x41, // LOAD_GLOBAL 'OP_CLOSE'
+    0xb5, // LOAD_FAST 5
+    0x51, // LOAD_CONST_NONE
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x4a,0x0a, // POP_EXCEPT_JUMP 10
+    0x57, // DUP_TOP
+    0x12,0x5a, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x59, // POP_TOP
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x18,0x2b, // STORE_ATTR 'connected'
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'sock'
+    0x14,0x26, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x12,0x07, // LOAD_GLOBAL 'WebSocketConnectionClosedException'
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb4, // LOAD_FAST 4
+    0x12,0x3e, // LOAD_GLOBAL 'OP_CONT'
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0xb4, // LOAD_FAST 4
+    0xc1, // STORE_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x14,0x2f, // LOAD_METHOD 'append'
+    0xb5, // LOAD_FAST 5
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb3, // LOAD_FAST 3
+    0x44,0x56, // POP_JUMP_IF_FALSE 22
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x14,0x39, // LOAD_METHOD 'join'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc6, // STORE_FAST 6
+    0xb1, // LOAD_FAST 1
+    0x12,0x3f, // LOAD_GLOBAL 'OP_TEXT'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xb6, // LOAD_FAST 6
+    0x14,0x20, // LOAD_METHOD 'decode'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+    0xb6, // LOAD_FAST 6
+    0x63, // RETURN_VALUE
+    0x42,0xf6,0x7e, // JUMP -138
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_recv = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_recv,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 150,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 13,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 56,
+        .line_info = fun_data_websocket_WebSocket_recv + 4,
+        .line_info_top = fun_data_websocket_WebSocket_recv + 4,
+        .opcodes = fun_data_websocket_WebSocket_recv + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_recv fun_data_websocket_WebSocket_recv[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_close
+static const byte fun_data_websocket_WebSocket_close[56] = {
+    0xc6,0x01,0x06, // prelude
+    0x26,0x54,0x5b, // names: close, self, status
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x2b, // LOAD_ATTR 'connected'
+    0x44,0x63, // POP_JUMP_IF_FALSE 35
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x18,0x2b, // STORE_ATTR 'connected'
+    0x48,0x13, // SETUP_EXCEPT 19
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD 'send_frame'
+    0x12,0x41, // LOAD_GLOBAL 'OP_CLOSE'
+    0x12,0x05, // LOAD_GLOBAL 'struct'
+    0x14,0x30, // LOAD_METHOD 'pack'
+    0x10,0x31, // LOAD_CONST_STRING '!H'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x4a,0x0a, // POP_EXCEPT_JUMP 10
+    0x57, // DUP_TOP
+    0x12,0x5a, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x59, // POP_TOP
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'sock'
+    0x14,0x26, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_close = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_close,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 56,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 38,
+        .line_info = fun_data_websocket_WebSocket_close + 6,
+        .line_info_top = fun_data_websocket_WebSocket_close + 6,
+        .opcodes = fun_data_websocket_WebSocket_close + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_close fun_data_websocket_WebSocket_close[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket_settimeout
+static const byte fun_data_websocket_WebSocket_settimeout[16] = {
+    0x22,0x06, // prelude
+    0x15,0x54,0x5c, // names: settimeout, self, t
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'sock'
+    0x14,0x15, // LOAD_METHOD 'settimeout'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket_settimeout = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket_settimeout,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 16,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 21,
+        .line_info = fun_data_websocket_WebSocket_settimeout + 5,
+        .line_info_top = fun_data_websocket_WebSocket_settimeout + 5,
+        .opcodes = fun_data_websocket_WebSocket_settimeout + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket_settimeout fun_data_websocket_WebSocket_settimeout[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket___enter__
+static const byte fun_data_websocket_WebSocket___enter__[6] = {
+    0x09,0x04, // prelude
+    0x3a,0x54, // names: __enter__, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket___enter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket___enter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 6,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 58,
+        .line_info = fun_data_websocket_WebSocket___enter__ + 4,
+        .line_info_top = fun_data_websocket_WebSocket___enter__ + 4,
+        .opcodes = fun_data_websocket_WebSocket___enter__ + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket___enter__ fun_data_websocket_WebSocket___enter__[0]
+#endif
+
+// child of websocket_WebSocket
+// frozen bytecode for file websocket.py, scope websocket_WebSocket___exit__
+static const byte fun_data_websocket_WebSocket___exit__[15] = {
+    0x99,0x80,0x80,0x40,0x04, // prelude
+    0x3b,0x54, // names: __exit__, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x26, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket___exit__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket___exit__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 15,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 4,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 59,
+        .line_info = fun_data_websocket_WebSocket___exit__ + 7,
+        .line_info_top = fun_data_websocket_WebSocket___exit__ + 7,
+        .opcodes = fun_data_websocket_WebSocket___exit__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_WebSocket___exit__ fun_data_websocket_WebSocket___exit__[0]
+#endif
+
+static const mp_raw_code_t *const children_websocket_WebSocket[] = {
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket___init__,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket__read_exact,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_send_frame,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_send,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_send_binary,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_ping,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_recv_frame,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_recv,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_close,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket_settimeout,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket___enter__,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket___exit__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_websocket_WebSocket = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_WebSocket,
+    .children = (void *)&children_websocket_WebSocket,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 77,
+    .n_children = 12,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 8,
+        .line_info = fun_data_websocket_WebSocket + 3,
+        .line_info_top = fun_data_websocket_WebSocket + 3,
+        .opcodes = fun_data_websocket_WebSocket + 3,
+    },
+    #endif
+    #endif
+};
+
+// child of websocket__lt_module_gt_
+// frozen bytecode for file websocket.py, scope websocket_create_connection
+static const byte fun_data_websocket_create_connection[251] = {
+    0xb4,0x95,0x01,0x0a, // prelude
+    0x12,0x4b,0x4e,0x4f,0x50, // names: create_connection, url, timeout, header, verify
+     // code info
+    0x12,0x0a, // LOAD_GLOBAL '_split_url'
+    0xb0, // LOAD_FAST 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0x30,0x04, // UNPACK_SEQUENCE 4
+    0xc4, // STORE_FAST 4
+    0xc5, // STORE_FAST 5
+    0xc6, // STORE_FAST 6
+    0xc7, // STORE_FAST 7
+    0x12,0x04, // LOAD_GLOBAL 'socket'
+    0x14,0x13, // LOAD_METHOD 'getaddrinfo'
+    0xb5, // LOAD_FAST 5
+    0xb6, // LOAD_FAST 6
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x12,0x04, // LOAD_GLOBAL 'socket'
+    0x13,0x14, // LOAD_ATTR 'SOCK_STREAM'
+    0x36,0x04, // CALL_METHOD 4
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc8, // STORE_FAST 8
+    0x12,0x04, // LOAD_GLOBAL 'socket'
+    0x14,0x04, // LOAD_METHOD 'socket'
+    0xb8, // LOAD_FAST 8
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x12,0x04, // LOAD_GLOBAL 'socket'
+    0x13,0x14, // LOAD_ATTR 'SOCK_STREAM'
+    0xb8, // LOAD_FAST 8
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x55, // LOAD_SUBSCR
+    0x36,0x03, // CALL_METHOD 3
+    0xc9, // STORE_FAST 9
+    0xb9, // LOAD_FAST 9
+    0x14,0x15, // LOAD_METHOD 'settimeout'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x48,0xad,0x01, // SETUP_EXCEPT 173
+    0xb9, // LOAD_FAST 9
+    0x14,0x16, // LOAD_METHOD 'connect'
+    0xb8, // LOAD_FAST 8
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x55, // LOAD_SUBSCR
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x44,0x62, // POP_JUMP_IF_FALSE 34
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x17, // IMPORT_NAME 'tls'
+    0xca, // STORE_FAST 10
+    0xba, // LOAD_FAST 10
+    0x14,0x18, // LOAD_METHOD 'SSLContext'
+    0xba, // LOAD_FAST 10
+    0x13,0x19, // LOAD_ATTR 'PROTOCOL_TLS_CLIENT'
+    0x36,0x01, // CALL_METHOD 1
+    0xcb, // STORE_FAST 11
+    0xb3, // LOAD_FAST 3
+    0x43,0x46, // POP_JUMP_IF_TRUE 6
+    0xba, // LOAD_FAST 10
+    0x13,0x1a, // LOAD_ATTR 'CERT_NONE'
+    0xbb, // LOAD_FAST 11
+    0x18,0x1b, // STORE_ATTR 'verify_mode'
+    0xbb, // LOAD_FAST 11
+    0x14,0x1c, // LOAD_METHOD 'wrap_socket'
+    0xb9, // LOAD_FAST 9
+    0x10,0x1d, // LOAD_CONST_STRING 'server_hostname'
+    0xb5, // LOAD_FAST 5
+    0x36,0x82,0x01, // CALL_METHOD 257
+    0xc9, // STORE_FAST 9
+    0x12,0x02, // LOAD_GLOBAL 'binascii'
+    0x14,0x1e, // LOAD_METHOD 'b2a_base64'
+    0x12,0x09, // LOAD_GLOBAL '_rand'
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x14,0x1f, // LOAD_METHOD 'strip'
+    0x36,0x00, // CALL_METHOD 0
+    0xcc, // STORE_FAST 12
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0xb7, // LOAD_FAST 7
+    0xb5, // LOAD_FAST 5
+    0xbc, // LOAD_FAST 12
+    0x14,0x20, // LOAD_METHOD 'decode'
+    0x36,0x00, // CALL_METHOD 0
+    0x2a,0x03, // BUILD_TUPLE 3
+    0xf8, // BINARY_OP 33 __mod__
+    0xcd, // STORE_FAST 13
+    0x12,0x51, // LOAD_GLOBAL 'isinstance'
+    0xb2, // LOAD_FAST 2
+    0x12,0x52, // LOAD_GLOBAL 'dict'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x32,0x00, // MAKE_FUNCTION 0
+    0xb2, // LOAD_FAST 2
+    0x14,0x21, // LOAD_METHOD 'items'
+    0x36,0x00, // CALL_METHOD 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x45,0x02, // JUMP_IF_TRUE_OR_POP 2
+    0x2a,0x00, // BUILD_TUPLE 0
+    0x5f, // GET_ITER_STACK
+    0x4b,0x0a, // FOR_ITER 10
+    0xce, // STORE_FAST 14
+    0xbd, // LOAD_FAST 13
+    0xbe, // LOAD_FAST 14
+    0x10,0x22, // LOAD_CONST_STRING '\r\n'
+    0xf2, // BINARY_OP 27 __add__
+    0xe5, // BINARY_OP 14 __iadd__
+    0xcd, // STORE_FAST 13
+    0x42,0x34, // JUMP -12
+    0xb9, // LOAD_FAST 9
+    0x14,0x23, // LOAD_METHOD 'write'
+    0xbd, // LOAD_FAST 13
+    0x10,0x22, // LOAD_CONST_STRING '\r\n'
+    0xf2, // BINARY_OP 27 __add__
+    0x14,0x24, // LOAD_METHOD 'encode'
+    0x36,0x00, // CALL_METHOD 0
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb9, // LOAD_FAST 9
+    0x14,0x25, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0xcf, // STORE_FAST 15
+    0xbf, // LOAD_FAST 15
+    0x14,0x0b, // LOAD_METHOD 'startswith'
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0x36,0x01, // CALL_METHOD 1
+    0x43,0x51, // POP_JUMP_IF_TRUE 17
+    0x12,0x06, // LOAD_GLOBAL 'WebSocketException'
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0xbf, // LOAD_FAST 15
+    0x14,0x20, // LOAD_METHOD 'decode'
+    0x36,0x00, // CALL_METHOD 0
+    0x14,0x1f, // LOAD_METHOD 'strip'
+    0x36,0x00, // CALL_METHOD 0
+    0xf2, // BINARY_OP 27 __add__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x42,0x40, // JUMP 0
+    0xb9, // LOAD_FAST 9
+    0x14,0x25, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x43,0x35, // POP_JUMP_IF_TRUE -11
+    0x4a,0x09, // POP_EXCEPT_JUMP 9
+    0x59, // POP_TOP
+    0xb9, // LOAD_FAST 9
+    0x14,0x26, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x64, // RAISE_LAST
+    0x5d, // END_FINALLY
+    0x12,0x08, // LOAD_GLOBAL 'WebSocket'
+    0xb9, // LOAD_FAST 9
+    0x34,0x01, // CALL_FUNCTION 1
+    0x63, // RETURN_VALUE
+};
+// child of websocket_create_connection
+// frozen bytecode for file websocket.py, scope websocket_create_connection__lt_listcomp_gt_
+static const byte fun_data_websocket_create_connection__lt_listcomp_gt_[20] = {
+    0x41,0x04, // prelude
+    0x3c,0x53, // names: <listcomp>, *
+     // code info
+    0x2b,0x00, // BUILD_LIST 0
+    0xb0, // LOAD_FAST 0
+    0x5f, // GET_ITER_STACK
+    0x4b,0x09, // FOR_ITER 9
+    0xc1, // STORE_FAST 1
+    0x10,0x3d, // LOAD_CONST_STRING '%s: %s'
+    0xb1, // LOAD_FAST 1
+    0xf8, // BINARY_OP 33 __mod__
+    0x2f,0x14, // STORE_COMP 20
+    0x42,0x35, // JUMP -11
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_websocket_create_connection__lt_listcomp_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_create_connection__lt_listcomp_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 60,
+        .line_info = fun_data_websocket_create_connection__lt_listcomp_gt_ + 4,
+        .line_info_top = fun_data_websocket_create_connection__lt_listcomp_gt_ + 4,
+        .opcodes = fun_data_websocket_create_connection__lt_listcomp_gt_ + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_websocket_create_connection__lt_listcomp_gt_ fun_data_websocket_create_connection__lt_listcomp_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_websocket_create_connection[] = {
+    (const mp_raw_code_t *)&proto_fun_websocket_create_connection__lt_listcomp_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_websocket_create_connection = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket_create_connection,
+    .children = (void *)&children_websocket_create_connection,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 251,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 23,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 4,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 3,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_websocket_create_connection + 9,
+        .line_info_top = fun_data_websocket_create_connection + 9,
+        .opcodes = fun_data_websocket_create_connection + 9,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_websocket__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_websocket__rand,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocketException,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocketConnectionClosedException,
+    (const mp_raw_code_t *)&proto_fun_websocket__split_url,
+    (const mp_raw_code_t *)&proto_fun_websocket_WebSocket,
+    (const mp_raw_code_t *)&proto_fun_websocket_create_connection,
+};
+
+static const mp_raw_code_truncated_t proto_fun_websocket__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_websocket__lt_module_gt_,
+    .children = (void *)&children_websocket__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 96,
+    .n_children = 6,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_websocket__lt_module_gt_ + 3,
+        .line_info_top = fun_data_websocket__lt_module_gt_ + 3,
+        .opcodes = fun_data_websocket__lt_module_gt_ + 3,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_websocket[93] = {
+    MP_QSTR_websocket_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_binascii,
+    MP_QSTR_random,
+    MP_QSTR_socket,
+    MP_QSTR_struct,
+    MP_QSTR_WebSocketException,
+    MP_QSTR_WebSocketConnectionClosedException,
+    MP_QSTR_WebSocket,
+    MP_QSTR__rand,
+    MP_QSTR__split_url,
+    MP_QSTR_startswith,
+    MP_QSTR_wss_colon__slash__slash_,
+    MP_QSTR_ws_colon__slash__slash_,
+    MP_QSTR_partition,
+    MP_QSTR__slash_,
+    MP_QSTR__colon_,
+    MP_QSTR_rsplit,
+    MP_QSTR_create_connection,
+    MP_QSTR_getaddrinfo,
+    MP_QSTR_SOCK_STREAM,
+    MP_QSTR_settimeout,
+    MP_QSTR_connect,
+    MP_QSTR_tls,
+    MP_QSTR_SSLContext,
+    MP_QSTR_PROTOCOL_TLS_CLIENT,
+    MP_QSTR_CERT_NONE,
+    MP_QSTR_verify_mode,
+    MP_QSTR_wrap_socket,
+    MP_QSTR_server_hostname,
+    MP_QSTR_b2a_base64,
+    MP_QSTR_strip,
+    MP_QSTR_decode,
+    MP_QSTR_items,
+    MP_QSTR__0x0d__0x0a_,
+    MP_QSTR_write,
+    MP_QSTR_encode,
+    MP_QSTR_readline,
+    MP_QSTR_close,
+    MP_QSTR__lt_genexpr_gt_,
+    MP_QSTR_getrandbits,
+    MP_QSTR___init__,
+    MP_QSTR_sock,
+    MP_QSTR_connected,
+    MP_QSTR__read_exact,
+    MP_QSTR_read,
+    MP_QSTR_send_frame,
+    MP_QSTR_append,
+    MP_QSTR_pack,
+    MP_QSTR__bang_H,
+    MP_QSTR__bang_Q,
+    MP_QSTR_send,
+    MP_QSTR_send_binary,
+    MP_QSTR_ping,
+    MP_QSTR_recv_frame,
+    MP_QSTR_unpack,
+    MP_QSTR_recv,
+    MP_QSTR_join,
+    MP_QSTR___enter__,
+    MP_QSTR___exit__,
+    MP_QSTR__lt_listcomp_gt_,
+    MP_QSTR__percent_s_colon__space__percent_s,
+    MP_QSTR_OP_CONT,
+    MP_QSTR_OP_TEXT,
+    MP_QSTR_OP_BINARY,
+    MP_QSTR_OP_CLOSE,
+    MP_QSTR_OP_PING,
+    MP_QSTR_OP_PONG,
+    MP_QSTR_Exception,
+    MP_QSTR_n,
+    MP_QSTR_bytes,
+    MP_QSTR_range,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_url,
+    MP_QSTR_ValueError,
+    MP_QSTR_int,
+    MP_QSTR_timeout,
+    MP_QSTR_header,
+    MP_QSTR_verify,
+    MP_QSTR_isinstance,
+    MP_QSTR_dict,
+    MP_QSTR__star_,
+    MP_QSTR_self,
+    MP_QSTR_len,
+    MP_QSTR_opcode,
+    MP_QSTR_data,
+    MP_QSTR_str,
+    MP_QSTR_bytearray,
+    MP_QSTR_OSError,
+    MP_QSTR_status,
+    MP_QSTR_t,
+};
+
+// constants
+static const mp_obj_str_t const_obj_websocket_0 = {{&mp_type_str}, 39869, 35, (const byte*)"\x75\x72\x6c\x20\x6d\x75\x73\x74\x20\x73\x74\x61\x72\x74\x20\x77\x69\x74\x68\x20\x77\x73\x3a\x2f\x2f\x20\x6f\x72\x20\x77\x73\x73\x3a\x2f\x2f"};
+static const mp_obj_str_t const_obj_websocket_2 = {{&mp_type_str}, 44426, 118, (const byte*)"\x47\x45\x54\x20\x25\x73\x20\x48\x54\x54\x50\x2f\x31\x2e\x31\x0d\x0a\x48\x6f\x73\x74\x3a\x20\x25\x73\x0d\x0a\x55\x70\x67\x72\x61\x64\x65\x3a\x20\x77\x65\x62\x73\x6f\x63\x6b\x65\x74\x0d\x0a\x43\x6f\x6e\x6e\x65\x63\x74\x69\x6f\x6e\x3a\x20\x55\x70\x67\x72\x61\x64\x65\x0d\x0a\x53\x65\x63\x2d\x57\x65\x62\x53\x6f\x63\x6b\x65\x74\x2d\x4b\x65\x79\x3a\x20\x25\x73\x0d\x0a\x53\x65\x63\x2d\x57\x65\x62\x53\x6f\x63\x6b\x65\x74\x2d\x56\x65\x72\x73\x69\x6f\x6e\x3a\x20\x31\x33\x0d\x0a"};
+static const mp_obj_str_t const_obj_websocket_3 = {{&mp_type_bytes}, 50348, 12, (const byte*)"\x48\x54\x54\x50\x2f\x31\x2e\x31\x20\x31\x30\x31"};
+static const mp_obj_str_t const_obj_websocket_5_0 = {{&mp_type_bytes}, 27298, 2, (const byte*)"\x0d\x0a"};
+static const mp_rom_obj_tuple_t const_obj_websocket_5 = {{&mp_type_tuple}, 2, {
+    MP_ROM_PTR(&const_obj_websocket_5_0),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+}};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_websocket[8] = {
+    MP_ROM_PTR(&const_obj_websocket_0),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+    MP_ROM_PTR(&const_obj_websocket_2),
+    MP_ROM_PTR(&const_obj_websocket_3),
+    MP_ROM_QSTR(MP_QSTR_handshake_space_failed_colon__space_),
+    MP_ROM_PTR(&const_obj_websocket_5),
+    MP_ROM_QSTR(MP_QSTR_connection_space_closed),
+    MP_ROM_QSTR(MP_QSTR_closed_space_by_space_the_space_server),
+};
+
+static const mp_frozen_module_t frozen_module_websocket = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_websocket,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_websocket,
+    },
+    .proto_fun = &proto_fun_websocket__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module ssl
+// - original source file: build/frozen_mpy/ssl.mpy
+// - frozen file name: ssl.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file ssl.py, scope ssl__lt_module_gt_
+static const byte fun_data_ssl__lt_module_gt_[47] = {
+    0x30,0x02, // prelude
+    0x01, // names: <module>
+     // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'tls'
+    0x16,0x02, // STORE_NAME 'tls'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x10,0x03, // LOAD_CONST_STRING '*'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x02, // IMPORT_NAME 'tls'
+    0x69, // IMPORT_STAR
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x04, // LOAD_CONST_STRING 'SSLContext'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x04, // STORE_NAME 'SSLContext'
+    0x50, // LOAD_CONST_FALSE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x11,0x13, // LOAD_NAME 'CERT_NONE'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x52, // LOAD_CONST_TRUE
+    0x2a,0x07, // BUILD_TUPLE 7
+    0x53, // LOAD_NULL
+    0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
+    0x16,0x07, // STORE_NAME 'wrap_socket'
+    0x10,0x05, // LOAD_CONST_STRING '0.2.1'
+    0x16,0x14, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of ssl__lt_module_gt_
+// frozen bytecode for file ssl.py, scope ssl_SSLContext
+static const byte fun_data_ssl_SSLContext[58] = {
+    0x10,0x02, // prelude
+    0x04, // names: SSLContext
+     // code info
+    0x11,0x15, // LOAD_NAME '__name__'
+    0x16,0x16, // STORE_NAME '__module__'
+    0x10,0x04, // LOAD_CONST_STRING 'SSLContext'
+    0x16,0x17, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x0f, // STORE_NAME '__init__'
+    0x11,0x18, // LOAD_NAME 'property'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x0b, // STORE_NAME 'verify_mode'
+    0x11,0x0b, // LOAD_NAME 'verify_mode'
+    0x13,0x06, // LOAD_ATTR 'setter'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x0b, // STORE_NAME 'verify_mode'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x08, // STORE_NAME 'load_cert_chain'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x04, // MAKE_FUNCTION_DEFARGS 4
+    0x16,0x09, // STORE_NAME 'load_verify_locations'
+    0x50, // LOAD_CONST_FALSE
+    0x52, // LOAD_CONST_TRUE
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x53, // LOAD_NULL
+    0x33,0x05, // MAKE_FUNCTION_DEFARGS 5
+    0x16,0x07, // STORE_NAME 'wrap_socket'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext___init__
+static const byte fun_data_ssl_SSLContext___init__[27] = {
+    0xa9,0x80,0x80,0x40,0x04, // prelude
+    0x0f,0x20, // names: __init__, self
+     // code info
+    0x12,0x02, // LOAD_GLOBAL 'tls'
+    0x14,0x04, // LOAD_METHOD 'SSLContext'
+    0xb1, // LOAD_FAST 1
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x37,0x01, // CALL_METHOD_VAR_KW 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x10, // STORE_ATTR '_context'
+    0x12,0x13, // LOAD_GLOBAL 'CERT_NONE'
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x18,0x0b, // STORE_ATTR 'verify_mode'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 27,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 4,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 15,
+        .line_info = fun_data_ssl_SSLContext___init__ + 7,
+        .line_info_top = fun_data_ssl_SSLContext___init__ + 7,
+        .opcodes = fun_data_ssl_SSLContext___init__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext___init__ fun_data_ssl_SSLContext___init__[0]
+#endif
+
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext_verify_mode
+static const byte fun_data_ssl_SSLContext_verify_mode[10] = {
+    0x09,0x04, // prelude
+    0x0b,0x20, // names: verify_mode, self
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x13,0x0b, // LOAD_ATTR 'verify_mode'
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_verify_mode = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext_verify_mode,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 10,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 11,
+        .line_info = fun_data_ssl_SSLContext_verify_mode + 4,
+        .line_info_top = fun_data_ssl_SSLContext_verify_mode + 4,
+        .opcodes = fun_data_ssl_SSLContext_verify_mode + 4,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext_verify_mode fun_data_ssl_SSLContext_verify_mode[0]
+#endif
+
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext_verify_mode2
+static const byte fun_data_ssl_SSLContext_verify_mode2[13] = {
+    0x1a,0x06, // prelude
+    0x0b,0x20,0x21, // names: verify_mode, self, val
+     // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x18,0x0b, // STORE_ATTR 'verify_mode'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_verify_mode2 = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext_verify_mode2,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 13,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 11,
+        .line_info = fun_data_ssl_SSLContext_verify_mode2 + 5,
+        .line_info_top = fun_data_ssl_SSLContext_verify_mode2 + 5,
+        .opcodes = fun_data_ssl_SSLContext_verify_mode2 + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext_verify_mode2 fun_data_ssl_SSLContext_verify_mode2[0]
+#endif
+
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext_load_cert_chain
+static const byte fun_data_ssl_SSLContext_load_cert_chain[74] = {
+    0x47,0x08, // prelude
+    0x08,0x20,0x22,0x23, // names: load_cert_chain, self, certfile, keyfile
+     // code info
+    0x12,0x24, // LOAD_GLOBAL 'isinstance'
+    0xb1, // LOAD_FAST 1
+    0x12,0x25, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x26, // LOAD_GLOBAL 'open'
+    0xb1, // LOAD_FAST 1
+    0x10,0x11, // LOAD_CONST_STRING 'rb'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x47,0x08, // SETUP_WITH 8
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x14,0x12, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0xc1, // STORE_FAST 1
+    0x51, // LOAD_CONST_NONE
+    0x5c, // WITH_CLEANUP
+    0x5d, // END_FINALLY
+    0x12,0x24, // LOAD_GLOBAL 'isinstance'
+    0xb2, // LOAD_FAST 2
+    0x12,0x25, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x26, // LOAD_GLOBAL 'open'
+    0xb2, // LOAD_FAST 2
+    0x10,0x11, // LOAD_CONST_STRING 'rb'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x47,0x08, // SETUP_WITH 8
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x14,0x12, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0x51, // LOAD_CONST_NONE
+    0x5c, // WITH_CLEANUP
+    0x5d, // END_FINALLY
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x14,0x08, // LOAD_METHOD 'load_cert_chain'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_load_cert_chain = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext_load_cert_chain,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 74,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 8,
+        .line_info = fun_data_ssl_SSLContext_load_cert_chain + 6,
+        .line_info_top = fun_data_ssl_SSLContext_load_cert_chain + 6,
+        .opcodes = fun_data_ssl_SSLContext_load_cert_chain + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext_load_cert_chain fun_data_ssl_SSLContext_load_cert_chain[0]
+#endif
+
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext_load_verify_locations
+static const byte fun_data_ssl_SSLContext_load_verify_locations[41] = {
+    0xc7,0x80,0x01,0x08, // prelude
+    0x09,0x20,0x27,0x0a, // names: load_verify_locations, self, cafile, cadata
+     // code info
+    0xb1, // LOAD_FAST 1
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x26, // LOAD_GLOBAL 'open'
+    0xb1, // LOAD_FAST 1
+    0x10,0x11, // LOAD_CONST_STRING 'rb'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x47,0x08, // SETUP_WITH 8
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x14,0x12, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0x51, // LOAD_CONST_NONE
+    0x5c, // WITH_CLEANUP
+    0x5d, // END_FINALLY
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x14,0x09, // LOAD_METHOD 'load_verify_locations'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_load_verify_locations = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext_load_verify_locations,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 41,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 9,
+        .line_info = fun_data_ssl_SSLContext_load_verify_locations + 8,
+        .line_info_top = fun_data_ssl_SSLContext_load_verify_locations + 8,
+        .opcodes = fun_data_ssl_SSLContext_load_verify_locations + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext_load_verify_locations fun_data_ssl_SSLContext_load_verify_locations[0]
+#endif
+
+// child of ssl_SSLContext
+// frozen bytecode for file ssl.py, scope ssl_SSLContext_wrap_socket
+static const byte fun_data_ssl_SSLContext_wrap_socket[29] = {
+    0xe9,0x85,0x01,0x0c, // prelude
+    0x07,0x20,0x19,0x0c,0x0d,0x0e, // names: wrap_socket, self, sock, server_side, do_handshake_on_connect, server_hostname
+     // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR '_context'
+    0x14,0x07, // LOAD_METHOD 'wrap_socket'
+    0xb1, // LOAD_FAST 1
+    0x10,0x0c, // LOAD_CONST_STRING 'server_side'
+    0xb2, // LOAD_FAST 2
+    0x10,0x0d, // LOAD_CONST_STRING 'do_handshake_on_connect'
+    0xb3, // LOAD_FAST 3
+    0x10,0x0e, // LOAD_CONST_STRING 'server_hostname'
+    0xb4, // LOAD_FAST 4
+    0x36,0x86,0x01, // CALL_METHOD 769
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_wrap_socket = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext_wrap_socket,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 29,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 14,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 5,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 3,
+        .qstr_block_name_idx = 7,
+        .line_info = fun_data_ssl_SSLContext_wrap_socket + 10,
+        .line_info_top = fun_data_ssl_SSLContext_wrap_socket + 10,
+        .opcodes = fun_data_ssl_SSLContext_wrap_socket + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_SSLContext_wrap_socket fun_data_ssl_SSLContext_wrap_socket[0]
+#endif
+
+static const mp_raw_code_t *const children_ssl_SSLContext[] = {
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext___init__,
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext_verify_mode,
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext_verify_mode2,
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext_load_cert_chain,
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext_load_verify_locations,
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext_wrap_socket,
+};
+
+static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_SSLContext,
+    .children = (void *)&children_ssl_SSLContext,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 58,
+    .n_children = 6,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 4,
+        .line_info = fun_data_ssl_SSLContext + 3,
+        .line_info_top = fun_data_ssl_SSLContext + 3,
+        .opcodes = fun_data_ssl_SSLContext + 3,
+    },
+    #endif
+    #endif
+};
+
+// child of ssl__lt_module_gt_
+// frozen bytecode for file ssl.py, scope ssl_wrap_socket
+static const byte fun_data_ssl_wrap_socket[76] = {
+    0x88,0x91,0x85,0x01,0x12, // prelude
+    0x07,0x19,0x0c,0x1a,0x1b,0x1c,0x0a,0x0e,0x1d, // names: wrap_socket, sock, server_side, key, cert, cert_reqs, cadata, server_hostname, do_handshake
+     // code info
+    0x12,0x04, // LOAD_GLOBAL 'SSLContext'
+    0xb1, // LOAD_FAST 1
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x12,0x1e, // LOAD_GLOBAL 'PROTOCOL_TLS_SERVER'
+    0x42,0x42, // JUMP 2
+    0x12,0x1f, // LOAD_GLOBAL 'PROTOCOL_TLS_CLIENT'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc8, // STORE_FAST 8
+    0xb3, // LOAD_FAST 3
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0xb2, // LOAD_FAST 2
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0xb8, // LOAD_FAST 8
+    0x14,0x08, // LOAD_METHOD 'load_cert_chain'
+    0xb3, // LOAD_FAST 3
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb5, // LOAD_FAST 5
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0xb8, // LOAD_FAST 8
+    0x14,0x09, // LOAD_METHOD 'load_verify_locations'
+    0x10,0x0a, // LOAD_CONST_STRING 'cadata'
+    0xb5, // LOAD_FAST 5
+    0x36,0x82,0x00, // CALL_METHOD 256
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0xb8, // LOAD_FAST 8
+    0x18,0x0b, // STORE_ATTR 'verify_mode'
+    0xb8, // LOAD_FAST 8
+    0x14,0x07, // LOAD_METHOD 'wrap_socket'
+    0xb0, // LOAD_FAST 0
+    0x10,0x0c, // LOAD_CONST_STRING 'server_side'
+    0xb1, // LOAD_FAST 1
+    0x10,0x0d, // LOAD_CONST_STRING 'do_handshake_on_connect'
+    0xb7, // LOAD_FAST 7
+    0x10,0x0e, // LOAD_CONST_STRING 'server_hostname'
+    0xb6, // LOAD_FAST 6
+    0x36,0x86,0x01, // CALL_METHOD 769
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_ssl_wrap_socket = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl_wrap_socket,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 76,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 18,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 8,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 7,
+        .qstr_block_name_idx = 7,
+        .line_info = fun_data_ssl_wrap_socket + 14,
+        .line_info_top = fun_data_ssl_wrap_socket + 14,
+        .opcodes = fun_data_ssl_wrap_socket + 14,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_ssl_wrap_socket fun_data_ssl_wrap_socket[0]
+#endif
+
+static const mp_raw_code_t *const children_ssl__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_ssl_SSLContext,
+    (const mp_raw_code_t *)&proto_fun_ssl_wrap_socket,
+};
+
+static const mp_raw_code_truncated_t proto_fun_ssl__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_ssl__lt_module_gt_,
+    .children = (void *)&children_ssl__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 47,
+    .n_children = 2,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_ssl__lt_module_gt_ + 3,
+        .line_info_top = fun_data_ssl__lt_module_gt_ + 3,
+        .opcodes = fun_data_ssl__lt_module_gt_ + 3,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_ssl[40] = {
+    MP_QSTR_ssl_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_tls,
+    MP_QSTR__star_,
+    MP_QSTR_SSLContext,
+    MP_QSTR_0_dot_2_dot_1,
+    MP_QSTR_setter,
+    MP_QSTR_wrap_socket,
+    MP_QSTR_load_cert_chain,
+    MP_QSTR_load_verify_locations,
+    MP_QSTR_cadata,
+    MP_QSTR_verify_mode,
+    MP_QSTR_server_side,
+    MP_QSTR_do_handshake_on_connect,
+    MP_QSTR_server_hostname,
+    MP_QSTR___init__,
+    MP_QSTR__context,
+    MP_QSTR_rb,
+    MP_QSTR_read,
+    MP_QSTR_CERT_NONE,
+    MP_QSTR___version__,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_property,
+    MP_QSTR_sock,
+    MP_QSTR_key,
+    MP_QSTR_cert,
+    MP_QSTR_cert_reqs,
+    MP_QSTR_do_handshake,
+    MP_QSTR_PROTOCOL_TLS_SERVER,
+    MP_QSTR_PROTOCOL_TLS_CLIENT,
+    MP_QSTR_self,
+    MP_QSTR_val,
+    MP_QSTR_certfile,
+    MP_QSTR_keyfile,
+    MP_QSTR_isinstance,
+    MP_QSTR_str,
+    MP_QSTR_open,
+    MP_QSTR_cafile,
+};
+
+static const mp_frozen_module_t frozen_module_ssl = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_ssl,
+        .obj_table = NULL,
+    },
+    .proto_fun = &proto_fun_ssl__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module umqtt_simple
+// - original source file: build/frozen_mpy/umqtt/simple.mpy
+// - frozen file name: umqtt/simple.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple__lt_module_gt_
+static const byte fun_data_umqtt_simple__lt_module_gt_[66] = {
+    0x18,0x14, // prelude
+    0x01, // names: <module>
+    0x26,0x26,0x6c,0x6b,0x20,0x84,0x0a,0x89,0xd6, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'socket'
+    0x16,0x02, // STORE_NAME 'socket'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x03, // IMPORT_NAME 'struct'
+    0x16,0x03, // STORE_NAME 'struct'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x10,0x04, // LOAD_CONST_STRING 'hexlify'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x05, // IMPORT_NAME 'binascii'
+    0x1c,0x04, // IMPORT_FROM 'hexlify'
+    0x16,0x04, // STORE_NAME 'hexlify'
+    0x59, // POP_TOP
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x06, // LOAD_CONST_STRING 'MQTTException'
+    0x11,0x33, // LOAD_NAME 'Exception'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x16,0x06, // STORE_NAME 'MQTTException'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x09, // STORE_NAME '_encode_len'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x10,0x07, // LOAD_CONST_STRING 'MQTTClient'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x07, // STORE_NAME 'MQTTClient'
+    0x10,0x08, // LOAD_CONST_STRING '1.8.0'
+    0x16,0x34, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of umqtt_simple__lt_module_gt_
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTException
+static const byte fun_data_umqtt_simple_MQTTException[15] = {
+    0x00,0x06, // prelude
+    0x06, // names: MQTTException
+    0x68,0x60, // code info
+    0x11,0x35, // LOAD_NAME '__name__'
+    0x16,0x36, // STORE_NAME '__module__'
+    0x10,0x06, // LOAD_CONST_STRING 'MQTTException'
+    0x16,0x37, // STORE_NAME '__qualname__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTException = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTException,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 15,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 6,
+        .line_info = fun_data_umqtt_simple_MQTTException + 3,
+        .line_info_top = fun_data_umqtt_simple_MQTTException + 5,
+        .opcodes = fun_data_umqtt_simple_MQTTException + 5,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTException fun_data_umqtt_simple_MQTTException[0]
+#endif
+
+// child of umqtt_simple__lt_module_gt_
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple__encode_len
+static const byte fun_data_umqtt_simple__encode_len[50] = {
+    0x2a,0x16, // prelude
+    0x09,0x38,0x39, // names: _encode_len, pkt, sz
+    0x80,0x0a,0x22,0x22,0x2c,0x24,0x2b,0x24, // code info
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xc2, // STORE_FAST 2
+    0x42,0x54, // JUMP 20
+    0xb1, // LOAD_FAST 1
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xef, // BINARY_OP 24 __and__
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xed, // BINARY_OP 22 __or__
+    0xb0, // LOAD_FAST 0
+    0xb2, // LOAD_FAST 2
+    0x56, // STORE_SUBSCR
+    0xb1, // LOAD_FAST 1
+    0x87, // LOAD_CONST_SMALL_INT 7
+    0xe4, // BINARY_OP 13 __irshift__
+    0xc1, // STORE_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc2, // STORE_FAST 2
+    0xb1, // LOAD_FAST 1
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xd8, // BINARY_OP 1 __gt__
+    0x43,0x25, // POP_JUMP_IF_TRUE -27
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0xb2, // LOAD_FAST 2
+    0x56, // STORE_SUBSCR
+    0xb2, // LOAD_FAST 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple__encode_len = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple__encode_len,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 50,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 9,
+        .line_info = fun_data_umqtt_simple__encode_len + 5,
+        .line_info_top = fun_data_umqtt_simple__encode_len + 13,
+        .opcodes = fun_data_umqtt_simple__encode_len + 13,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple__encode_len fun_data_umqtt_simple__encode_len[0]
+#endif
+
+// child of umqtt_simple__lt_module_gt_
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient
+static const byte fun_data_umqtt_simple_MQTTClient[130] = {
+    0x28,0x3a, // prelude
+    0x07, // names: MQTTClient
+    0x88,0x14,0x85,0x09,0x89,0x14,0x64,0x20,0x84,0x0a,0x64,0x89,0x08,0x89,0x31,0x64,0x20,0x64,0x89,0x1e,0x88,0x15,0x68,0x20,0x84,0x07,0x84,0x24, // code info
+    0x11,0x35, // LOAD_NAME '__name__'
+    0x16,0x36, // STORE_NAME '__module__'
+    0x10,0x07, // LOAD_CONST_STRING 'MQTTClient'
+    0x16,0x37, // STORE_NAME '__qualname__'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x2c,0x00, // BUILD_MAP 0
+    0x2a,0x06, // BUILD_TUPLE 6
+    0x53, // LOAD_NULL
+    0x33,0x00, // MAKE_FUNCTION_DEFARGS 0
+    0x16,0x0a, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x1a, // STORE_NAME '_send_str'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x1e, // STORE_NAME '_recv_len'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x20, // STORE_NAME 'set_callback'
+    0x50, // LOAD_CONST_FALSE
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x04, // MAKE_FUNCTION_DEFARGS 4
+    0x16,0x21, // STORE_NAME 'set_last_will'
+    0x52, // LOAD_CONST_TRUE
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x05, // MAKE_FUNCTION_DEFARGS 5
+    0x16,0x23, // STORE_NAME 'connect'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x29, // STORE_NAME 'disconnect'
+    0x32,0x07, // MAKE_FUNCTION 7
+    0x16,0x2a, // STORE_NAME 'ping'
+    0x50, // LOAD_CONST_FALSE
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x08, // MAKE_FUNCTION_DEFARGS 8
+    0x16,0x2b, // STORE_NAME 'publish'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x09, // MAKE_FUNCTION_DEFARGS 9
+    0x16,0x2e, // STORE_NAME '_send_subunsub'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x0a, // MAKE_FUNCTION_DEFARGS 10
+    0x16,0x2f, // STORE_NAME 'subscribe'
+    0x32,0x0b, // MAKE_FUNCTION 11
+    0x16,0x30, // STORE_NAME 'unsubscribe'
+    0x32,0x0c, // MAKE_FUNCTION 12
+    0x16,0x2d, // STORE_NAME 'wait_msg'
+    0x32,0x0d, // MAKE_FUNCTION 13
+    0x16,0x32, // STORE_NAME 'check_msg'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient___init__
+static const byte fun_data_umqtt_simple_MQTTClient___init__[113] = {
+    0xd1,0x80,0x85,0x01,0x38, // prelude
+    0x0a,0x3a,0x0b,0x0d,0x0e,0x13,0x3b,0x15,0x0f,0x10, // names: __init__, self, client_id, server, port, user, password, keepalive, ssl, ssl_params
+    0x80,0x1f,0x25,0x2d,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24,0x24, // code info
+    0xb3, // LOAD_FAST 3
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0xb7, // LOAD_FAST 7
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x22,0x80,0xc5,0x33, // LOAD_CONST_SMALL_INT 8883
+    0x42,0x43, // JUMP 3
+    0x22,0x8e,0x5b, // LOAD_CONST_SMALL_INT 1883
+    0xc3, // STORE_FAST 3
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x0b, // STORE_ATTR 'client_id'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'sock'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x0d, // STORE_ATTR 'server'
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x18,0x0e, // STORE_ATTR 'port'
+    0xb7, // LOAD_FAST 7
+    0xb0, // LOAD_FAST 0
+    0x18,0x0f, // STORE_ATTR 'ssl'
+    0xb8, // LOAD_FAST 8
+    0xb0, // LOAD_FAST 0
+    0x18,0x10, // STORE_ATTR 'ssl_params'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb0, // LOAD_FAST 0
+    0x18,0x11, // STORE_ATTR 'pid'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x12, // STORE_ATTR 'cb'
+    0xb4, // LOAD_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x18,0x13, // STORE_ATTR 'user'
+    0xb5, // LOAD_FAST 5
+    0xb0, // LOAD_FAST 0
+    0x18,0x14, // STORE_ATTR 'pswd'
+    0xb6, // LOAD_FAST 6
+    0xb0, // LOAD_FAST 0
+    0x18,0x15, // STORE_ATTR 'keepalive'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x16, // STORE_ATTR 'lw_topic'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x17, // STORE_ATTR 'lw_msg'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb0, // LOAD_FAST 0
+    0x18,0x18, // STORE_ATTR 'lw_qos'
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x18,0x19, // STORE_ATTR 'lw_retain'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 113,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 9,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 6,
+        .qstr_block_name_idx = 10,
+        .line_info = fun_data_umqtt_simple_MQTTClient___init__ + 15,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient___init__ + 33,
+        .opcodes = fun_data_umqtt_simple_MQTTClient___init__ + 33,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient___init__ fun_data_umqtt_simple_MQTTClient___init__[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient__send_str
+static const byte fun_data_umqtt_simple_MQTTClient__send_str[40] = {
+    0x42,0x0c, // prelude
+    0x1a,0x3a,0x3c, // names: _send_str, self, s
+    0x80,0x32,0x35, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0x12,0x03, // LOAD_GLOBAL 'struct'
+    0x14,0x1c, // LOAD_METHOD 'pack'
+    0x10,0x1d, // LOAD_CONST_STRING '!H'
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x02, // CALL_METHOD 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient__send_str = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient__send_str,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 40,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 26,
+        .line_info = fun_data_umqtt_simple_MQTTClient__send_str + 5,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient__send_str + 8,
+        .opcodes = fun_data_umqtt_simple_MQTTClient__send_str + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient__send_str fun_data_umqtt_simple_MQTTClient__send_str[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient__recv_len
+static const byte fun_data_umqtt_simple_MQTTClient__recv_len[55] = {
+    0x31,0x16, // prelude
+    0x1e,0x3a, // names: _recv_len, self
+    0x80,0x36,0x22,0x22,0x20,0x2b,0x2a,0x27,0x22, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc1, // STORE_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x01, // CALL_METHOD 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc3, // STORE_FAST 3
+    0xb1, // LOAD_FAST 1
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xef, // BINARY_OP 24 __and__
+    0xb2, // LOAD_FAST 2
+    0xf0, // BINARY_OP 25 __lshift__
+    0xe0, // BINARY_OP 9 __ior__
+    0xc1, // STORE_FAST 1
+    0xb3, // LOAD_FAST 3
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xef, // BINARY_OP 24 __and__
+    0x43,0x42, // POP_JUMP_IF_TRUE 2
+    0xb1, // LOAD_FAST 1
+    0x63, // RETURN_VALUE
+    0xb2, // LOAD_FAST 2
+    0x87, // LOAD_CONST_SMALL_INT 7
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc2, // STORE_FAST 2
+    0x42,0x1c, // JUMP -36
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient__recv_len = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient__recv_len,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 55,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 30,
+        .line_info = fun_data_umqtt_simple_MQTTClient__recv_len + 4,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient__recv_len + 13,
+        .opcodes = fun_data_umqtt_simple_MQTTClient__recv_len + 13,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient__recv_len fun_data_umqtt_simple_MQTTClient__recv_len[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_set_callback
+static const byte fun_data_umqtt_simple_MQTTClient_set_callback[13] = {
+    0x1a,0x0a, // prelude
+    0x20,0x3a,0x3e, // names: set_callback, self, f
+    0x80,0x40, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x12, // STORE_ATTR 'cb'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_set_callback = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_set_callback,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 13,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 32,
+        .line_info = fun_data_umqtt_simple_MQTTClient_set_callback + 5,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_set_callback + 7,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_set_callback + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_set_callback fun_data_umqtt_simple_MQTTClient_set_callback[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_set_last_will
+static const byte fun_data_umqtt_simple_MQTTClient_set_last_will[59] = {
+    0xb9,0x84,0x01,0x1a, // prelude
+    0x21,0x3a,0x3f,0x40,0x41,0x42, // names: set_last_will, self, topic, msg, retain, qos
+    0x80,0x43,0x32,0x26,0x24,0x24,0x24, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb4, // LOAD_FAST 4
+    0x57, // DUP_TOP
+    0x5b, // ROT_THREE
+    0xda, // BINARY_OP 3 __le__
+    0x46,0x04, // JUMP_IF_FALSE_OR_POP 4
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xda, // BINARY_OP 3 __le__
+    0x42,0x42, // JUMP 2
+    0x5a, // ROT_TWO
+    0x59, // POP_TOP
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x16, // STORE_ATTR 'lw_topic'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x17, // STORE_ATTR 'lw_msg'
+    0xb4, // LOAD_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x18,0x18, // STORE_ATTR 'lw_qos'
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x18,0x19, // STORE_ATTR 'lw_retain'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_set_last_will = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_set_last_will,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 59,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 5,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 33,
+        .line_info = fun_data_umqtt_simple_MQTTClient_set_last_will + 10,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_set_last_will + 17,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_set_last_will + 17,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_set_last_will fun_data_umqtt_simple_MQTTClient_set_last_will[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_connect
+static const byte fun_data_umqtt_simple_MQTTClient_connect[470] = {
+    0xfb,0x80,0x01,0x5c, // prelude
+    0x23,0x3a,0x43,0x44, // names: connect, self, clean_session, timeout
+    0x80,0x4b,0x25,0x28,0x29,0x29,0x31,0x29,0x47,0x45,0x33,0x25,0x35,0x27,0x47,0x2c,0x26,0x25,0x36,0x2a,0x25,0x2d,0x2c,0x2e,0x25,0x36,0x38,0x4c,0x47,0x2c,0x49,0x29,0x25,0x29,0x29,0x25,0x29,0x29,0x29,0x31,0x27,0x28, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x24, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x14,0x02, // LOAD_METHOD 'socket'
+    0x36,0x00, // CALL_METHOD 0
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'sock'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x25, // LOAD_METHOD 'settimeout'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x14,0x26, // LOAD_METHOD 'getaddrinfo'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0d, // LOAD_ATTR 'server'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0e, // LOAD_ATTR 'port'
+    0x36,0x02, // CALL_METHOD 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x55, // LOAD_SUBSCR
+    0xc3, // STORE_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x23, // LOAD_METHOD 'connect'
+    0xb3, // LOAD_FAST 3
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0f, // LOAD_ATTR 'ssl'
+    0x52, // LOAD_CONST_TRUE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x58, // POP_JUMP_IF_FALSE 24
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x0f, // IMPORT_NAME 'ssl'
+    0xc4, // STORE_FAST 4
+    0xb4, // LOAD_FAST 4
+    0x14,0x27, // LOAD_METHOD 'wrap_socket'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x13,0x10, // LOAD_ATTR 'ssl_params'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x01, // CALL_METHOD_VAR_KW 257
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'sock'
+    0x42,0x5a, // JUMP 26
+    0xb0, // LOAD_FAST 0
+    0x13,0x0f, // LOAD_ATTR 'ssl'
+    0x44,0x55, // POP_JUMP_IF_FALSE 21
+    0xb0, // LOAD_FAST 0
+    0x13,0x0f, // LOAD_ATTR 'ssl'
+    0x14,0x27, // LOAD_METHOD 'wrap_socket'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x10,0x28, // LOAD_CONST_STRING 'server_hostname'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0d, // LOAD_ATTR 'server'
+    0x36,0x82,0x01, // CALL_METHOD 257
+    0xb0, // LOAD_FAST 0
+    0x18,0x0c, // STORE_ATTR 'sock'
+    0x42,0x40, // JUMP 0
+    0x12,0x45, // LOAD_GLOBAL 'bytearray'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc5, // STORE_FAST 5
+    0x12,0x45, // LOAD_GLOBAL 'bytearray'
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc6, // STORE_FAST 6
+    0x8a, // LOAD_CONST_SMALL_INT 10
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xf2, // BINARY_OP 27 __add__
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0b, // LOAD_ATTR 'client_id'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xc7, // STORE_FAST 7
+    0xb1, // LOAD_FAST 1
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xf0, // BINARY_OP 25 __lshift__
+    0xb6, // LOAD_FAST 6
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0x56, // STORE_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'user'
+    0x44,0x60, // POP_JUMP_IF_FALSE 32
+    0xb7, // LOAD_FAST 7
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'user'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xf2, // BINARY_OP 27 __add__
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb0, // LOAD_FAST 0
+    0x13,0x14, // LOAD_ATTR 'pswd'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc7, // STORE_FAST 7
+    0xb6, // LOAD_FAST 6
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0x22,0x81,0x40, // LOAD_CONST_SMALL_INT 192
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'keepalive'
+    0x44,0x67, // POP_JUMP_IF_FALSE 39
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'keepalive'
+    0x22,0x84,0x80,0x00, // LOAD_CONST_SMALL_INT 65536
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb6, // LOAD_FAST 6
+    0x87, // LOAD_CONST_SMALL_INT 7
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'keepalive'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xf1, // BINARY_OP 26 __rshift__
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0xb6, // LOAD_FAST 6
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'keepalive'
+    0x22,0x81,0x7f, // LOAD_CONST_SMALL_INT 255
+    0xef, // BINARY_OP 24 __and__
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'lw_topic'
+    0x44,0x7a, // POP_JUMP_IF_FALSE 58
+    0xb7, // LOAD_FAST 7
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'lw_topic'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xf2, // BINARY_OP 27 __add__
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb0, // LOAD_FAST 0
+    0x13,0x17, // LOAD_ATTR 'lw_msg'
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc7, // STORE_FAST 7
+    0xb6, // LOAD_FAST 6
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0xb0, // LOAD_FAST 0
+    0x13,0x18, // LOAD_ATTR 'lw_qos'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xef, // BINARY_OP 24 __and__
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xf0, // BINARY_OP 25 __lshift__
+    0xed, // BINARY_OP 22 __or__
+    0xb0, // LOAD_FAST 0
+    0x13,0x18, // LOAD_ATTR 'lw_qos'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xef, // BINARY_OP 24 __and__
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xf0, // BINARY_OP 25 __lshift__
+    0xed, // BINARY_OP 22 __or__
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0xb6, // LOAD_FAST 6
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x13,0x19, // LOAD_ATTR 'lw_retain'
+    0x85, // LOAD_CONST_SMALL_INT 5
+    0xf0, // BINARY_OP 25 __lshift__
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0x12,0x09, // LOAD_GLOBAL '_encode_len'
+    0xb5, // LOAD_FAST 5
+    0xb7, // LOAD_FAST 7
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc8, // STORE_FAST 8
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb5, // LOAD_FAST 5
+    0xb8, // LOAD_FAST 8
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xf2, // BINARY_OP 27 __add__
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb6, // LOAD_FAST 6
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x0b, // LOAD_ATTR 'client_id'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'lw_topic'
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'lw_topic'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x17, // LOAD_ATTR 'lw_msg'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'user'
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'user'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x14, // LOAD_ATTR 'pswd'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x36,0x01, // CALL_METHOD 1
+    0xc9, // STORE_FAST 9
+    0xb9, // LOAD_FAST 9
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xa0, // LOAD_CONST_SMALL_INT 32
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x47, // POP_JUMP_IF_FALSE 7
+    0xb9, // LOAD_FAST 9
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb9, // LOAD_FAST 9
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x55, // LOAD_SUBSCR
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x06, // LOAD_GLOBAL 'MQTTException'
+    0xb9, // LOAD_FAST 9
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x55, // LOAD_SUBSCR
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb9, // LOAD_FAST 9
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x55, // LOAD_SUBSCR
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xef, // BINARY_OP 24 __and__
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_connect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_connect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 470,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 16,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 35,
+        .line_info = fun_data_umqtt_simple_MQTTClient_connect + 8,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_connect + 50,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_connect + 50,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_connect fun_data_umqtt_simple_MQTTClient_connect[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_disconnect
+static const byte fun_data_umqtt_simple_MQTTClient_disconnect[27] = {
+    0x19,0x0a, // prelude
+    0x29,0x3a, // names: disconnect, self
+    0x80,0x7c,0x2a, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x24, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_disconnect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_disconnect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 27,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 41,
+        .line_info = fun_data_umqtt_simple_MQTTClient_disconnect + 4,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_disconnect + 7,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_disconnect + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_disconnect fun_data_umqtt_simple_MQTTClient_disconnect[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_ping
+static const byte fun_data_umqtt_simple_MQTTClient_ping[18] = {
+    0x19,0x08, // prelude
+    0x2a,0x3a, // names: ping, self
+    0x80,0x80, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_ping = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_ping,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 18,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 42,
+        .line_info = fun_data_umqtt_simple_MQTTClient_ping + 4,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_ping + 6,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_ping + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_ping fun_data_umqtt_simple_MQTTClient_ping[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_publish
+static const byte fun_data_umqtt_simple_MQTTClient_publish[245] = {
+    0x81,0x94,0x01,0x44, // prelude
+    0x2b,0x3a,0x3f,0x40,0x41,0x42, // names: publish, self, topic, msg, retain, qos
+    0x80,0x83,0x27,0x2c,0x2e,0x25,0x24,0x2c,0x47,0x2c,0x27,0x25,0x29,0x24,0x2c,0x2a,0x29,0x25,0x20,0x26,0x27,0x29,0x29,0x29,0x2a,0x25,0x26,0x25, // code info
+    0x12,0x45, // LOAD_GLOBAL 'bytearray'
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc5, // STORE_FAST 5
+    0xb5, // LOAD_FAST 5
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x58, // DUP_TOP_TWO
+    0x55, // LOAD_SUBSCR
+    0xb4, // LOAD_FAST 4
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xf0, // BINARY_OP 25 __lshift__
+    0xb3, // LOAD_FAST 3
+    0xed, // BINARY_OP 22 __or__
+    0xe0, // BINARY_OP 9 __ior__
+    0x5b, // ROT_THREE
+    0x56, // STORE_SUBSCR
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xc6, // STORE_FAST 6
+    0xb4, // LOAD_FAST 4
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0xb6, // LOAD_FAST 6
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc6, // STORE_FAST 6
+    0xb6, // LOAD_FAST 6
+    0x22,0x81,0x80,0x80,0x00, // LOAD_CONST_SMALL_INT 2097152
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x12,0x09, // LOAD_GLOBAL '_encode_len'
+    0xb5, // LOAD_FAST 5
+    0xb6, // LOAD_FAST 6
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc7, // STORE_FAST 7
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb5, // LOAD_FAST 5
+    0xb7, // LOAD_FAST 7
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xf2, // BINARY_OP 27 __add__
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x63, // POP_JUMP_IF_FALSE 35
+    0xb0, // LOAD_FAST 0
+    0x57, // DUP_TOP
+    0x13,0x11, // LOAD_ATTR 'pid'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x5a, // ROT_TWO
+    0x18,0x11, // STORE_ATTR 'pid'
+    0xb0, // LOAD_FAST 0
+    0x13,0x11, // LOAD_ATTR 'pid'
+    0xc8, // STORE_FAST 8
+    0x12,0x03, // LOAD_GLOBAL 'struct'
+    0x14,0x2c, // LOAD_METHOD 'pack_into'
+    0x10,0x1d, // LOAD_CONST_STRING '!H'
+    0xb5, // LOAD_FAST 5
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb8, // LOAD_FAST 8
+    0x36,0x04, // CALL_METHOD 4
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb5, // LOAD_FAST 5
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x7d, // POP_JUMP_IF_FALSE 61
+    0xb0, // LOAD_FAST 0
+    0x14,0x2d, // LOAD_METHOD 'wait_msg'
+    0x36,0x00, // CALL_METHOD 0
+    0xc9, // STORE_FAST 9
+    0xb9, // LOAD_FAST 9
+    0x22,0x80,0x40, // LOAD_CONST_SMALL_INT 64
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x6c, // POP_JUMP_IF_FALSE 44
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x01, // CALL_METHOD 1
+    0xc6, // STORE_FAST 6
+    0xb6, // LOAD_FAST 6
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0xca, // STORE_FAST 10
+    0xba, // LOAD_FAST 10
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xf0, // BINARY_OP 25 __lshift__
+    0xba, // LOAD_FAST 10
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0xed, // BINARY_OP 22 __or__
+    0xca, // STORE_FAST 10
+    0xb8, // LOAD_FAST 8
+    0xba, // LOAD_FAST 10
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+    0x42,0x05, // JUMP -59
+    0x42,0x4a, // JUMP 10
+    0xb4, // LOAD_FAST 4
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x42,0x40, // JUMP 0
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_publish = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_publish,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 245,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 17,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 5,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 43,
+        .line_info = fun_data_umqtt_simple_MQTTClient_publish + 10,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_publish + 38,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_publish + 38,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_publish fun_data_umqtt_simple_MQTTClient_publish[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient__send_subunsub
+static const byte fun_data_umqtt_simple_MQTTClient__send_subunsub[195] = {
+    0x82,0x15,0x36, // prelude
+    0x2e,0x3a,0x3f,0x46,0x47,0x48,0x42, // names: _send_subunsub, self, topic, typ, ack_op, ack_n, qos
+    0x80,0xa1,0x26,0x24,0x29,0x24,0x31,0x2c,0x2c,0x2a,0x27,0x25,0x2f,0x20,0x26,0x25,0x29,0x30,0x2e,0x28, // code info
+    0x12,0x45, // LOAD_GLOBAL 'bytearray'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc6, // STORE_FAST 6
+    0xb2, // LOAD_FAST 2
+    0xb6, // LOAD_FAST 6
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x56, // STORE_SUBSCR
+    0xb0, // LOAD_FAST 0
+    0x57, // DUP_TOP
+    0x13,0x11, // LOAD_ATTR 'pid'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0x5a, // ROT_TWO
+    0x18,0x11, // STORE_ATTR 'pid'
+    0xb0, // LOAD_FAST 0
+    0x13,0x11, // LOAD_ATTR 'pid'
+    0xc7, // STORE_FAST 7
+    0x12,0x09, // LOAD_GLOBAL '_encode_len'
+    0xb6, // LOAD_FAST 6
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x12,0x3d, // LOAD_GLOBAL 'len'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xb4, // LOAD_FAST 4
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xd8, // BINARY_OP 1 __gt__
+    0xf2, // BINARY_OP 27 __add__
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc8, // STORE_FAST 8
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb6, // LOAD_FAST 6
+    0xb8, // LOAD_FAST 8
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xf2, // BINARY_OP 27 __add__
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x12,0x03, // LOAD_GLOBAL 'struct'
+    0x14,0x2c, // LOAD_METHOD 'pack_into'
+    0x10,0x1d, // LOAD_CONST_STRING '!H'
+    0xb6, // LOAD_FAST 6
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb7, // LOAD_FAST 7
+    0x36,0x04, // CALL_METHOD 4
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb6, // LOAD_FAST 6
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x1a, // LOAD_METHOD '_send_str'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x4f, // POP_JUMP_IF_FALSE 15
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0x12,0x49, // LOAD_GLOBAL 'bytes'
+    0xb5, // LOAD_FAST 5
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x2d, // LOAD_METHOD 'wait_msg'
+    0x36,0x00, // CALL_METHOD 0
+    0xc9, // STORE_FAST 9
+    0xb9, // LOAD_FAST 9
+    0xb3, // LOAD_FAST 3
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x71, // POP_JUMP_IF_FALSE 49
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0xb4, // LOAD_FAST 4
+    0x36,0x01, // CALL_METHOD 1
+    0xca, // STORE_FAST 10
+    0xba, // LOAD_FAST 10
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xf0, // BINARY_OP 25 __lshift__
+    0xba, // LOAD_FAST 10
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x55, // LOAD_SUBSCR
+    0xed, // BINARY_OP 22 __or__
+    0xb7, // LOAD_FAST 7
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb4, // LOAD_FAST 4
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x51, // POP_JUMP_IF_FALSE 17
+    0xba, // LOAD_FAST 10
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x55, // LOAD_SUBSCR
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x06, // LOAD_GLOBAL 'MQTTException'
+    0xba, // LOAD_FAST 10
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x55, // LOAD_SUBSCR
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+    0x42,0x02, // JUMP -62
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient__send_subunsub = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient__send_subunsub,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 195,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 17,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 6,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 46,
+        .line_info = fun_data_umqtt_simple_MQTTClient__send_subunsub + 10,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient__send_subunsub + 30,
+        .opcodes = fun_data_umqtt_simple_MQTTClient__send_subunsub + 30,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient__send_subunsub fun_data_umqtt_simple_MQTTClient__send_subunsub[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_subscribe
+static const byte fun_data_umqtt_simple_MQTTClient_subscribe[42] = {
+    0xcb,0x01,0x0e, // prelude
+    0x2f,0x3a,0x3f,0x42, // names: subscribe, self, topic, qos
+    0x80,0xb6,0x2f, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x12, // LOAD_ATTR 'cb'
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x43,0x47, // POP_JUMP_IF_TRUE 7
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD '_send_subunsub'
+    0xb1, // LOAD_FAST 1
+    0x22,0x81,0x02, // LOAD_CONST_SMALL_INT 130
+    0x22,0x81,0x10, // LOAD_CONST_SMALL_INT 144
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0xb2, // LOAD_FAST 2
+    0x36,0x05, // CALL_METHOD 5
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_subscribe = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_subscribe,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 42,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 47,
+        .line_info = fun_data_umqtt_simple_MQTTClient_subscribe + 7,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_subscribe + 10,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_subscribe + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_subscribe fun_data_umqtt_simple_MQTTClient_subscribe[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_unsubscribe
+static const byte fun_data_umqtt_simple_MQTTClient_unsubscribe[23] = {
+    0x3a,0x0a, // prelude
+    0x30,0x3a,0x3f, // names: unsubscribe, self, topic
+    0x80,0xba, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2e, // LOAD_METHOD '_send_subunsub'
+    0xb1, // LOAD_FAST 1
+    0x22,0x81,0x22, // LOAD_CONST_SMALL_INT 162
+    0x22,0x81,0x30, // LOAD_CONST_SMALL_INT 176
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x36,0x04, // CALL_METHOD 4
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_unsubscribe = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_unsubscribe,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 23,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 48,
+        .line_info = fun_data_umqtt_simple_MQTTClient_unsubscribe + 5,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_unsubscribe + 7,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_unsubscribe + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_unsubscribe fun_data_umqtt_simple_MQTTClient_unsubscribe[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_wait_msg
+static const byte fun_data_umqtt_simple_MQTTClient_wait_msg[252] = {
+    0x71,0x44, // prelude
+    0x2d,0x3a, // names: wait_msg, self
+    0x80,0xc1,0x29,0x29,0x25,0x22,0x26,0x26,0x26,0x2b,0x28,0x22,0x24,0x2a,0x22,0x26,0x29,0x2a,0x29,0x26,0x25,0x29,0x2a,0x24,0x29,0x28,0x27,0x27,0x2c,0x2b,0x27,0x25, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x01, // CALL_METHOD 1
+    0xc1, // STORE_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x31, // LOAD_METHOD 'setblocking'
+    0x52, // LOAD_CONST_TRUE
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb1, // LOAD_FAST 1
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+    0xb1, // LOAD_FAST 1
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x12,0x4a, // LOAD_GLOBAL 'OSError'
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x23,0x08, // LOAD_CONST_OBJ 8
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x55, // POP_JUMP_IF_FALSE 21
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x01, // CALL_METHOD 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x22,0x81,0x70, // LOAD_CONST_SMALL_INT 240
+    0xef, // BINARY_OP 24 __and__
+    0x22,0x30, // LOAD_CONST_SMALL_INT 48
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0xb3, // LOAD_FAST 3
+    0x63, // RETURN_VALUE
+    0xb0, // LOAD_FAST 0
+    0x14,0x1e, // LOAD_METHOD '_recv_len'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc4, // STORE_FAST 4
+    0xb4, // LOAD_FAST 4
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xf0, // BINARY_OP 25 __lshift__
+    0xb4, // LOAD_FAST 4
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0xed, // BINARY_OP 22 __or__
+    0xc4, // STORE_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0xb4, // LOAD_FAST 4
+    0x36,0x01, // CALL_METHOD 1
+    0xc5, // STORE_FAST 5
+    0xb2, // LOAD_FAST 2
+    0xb4, // LOAD_FAST 4
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xf2, // BINARY_OP 27 __add__
+    0xe6, // BINARY_OP 15 __isub__
+    0xc2, // STORE_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0xef, // BINARY_OP 24 __and__
+    0x44,0x57, // POP_JUMP_IF_FALSE 23
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc6, // STORE_FAST 6
+    0xb6, // LOAD_FAST 6
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0xf0, // BINARY_OP 25 __lshift__
+    0xb6, // LOAD_FAST 6
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0xed, // BINARY_OP 22 __or__
+    0xc6, // STORE_FAST 6
+    0xb2, // LOAD_FAST 2
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xe6, // BINARY_OP 15 __isub__
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1f, // LOAD_METHOD 'read'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc7, // STORE_FAST 7
+    0xb0, // LOAD_FAST 0
+    0x14,0x12, // LOAD_METHOD 'cb'
+    0xb5, // LOAD_FAST 5
+    0xb7, // LOAD_FAST 7
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb3, // LOAD_FAST 3
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0xef, // BINARY_OP 24 __and__
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x5e, // POP_JUMP_IF_FALSE 30
+    0x12,0x45, // LOAD_GLOBAL 'bytearray'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc8, // STORE_FAST 8
+    0x12,0x03, // LOAD_GLOBAL 'struct'
+    0x14,0x2c, // LOAD_METHOD 'pack_into'
+    0x10,0x1d, // LOAD_CONST_STRING '!H'
+    0xb8, // LOAD_FAST 8
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xb6, // LOAD_FAST 6
+    0x36,0x04, // CALL_METHOD 4
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x1b, // LOAD_METHOD 'write'
+    0xb8, // LOAD_FAST 8
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x4c, // JUMP 12
+    0xb3, // LOAD_FAST 3
+    0x86, // LOAD_CONST_SMALL_INT 6
+    0xef, // BINARY_OP 24 __and__
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0x12,0x22, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x42,0x40, // JUMP 0
+    0xb3, // LOAD_FAST 3
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_wait_msg = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_wait_msg,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 252,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 15,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 45,
+        .line_info = fun_data_umqtt_simple_MQTTClient_wait_msg + 4,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_wait_msg + 36,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_wait_msg + 36,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_wait_msg fun_data_umqtt_simple_MQTTClient_wait_msg[0]
+#endif
+
+// child of umqtt_simple_MQTTClient
+// frozen bytecode for file umqtt/simple.py, scope umqtt_simple_MQTTClient_check_msg
+static const byte fun_data_umqtt_simple_MQTTClient_check_msg[22] = {
+    0x19,0x0a, // prelude
+    0x32,0x3a, // names: check_msg, self
+    0x80,0xe5,0x29, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0c, // LOAD_ATTR 'sock'
+    0x14,0x31, // LOAD_METHOD 'setblocking'
+    0x50, // LOAD_CONST_FALSE
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x14,0x2d, // LOAD_METHOD 'wait_msg'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient_check_msg = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient_check_msg,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 50,
+        .line_info = fun_data_umqtt_simple_MQTTClient_check_msg + 4,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient_check_msg + 7,
+        .opcodes = fun_data_umqtt_simple_MQTTClient_check_msg + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_simple_MQTTClient_check_msg fun_data_umqtt_simple_MQTTClient_check_msg[0]
+#endif
+
+static const mp_raw_code_t *const children_umqtt_simple_MQTTClient[] = {
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient___init__,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient__send_str,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient__recv_len,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_set_callback,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_set_last_will,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_connect,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_disconnect,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_ping,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_publish,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient__send_subunsub,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_subscribe,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_unsubscribe,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_wait_msg,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient_check_msg,
+};
+
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple_MQTTClient = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple_MQTTClient,
+    .children = (void *)&children_umqtt_simple_MQTTClient,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 130,
+    .n_children = 14,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 7,
+        .line_info = fun_data_umqtt_simple_MQTTClient + 3,
+        .line_info_top = fun_data_umqtt_simple_MQTTClient + 31,
+        .opcodes = fun_data_umqtt_simple_MQTTClient + 31,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_umqtt_simple__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTException,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple__encode_len,
+    (const mp_raw_code_t *)&proto_fun_umqtt_simple_MQTTClient,
+};
+
+static const mp_raw_code_truncated_t proto_fun_umqtt_simple__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_simple__lt_module_gt_,
+    .children = (void *)&children_umqtt_simple__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 66,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_umqtt_simple__lt_module_gt_ + 3,
+        .line_info_top = fun_data_umqtt_simple__lt_module_gt_ + 12,
+        .opcodes = fun_data_umqtt_simple__lt_module_gt_ + 12,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_umqtt_simple[75] = {
+    MP_QSTR_umqtt_slash_simple_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_socket,
+    MP_QSTR_struct,
+    MP_QSTR_hexlify,
+    MP_QSTR_binascii,
+    MP_QSTR_MQTTException,
+    MP_QSTR_MQTTClient,
+    MP_QSTR_1_dot_8_dot_0,
+    MP_QSTR__encode_len,
+    MP_QSTR___init__,
+    MP_QSTR_client_id,
+    MP_QSTR_sock,
+    MP_QSTR_server,
+    MP_QSTR_port,
+    MP_QSTR_ssl,
+    MP_QSTR_ssl_params,
+    MP_QSTR_pid,
+    MP_QSTR_cb,
+    MP_QSTR_user,
+    MP_QSTR_pswd,
+    MP_QSTR_keepalive,
+    MP_QSTR_lw_topic,
+    MP_QSTR_lw_msg,
+    MP_QSTR_lw_qos,
+    MP_QSTR_lw_retain,
+    MP_QSTR__send_str,
+    MP_QSTR_write,
+    MP_QSTR_pack,
+    MP_QSTR__bang_H,
+    MP_QSTR__recv_len,
+    MP_QSTR_read,
+    MP_QSTR_set_callback,
+    MP_QSTR_set_last_will,
+    MP_QSTR_AssertionError,
+    MP_QSTR_connect,
+    MP_QSTR_close,
+    MP_QSTR_settimeout,
+    MP_QSTR_getaddrinfo,
+    MP_QSTR_wrap_socket,
+    MP_QSTR_server_hostname,
+    MP_QSTR_disconnect,
+    MP_QSTR_ping,
+    MP_QSTR_publish,
+    MP_QSTR_pack_into,
+    MP_QSTR_wait_msg,
+    MP_QSTR__send_subunsub,
+    MP_QSTR_subscribe,
+    MP_QSTR_unsubscribe,
+    MP_QSTR_setblocking,
+    MP_QSTR_check_msg,
+    MP_QSTR_Exception,
+    MP_QSTR___version__,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_pkt,
+    MP_QSTR_sz,
+    MP_QSTR_self,
+    MP_QSTR_password,
+    MP_QSTR_s,
+    MP_QSTR_len,
+    MP_QSTR_f,
+    MP_QSTR_topic,
+    MP_QSTR_msg,
+    MP_QSTR_retain,
+    MP_QSTR_qos,
+    MP_QSTR_clean_session,
+    MP_QSTR_timeout,
+    MP_QSTR_bytearray,
+    MP_QSTR_typ,
+    MP_QSTR_ack_op,
+    MP_QSTR_ack_n,
+    MP_QSTR_bytes,
+    MP_QSTR_OSError,
+};
+
+// constants
+static const mp_obj_str_t const_obj_umqtt_simple_0 = {{&mp_type_bytes}, 36565, 6, (const byte*)"\x10\x00\x00\x00\x00\x00"};
+static const mp_obj_str_t const_obj_umqtt_simple_1 = {{&mp_type_bytes}, 14619, 9, (const byte*)"\x04\x4d\x51\x54\x54\x04\x02\x00\x00"};
+static const mp_obj_str_t const_obj_umqtt_simple_2 = {{&mp_type_bytes}, 24037, 2, (const byte*)"\xe0\x00"};
+static const mp_obj_str_t const_obj_umqtt_simple_3 = {{&mp_type_bytes}, 25093, 2, (const byte*)"\xc0\x00"};
+static const mp_obj_str_t const_obj_umqtt_simple_4 = {{&mp_type_bytes}, 18805, 4, (const byte*)"\x30\x00\x00\x00"};
+static const mp_obj_str_t const_obj_umqtt_simple_5 = {{&mp_type_bytes}, 46503, 1, (const byte*)"\x02"};
+static const mp_obj_str_t const_obj_umqtt_simple_6 = {{&mp_type_str}, 9577, 29, (const byte*)"\x53\x75\x62\x73\x63\x72\x69\x62\x65\x20\x63\x61\x6c\x6c\x62\x61\x63\x6b\x20\x69\x73\x20\x6e\x6f\x74\x20\x73\x65\x74"};
+static const mp_obj_str_t const_obj_umqtt_simple_8 = {{&mp_type_bytes}, 46453, 1, (const byte*)"\xd0"};
+static const mp_obj_str_t const_obj_umqtt_simple_9 = {{&mp_type_bytes}, 12359, 4, (const byte*)"\x40\x02\x00\x00"};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_umqtt_simple[10] = {
+    MP_ROM_PTR(&const_obj_umqtt_simple_0),
+    MP_ROM_PTR(&const_obj_umqtt_simple_1),
+    MP_ROM_PTR(&const_obj_umqtt_simple_2),
+    MP_ROM_PTR(&const_obj_umqtt_simple_3),
+    MP_ROM_PTR(&const_obj_umqtt_simple_4),
+    MP_ROM_PTR(&const_obj_umqtt_simple_5),
+    MP_ROM_PTR(&const_obj_umqtt_simple_6),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+    MP_ROM_PTR(&const_obj_umqtt_simple_8),
+    MP_ROM_PTR(&const_obj_umqtt_simple_9),
+};
+
+static const mp_frozen_module_t frozen_module_umqtt_simple = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_umqtt_simple,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_umqtt_simple,
+    },
+    .proto_fun = &proto_fun_umqtt_simple__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module umqtt_robust
+// - original source file: build/frozen_mpy/umqtt/robust.mpy
+// - frozen file name: umqtt/robust.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust__lt_module_gt_
+static const byte fun_data_umqtt_robust__lt_module_gt_[44] = {
+    0x18,0x0a, // prelude
+    0x01, // names: <module>
+    0x26,0x6c,0x8d,0x35, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'time'
+    0x16,0x02, // STORE_NAME 'time'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x10,0x03, // LOAD_CONST_STRING 'simple'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x04, // IMPORT_NAME ''
+    0x1c,0x03, // IMPORT_FROM 'simple'
+    0x16,0x03, // STORE_NAME 'simple'
+    0x59, // POP_TOP
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x05, // LOAD_CONST_STRING 'MQTTClient'
+    0x11,0x03, // LOAD_NAME 'simple'
+    0x13,0x05, // LOAD_ATTR 'MQTTClient'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x16,0x05, // STORE_NAME 'MQTTClient'
+    0x10,0x06, // LOAD_CONST_STRING '1.0.3'
+    0x16,0x14, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of umqtt_robust__lt_module_gt_
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient
+static const byte fun_data_umqtt_robust_MQTTClient[72] = {
+    0x18,0x1d, // prelude
+    0x05, // names: MQTTClient
+    0x68,0x40,0x23,0x43,0x64,0x84,0x07,0x84,0x0c,0x8b,0x08,0x86,0x08,0x00, // code info
+    0x11,0x15, // LOAD_NAME '__name__'
+    0x16,0x16, // STORE_NAME '__module__'
+    0x10,0x05, // LOAD_CONST_STRING 'MQTTClient'
+    0x16,0x17, // STORE_NAME '__qualname__'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x16,0x09, // STORE_NAME 'DELAY'
+    0x50, // LOAD_CONST_FALSE
+    0x16,0x0b, // STORE_NAME 'DEBUG'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x07, // STORE_NAME 'delay'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x0a, // STORE_NAME 'log'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x0d, // STORE_NAME 'reconnect'
+    0x50, // LOAD_CONST_FALSE
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x21,0x03,0x01, // MAKE_CLOSURE_DEFARGS 3
+    0x16,0x0f, // STORE_NAME 'publish'
+    0xb0, // LOAD_FAST 0
+    0x20,0x04,0x01, // MAKE_CLOSURE 4
+    0x16,0x10, // STORE_NAME 'wait_msg'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x21,0x05,0x01, // MAKE_CLOSURE_DEFARGS 5
+    0x16,0x11, // STORE_NAME 'check_msg'
+    0xb0, // LOAD_FAST 0
+    0x63, // RETURN_VALUE
+};
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_delay
+static const byte fun_data_umqtt_robust_MQTTClient_delay[19] = {
+    0x22,0x0a, // prelude
+    0x07,0x18,0x19, // names: delay, self, i
+    0x80,0x09, // code info
+    0x12,0x02, // LOAD_GLOBAL 'time'
+    0x14,0x08, // LOAD_METHOD 'sleep'
+    0xb0, // LOAD_FAST 0
+    0x13,0x09, // LOAD_ATTR 'DELAY'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_delay = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_delay,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 19,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 7,
+        .line_info = fun_data_umqtt_robust_MQTTClient_delay + 5,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_delay + 7,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_delay + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_delay fun_data_umqtt_robust_MQTTClient_delay[0]
+#endif
+
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_log
+static const byte fun_data_umqtt_robust_MQTTClient_log[41] = {
+    0x2b,0x12, // prelude
+    0x0a,0x18,0x1a,0x1b, // names: log, self, in_reconnect, e
+    0x80,0x0c,0x25,0x23,0x4b, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x0b, // LOAD_ATTR 'DEBUG'
+    0x44,0x57, // POP_JUMP_IF_FALSE 23
+    0xb1, // LOAD_FAST 1
+    0x44,0x4b, // POP_JUMP_IF_FALSE 11
+    0x12,0x1c, // LOAD_GLOBAL 'print'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0xb2, // LOAD_FAST 2
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x59, // POP_TOP
+    0x42,0x49, // JUMP 9
+    0x12,0x1c, // LOAD_GLOBAL 'print'
+    0x10,0x0c, // LOAD_CONST_STRING 'mqtt: %r'
+    0xb2, // LOAD_FAST 2
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_log = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_log,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 41,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 10,
+        .line_info = fun_data_umqtt_robust_MQTTClient_log + 6,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_log + 11,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_log + 11,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_log fun_data_umqtt_robust_MQTTClient_log[0]
+#endif
+
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_reconnect
+static const byte fun_data_umqtt_robust_MQTTClient_reconnect[65] = {
+    0xc9,0x02,0x14, // prelude
+    0x0d,0x18, // names: reconnect, self
+    0x80,0x13,0x22,0x20,0x62,0x50,0x28,0x24, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc1, // STORE_FAST 1
+    0x48,0x07, // SETUP_EXCEPT 7
+    0xb0, // LOAD_FAST 0
+    0x14,0x0e, // LOAD_METHOD 'connect'
+    0x50, // LOAD_CONST_FALSE
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+    0x57, // DUP_TOP
+    0x12,0x1d, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x5e, // POP_JUMP_IF_FALSE 30
+    0xc2, // STORE_FAST 2
+    0x49,0x14, // SETUP_FINALLY 20
+    0xb0, // LOAD_FAST 0
+    0x14,0x0a, // LOAD_METHOD 'log'
+    0x52, // LOAD_CONST_TRUE
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0xb1, // LOAD_FAST 1
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc1, // STORE_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x14,0x07, // LOAD_METHOD 'delay'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0xc2, // STORE_FAST 2
+    0x28,0x02, // DELETE_FAST 2
+    0x5d, // END_FINALLY
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0x42,0x10, // JUMP -48
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_reconnect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_reconnect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 65,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 2,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 13,
+        .line_info = fun_data_umqtt_robust_MQTTClient_reconnect + 5,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_reconnect + 13,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_reconnect + 13,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_reconnect fun_data_umqtt_robust_MQTTClient_reconnect[0]
+#endif
+
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_publish
+static const byte fun_data_umqtt_robust_MQTTClient_publish[69] = {
+    0xea,0x86,0x01,0x1a, // prelude
+    0x0f,0x1e,0x18,0x1f,0x20,0x21,0x22, // names: publish, *, self, topic, msg, retain, qos
+    0x80,0x1f,0x20,0x22,0x57,0x31, // code info
+    0x48,0x0e, // SETUP_EXCEPT 14
+    0x12,0x23, // LOAD_GLOBAL 'super'
+    0x25,0x00, // LOAD_DEREF 0
+    0xb1, // LOAD_FAST 1
+    0x15,0x0f, // LOAD_SUPER_METHOD 'publish'
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0x36,0x04, // CALL_METHOD 4
+    0x63, // RETURN_VALUE
+    0x57, // DUP_TOP
+    0x12,0x1d, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0xc6, // STORE_FAST 6
+    0x49,0x09, // SETUP_FINALLY 9
+    0xb1, // LOAD_FAST 1
+    0x14,0x0a, // LOAD_METHOD 'log'
+    0x50, // LOAD_CONST_FALSE
+    0xb6, // LOAD_FAST 6
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0xc6, // STORE_FAST 6
+    0x28,0x06, // DELETE_FAST 6
+    0x5d, // END_FINALLY
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb1, // LOAD_FAST 1
+    0x14,0x0d, // LOAD_METHOD 'reconnect'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x42,0x0e, // JUMP -50
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_publish = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_publish,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 69,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 14,
+        .n_exc_stack = 2,
+        .scope_flags = 0,
+        .n_pos_args = 6,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 15,
+        .line_info = fun_data_umqtt_robust_MQTTClient_publish + 11,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_publish + 17,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_publish + 17,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_publish fun_data_umqtt_robust_MQTTClient_publish[0]
+#endif
+
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_wait_msg
+static const byte fun_data_umqtt_robust_MQTTClient_wait_msg[60] = {
+    0xca,0x02,0x12, // prelude
+    0x10,0x1e,0x18, // names: wait_msg, *, self
+    0x80,0x27,0x20,0x22,0x53,0x31, // code info
+    0x48,0x0a, // SETUP_EXCEPT 10
+    0x12,0x23, // LOAD_GLOBAL 'super'
+    0x25,0x00, // LOAD_DEREF 0
+    0xb1, // LOAD_FAST 1
+    0x15,0x10, // LOAD_SUPER_METHOD 'wait_msg'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+    0x57, // DUP_TOP
+    0x12,0x1d, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0xc2, // STORE_FAST 2
+    0x49,0x09, // SETUP_FINALLY 9
+    0xb1, // LOAD_FAST 1
+    0x14,0x0a, // LOAD_METHOD 'log'
+    0x50, // LOAD_CONST_FALSE
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0xc2, // STORE_FAST 2
+    0x28,0x02, // DELETE_FAST 2
+    0x5d, // END_FINALLY
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb1, // LOAD_FAST 1
+    0x14,0x0d, // LOAD_METHOD 'reconnect'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x42,0x12, // JUMP -46
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_wait_msg = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_wait_msg,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 60,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 2,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 16,
+        .line_info = fun_data_umqtt_robust_MQTTClient_wait_msg + 6,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_wait_msg + 12,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_wait_msg + 12,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_wait_msg fun_data_umqtt_robust_MQTTClient_wait_msg[0]
+#endif
+
+// child of umqtt_robust_MQTTClient
+// frozen bytecode for file umqtt/robust.py, scope umqtt_robust_MQTTClient_check_msg
+static const byte fun_data_umqtt_robust_MQTTClient_check_msg[79] = {
+    0xd3,0x03,0x18, // prelude
+    0x11,0x1e,0x18,0x24, // names: check_msg, *, self, attempts
+    0x80,0x2f,0x22,0x29,0x22,0x53,0x31,0x26, // code info
+    0x42,0x79, // JUMP 57
+    0xb1, // LOAD_FAST 1
+    0x13,0x12, // LOAD_ATTR 'sock'
+    0x14,0x13, // LOAD_METHOD 'setblocking'
+    0x50, // LOAD_CONST_FALSE
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x48,0x0a, // SETUP_EXCEPT 10
+    0x12,0x23, // LOAD_GLOBAL 'super'
+    0x25,0x00, // LOAD_DEREF 0
+    0xb1, // LOAD_FAST 1
+    0x15,0x10, // LOAD_SUPER_METHOD 'wait_msg'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+    0x57, // DUP_TOP
+    0x12,0x1d, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0xc3, // STORE_FAST 3
+    0x49,0x09, // SETUP_FINALLY 9
+    0xb1, // LOAD_FAST 1
+    0x14,0x0a, // LOAD_METHOD 'log'
+    0x50, // LOAD_CONST_FALSE
+    0xb3, // LOAD_FAST 3
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0xc3, // STORE_FAST 3
+    0x28,0x03, // DELETE_FAST 3
+    0x5d, // END_FINALLY
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb1, // LOAD_FAST 1
+    0x14,0x0d, // LOAD_METHOD 'reconnect'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0xb2, // LOAD_FAST 2
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe6, // BINARY_OP 15 __isub__
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x43,0x04, // POP_JUMP_IF_TRUE -60
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient_check_msg = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient_check_msg,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 79,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 2,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 17,
+        .line_info = fun_data_umqtt_robust_MQTTClient_check_msg + 7,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient_check_msg + 15,
+        .opcodes = fun_data_umqtt_robust_MQTTClient_check_msg + 15,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_umqtt_robust_MQTTClient_check_msg fun_data_umqtt_robust_MQTTClient_check_msg[0]
+#endif
+
+static const mp_raw_code_t *const children_umqtt_robust_MQTTClient[] = {
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_delay,
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_log,
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_reconnect,
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_publish,
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_wait_msg,
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient_check_msg,
+};
+
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust_MQTTClient = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust_MQTTClient,
+    .children = (void *)&children_umqtt_robust_MQTTClient,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 72,
+    .n_children = 6,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 5,
+        .line_info = fun_data_umqtt_robust_MQTTClient + 3,
+        .line_info_top = fun_data_umqtt_robust_MQTTClient + 16,
+        .opcodes = fun_data_umqtt_robust_MQTTClient + 17,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_umqtt_robust__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_umqtt_robust_MQTTClient,
+};
+
+static const mp_raw_code_truncated_t proto_fun_umqtt_robust__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_umqtt_robust__lt_module_gt_,
+    .children = (void *)&children_umqtt_robust__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 44,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_umqtt_robust__lt_module_gt_ + 3,
+        .line_info_top = fun_data_umqtt_robust__lt_module_gt_ + 7,
+        .opcodes = fun_data_umqtt_robust__lt_module_gt_ + 7,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_umqtt_robust[37] = {
+    MP_QSTR_umqtt_slash_robust_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_time,
+    MP_QSTR_simple,
+    MP_QSTR_,
+    MP_QSTR_MQTTClient,
+    MP_QSTR_1_dot_0_dot_3,
+    MP_QSTR_delay,
+    MP_QSTR_sleep,
+    MP_QSTR_DELAY,
+    MP_QSTR_log,
+    MP_QSTR_DEBUG,
+    MP_QSTR_mqtt_colon__space__percent_r,
+    MP_QSTR_reconnect,
+    MP_QSTR_connect,
+    MP_QSTR_publish,
+    MP_QSTR_wait_msg,
+    MP_QSTR_check_msg,
+    MP_QSTR_sock,
+    MP_QSTR_setblocking,
+    MP_QSTR___version__,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_self,
+    MP_QSTR_i,
+    MP_QSTR_in_reconnect,
+    MP_QSTR_e,
+    MP_QSTR_print,
+    MP_QSTR_OSError,
+    MP_QSTR__star_,
+    MP_QSTR_topic,
+    MP_QSTR_msg,
+    MP_QSTR_retain,
+    MP_QSTR_qos,
+    MP_QSTR_super,
+    MP_QSTR_attempts,
+};
+
+// constants
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_umqtt_robust[1] = {
+    MP_ROM_QSTR(MP_QSTR_mqtt_space_reconnect_colon__space__percent_r),
+};
+
+static const mp_frozen_module_t frozen_module_umqtt_robust = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_umqtt_robust,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_umqtt_robust,
+    },
+    .proto_fun = &proto_fun_umqtt_robust__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module requests___init__
+// - original source file: build/frozen_mpy/requests/__init__.mpy
+// - frozen file name: requests/__init__.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file requests/__init__.py, scope requests___init____lt_module_gt_
+static const byte fun_data_requests___init____lt_module_gt_[90] = {
+    0x30,0x28, // prelude
+    0x01, // names: <module>
+    0x66,0x89,0x2c,0x89,0x26,0x8e,0xbc,0x64,0x20,0x64,0x20,0x64,0x20,0x64,0x20,0x64,0x20,0x64,0x20, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'socket'
+    0x16,0x02, // STORE_NAME 'socket'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x03, // LOAD_CONST_STRING 'BodyStream'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x03, // STORE_NAME 'BodyStream'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x10,0x04, // LOAD_CONST_STRING 'Response'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x04, // STORE_NAME 'Response'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x52, // LOAD_CONST_TRUE
+    0x2a,0x07, // BUILD_TUPLE 7
+    0x53, // LOAD_NULL
+    0x33,0x02, // MAKE_FUNCTION_DEFARGS 2
+    0x16,0x06, // STORE_NAME 'request'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x38, // STORE_NAME 'head'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x16,0x2b, // STORE_NAME 'get'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x3a, // STORE_NAME 'post'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x3c, // STORE_NAME 'put'
+    0x32,0x07, // MAKE_FUNCTION 7
+    0x16,0x3e, // STORE_NAME 'patch'
+    0x32,0x08, // MAKE_FUNCTION 8
+    0x16,0x40, // STORE_NAME 'delete'
+    0x10,0x05, // LOAD_CONST_STRING '1.1.1'
+    0x16,0x50, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___BodyStream
+static const byte fun_data_requests___init___BodyStream[41] = {
+    0x08,0x12, // prelude
+    0x03, // names: BodyStream
+    0x68,0x20,0x64,0x40,0x88,0x0c,0x84,0x16, // code info
+    0x11,0x51, // LOAD_NAME '__name__'
+    0x16,0x52, // STORE_NAME '__module__'
+    0x10,0x03, // LOAD_CONST_STRING 'BodyStream'
+    0x16,0x53, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x42, // STORE_NAME '__init__'
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
+    0x16,0x46, // STORE_NAME 'read'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x47, // STORE_NAME 'readinto'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x2a, // STORE_NAME 'close'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of requests___init___BodyStream
+// frozen bytecode for file requests/__init__.py, scope requests___init___BodyStream___init__
+static const byte fun_data_requests___init___BodyStream___init__[26] = {
+    0x23,0x10, // prelude
+    0x42,0x65,0x66,0x67, // names: __init__, self, sock, remaining
+    0x60,0x40,0x24,0x26, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x43, // STORE_ATTR '_sock'
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd7, // BINARY_OP 0 __lt__
+    0xb0, // LOAD_FAST 0
+    0x18,0x44, // STORE_ATTR '_chunk'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x45, // STORE_ATTR '_remaining'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___BodyStream___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___BodyStream___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 26,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 66,
+        .line_info = fun_data_requests___init___BodyStream___init__ + 6,
+        .line_info_top = fun_data_requests___init___BodyStream___init__ + 10,
+        .opcodes = fun_data_requests___init___BodyStream___init__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___BodyStream___init__ fun_data_requests___init___BodyStream___init__[0]
+#endif
+
+// child of requests___init___BodyStream
+// frozen bytecode for file requests/__init__.py, scope requests___init___BodyStream_read
+static const byte fun_data_requests___init___BodyStream_read[86] = {
+    0xc2,0x01,0x1c, // prelude
+    0x46,0x65,0x68, // names: read, self, n
+    0x80,0x0a,0x30,0x25,0x27,0x2d,0x23,0x20,0x27,0x23,0x22, // code info
+    0x12,0x69, // LOAD_GLOBAL 'bytearray'
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xdb, // BINARY_OP 4 __ge__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0xb1, // LOAD_FAST 1
+    0x42,0x43, // JUMP 3
+    0x22,0x82,0x00, // LOAD_CONST_SMALL_INT 256
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc2, // STORE_FAST 2
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xdb, // BINARY_OP 4 __ge__
+    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0xb0, // LOAD_FAST 0
+    0x14,0x47, // LOAD_METHOD 'readinto'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x44,0x47, // POP_JUMP_IF_FALSE 7
+    0xb2, // LOAD_FAST 2
+    0x51, // LOAD_CONST_NONE
+    0xb3, // LOAD_FAST 3
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x63, // RETURN_VALUE
+    0x23,0x11, // LOAD_CONST_OBJ 17
+    0x63, // RETURN_VALUE
+    0x23,0x11, // LOAD_CONST_OBJ 17
+    0xc4, // STORE_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x14,0x47, // LOAD_METHOD 'readinto'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x43,0x42, // POP_JUMP_IF_TRUE 2
+    0xb4, // LOAD_FAST 4
+    0x63, // RETURN_VALUE
+    0xb4, // LOAD_FAST 4
+    0xb2, // LOAD_FAST 2
+    0x51, // LOAD_CONST_NONE
+    0xb3, // LOAD_FAST 3
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc4, // STORE_FAST 4
+    0x42,0x29, // JUMP -23
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___BodyStream_read = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___BodyStream_read,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 86,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 70,
+        .line_info = fun_data_requests___init___BodyStream_read + 6,
+        .line_info_top = fun_data_requests___init___BodyStream_read + 17,
+        .opcodes = fun_data_requests___init___BodyStream_read + 17,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___BodyStream_read fun_data_requests___init___BodyStream_read[0]
+#endif
+
+// child of requests___init___BodyStream
+// frozen bytecode for file requests/__init__.py, scope requests___init___BodyStream_readinto
+static const byte fun_data_requests___init___BodyStream_readinto[167] = {
+    0x42,0x30, // prelude
+    0x47,0x65,0x6a, // names: readinto, self, buf
+    0x80,0x16,0x24,0x27,0x27,0x22,0x35,0x27,0x20,0x26,0x29,0x24,0x2b,0x2d,0x27,0x23,0x27,0x29,0x2c,0x26,0x24, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR '_sock'
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xda, // BINARY_OP 3 __le__
+    0x44,0x78, // POP_JUMP_IF_FALSE 56
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x63, // RETURN_VALUE
+    0x12,0x5f, // LOAD_GLOBAL 'int'
+    0xb2, // LOAD_FAST 2
+    0x14,0x2d, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x23,0x12, // LOAD_CONST_OBJ 18
+    0x36,0x01, // CALL_METHOD 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0x34,0x02, // CALL_FUNCTION 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x45, // STORE_ATTR '_remaining'
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0xb2, // LOAD_FAST 2
+    0x14,0x2d, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xb3, // LOAD_FAST 3
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x63, // RETURN_VALUE
+    0x42,0x2d, // JUMP -19
+    0x12,0x62, // LOAD_GLOBAL 'len'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x12,0x6b, // LOAD_GLOBAL 'memoryview'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0xc1, // STORE_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x14,0x47, // LOAD_METHOD 'readinto'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0xc4, // STORE_FAST 4
+    0xb4, // LOAD_FAST 4
+    0x43,0x47, // POP_JUMP_IF_TRUE 7
+    0x12,0x5e, // LOAD_GLOBAL 'ValueError'
+    0x23,0x13, // LOAD_CONST_OBJ 19
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x57, // DUP_TOP
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0xb4, // LOAD_FAST 4
+    0xe6, // BINARY_OP 15 __isub__
+    0x5a, // ROT_TWO
+    0x18,0x45, // STORE_ATTR '_remaining'
+    0xb0, // LOAD_FAST 0
+    0x13,0x45, // LOAD_ATTR '_remaining'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4f, // POP_JUMP_IF_FALSE 15
+    0xb0, // LOAD_FAST 0
+    0x13,0x44, // LOAD_ATTR '_chunk'
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0xb2, // LOAD_FAST 2
+    0x14,0x2d, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0xb0, // LOAD_FAST 0
+    0x18,0x45, // STORE_ATTR '_remaining'
+    0xb4, // LOAD_FAST 4
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___BodyStream_readinto = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___BodyStream_readinto,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 167,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 71,
+        .line_info = fun_data_requests___init___BodyStream_readinto + 5,
+        .line_info_top = fun_data_requests___init___BodyStream_readinto + 26,
+        .opcodes = fun_data_requests___init___BodyStream_readinto + 26,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___BodyStream_readinto fun_data_requests___init___BodyStream_readinto[0]
+#endif
+
+// child of requests___init___BodyStream
+// frozen bytecode for file requests/__init__.py, scope requests___init___BodyStream_close
+static const byte fun_data_requests___init___BodyStream_close[16] = {
+    0x11,0x08, // prelude
+    0x2a,0x65, // names: close, self
+    0x80,0x2c, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x43, // LOAD_ATTR '_sock'
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___BodyStream_close = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___BodyStream_close,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 16,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 42,
+        .line_info = fun_data_requests___init___BodyStream_close + 4,
+        .line_info_top = fun_data_requests___init___BodyStream_close + 6,
+        .opcodes = fun_data_requests___init___BodyStream_close + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___BodyStream_close fun_data_requests___init___BodyStream_close[0]
+#endif
+
+static const mp_raw_code_t *const children_requests___init___BodyStream[] = {
+    (const mp_raw_code_t *)&proto_fun_requests___init___BodyStream___init__,
+    (const mp_raw_code_t *)&proto_fun_requests___init___BodyStream_read,
+    (const mp_raw_code_t *)&proto_fun_requests___init___BodyStream_readinto,
+    (const mp_raw_code_t *)&proto_fun_requests___init___BodyStream_close,
+};
+
+static const mp_raw_code_truncated_t proto_fun_requests___init___BodyStream = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___BodyStream,
+    .children = (void *)&children_requests___init___BodyStream,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 41,
+    .n_children = 4,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 3,
+        .line_info = fun_data_requests___init___BodyStream + 3,
+        .line_info_top = fun_data_requests___init___BodyStream + 11,
+        .opcodes = fun_data_requests___init___BodyStream + 11,
+    },
+    #endif
+    #endif
+};
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response
+static const byte fun_data_requests___init___Response[62] = {
+    0x08,0x1c, // prelude
+    0x04, // names: Response
+    0x88,0x30,0x64,0x40,0x64,0x60,0x88,0x0a,0x68,0x20,0x64,0x40,0x64, // code info
+    0x11,0x51, // LOAD_NAME '__name__'
+    0x16,0x52, // STORE_NAME '__module__'
+    0x10,0x04, // LOAD_CONST_STRING 'Response'
+    0x16,0x53, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x42, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x2a, // STORE_NAME 'close'
+    0x11,0x54, // LOAD_NAME 'property'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x4b, // STORE_NAME 'content'
+    0x11,0x54, // LOAD_NAME 'property'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x4c, // STORE_NAME 'text'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x16,0x26, // STORE_NAME 'json'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x4e, // STORE_NAME '__enter__'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x4f, // STORE_NAME '__exit__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response___init__
+static const byte fun_data_requests___init___Response___init__[24] = {
+    0x1a,0x0e, // prelude
+    0x42,0x65,0x6c, // names: __init__, self, f
+    0x80,0x31,0x24,0x25, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x48, // STORE_ATTR 'raw'
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0xb0, // LOAD_FAST 0
+    0x18,0x49, // STORE_ATTR 'encoding'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x4a, // STORE_ATTR '_cached'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 24,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 66,
+        .line_info = fun_data_requests___init___Response___init__ + 5,
+        .line_info_top = fun_data_requests___init___Response___init__ + 9,
+        .opcodes = fun_data_requests___init___Response___init__ + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response___init__ fun_data_requests___init___Response___init__[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response_close
+static const byte fun_data_requests___init___Response_close[32] = {
+    0x11,0x0e, // prelude
+    0x2a,0x65, // names: close, self
+    0x80,0x36,0x25,0x28,0x24, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x48, // LOAD_ATTR 'raw'
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0xb0, // LOAD_FAST 0
+    0x13,0x48, // LOAD_ATTR 'raw'
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x48, // STORE_ATTR 'raw'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x4a, // STORE_ATTR '_cached'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response_close = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response_close,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 32,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 42,
+        .line_info = fun_data_requests___init___Response_close + 4,
+        .line_info_top = fun_data_requests___init___Response_close + 9,
+        .opcodes = fun_data_requests___init___Response_close + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response_close fun_data_requests___init___Response_close[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response_content
+static const byte fun_data_requests___init___Response_content[48] = {
+    0x2d,0x12, // prelude
+    0x4b,0x65, // names: content, self
+    0x80,0x3d,0x27,0x22,0x4b,0x28,0x25, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x4a, // LOAD_ATTR '_cached'
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x5a, // POP_JUMP_IF_FALSE 26
+    0x49,0x0b, // SETUP_FINALLY 11
+    0xb0, // LOAD_FAST 0
+    0x13,0x48, // LOAD_ATTR 'raw'
+    0x14,0x46, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0xb0, // LOAD_FAST 0
+    0x18,0x4a, // STORE_ATTR '_cached'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x13,0x48, // LOAD_ATTR 'raw'
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x48, // STORE_ATTR 'raw'
+    0x5d, // END_FINALLY
+    0xb0, // LOAD_FAST 0
+    0x13,0x4a, // LOAD_ATTR '_cached'
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response_content = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response_content,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 48,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 75,
+        .line_info = fun_data_requests___init___Response_content + 4,
+        .line_info_top = fun_data_requests___init___Response_content + 11,
+        .opcodes = fun_data_requests___init___Response_content + 11,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response_content fun_data_requests___init___Response_content[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response_text
+static const byte fun_data_requests___init___Response_text[17] = {
+    0x19,0x08, // prelude
+    0x4c,0x65, // names: text, self
+    0x80,0x47, // code info
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0xb0, // LOAD_FAST 0
+    0x13,0x4b, // LOAD_ATTR 'content'
+    0xb0, // LOAD_FAST 0
+    0x13,0x49, // LOAD_ATTR 'encoding'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response_text = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response_text,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 17,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 76,
+        .line_info = fun_data_requests___init___Response_text + 4,
+        .line_info_top = fun_data_requests___init___Response_text + 6,
+        .opcodes = fun_data_requests___init___Response_text + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response_text fun_data_requests___init___Response_text[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response_json
+static const byte fun_data_requests___init___Response_json[21] = {
+    0x21,0x0a, // prelude
+    0x26,0x65, // names: json, self
+    0x80,0x4a,0x45, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x26, // IMPORT_NAME 'json'
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x14,0x4d, // LOAD_METHOD 'loads'
+    0xb0, // LOAD_FAST 0
+    0x13,0x4b, // LOAD_ATTR 'content'
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response_json = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response_json,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 21,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 38,
+        .line_info = fun_data_requests___init___Response_json + 4,
+        .line_info_top = fun_data_requests___init___Response_json + 7,
+        .opcodes = fun_data_requests___init___Response_json + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response_json fun_data_requests___init___Response_json[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response___enter__
+static const byte fun_data_requests___init___Response___enter__[8] = {
+    0x09,0x08, // prelude
+    0x4e,0x65, // names: __enter__, self
+    0x80,0x4f, // code info
+    0xb0, // LOAD_FAST 0
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response___enter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response___enter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 8,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 78,
+        .line_info = fun_data_requests___init___Response___enter__ + 4,
+        .line_info_top = fun_data_requests___init___Response___enter__ + 6,
+        .opcodes = fun_data_requests___init___Response___enter__ + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response___enter__ fun_data_requests___init___Response___enter__[0]
+#endif
+
+// child of requests___init___Response
+// frozen bytecode for file requests/__init__.py, scope requests___init___Response___exit__
+static const byte fun_data_requests___init___Response___exit__[18] = {
+    0xa8,0x04,0x0e, // prelude
+    0x4f,0x65,0x6d,0x6e,0x6f, // names: __exit__, self, exc_type, exc_val, exc_tb
+    0x80,0x52, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response___exit__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response___exit__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 18,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 4,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 79,
+        .line_info = fun_data_requests___init___Response___exit__ + 8,
+        .line_info_top = fun_data_requests___init___Response___exit__ + 10,
+        .opcodes = fun_data_requests___init___Response___exit__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___Response___exit__ fun_data_requests___init___Response___exit__[0]
+#endif
+
+static const mp_raw_code_t *const children_requests___init___Response[] = {
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response___init__,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response_close,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response_content,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response_text,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response_json,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response___enter__,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response___exit__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_requests___init___Response = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___Response,
+    .children = (void *)&children_requests___init___Response,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 62,
+    .n_children = 7,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 4,
+        .line_info = fun_data_requests___init___Response + 3,
+        .line_info_top = fun_data_requests___init___Response + 16,
+        .opcodes = fun_data_requests___init___Response + 16,
+    },
+    #endif
+    #endif
+};
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___request
+static const byte fun_data_requests___init___request[1347] = {
+    0xed,0xa1,0x85,0x01,0xa0,0x04, // prelude
+    0x06,0x55,0x56,0x57,0x26,0x37,0x58,0x59,0x5a,0x5b, // names: request, method, url, data, json, headers, stream, auth, timeout, parse_headers
+    0x80,0x60,0x25,0x45,0x46,0x22,0x57,0x26,0x45,0x25,0x29,0x32,0x4b,0x22,0x5a,0x2f,0x27,0x26,0x27,0x26,0x46,0x47,0x49,0x27,0x2f,0x4a,0x27,0x2f,0x4a,0x27,0x2f,0x48,0x31,0x46,0x23,0x26,0x44,0x54,0x66,0x48,0x23,0x2b,0x26,0x2c,0x28,0x2f,0x4f,0x27,0x46,0x26,0x28,0x4c,0x46,0x27,0x46,0x23,0x23,0x2e,0x48,0x29,0x28,0x27,0x4d,0x27,0x66,0x26,0x29,0x29,0x2b,0x4b,0x49,0x24,0x24,0x2d,0x26,0x30,0x29,0x2b,0x4b,0x26,0x4d,0x48,0x48,0x2a,0x4a,0x2a,0x2a,0x24,0x2a,0x2a,0x23,0x23,0x20,0x28,0x2b,0x43,0x28,0x2a,0x27,0x26,0x1f,0x21,0x36,0x2e,0x29,0x56,0x2c,0x25,0x23,0x25,0x2a,0x2f,0x28,0x27,0x2a,0x4a,0x54,0x27,0x42,0x23,0x47,0x29,0x30,0x4c,0x4e,0x24,0x2f,0x27,0x50,0x28,0x26,0x26,0x27,0x26, // code info
+    0xb4, // LOAD_FAST 4
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0x2c,0x00, // BUILD_MAP 0
+    0xc4, // STORE_FAST 4
+    0x42,0x46, // JUMP 6
+    0xb4, // LOAD_FAST 4
+    0x14,0x07, // LOAD_METHOD 'copy'
+    0x36,0x00, // CALL_METHOD 0
+    0xc4, // STORE_FAST 4
+    0x51, // LOAD_CONST_NONE
+    0xc9, // STORE_FAST 9
+    0xb2, // LOAD_FAST 2
+    0x46,0x13, // JUMP_IF_FALSE_OR_POP 19
+    0x12,0x5c, // LOAD_GLOBAL 'getattr'
+    0xb2, // LOAD_FAST 2
+    0x10,0x08, // LOAD_CONST_STRING '__next__'
+    0x51, // LOAD_CONST_NONE
+    0x34,0x03, // CALL_FUNCTION 3
+    0x46,0x09, // JUMP_IF_FALSE_OR_POP 9
+    0x12,0x5c, // LOAD_GLOBAL 'getattr'
+    0xb2, // LOAD_FAST 2
+    0x10,0x09, // LOAD_CONST_STRING '__len__'
+    0x51, // LOAD_CONST_NONE
+    0x34,0x03, // CALL_FUNCTION 3
+    0xd3, // UNARY_OP 3 <not>
+    0xca, // STORE_FAST 10
+    0xb6, // LOAD_FAST 6
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x70, // POP_JUMP_IF_FALSE 48
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x0a, // IMPORT_NAME 'binascii'
+    0xcb, // STORE_FAST 11
+    0xb6, // LOAD_FAST 6
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xcc, // STORE_FAST 12
+    0xcd, // STORE_FAST 13
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x14,0x0b, // LOAD_METHOD 'format'
+    0xbc, // LOAD_FAST 12
+    0xbd, // LOAD_FAST 13
+    0x36,0x02, // CALL_METHOD 2
+    0xce, // STORE_FAST 14
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0xbb, // LOAD_FAST 11
+    0x14,0x0c, // LOAD_METHOD 'b2a_base64'
+    0xbe, // LOAD_FAST 14
+    0x36,0x01, // CALL_METHOD 1
+    0x51, // LOAD_CONST_NONE
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x10,0x0d, // LOAD_CONST_STRING 'ascii'
+    0x34,0x02, // CALL_FUNCTION 2
+    0xce, // STORE_FAST 14
+    0x10,0x0e, // LOAD_CONST_STRING 'Basic {}'
+    0x14,0x0b, // LOAD_METHOD 'format'
+    0xbe, // LOAD_FAST 14
+    0x36,0x01, // CALL_METHOD 1
+    0xb4, // LOAD_FAST 4
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x56, // STORE_SUBSCR
+    0x48,0x13, // SETUP_EXCEPT 19
+    0xb1, // LOAD_FAST 1
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x10, // LOAD_CONST_STRING '/'
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x04, // UNPACK_SEQUENCE 4
+    0xcf, // STORE_FAST 15
+    0x26,0x10, // STORE_FAST_N 16
+    0x26,0x11, // STORE_FAST_N 17
+    0x26,0x12, // STORE_FAST_N 18
+    0x4a,0x1d, // POP_EXCEPT_JUMP 29
+    0x57, // DUP_TOP
+    0x12,0x5e, // LOAD_GLOBAL 'ValueError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x56, // POP_JUMP_IF_FALSE 22
+    0x59, // POP_TOP
+    0xb1, // LOAD_FAST 1
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x10, // LOAD_CONST_STRING '/'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xcf, // STORE_FAST 15
+    0x26,0x10, // STORE_FAST_N 16
+    0x26,0x11, // STORE_FAST_N 17
+    0x10,0x11, // LOAD_CONST_STRING ''
+    0x26,0x12, // STORE_FAST_N 18
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xbf, // LOAD_FAST 15
+    0x10,0x12, // LOAD_CONST_STRING 'http:'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x47, // POP_JUMP_IF_FALSE 7
+    0x22,0x80,0x50, // LOAD_CONST_SMALL_INT 80
+    0x26,0x13, // STORE_FAST_N 19
+    0x42,0x5c, // JUMP 28
+    0xbf, // LOAD_FAST 15
+    0x10,0x13, // LOAD_CONST_STRING 'https:'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x14, // IMPORT_NAME 'tls'
+    0x26,0x14, // STORE_FAST_N 20
+    0x22,0x83,0x3b, // LOAD_CONST_SMALL_INT 443
+    0x26,0x13, // STORE_FAST_N 19
+    0x42,0x49, // JUMP 9
+    0x12,0x5e, // LOAD_GLOBAL 'ValueError'
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0xbf, // LOAD_FAST 15
+    0xf2, // BINARY_OP 27 __add__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x10,0x15, // LOAD_CONST_STRING '?'
+    0x24,0x11, // LOAD_FAST_N 17
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x59, // POP_JUMP_IF_FALSE 25
+    0x24,0x11, // LOAD_FAST_N 17
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x15, // LOAD_CONST_STRING '?'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0x26,0x11, // STORE_FAST_N 17
+    0x26,0x15, // STORE_FAST_N 21
+    0x10,0x15, // LOAD_CONST_STRING '?'
+    0x24,0x15, // LOAD_FAST_N 21
+    0xf2, // BINARY_OP 27 __add__
+    0x24,0x12, // LOAD_FAST_N 18
+    0xf2, // BINARY_OP 27 __add__
+    0x26,0x12, // STORE_FAST_N 18
+    0x10,0x16, // LOAD_CONST_STRING '#'
+    0x24,0x11, // LOAD_FAST_N 17
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x59, // POP_JUMP_IF_FALSE 25
+    0x24,0x11, // LOAD_FAST_N 17
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x16, // LOAD_CONST_STRING '#'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0x26,0x11, // STORE_FAST_N 17
+    0x26,0x15, // STORE_FAST_N 21
+    0x10,0x16, // LOAD_CONST_STRING '#'
+    0x24,0x15, // LOAD_FAST_N 21
+    0xf2, // BINARY_OP 27 __add__
+    0x24,0x12, // LOAD_FAST_N 18
+    0xf2, // BINARY_OP 27 __add__
+    0x26,0x12, // STORE_FAST_N 18
+    0x10,0x17, // LOAD_CONST_STRING ':'
+    0x24,0x11, // LOAD_FAST_N 17
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x57, // POP_JUMP_IF_FALSE 23
+    0x24,0x11, // LOAD_FAST_N 17
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x17, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0x26,0x11, // STORE_FAST_N 17
+    0x26,0x13, // STORE_FAST_N 19
+    0x12,0x5f, // LOAD_GLOBAL 'int'
+    0x24,0x13, // LOAD_FAST_N 19
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x13, // STORE_FAST_N 19
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x14,0x18, // LOAD_METHOD 'getaddrinfo'
+    0x24,0x11, // LOAD_FAST_N 17
+    0x24,0x13, // LOAD_FAST_N 19
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x13,0x19, // LOAD_ATTR 'SOCK_STREAM'
+    0x36,0x04, // CALL_METHOD 4
+    0x26,0x16, // STORE_FAST_N 22
+    0x24,0x16, // LOAD_FAST_N 22
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x26,0x16, // STORE_FAST_N 22
+    0x51, // LOAD_CONST_NONE
+    0x26,0x17, // STORE_FAST_N 23
+    0xb8, // LOAD_FAST 8
+    0x50, // LOAD_CONST_FALSE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x2c,0x00, // BUILD_MAP 0
+    0x26,0x17, // STORE_FAST_N 23
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x14,0x02, // LOAD_METHOD 'socket'
+    0x24,0x16, // LOAD_FAST_N 22
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x12,0x02, // LOAD_GLOBAL 'socket'
+    0x13,0x19, // LOAD_ATTR 'SOCK_STREAM'
+    0x24,0x16, // LOAD_FAST_N 22
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x55, // LOAD_SUBSCR
+    0x36,0x03, // CALL_METHOD 3
+    0x26,0x18, // STORE_FAST_N 24
+    0xb7, // LOAD_FAST 7
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x1a, // LOAD_METHOD 'settimeout'
+    0xb7, // LOAD_FAST 7
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x48,0xaf,0x05, // SETUP_EXCEPT 687
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x1b, // LOAD_METHOD 'connect'
+    0x24,0x16, // LOAD_FAST_N 22
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x55, // LOAD_SUBSCR
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xbf, // LOAD_FAST 15
+    0x10,0x13, // LOAD_CONST_STRING 'https:'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x63, // POP_JUMP_IF_FALSE 35
+    0x24,0x14, // LOAD_FAST_N 20
+    0x14,0x1c, // LOAD_METHOD 'SSLContext'
+    0x24,0x14, // LOAD_FAST_N 20
+    0x13,0x1d, // LOAD_ATTR 'PROTOCOL_TLS_CLIENT'
+    0x36,0x01, // CALL_METHOD 1
+    0x26,0x19, // STORE_FAST_N 25
+    0x24,0x14, // LOAD_FAST_N 20
+    0x13,0x1e, // LOAD_ATTR 'CERT_NONE'
+    0x24,0x19, // LOAD_FAST_N 25
+    0x18,0x1f, // STORE_ATTR 'verify_mode'
+    0x24,0x19, // LOAD_FAST_N 25
+    0x14,0x20, // LOAD_METHOD 'wrap_socket'
+    0x24,0x18, // LOAD_FAST_N 24
+    0x10,0x21, // LOAD_CONST_STRING 'server_hostname'
+    0x24,0x11, // LOAD_FAST_N 17
+    0x36,0x82,0x01, // CALL_METHOD 257
+    0x26,0x18, // STORE_FAST_N 24
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0xb0, // LOAD_FAST 0
+    0x24,0x12, // LOAD_FAST_N 18
+    0x2a,0x02, // BUILD_TUPLE 2
+    0xf8, // BINARY_OP 33 __mod__
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x10,0x23, // LOAD_CONST_STRING 'Host'
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x24,0x11, // LOAD_FAST_N 17
+    0xb4, // LOAD_FAST 4
+    0x10,0x23, // LOAD_CONST_STRING 'Host'
+    0x56, // STORE_SUBSCR
+    0xb3, // LOAD_FAST 3
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x67, // POP_JUMP_IF_FALSE 39
+    0xb2, // LOAD_FAST 2
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x24, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x10,0x25, // LOAD_CONST_STRING 'dumps'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x26, // IMPORT_NAME 'json'
+    0x1c,0x25, // IMPORT_FROM 'dumps'
+    0x26,0x1a, // STORE_FAST_N 26
+    0x59, // POP_TOP
+    0x24,0x1a, // LOAD_FAST_N 26
+    0xb3, // LOAD_FAST 3
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc2, // STORE_FAST 2
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0xb4, // LOAD_FAST 4
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0x56, // STORE_SUBSCR
+    0xb2, // LOAD_FAST 2
+    0x44,0x7e, // POP_JUMP_IF_FALSE 62
+    0xba, // LOAD_FAST 10
+    0x44,0x56, // POP_JUMP_IF_FALSE 22
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x10,0x27, // LOAD_CONST_STRING 'chunked'
+    0xb4, // LOAD_FAST 4
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x56, // STORE_SUBSCR
+    0x42,0x65, // JUMP 37
+    0x12,0x60, // LOAD_GLOBAL 'isinstance'
+    0xb2, // LOAD_FAST 2
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x61, // LOAD_GLOBAL 'bytes'
+    0xb2, // LOAD_FAST 2
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc2, // STORE_FAST 2
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0x12,0x62, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xb4, // LOAD_FAST 4
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0x56, // STORE_SUBSCR
+    0x10,0x29, // LOAD_CONST_STRING 'Connection'
+    0xb4, // LOAD_FAST 4
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x10,0x2a, // LOAD_CONST_STRING 'close'
+    0xb4, // LOAD_FAST 4
+    0x10,0x29, // LOAD_CONST_STRING 'Connection'
+    0x56, // STORE_SUBSCR
+    0xb4, // LOAD_FAST 4
+    0x5f, // GET_ITER_STACK
+    0x4b,0x2a, // FOR_ITER 42
+    0x26,0x1b, // STORE_FAST_N 27
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x24,0x1b, // LOAD_FAST_N 27
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x08, // LOAD_CONST_OBJ 8
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0xb4, // LOAD_FAST 4
+    0x24,0x1b, // LOAD_FAST_N 27
+    0x55, // LOAD_SUBSCR
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x14, // JUMP -44
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb2, // LOAD_FAST 2
+    0x44,0xe1,0x80, // POP_JUMP_IF_FALSE 97
+    0xba, // LOAD_FAST 10
+    0x44,0xd5,0x80, // POP_JUMP_IF_FALSE 85
+    0xb4, // LOAD_FAST 4
+    0x14,0x2b, // LOAD_METHOD 'get'
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x51, // LOAD_CONST_NONE
+    0x36,0x02, // CALL_METHOD 2
+    0x10,0x27, // LOAD_CONST_STRING 'chunked'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x75, // POP_JUMP_IF_FALSE 53
+    0xb2, // LOAD_FAST 2
+    0x5f, // GET_ITER_STACK
+    0x4b,0x26, // FOR_ITER 38
+    0x26,0x1c, // STORE_FAST_N 28
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x0a, // LOAD_CONST_OBJ 10
+    0x12,0x62, // LOAD_GLOBAL 'len'
+    0x24,0x1c, // LOAD_FAST_N 28
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf8, // BINARY_OP 33 __mod__
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x24,0x1c, // LOAD_FAST_N 28
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x18, // JUMP -40
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x10,0x2c, // LOAD_CONST_STRING '0\r\n\r\n'
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x51, // JUMP 17
+    0xb2, // LOAD_FAST 2
+    0x5f, // GET_ITER_STACK
+    0x4b,0x0d, // FOR_ITER 13
+    0x26,0x1c, // STORE_FAST_N 28
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0x24,0x1c, // LOAD_FAST_N 28
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x42,0x31, // JUMP -15
+    0x42,0x48, // JUMP 8
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x22, // LOAD_METHOD 'write'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x2d, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x26,0x1d, // STORE_FAST_N 29
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x51, // LOAD_CONST_NONE
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0x26,0x1d, // STORE_FAST_N 29
+    0x12,0x62, // LOAD_GLOBAL 'len'
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x34,0x01, // CALL_FUNCTION 1
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x12,0x5e, // LOAD_GLOBAL 'ValueError'
+    0x23,0x0b, // LOAD_CONST_OBJ 11
+    0x24,0x1d, // LOAD_FAST_N 29
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x12,0x5f, // LOAD_GLOBAL 'int'
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x1e, // STORE_FAST_N 30
+    0x10,0x11, // LOAD_CONST_STRING ''
+    0x26,0x1f, // STORE_FAST_N 31
+    0x12,0x62, // LOAD_GLOBAL 'len'
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x34,0x01, // CALL_FUNCTION 1
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd8, // BINARY_OP 1 __gt__
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x55, // LOAD_SUBSCR
+    0x14,0x2e, // LOAD_METHOD 'rstrip'
+    0x36,0x00, // CALL_METHOD 0
+    0x26,0x1f, // STORE_FAST_N 31
+    0x51, // LOAD_CONST_NONE
+    0x26,0x20, // STORE_FAST_N 32
+    0x50, // LOAD_CONST_FALSE
+    0x26,0x21, // STORE_FAST_N 33
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x2d, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x26,0x1d, // STORE_FAST_N 29
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x44,0x47, // POP_JUMP_IF_FALSE 7
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x42,0xe2,0x81, // JUMP 226
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x14,0x2f, // LOAD_METHOD 'lower'
+    0x36,0x00, // CALL_METHOD 0
+    0x26,0x22, // STORE_FAST_N 34
+    0x24,0x22, // LOAD_FAST_N 34
+    0x14,0x30, // LOAD_METHOD 'startswith'
+    0x23,0x0c, // LOAD_CONST_OBJ 12
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x23,0x0d, // LOAD_CONST_OBJ 13
+    0x24,0x1d, // LOAD_FAST_N 29
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x52, // LOAD_CONST_TRUE
+    0x26,0x21, // STORE_FAST_N 33
+    0x42,0xef,0x80, // JUMP 111
+    0x24,0x22, // LOAD_FAST_N 34
+    0x14,0x30, // LOAD_METHOD 'startswith'
+    0x23,0x0e, // LOAD_CONST_OBJ 14
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0xe4,0x80, // POP_JUMP_IF_FALSE 100
+    0x22,0x81,0x48, // LOAD_CONST_SMALL_INT 200
+    0x24,0x1e, // LOAD_FAST_N 30
+    0x57, // DUP_TOP
+    0x5b, // ROT_THREE
+    0xda, // BINARY_OP 3 __le__
+    0x46,0x06, // JUMP_IF_FALSE_OR_POP 6
+    0x22,0x82,0x2b, // LOAD_CONST_SMALL_INT 299
+    0xda, // BINARY_OP 3 __le__
+    0x42,0x42, // JUMP 2
+    0x5a, // ROT_TWO
+    0x59, // POP_TOP
+    0x43,0xcf,0x80, // POP_JUMP_IF_TRUE 79
+    0x24,0x1e, // LOAD_FAST_N 30
+    0x22,0x82,0x2d, // LOAD_CONST_SMALL_INT 301
+    0x22,0x82,0x2e, // LOAD_CONST_SMALL_INT 302
+    0x22,0x82,0x2f, // LOAD_CONST_SMALL_INT 303
+    0x22,0x82,0x33, // LOAD_CONST_SMALL_INT 307
+    0x22,0x82,0x34, // LOAD_CONST_SMALL_INT 308
+    0x2b,0x05, // BUILD_LIST 5
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x6d, // POP_JUMP_IF_FALSE 45
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x8a, // LOAD_CONST_SMALL_INT 10
+    0x7e, // LOAD_CONST_SMALL_INT -2
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc9, // STORE_FAST 9
+    0xb9, // LOAD_FAST 9
+    0x14,0x30, // LOAD_METHOD 'startswith'
+    0x10,0x10, // LOAD_CONST_STRING '/'
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0xbf, // LOAD_FAST 15
+    0x10,0x31, // LOAD_CONST_STRING '//'
+    0xf2, // BINARY_OP 27 __add__
+    0x24,0x11, // LOAD_FAST_N 17
+    0xf2, // BINARY_OP 27 __add__
+    0x10,0x17, // LOAD_CONST_STRING ':'
+    0xf2, // BINARY_OP 27 __add__
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0x24,0x13, // LOAD_FAST_N 19
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf2, // BINARY_OP 27 __add__
+    0xb9, // LOAD_FAST 9
+    0xf2, // BINARY_OP 27 __add__
+    0xc9, // STORE_FAST 9
+    0x42,0x4a, // JUMP 10
+    0x12,0x63, // LOAD_GLOBAL 'NotImplementedError'
+    0x23,0x0f, // LOAD_CONST_OBJ 15
+    0x24,0x1e, // LOAD_FAST_N 30
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x42,0x40, // JUMP 0
+    0xb8, // LOAD_FAST 8
+    0x50, // LOAD_CONST_FALSE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x42,0xc9,0x80, // JUMP 73
+    0xb8, // LOAD_FAST 8
+    0x52, // LOAD_CONST_TRUE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x7c, // POP_JUMP_IF_FALSE 60
+    0x12,0x5d, // LOAD_GLOBAL 'str'
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x26,0x1d, // STORE_FAST_N 29
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x14,0x0f, // LOAD_METHOD 'split'
+    0x10,0x17, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0x26,0x1b, // STORE_FAST_N 27
+    0x26,0x23, // STORE_FAST_N 35
+    0x24,0x23, // LOAD_FAST_N 35
+    0x14,0x32, // LOAD_METHOD 'strip'
+    0x36,0x00, // CALL_METHOD 0
+    0x26,0x23, // STORE_FAST_N 35
+    0x24,0x23, // LOAD_FAST_N 35
+    0x24,0x17, // LOAD_FAST_N 23
+    0x24,0x1b, // LOAD_FAST_N 27
+    0x56, // STORE_SUBSCR
+    0x24,0x22, // LOAD_FAST_N 34
+    0x14,0x30, // LOAD_METHOD 'startswith'
+    0x23,0x10, // LOAD_CONST_OBJ 16
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x5f, // LOAD_GLOBAL 'int'
+    0x24,0x23, // LOAD_FAST_N 35
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x20, // STORE_FAST_N 32
+    0x42,0x48, // JUMP 8
+    0xb8, // LOAD_FAST 8
+    0x24,0x1d, // LOAD_FAST_N 29
+    0x24,0x17, // LOAD_FAST_N 23
+    0x34,0x02, // CALL_FUNCTION 2
+    0x59, // POP_TOP
+    0x42,0x88,0x7e, // JUMP -248
+    0x4a,0x10, // POP_EXCEPT_JUMP 16
+    0x57, // DUP_TOP
+    0x12,0x64, // LOAD_GLOBAL 'OSError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0x59, // POP_TOP
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0x64, // RAISE_LAST
+    0x5d, // END_FINALLY
+    0xb9, // LOAD_FAST 9
+    0x44,0x7a, // POP_JUMP_IF_FALSE 58
+    0x24,0x18, // LOAD_FAST_N 24
+    0x14,0x2a, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x59, // POP_TOP
+    0xb4, // LOAD_FAST 4
+    0x14,0x33, // LOAD_METHOD 'pop'
+    0x10,0x23, // LOAD_CONST_STRING 'Host'
+    0x51, // LOAD_CONST_NONE
+    0x36,0x02, // CALL_METHOD 2
+    0x59, // POP_TOP
+    0x24,0x1e, // LOAD_FAST_N 30
+    0x22,0x82,0x2d, // LOAD_CONST_SMALL_INT 301
+    0x22,0x82,0x2e, // LOAD_CONST_SMALL_INT 302
+    0x22,0x82,0x2f, // LOAD_CONST_SMALL_INT 303
+    0x2b,0x03, // BUILD_LIST 3
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x34, // LOAD_CONST_STRING 'GET'
+    0xb9, // LOAD_FAST 9
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0x34,0x06, // CALL_FUNCTION 6
+    0x63, // RETURN_VALUE
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0xb0, // LOAD_FAST 0
+    0xb9, // LOAD_FAST 9
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0x34,0x06, // CALL_FUNCTION 6
+    0x63, // RETURN_VALUE
+    0x42,0xce,0x80, // JUMP 78
+    0x24,0x21, // LOAD_FAST_N 33
+    0x44,0x4f, // POP_JUMP_IF_FALSE 15
+    0x12,0x04, // LOAD_GLOBAL 'Response'
+    0x12,0x03, // LOAD_GLOBAL 'BodyStream'
+    0x24,0x18, // LOAD_FAST_N 24
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x34,0x02, // CALL_FUNCTION 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x24, // STORE_FAST_N 36
+    0x42,0x5f, // JUMP 31
+    0x24,0x20, // LOAD_FAST_N 32
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x50, // POP_JUMP_IF_FALSE 16
+    0x12,0x04, // LOAD_GLOBAL 'Response'
+    0x12,0x03, // LOAD_GLOBAL 'BodyStream'
+    0x24,0x18, // LOAD_FAST_N 24
+    0x24,0x20, // LOAD_FAST_N 32
+    0x34,0x02, // CALL_FUNCTION 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x24, // STORE_FAST_N 36
+    0x42,0x48, // JUMP 8
+    0x12,0x04, // LOAD_GLOBAL 'Response'
+    0x24,0x18, // LOAD_FAST_N 24
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x24, // STORE_FAST_N 36
+    0x24,0x1e, // LOAD_FAST_N 30
+    0x24,0x24, // LOAD_FAST_N 36
+    0x18,0x35, // STORE_ATTR 'status_code'
+    0x24,0x1f, // LOAD_FAST_N 31
+    0x24,0x24, // LOAD_FAST_N 36
+    0x18,0x36, // STORE_ATTR 'reason'
+    0x24,0x17, // LOAD_FAST_N 23
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x24,0x17, // LOAD_FAST_N 23
+    0x24,0x24, // LOAD_FAST_N 36
+    0x18,0x37, // STORE_ATTR 'headers'
+    0x24,0x24, // LOAD_FAST_N 36
+    0x63, // RETURN_VALUE
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___request = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___request,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 1347,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 46,
+        .n_exc_stack = 1,
+        .scope_flags = 0,
+        .n_pos_args = 9,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 7,
+        .qstr_block_name_idx = 6,
+        .line_info = fun_data_requests___init___request + 16,
+        .line_info_top = fun_data_requests___init___request + 150,
+        .opcodes = fun_data_requests___init___request + 150,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___request fun_data_requests___init___request[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___head
+static const byte fun_data_requests___init___head[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x38,0x56, // names: head, url
+    0x90,0x12, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x39, // LOAD_CONST_STRING 'HEAD'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___head = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___head,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 56,
+        .line_info = fun_data_requests___init___head + 6,
+        .line_info_top = fun_data_requests___init___head + 8,
+        .opcodes = fun_data_requests___init___head + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___head fun_data_requests___init___head[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___get
+static const byte fun_data_requests___init___get[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x2b,0x56, // names: get, url
+    0x90,0x16, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x34, // LOAD_CONST_STRING 'GET'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___get = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___get,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 43,
+        .line_info = fun_data_requests___init___get + 6,
+        .line_info_top = fun_data_requests___init___get + 8,
+        .opcodes = fun_data_requests___init___get + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___get fun_data_requests___init___get[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___post
+static const byte fun_data_requests___init___post[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x3a,0x56, // names: post, url
+    0x90,0x1a, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x3b, // LOAD_CONST_STRING 'POST'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___post = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___post,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 58,
+        .line_info = fun_data_requests___init___post + 6,
+        .line_info_top = fun_data_requests___init___post + 8,
+        .opcodes = fun_data_requests___init___post + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___post fun_data_requests___init___post[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___put
+static const byte fun_data_requests___init___put[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x3c,0x56, // names: put, url
+    0x90,0x1e, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x3d, // LOAD_CONST_STRING 'PUT'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___put = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___put,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 60,
+        .line_info = fun_data_requests___init___put + 6,
+        .line_info_top = fun_data_requests___init___put + 8,
+        .opcodes = fun_data_requests___init___put + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___put fun_data_requests___init___put[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___patch
+static const byte fun_data_requests___init___patch[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x3e,0x56, // names: patch, url
+    0x90,0x22, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x3f, // LOAD_CONST_STRING 'PATCH'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___patch = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___patch,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 62,
+        .line_info = fun_data_requests___init___patch + 6,
+        .line_info_top = fun_data_requests___init___patch + 8,
+        .opcodes = fun_data_requests___init___patch + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___patch fun_data_requests___init___patch[0]
+#endif
+
+// child of requests___init____lt_module_gt_
+// frozen bytecode for file requests/__init__.py, scope requests___init___delete
+static const byte fun_data_requests___init___delete[20] = {
+    0xb9,0x80,0x40,0x08, // prelude
+    0x40,0x56, // names: delete, url
+    0x90,0x26, // code info
+    0x12,0x06, // LOAD_GLOBAL 'request'
+    0x10,0x41, // LOAD_CONST_STRING 'DELETE'
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x82,0x02, // CALL_FUNCTION_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_requests___init___delete = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init___delete,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 8,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 64,
+        .line_info = fun_data_requests___init___delete + 6,
+        .line_info_top = fun_data_requests___init___delete + 8,
+        .opcodes = fun_data_requests___init___delete + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_requests___init___delete fun_data_requests___init___delete[0]
+#endif
+
+static const mp_raw_code_t *const children_requests___init____lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_requests___init___BodyStream,
+    (const mp_raw_code_t *)&proto_fun_requests___init___Response,
+    (const mp_raw_code_t *)&proto_fun_requests___init___request,
+    (const mp_raw_code_t *)&proto_fun_requests___init___head,
+    (const mp_raw_code_t *)&proto_fun_requests___init___get,
+    (const mp_raw_code_t *)&proto_fun_requests___init___post,
+    (const mp_raw_code_t *)&proto_fun_requests___init___put,
+    (const mp_raw_code_t *)&proto_fun_requests___init___patch,
+    (const mp_raw_code_t *)&proto_fun_requests___init___delete,
+};
+
+static const mp_raw_code_truncated_t proto_fun_requests___init____lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_requests___init____lt_module_gt_,
+    .children = (void *)&children_requests___init____lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 90,
+    .n_children = 9,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_requests___init____lt_module_gt_ + 3,
+        .line_info_top = fun_data_requests___init____lt_module_gt_ + 22,
+        .opcodes = fun_data_requests___init____lt_module_gt_ + 22,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_requests___init__[112] = {
+    MP_QSTR_requests_slash___init___dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_socket,
+    MP_QSTR_BodyStream,
+    MP_QSTR_Response,
+    MP_QSTR_1_dot_1_dot_1,
+    MP_QSTR_request,
+    MP_QSTR_copy,
+    MP_QSTR___next__,
+    MP_QSTR___len__,
+    MP_QSTR_binascii,
+    MP_QSTR_format,
+    MP_QSTR_b2a_base64,
+    MP_QSTR_ascii,
+    MP_QSTR_Basic_space__brace_open__brace_close_,
+    MP_QSTR_split,
+    MP_QSTR__slash_,
+    MP_QSTR_,
+    MP_QSTR_http_colon_,
+    MP_QSTR_https_colon_,
+    MP_QSTR_tls,
+    MP_QSTR__question_,
+    MP_QSTR__hash_,
+    MP_QSTR__colon_,
+    MP_QSTR_getaddrinfo,
+    MP_QSTR_SOCK_STREAM,
+    MP_QSTR_settimeout,
+    MP_QSTR_connect,
+    MP_QSTR_SSLContext,
+    MP_QSTR_PROTOCOL_TLS_CLIENT,
+    MP_QSTR_CERT_NONE,
+    MP_QSTR_verify_mode,
+    MP_QSTR_wrap_socket,
+    MP_QSTR_server_hostname,
+    MP_QSTR_write,
+    MP_QSTR_Host,
+    MP_QSTR_AssertionError,
+    MP_QSTR_dumps,
+    MP_QSTR_json,
+    MP_QSTR_chunked,
+    MP_QSTR_utf_hyphen_8,
+    MP_QSTR_Connection,
+    MP_QSTR_close,
+    MP_QSTR_get,
+    MP_QSTR_0_0x0d__0x0a__0x0d__0x0a_,
+    MP_QSTR_readline,
+    MP_QSTR_rstrip,
+    MP_QSTR_lower,
+    MP_QSTR_startswith,
+    MP_QSTR__slash__slash_,
+    MP_QSTR_strip,
+    MP_QSTR_pop,
+    MP_QSTR_GET,
+    MP_QSTR_status_code,
+    MP_QSTR_reason,
+    MP_QSTR_headers,
+    MP_QSTR_head,
+    MP_QSTR_HEAD,
+    MP_QSTR_post,
+    MP_QSTR_POST,
+    MP_QSTR_put,
+    MP_QSTR_PUT,
+    MP_QSTR_patch,
+    MP_QSTR_PATCH,
+    MP_QSTR_delete,
+    MP_QSTR_DELETE,
+    MP_QSTR___init__,
+    MP_QSTR__sock,
+    MP_QSTR__chunk,
+    MP_QSTR__remaining,
+    MP_QSTR_read,
+    MP_QSTR_readinto,
+    MP_QSTR_raw,
+    MP_QSTR_encoding,
+    MP_QSTR__cached,
+    MP_QSTR_content,
+    MP_QSTR_text,
+    MP_QSTR_loads,
+    MP_QSTR___enter__,
+    MP_QSTR___exit__,
+    MP_QSTR___version__,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_property,
+    MP_QSTR_method,
+    MP_QSTR_url,
+    MP_QSTR_data,
+    MP_QSTR_stream,
+    MP_QSTR_auth,
+    MP_QSTR_timeout,
+    MP_QSTR_parse_headers,
+    MP_QSTR_getattr,
+    MP_QSTR_str,
+    MP_QSTR_ValueError,
+    MP_QSTR_int,
+    MP_QSTR_isinstance,
+    MP_QSTR_bytes,
+    MP_QSTR_len,
+    MP_QSTR_NotImplementedError,
+    MP_QSTR_OSError,
+    MP_QSTR_self,
+    MP_QSTR_sock,
+    MP_QSTR_remaining,
+    MP_QSTR_n,
+    MP_QSTR_bytearray,
+    MP_QSTR_buf,
+    MP_QSTR_memoryview,
+    MP_QSTR_f,
+    MP_QSTR_exc_type,
+    MP_QSTR_exc_val,
+    MP_QSTR_exc_tb,
+};
+
+// constants
+static const mp_obj_str_t const_obj_requests___init___0 = {{&mp_type_bytes}, 14943, 5, (const byte*)"\x7b\x7d\x3a\x7b\x7d"};
+static const mp_obj_str_t const_obj_requests___init___3 = {{&mp_type_bytes}, 48500, 17, (const byte*)"\x25\x73\x20\x2f\x25\x73\x20\x48\x54\x54\x50\x2f\x31\x2e\x31\x0d\x0a"};
+static const mp_obj_str_t const_obj_requests___init___8 = {{&mp_type_bytes}, 26975, 2, (const byte*)"\x3a\x20"};
+static const mp_obj_str_t const_obj_requests___init___9 = {{&mp_type_bytes}, 27298, 2, (const byte*)"\x0d\x0a"};
+static const mp_obj_str_t const_obj_requests___init___10 = {{&mp_type_bytes}, 50079, 4, (const byte*)"\x25\x78\x0d\x0a"};
+static const mp_obj_str_t const_obj_requests___init___11 = {{&mp_type_str}, 62148, 29, (const byte*)"\x48\x54\x54\x50\x20\x65\x72\x72\x6f\x72\x3a\x20\x42\x61\x64\x53\x74\x61\x74\x75\x73\x4c\x69\x6e\x65\x3a\x0a\x25\x73"};
+static const mp_obj_str_t const_obj_requests___init___12 = {{&mp_type_bytes}, 8890, 18, (const byte*)"\x74\x72\x61\x6e\x73\x66\x65\x72\x2d\x65\x6e\x63\x6f\x64\x69\x6e\x67\x3a"};
+static const mp_obj_str_t const_obj_requests___init___13 = {{&mp_type_bytes}, 3583, 7, (const byte*)"\x63\x68\x75\x6e\x6b\x65\x64"};
+static const mp_obj_str_t const_obj_requests___init___14 = {{&mp_type_bytes}, 674, 9, (const byte*)"\x6c\x6f\x63\x61\x74\x69\x6f\x6e\x3a"};
+static const mp_obj_str_t const_obj_requests___init___15 = {{&mp_type_str}, 18157, 29, (const byte*)"\x52\x65\x64\x69\x72\x65\x63\x74\x20\x25\x64\x20\x6e\x6f\x74\x20\x79\x65\x74\x20\x73\x75\x70\x70\x6f\x72\x74\x65\x64"};
+static const mp_obj_str_t const_obj_requests___init___16 = {{&mp_type_bytes}, 64711, 15, (const byte*)"\x63\x6f\x6e\x74\x65\x6e\x74\x2d\x6c\x65\x6e\x67\x74\x68\x3a"};
+static const mp_obj_str_t const_obj_requests___init___18 = {{&mp_type_bytes}, 46494, 1, (const byte*)"\x3b"};
+static const mp_obj_str_t const_obj_requests___init___19 = {{&mp_type_str}, 14625, 38, (const byte*)"\x43\x6f\x6e\x6e\x65\x63\x74\x69\x6f\x6e\x20\x63\x6c\x6f\x73\x65\x64\x20\x62\x65\x66\x6f\x72\x65\x20\x62\x6f\x64\x79\x20\x63\x6f\x6d\x70\x6c\x65\x74\x65"};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_requests___init__[20] = {
+    MP_ROM_PTR(&const_obj_requests___init___0),
+    MP_ROM_QSTR(MP_QSTR_Authorization),
+    MP_ROM_QSTR(MP_QSTR_Unsupported_space_protocol_colon__space_),
+    MP_ROM_PTR(&const_obj_requests___init___3),
+    MP_ROM_QSTR(MP_QSTR_Content_hyphen_Type),
+    MP_ROM_QSTR(MP_QSTR_application_slash_json),
+    MP_ROM_QSTR(MP_QSTR_Transfer_hyphen_Encoding),
+    MP_ROM_QSTR(MP_QSTR_Content_hyphen_Length),
+    MP_ROM_PTR(&const_obj_requests___init___8),
+    MP_ROM_PTR(&const_obj_requests___init___9),
+    MP_ROM_PTR(&const_obj_requests___init___10),
+    MP_ROM_PTR(&const_obj_requests___init___11),
+    MP_ROM_PTR(&const_obj_requests___init___12),
+    MP_ROM_PTR(&const_obj_requests___init___13),
+    MP_ROM_PTR(&const_obj_requests___init___14),
+    MP_ROM_PTR(&const_obj_requests___init___15),
+    MP_ROM_PTR(&const_obj_requests___init___16),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+    MP_ROM_PTR(&const_obj_requests___init___18),
+    MP_ROM_PTR(&const_obj_requests___init___19),
+};
+
+static const mp_frozen_module_t frozen_module_requests___init__ = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_requests___init__,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_requests___init__,
+    },
+    .proto_fun = &proto_fun_requests___init____lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module aiohttp_aiohttp_ws
+// - original source file: build/frozen_mpy/aiohttp/aiohttp_ws.mpy
+// - frozen file name: aiohttp/aiohttp_ws.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws__lt_module_gt_
+static const byte fun_data_aiohttp_aiohttp_ws__lt_module_gt_[149] = {
+    0x10,0x30, // prelude
+    0x01, // names: <module>
+    0x60,0x40,0x26,0x26,0x26,0x26,0x26,0x26,0x4c,0x2a,0x6a,0x84,0x15,0x69,0x60,0x69,0x60,0x89,0xa5,0x89,0x2f,0x89,0x0d, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'asyncio'
+    0x16,0x02, // STORE_NAME 'asyncio'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x03, // IMPORT_NAME 'random'
+    0x16,0x03, // STORE_NAME 'random'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x04, // IMPORT_NAME 'json'
+    0x16,0x66, // STORE_NAME '_json'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x05, // IMPORT_NAME 'binascii'
+    0x16,0x05, // STORE_NAME 'binascii'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x06, // IMPORT_NAME 're'
+    0x16,0x06, // STORE_NAME 're'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x07, // IMPORT_NAME 'struct'
+    0x16,0x07, // STORE_NAME 'struct'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x10,0x08, // LOAD_CONST_STRING 'namedtuple'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x1b,0x09, // IMPORT_NAME 'collections'
+    0x1c,0x08, // IMPORT_FROM 'namedtuple'
+    0x16,0x08, // STORE_NAME 'namedtuple'
+    0x59, // POP_TOP
+    0x11,0x06, // LOAD_NAME 're'
+    0x14,0x0a, // LOAD_METHOD 'compile'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x36,0x01, // CALL_METHOD 1
+    0x16,0x67, // STORE_NAME 'URL_RE'
+    0x11,0x08, // LOAD_NAME 'namedtuple'
+    0x10,0x0b, // LOAD_CONST_STRING 'URI'
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0b, // STORE_NAME 'URI'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x12, // STORE_NAME 'urlparse'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x10,0x0c, // LOAD_CONST_STRING 'WebSocketMessage'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0c, // STORE_NAME 'WebSocketMessage'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x10,0x0d, // LOAD_CONST_STRING 'WSMsgType'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0d, // STORE_NAME 'WSMsgType'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x10,0x0e, // LOAD_CONST_STRING 'WebSocketClient'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0e, // STORE_NAME 'WebSocketClient'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x10,0x0f, // LOAD_CONST_STRING 'ClientWebSocketResponse'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0f, // STORE_NAME 'ClientWebSocketResponse'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x10,0x10, // LOAD_CONST_STRING '_WSRequestContextManager'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x10, // STORE_NAME '_WSRequestContextManager'
+    0x10,0x11, // LOAD_CONST_STRING '0.0.8'
+    0x16,0x68, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_urlparse
+static const byte fun_data_aiohttp_aiohttp_ws_urlparse[121] = {
+    0x51,0x24, // prelude
+    0x12,0x69, // names: urlparse, uri
+    0x80,0x12,0x20,0x28,0x24,0x27,0x27,0x27,0x47,0x26,0x25,0x26,0x26,0x25,0x46,0x4c, // code info
+    0x12,0x67, // LOAD_GLOBAL 'URL_RE'
+    0x14,0x13, // LOAD_METHOD 'match'
+    0xb0, // LOAD_FAST 0
+    0x36,0x01, // CALL_METHOD 1
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x44,0xd7,0x80, // POP_JUMP_IF_FALSE 87
+    0xb1, // LOAD_FAST 1
+    0x14,0x14, // LOAD_METHOD 'group'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x01, // CALL_METHOD 1
+    0xc2, // STORE_FAST 2
+    0xb1, // LOAD_FAST 1
+    0x14,0x14, // LOAD_METHOD 'group'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0xc3, // STORE_FAST 3
+    0xb1, // LOAD_FAST 1
+    0x14,0x14, // LOAD_METHOD 'group'
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x36,0x01, // CALL_METHOD 1
+    0xc4, // STORE_FAST 4
+    0xb1, // LOAD_FAST 1
+    0x14,0x14, // LOAD_METHOD 'group'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x36,0x01, // CALL_METHOD 1
+    0xc5, // STORE_FAST 5
+    0xb2, // LOAD_FAST 2
+    0x10,0x15, // LOAD_CONST_STRING 'wss'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4b, // POP_JUMP_IF_FALSE 11
+    0xb4, // LOAD_FAST 4
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x22,0x83,0x3b, // LOAD_CONST_SMALL_INT 443
+    0xc4, // STORE_FAST 4
+    0x42,0x5d, // JUMP 29
+    0xb2, // LOAD_FAST 2
+    0x10,0x16, // LOAD_CONST_STRING 'ws'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4b, // POP_JUMP_IF_FALSE 11
+    0xb4, // LOAD_FAST 4
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x22,0x80,0x50, // LOAD_CONST_SMALL_INT 80
+    0xc4, // STORE_FAST 4
+    0x42,0x4c, // JUMP 12
+    0x12,0x6a, // LOAD_GLOBAL 'ValueError'
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x12,0x0b, // LOAD_GLOBAL 'URI'
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x12,0x6b, // LOAD_GLOBAL 'int'
+    0xb4, // LOAD_FAST 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0xb5, // LOAD_FAST 5
+    0x34,0x04, // CALL_FUNCTION 4
+    0x63, // RETURN_VALUE
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_urlparse = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_urlparse,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 121,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_aiohttp_aiohttp_ws_urlparse + 4,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_urlparse + 20,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_urlparse + 20,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_urlparse fun_data_aiohttp_aiohttp_ws_urlparse[0]
+#endif
+
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketMessage
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketMessage[19] = {
+    0x00,0x06, // prelude
+    0x0c, // names: WebSocketMessage
+    0x88,0x27, // code info
+    0x11,0x6c, // LOAD_NAME '__name__'
+    0x16,0x6d, // STORE_NAME '__module__'
+    0x10,0x0c, // LOAD_CONST_STRING 'WebSocketMessage'
+    0x16,0x6e, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x18, // STORE_NAME '__init__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_WebSocketMessage
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketMessage___init__
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__[19] = {
+    0x23,0x0e, // prelude
+    0x18,0x72,0x73,0x1a, // names: __init__, self, opcode, data
+    0x80,0x28,0x24, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x19, // STORE_ATTR 'type'
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x1a, // STORE_ATTR 'data'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketMessage___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 19,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 24,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__ + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__ + 9,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__ + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketMessage___init__ fun_data_aiohttp_aiohttp_ws_WebSocketMessage___init__[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_WebSocketMessage[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketMessage___init__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketMessage = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketMessage,
+    .children = (void *)&children_aiohttp_aiohttp_ws_WebSocketMessage,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 19,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 12,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketMessage + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketMessage + 5,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketMessage + 5,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WSMsgType
+static const byte fun_data_aiohttp_aiohttp_ws_WSMsgType[28] = {
+    0x00,0x0a, // prelude
+    0x0d, // names: WSMsgType
+    0x88,0x2d,0x23,0x23, // code info
+    0x11,0x6c, // LOAD_NAME '__name__'
+    0x16,0x6d, // STORE_NAME '__module__'
+    0x10,0x0d, // LOAD_CONST_STRING 'WSMsgType'
+    0x16,0x6e, // STORE_NAME '__qualname__'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x16,0x27, // STORE_NAME 'TEXT'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x16,0x29, // STORE_NAME 'BINARY'
+    0x22,0x82,0x02, // LOAD_CONST_SMALL_INT 258
+    0x16,0x6f, // STORE_NAME 'ERROR'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WSMsgType = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WSMsgType,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 28,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 13,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WSMsgType + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WSMsgType + 7,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WSMsgType + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WSMsgType fun_data_aiohttp_aiohttp_ws_WSMsgType[0]
+#endif
+
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient[114] = {
+    0x08,0x36, // prelude
+    0x0e, // names: WebSocketClient
+    0x88,0x33,0x23,0x23,0x23,0x23,0x23,0x43,0x64,0x60,0x89,0x08,0x88,0x0e,0x84,0x0e,0x88,0x25,0x84,0x1d,0x84,0x10,0x88,0x07,0x64,0x40, // code info
+    0x11,0x6c, // LOAD_NAME '__name__'
+    0x16,0x6d, // STORE_NAME '__module__'
+    0x10,0x0e, // LOAD_CONST_STRING 'WebSocketClient'
+    0x16,0x6e, // STORE_NAME '__qualname__'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x16,0x70, // STORE_NAME 'CONT'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x16,0x27, // STORE_NAME 'TEXT'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x16,0x29, // STORE_NAME 'BINARY'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x16,0x2a, // STORE_NAME 'CLOSE'
+    0x89, // LOAD_CONST_SMALL_INT 9
+    0x16,0x2b, // STORE_NAME 'PING'
+    0x8a, // LOAD_CONST_SMALL_INT 10
+    0x16,0x2c, // STORE_NAME 'PONG'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x18, // STORE_NAME '__init__'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x53, // LOAD_NULL
+    0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
+    0x16,0x1f, // STORE_NAME 'connect'
+    0x11,0x71, // LOAD_NAME 'classmethod'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x23, // STORE_NAME '_parse_frame_header'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x26, // STORE_NAME '_process_websocket_frame'
+    0x11,0x71, // LOAD_NAME 'classmethod'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0x16,0x2d, // STORE_NAME '_encode_websocket_frame'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x22, // STORE_NAME 'handshake'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x4b, // STORE_NAME 'receive'
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x07, // MAKE_FUNCTION_DEFARGS 7
+    0x16,0x4d, // STORE_NAME 'send'
+    0x32,0x08, // MAKE_FUNCTION 8
+    0x16,0x50, // STORE_NAME 'close'
+    0x32,0x09, // MAKE_FUNCTION 9
+    0x16,0x4c, // STORE_NAME '_read_frame'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient___init__
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__[28] = {
+    0x1a,0x10, // prelude
+    0x18,0x72,0x1b, // names: __init__, self, params
+    0x80,0x3b,0x24,0x24,0x24, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x1b, // STORE_ATTR 'params'
+    0x50, // LOAD_CONST_FALSE
+    0xb0, // LOAD_FAST 0
+    0x18,0x1c, // STORE_ATTR 'closed'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x1d, // STORE_ATTR 'reader'
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x1e, // STORE_ATTR 'writer'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 28,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 24,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__ + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient___init__ fun_data_aiohttp_aiohttp_ws_WebSocketClient___init__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_connect
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect[55] = {
+    0xc0,0xc4,0x01,0x18, // prelude
+    0x1f,0x72,0x69,0x44,0x74, // names: connect, self, uri, ssl, handshake_request
+    0x80,0x41,0x26,0x26,0x28,0x23,0x22, // code info
+    0x12,0x12, // LOAD_GLOBAL 'urlparse'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x20, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x13,0x21, // LOAD_ATTR 'protocol'
+    0x10,0x15, // LOAD_CONST_STRING 'wss'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0xb2, // LOAD_FAST 2
+    0x43,0x42, // POP_JUMP_IF_TRUE 2
+    0x52, // LOAD_CONST_TRUE
+    0xc2, // STORE_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x14,0x22, // LOAD_METHOD 'handshake'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x36,0x03, // CALL_METHOD 3
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_connect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 55,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 4,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 2,
+        .qstr_block_name_idx = 31,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect + 9,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect + 16,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect + 16,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient_connect fun_data_aiohttp_aiohttp_ws_WebSocketClient_connect[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header[62] = {
+    0x5a,0x14, // prelude
+    0x23,0x75,0x76, // names: _parse_frame_header, cls, header
+    0x80,0x4a,0x6d,0x2a,0x64,0x2a,0x46, // code info
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x24, // LOAD_METHOD 'unpack'
+    0x10,0x25, // LOAD_CONST_STRING '!BB'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0x12,0x77, // LOAD_GLOBAL 'bool'
+    0xb2, // LOAD_FAST 2
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xef, // BINARY_OP 24 __and__
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc4, // STORE_FAST 4
+    0xb2, // LOAD_FAST 2
+    0x8f, // LOAD_CONST_SMALL_INT 15
+    0xef, // BINARY_OP 24 __and__
+    0xc5, // STORE_FAST 5
+    0x12,0x77, // LOAD_GLOBAL 'bool'
+    0xb3, // LOAD_FAST 3
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0xef, // BINARY_OP 24 __and__
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc6, // STORE_FAST 6
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xef, // BINARY_OP 24 __and__
+    0xc7, // STORE_FAST 7
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0xb6, // LOAD_FAST 6
+    0xb7, // LOAD_FAST 7
+    0x2a,0x04, // BUILD_TUPLE 4
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 62,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 35,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header + 12,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header + 12,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header fun_data_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame[85] = {
+    0x2b,0x20, // prelude
+    0x26,0x72,0x73,0x78, // names: _process_websocket_frame, self, opcode, payload
+    0x80,0x57,0x27,0x2a,0x27,0x22,0x47,0x25,0x27,0x27,0x27,0x23, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x27, // LOAD_ATTR 'TEXT'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x12,0x79, // LOAD_GLOBAL 'str'
+    0xb2, // LOAD_FAST 2
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0x34,0x02, // CALL_FUNCTION 2
+    0xc2, // STORE_FAST 2
+    0x42,0x6d, // JUMP 45
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x29, // LOAD_ATTR 'BINARY'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x42,0x64, // JUMP 36
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'CLOSE'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x2b, // LOAD_ATTR 'PING'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x47, // POP_JUMP_IF_FALSE 7
+    0xb0, // LOAD_FAST 0
+    0x13,0x2c, // LOAD_ATTR 'PONG'
+    0xb2, // LOAD_FAST 2
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x2c, // LOAD_ATTR 'PONG'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0x63, // RETURN_VALUE
+    0x51, // LOAD_CONST_NONE
+    0xb2, // LOAD_FAST 2
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 85,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 38,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame + 18,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame + 18,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame fun_data_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame[201] = {
+    0x7b,0x37, // prelude
+    0x2d,0x75,0x73,0x78, // names: _encode_websocket_frame, cls, opcode, payload
+    0x80,0x66,0x27,0x46,0x26,0x64,0x20,0x2a,0x64,0x4a,0x27,0x24,0x4d,0x28,0x26,0x4e,0x26,0x26,0x6e,0x63,0x31,0x25,0x31,0x09, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x27, // LOAD_ATTR 'TEXT'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xb2, // LOAD_FAST 2
+    0x14,0x2e, // LOAD_METHOD 'encode'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0x12,0x7a, // LOAD_GLOBAL 'len'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0x52, // LOAD_CONST_TRUE
+    0x57, // DUP_TOP
+    0xc4, // STORE_FAST 4
+    0xc5, // STORE_FAST 5
+    0xb4, // LOAD_FAST 4
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0x42,0x41, // JUMP 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc6, // STORE_FAST 6
+    0xb6, // LOAD_FAST 6
+    0xb1, // LOAD_FAST 1
+    0xe0, // BINARY_OP 9 __ior__
+    0xc6, // STORE_FAST 6
+    0xb5, // LOAD_FAST 5
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0x22,0x81,0x00, // LOAD_CONST_SMALL_INT 128
+    0x42,0x41, // JUMP 1
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc7, // STORE_FAST 7
+    0xb3, // LOAD_FAST 3
+    0x22,0x80,0x7e, // LOAD_CONST_SMALL_INT 126
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x51, // POP_JUMP_IF_FALSE 17
+    0xb7, // LOAD_FAST 7
+    0xb3, // LOAD_FAST 3
+    0xe0, // BINARY_OP 9 __ior__
+    0xc7, // STORE_FAST 7
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x2f, // LOAD_METHOD 'pack'
+    0x10,0x25, // LOAD_CONST_STRING '!BB'
+    0xb6, // LOAD_FAST 6
+    0xb7, // LOAD_FAST 7
+    0x36,0x03, // CALL_METHOD 3
+    0xc8, // STORE_FAST 8
+    0x42,0x79, // JUMP 57
+    0xb3, // LOAD_FAST 3
+    0x22,0x84,0x80,0x00, // LOAD_CONST_SMALL_INT 65536
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0xb7, // LOAD_FAST 7
+    0x22,0x80,0x7e, // LOAD_CONST_SMALL_INT 126
+    0xe0, // BINARY_OP 9 __ior__
+    0xc7, // STORE_FAST 7
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x2f, // LOAD_METHOD 'pack'
+    0x10,0x30, // LOAD_CONST_STRING '!BBH'
+    0xb6, // LOAD_FAST 6
+    0xb7, // LOAD_FAST 7
+    0xb3, // LOAD_FAST 3
+    0x36,0x04, // CALL_METHOD 4
+    0xc8, // STORE_FAST 8
+    0x42,0x5d, // JUMP 29
+    0xb3, // LOAD_FAST 3
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0xd7, // BINARY_OP 0 __lt__
+    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0xb7, // LOAD_FAST 7
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xe0, // BINARY_OP 9 __ior__
+    0xc7, // STORE_FAST 7
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x2f, // LOAD_METHOD 'pack'
+    0x10,0x31, // LOAD_CONST_STRING '!BBQ'
+    0xb6, // LOAD_FAST 6
+    0xb7, // LOAD_FAST 7
+    0xb3, // LOAD_FAST 3
+    0x36,0x04, // CALL_METHOD 4
+    0xc8, // STORE_FAST 8
+    0x42,0x43, // JUMP 3
+    0x12,0x6a, // LOAD_GLOBAL 'ValueError'
+    0x65, // RAISE_OBJ
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x2f, // LOAD_METHOD 'pack'
+    0x10,0x32, // LOAD_CONST_STRING '!I'
+    0x12,0x03, // LOAD_GLOBAL 'random'
+    0x14,0x33, // LOAD_METHOD 'getrandbits'
+    0xa0, // LOAD_CONST_SMALL_INT 32
+    0x36,0x01, // CALL_METHOD 1
+    0x36,0x02, // CALL_METHOD 2
+    0x27,0x09, // STORE_DEREF 9
+    0xb8, // LOAD_FAST 8
+    0x25,0x09, // LOAD_DEREF 9
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc8, // STORE_FAST 8
+    0x12,0x7b, // LOAD_GLOBAL 'bytes'
+    0xb9, // LOAD_FAST 9
+    0x20,0x00,0x01, // MAKE_CLOSURE 0
+    0x12,0x7c, // LOAD_GLOBAL 'enumerate'
+    0xb2, // LOAD_FAST 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc2, // STORE_FAST 2
+    0xb8, // LOAD_FAST 8
+    0xb2, // LOAD_FAST 2
+    0xf2, // BINARY_OP 27 __add__
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_[34] = {
+    0xda,0x40,0x0e, // prelude
+    0x65,0x81,0x06,0x81,0x06, // names: <genexpr>, *, *
+    0x80,0x86, // code info
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x25,0x00, // LOAD_DEREF 0
+    0xb2, // LOAD_FAST 2
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0xf8, // BINARY_OP 33 __mod__
+    0x55, // LOAD_SUBSCR
+    0xee, // BINARY_OP 23 __xor__
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_ + 8,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_ fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame__lt_genexpr_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame,
+    .children = (void *)&children_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 201,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 16,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 45,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame + 29,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame + 30,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_handshake
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake[245] = {
+    0x98,0x54,0x32, // prelude
+    0x22,0x72,0x69,0x44,0x7d, // names: handshake, self, uri, ssl, req
+    0x80,0x8a,0x24,0x2f,0x35,0x3a,0x30,0x26,0x26,0x2b,0x26,0x51,0x7f,0x60,0x60,0x2b,0x27,0x4f,0x22,0x2b, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x1b, // LOAD_ATTR 'params'
+    0xc4, // STORE_FAST 4
+    0xb1, // LOAD_FAST 1
+    0x13,0x21, // LOAD_ATTR 'protocol'
+    0x10,0x15, // LOAD_CONST_STRING 'wss'
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x10,0x34, // LOAD_CONST_STRING 'http'
+    0x42,0x42, // JUMP 2
+    0x10,0x35, // LOAD_CONST_STRING 'https'
+    0xc5, // STORE_FAST 5
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb5, // LOAD_FAST 5
+    0xb1, // LOAD_FAST 1
+    0x13,0x36, // LOAD_ATTR 'hostname'
+    0xb1, // LOAD_FAST 1
+    0x13,0x37, // LOAD_ATTR 'port'
+    0xb1, // LOAD_FAST 1
+    0x13,0x38, // LOAD_ATTR 'path'
+    0x45,0x02, // JUMP_IF_TRUE_OR_POP 2
+    0x10,0x39, // LOAD_CONST_STRING '/'
+    0x36,0x04, // CALL_METHOD 4
+    0xc6, // STORE_FAST 6
+    0x12,0x05, // LOAD_GLOBAL 'binascii'
+    0x14,0x3a, // LOAD_METHOD 'b2a_base64'
+    0x12,0x7b, // LOAD_GLOBAL 'bytes'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x12,0x7e, // LOAD_GLOBAL 'range'
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x51, // LOAD_CONST_NONE
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0xc7, // STORE_FAST 7
+    0x10,0x3b, // LOAD_CONST_STRING '{}:{}'
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb1, // LOAD_FAST 1
+    0x13,0x36, // LOAD_ATTR 'hostname'
+    0xb1, // LOAD_FAST 1
+    0x13,0x37, // LOAD_ATTR 'port'
+    0x36,0x02, // CALL_METHOD 2
+    0xb4, // LOAD_FAST 4
+    0x10,0x3c, // LOAD_CONST_STRING 'Host'
+    0x56, // STORE_SUBSCR
+    0x10,0x3d, // LOAD_CONST_STRING 'Upgrade'
+    0xb4, // LOAD_FAST 4
+    0x10,0x3e, // LOAD_CONST_STRING 'Connection'
+    0x56, // STORE_SUBSCR
+    0x10,0x3f, // LOAD_CONST_STRING 'websocket'
+    0xb4, // LOAD_FAST 4
+    0x10,0x3d, // LOAD_CONST_STRING 'Upgrade'
+    0x56, // STORE_SUBSCR
+    0x12,0x79, // LOAD_GLOBAL 'str'
+    0xb7, // LOAD_FAST 7
+    0x10,0x28, // LOAD_CONST_STRING 'utf-8'
+    0x34,0x02, // CALL_FUNCTION 2
+    0xb4, // LOAD_FAST 4
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0x56, // STORE_SUBSCR
+    0x10,0x40, // LOAD_CONST_STRING '13'
+    0xb4, // LOAD_FAST 4
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0x56, // STORE_SUBSCR
+    0x10,0x41, // LOAD_CONST_STRING '{}://{}:{}'
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb5, // LOAD_FAST 5
+    0xb1, // LOAD_FAST 1
+    0x13,0x36, // LOAD_ATTR 'hostname'
+    0xb1, // LOAD_FAST 1
+    0x13,0x37, // LOAD_ATTR 'port'
+    0x36,0x03, // CALL_METHOD 3
+    0xb4, // LOAD_FAST 4
+    0x10,0x42, // LOAD_CONST_STRING 'Origin'
+    0x56, // STORE_SUBSCR
+    0xb3, // LOAD_FAST 3
+    0x10,0x43, // LOAD_CONST_STRING 'GET'
+    0xb6, // LOAD_FAST 6
+    0x10,0x44, // LOAD_CONST_STRING 'ssl'
+    0xb2, // LOAD_FAST 2
+    0x10,0x45, // LOAD_CONST_STRING 'headers'
+    0xb4, // LOAD_FAST 4
+    0x10,0x46, // LOAD_CONST_STRING 'is_handshake'
+    0x52, // LOAD_CONST_TRUE
+    0x10,0x47, // LOAD_CONST_STRING 'version'
+    0x10,0x48, // LOAD_CONST_STRING 'HTTP/1.1'
+    0x34,0x88,0x02, // CALL_FUNCTION 1026
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x1d, // STORE_ATTR 'reader'
+    0xb0, // LOAD_FAST 0
+    0x18,0x1e, // STORE_ATTR 'writer'
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x49, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc8, // STORE_FAST 8
+    0xb8, // LOAD_FAST 8
+    0x51, // LOAD_CONST_NONE
+    0x7e, // LOAD_CONST_SMALL_INT -2
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0xc8, // STORE_FAST 8
+    0xb8, // LOAD_FAST 8
+    0x14,0x4a, // LOAD_METHOD 'startswith'
+    0x23,0x08, // LOAD_CONST_OBJ 8
+    0x36,0x01, // CALL_METHOD 1
+    0x43,0x46, // POP_JUMP_IF_TRUE 6
+    0x12,0x20, // LOAD_GLOBAL 'AssertionError'
+    0xb8, // LOAD_FAST 8
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x42,0x52, // JUMP 18
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x49, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc8, // STORE_FAST 8
+    0xb8, // LOAD_FAST 8
+    0x51, // LOAD_CONST_NONE
+    0x7e, // LOAD_CONST_SMALL_INT -2
+    0x2e,0x02, // BUILD_SLICE 2
+    0x55, // LOAD_SUBSCR
+    0xc8, // STORE_FAST 8
+    0xb8, // LOAD_FAST 8
+    0x43,0x2b, // POP_JUMP_IF_TRUE -21
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_WebSocketClient_handshake
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_[28] = {
+    0xc1,0x40,0x0a, // prelude
+    0x65,0x81,0x06, // names: <genexpr>, *
+    0x80,0x8d, // code info
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x0c, // FOR_ITER 12
+    0xc1, // STORE_FAST 1
+    0x12,0x03, // LOAD_GLOBAL 'random'
+    0x14,0x33, // LOAD_METHOD 'getrandbits'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x36,0x01, // CALL_METHOD 1
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x32, // JUMP -14
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 28,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_ + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_ + 8,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_ + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_ fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_WebSocketClient_handshake[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_handshake__lt_genexpr_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_handshake = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake,
+    .children = (void *)&children_aiohttp_aiohttp_ws_WebSocketClient_handshake,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 245,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 20,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 4,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 34,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake + 8,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake + 28,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_handshake + 28,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_receive
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive[107] = {
+    0xd9,0x40,0x1e, // prelude
+    0x4b,0x72, // names: receive, self
+    0x80,0xa7,0x20,0x2d,0x42,0x2d,0x27,0x2b,0x23,0x2b,0x27,0x24,0x48, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x4c, // LOAD_METHOD '_read_frame'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0x42,0x51, // JUMP 17
+    0xb0, // LOAD_FAST 0
+    0x14,0x4c, // LOAD_METHOD '_read_frame'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xc4, // STORE_FAST 4
+    0xc5, // STORE_FAST 5
+    0xc3, // STORE_FAST 3
+    0xb2, // LOAD_FAST 2
+    0xb5, // LOAD_FAST 5
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc2, // STORE_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x44,0x2c, // POP_JUMP_IF_FALSE -20
+    0xb0, // LOAD_FAST 0
+    0x14,0x26, // LOAD_METHOD '_process_websocket_frame'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc6, // STORE_FAST 6
+    0xc7, // STORE_FAST 7
+    0xb6, // LOAD_FAST 6
+    0x44,0x4b, // POP_JUMP_IF_FALSE 11
+    0xb0, // LOAD_FAST 0
+    0x14,0x4d, // LOAD_METHOD 'send'
+    0xb7, // LOAD_FAST 7
+    0xb6, // LOAD_FAST 6
+    0x36,0x02, // CALL_METHOD 2
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'CLOSE'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0x52, // LOAD_CONST_TRUE
+    0xb0, // LOAD_FAST 0
+    0x18,0x1c, // STORE_ATTR 'closed'
+    0xb1, // LOAD_FAST 1
+    0xb7, // LOAD_FAST 7
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0xb7, // LOAD_FAST 7
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0xb1, // LOAD_FAST 1
+    0xb7, // LOAD_FAST 7
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0x42,0xa9,0x7f, // JUMP -87
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_receive = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 107,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 75,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive + 18,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive + 18,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient_receive fun_data_aiohttp_aiohttp_ws_WebSocketClient_receive[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_send
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_send[61] = {
+    0xc3,0x41,0x12, // prelude
+    0x4d,0x72,0x1a,0x73, // names: send, self, data, opcode
+    0x80,0xb7,0x23,0x58,0x29, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x2d, // LOAD_METHOD '_encode_websocket_frame'
+    0xb2, // LOAD_FAST 2
+    0x45,0x11, // JUMP_IF_TRUE_OR_POP 17
+    0x12,0x7f, // LOAD_GLOBAL 'isinstance'
+    0xb1, // LOAD_FAST 1
+    0x12,0x79, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x45, // POP_JUMP_IF_FALSE 5
+    0xb0, // LOAD_FAST 0
+    0x13,0x27, // LOAD_ATTR 'TEXT'
+    0x42,0x43, // JUMP 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x29, // LOAD_ATTR 'BINARY'
+    0xb1, // LOAD_FAST 1
+    0x36,0x02, // CALL_METHOD 2
+    0xc3, // STORE_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x13,0x1e, // LOAD_ATTR 'writer'
+    0x14,0x4e, // LOAD_METHOD 'write'
+    0xb3, // LOAD_FAST 3
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xb0, // LOAD_FAST 0
+    0x13,0x1e, // LOAD_ATTR 'writer'
+    0x14,0x4f, // LOAD_METHOD 'drain'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_send = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_send,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 61,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 77,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_send + 7,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_send + 12,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_send + 12,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient_send fun_data_aiohttp_aiohttp_ws_WebSocketClient_send[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient_close
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient_close[34] = {
+    0xa1,0x40,0x0c, // prelude
+    0x50,0x72, // names: close, self
+    0x80,0xbe,0x25,0x24, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x1c, // LOAD_ATTR 'closed'
+    0x43,0x52, // POP_JUMP_IF_TRUE 18
+    0x52, // LOAD_CONST_TRUE
+    0xb0, // LOAD_FAST 0
+    0x18,0x1c, // STORE_ATTR 'closed'
+    0xb0, // LOAD_FAST 0
+    0x14,0x4d, // LOAD_METHOD 'send'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'CLOSE'
+    0x36,0x02, // CALL_METHOD 2
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient_close = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient_close,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 80,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient_close + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient_close + 9,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient_close + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient_close fun_data_aiohttp_aiohttp_ws_WebSocketClient_close[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_WebSocketClient
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__read_frame
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame[184] = {
+    0xe9,0x40,0x27, // prelude
+    0x4c,0x72, // names: _read_frame, self
+    0x80,0xc3,0x2c,0x49,0x24,0x23,0x25,0x2c,0x27,0x38,0x27,0x58,0x23,0x2d,0x2c,0x23,0x31,0x07, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x51, // LOAD_METHOD 'readexactly'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc1, // STORE_FAST 1
+    0x12,0x7a, // LOAD_GLOBAL 'len'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x4c, // POP_JUMP_IF_FALSE 12
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'CLOSE'
+    0xc2, // STORE_FAST 2
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0xc3, // STORE_FAST 3
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0xb0, // LOAD_FAST 0
+    0x14,0x23, // LOAD_METHOD '_parse_frame_header'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x30,0x04, // UNPACK_SEQUENCE 4
+    0xc4, // STORE_FAST 4
+    0xc2, // STORE_FAST 2
+    0xc5, // STORE_FAST 5
+    0xc6, // STORE_FAST 6
+    0xb6, // LOAD_FAST 6
+    0x22,0x80,0x7e, // LOAD_CONST_SMALL_INT 126
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x58, // POP_JUMP_IF_FALSE 24
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x24, // LOAD_METHOD 'unpack'
+    0x10,0x52, // LOAD_CONST_STRING '!H'
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x51, // LOAD_METHOD 'readexactly'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x01, // UNPACK_SEQUENCE 1
+    0xc6, // STORE_FAST 6
+    0x42,0x5f, // JUMP 31
+    0xb6, // LOAD_FAST 6
+    0x22,0x80,0x7f, // LOAD_CONST_SMALL_INT 127
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x58, // POP_JUMP_IF_FALSE 24
+    0x12,0x07, // LOAD_GLOBAL 'struct'
+    0x14,0x24, // LOAD_METHOD 'unpack'
+    0x10,0x53, // LOAD_CONST_STRING '!Q'
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x51, // LOAD_METHOD 'readexactly'
+    0x88, // LOAD_CONST_SMALL_INT 8
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x01, // UNPACK_SEQUENCE 1
+    0xc6, // STORE_FAST 6
+    0x42,0x40, // JUMP 0
+    0xb5, // LOAD_FAST 5
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x51, // LOAD_METHOD 'readexactly'
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x27,0x07, // STORE_DEREF 7
+    0xb0, // LOAD_FAST 0
+    0x13,0x1d, // LOAD_ATTR 'reader'
+    0x14,0x51, // LOAD_METHOD 'readexactly'
+    0xb6, // LOAD_FAST 6
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc3, // STORE_FAST 3
+    0xb5, // LOAD_FAST 5
+    0x44,0x51, // POP_JUMP_IF_FALSE 17
+    0x12,0x7b, // LOAD_GLOBAL 'bytes'
+    0xb7, // LOAD_FAST 7
+    0x20,0x00,0x01, // MAKE_CLOSURE 0
+    0x12,0x7c, // LOAD_GLOBAL 'enumerate'
+    0xb3, // LOAD_FAST 3
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xb4, // LOAD_FAST 4
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_WebSocketClient__read_frame
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_
+static const byte fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_[34] = {
+    0xda,0x40,0x0e, // prelude
+    0x65,0x81,0x06,0x81,0x06, // names: <genexpr>, *, *
+    0x80,0xd3, // code info
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc2, // STORE_FAST 2
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x25,0x00, // LOAD_DEREF 0
+    0xb2, // LOAD_FAST 2
+    0x84, // LOAD_CONST_SMALL_INT 4
+    0xf8, // BINARY_OP 33 __mod__
+    0x55, // LOAD_SUBSCR
+    0xee, // BINARY_OP 23 __xor__
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_ + 8,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_ fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_WebSocketClient__read_frame[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__read_frame__lt_genexpr_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient__read_frame = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame,
+    .children = (void *)&children_aiohttp_aiohttp_ws_WebSocketClient__read_frame,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 184,
+    .n_children = 1,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 14,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 76,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame + 22,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient__read_frame + 23,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_WebSocketClient[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_connect,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__parse_frame_header,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__process_websocket_frame,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__encode_websocket_frame,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_handshake,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_receive,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_send,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient_close,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient__read_frame,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_WebSocketClient = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_WebSocketClient,
+    .children = (void *)&children_aiohttp_aiohttp_ws_WebSocketClient,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 114,
+    .n_children = 10,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 14,
+        .line_info = fun_data_aiohttp_aiohttp_ws_WebSocketClient + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_WebSocketClient + 29,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_WebSocketClient + 29,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse[69] = {
+    0x00,0x22, // prelude
+    0x0f, // names: ClientWebSocketResponse
+    0x88,0xd8,0x64,0x64,0x84,0x07,0x64,0x64,0x40,0x64,0x40,0x64,0x64,0x60,0x64,0x60, // code info
+    0x11,0x6c, // LOAD_NAME '__name__'
+    0x16,0x6d, // STORE_NAME '__module__'
+    0x10,0x0f, // LOAD_CONST_STRING 'ClientWebSocketResponse'
+    0x16,0x6e, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x18, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x54, // STORE_NAME '__aiter__'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x55, // STORE_NAME '__anext__'
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x16,0x50, // STORE_NAME 'close'
+    0x32,0x04, // MAKE_FUNCTION 4
+    0x16,0x56, // STORE_NAME 'send_str'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x57, // STORE_NAME 'send_bytes'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x58, // STORE_NAME 'send_json'
+    0x32,0x07, // MAKE_FUNCTION 7
+    0x16,0x5a, // STORE_NAME 'receive_str'
+    0x32,0x08, // MAKE_FUNCTION 8
+    0x16,0x5b, // STORE_NAME 'receive_bytes'
+    0x32,0x09, // MAKE_FUNCTION 9
+    0x16,0x5c, // STORE_NAME 'receive_json'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse___init__
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__[14] = {
+    0x1a,0x0c, // prelude
+    0x18,0x72,0x81,0x00, // names: __init__, self, wsclient
+    0x80,0xd9, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x16, // STORE_ATTR 'ws'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 14,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 24,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__ + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__ + 8,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__ + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__ fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__[8] = {
+    0x09,0x08, // prelude
+    0x54,0x72, // names: __aiter__, self
+    0x80,0xdc, // code info
+    0xb0, // LOAD_FAST 0
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 8,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 84,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__ + 4,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__ + 6,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__ + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__ fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__[55] = {
+    0xa1,0x40,0x0e, // prelude
+    0x55,0x72, // names: __anext__, self
+    0x80,0xdf,0x50,0x37,0x24, // code info
+    0x12,0x0c, // LOAD_GLOBAL 'WebSocketMessage'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x4b, // LOAD_METHOD 'receive'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x35,0x01, // CALL_FUNCTION_VAR_KW 1
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x13,0x1a, // LOAD_ATTR 'data'
+    0x43,0x4b, // POP_JUMP_IF_TRUE 11
+    0xb1, // LOAD_FAST 1
+    0x13,0x19, // LOAD_ATTR 'type'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x13,0x2a, // LOAD_ATTR 'CLOSE'
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x47, // POP_JUMP_IF_TRUE 7
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x13,0x1c, // LOAD_ATTR 'closed'
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0x12,0x81,0x01, // LOAD_GLOBAL 'StopAsyncIteration'
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 55,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 85,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__ + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__ fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_close
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close[20] = {
+    0x91,0x40,0x08, // prelude
+    0x50,0x72, // names: close, self
+    0x80,0xe6, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x50, // LOAD_METHOD 'close'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_close = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 80,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close + 7,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_close fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_close[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str[47] = {
+    0xaa,0x40,0x0e, // prelude
+    0x56,0x72,0x1a, // names: send_str, self, data
+    0x80,0xe9,0x29,0x2e, // code info
+    0x12,0x7f, // LOAD_GLOBAL 'isinstance'
+    0xb1, // LOAD_FAST 1
+    0x12,0x79, // LOAD_GLOBAL 'str'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x43,0x4e, // POP_JUMP_IF_TRUE 14
+    0x12,0x81,0x02, // LOAD_GLOBAL 'TypeError'
+    0x23,0x0a, // LOAD_CONST_OBJ 10
+    0x12,0x19, // LOAD_GLOBAL 'type'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x4d, // LOAD_METHOD 'send'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 47,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 6,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 86,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes[55] = {
+    0xb2,0x40,0x0e, // prelude
+    0x57,0x72,0x1a, // names: send_bytes, self, data
+    0x80,0xee,0x31,0x2e, // code info
+    0x12,0x7f, // LOAD_GLOBAL 'isinstance'
+    0xb1, // LOAD_FAST 1
+    0x12,0x7b, // LOAD_GLOBAL 'bytes'
+    0x12,0x81,0x03, // LOAD_GLOBAL 'bytearray'
+    0x12,0x81,0x04, // LOAD_GLOBAL 'memoryview'
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x34,0x02, // CALL_FUNCTION 2
+    0x43,0x4e, // POP_JUMP_IF_TRUE 14
+    0x12,0x81,0x02, // LOAD_GLOBAL 'TypeError'
+    0x23,0x0b, // LOAD_CONST_OBJ 11
+    0x12,0x19, // LOAD_GLOBAL 'type'
+    0xb1, // LOAD_FAST 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0xf8, // BINARY_OP 33 __mod__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x4d, // LOAD_METHOD 'send'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 55,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 87,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json[26] = {
+    0xb2,0x40,0x0a, // prelude
+    0x58,0x72,0x1a, // names: send_json, self, data
+    0x80,0xf3, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x56, // LOAD_METHOD 'send_str'
+    0x12,0x66, // LOAD_GLOBAL '_json'
+    0x14,0x59, // LOAD_METHOD 'dumps'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 26,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 88,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json + 6,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json + 8,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str[59] = {
+    0xb1,0x40,0x0e, // prelude
+    0x5a,0x72, // names: receive_str, self
+    0x80,0xf6,0x30,0x2b,0x32, // code info
+    0x12,0x0c, // LOAD_GLOBAL 'WebSocketMessage'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x4b, // LOAD_METHOD 'receive'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x35,0x01, // CALL_FUNCTION_VAR_KW 1
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x13,0x19, // LOAD_ATTR 'type'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x13,0x27, // LOAD_ATTR 'TEXT'
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0x12,0x81,0x02, // LOAD_GLOBAL 'TypeError'
+    0x23,0x0c, // LOAD_CONST_OBJ 12
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb1, // LOAD_FAST 1
+    0x13,0x19, // LOAD_ATTR 'type'
+    0xb1, // LOAD_FAST 1
+    0x13,0x1a, // LOAD_ATTR 'data'
+    0x36,0x02, // CALL_METHOD 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x13,0x1a, // LOAD_ATTR 'data'
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 59,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 90,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes[59] = {
+    0xb1,0x40,0x0e, // prelude
+    0x5b,0x72, // names: receive_bytes, self
+    0x80,0xfc,0x30,0x2b,0x32, // code info
+    0x12,0x0c, // LOAD_GLOBAL 'WebSocketMessage'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x14,0x4b, // LOAD_METHOD 'receive'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x35,0x01, // CALL_FUNCTION_VAR_KW 1
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x13,0x19, // LOAD_ATTR 'type'
+    0xb0, // LOAD_FAST 0
+    0x13,0x16, // LOAD_ATTR 'ws'
+    0x13,0x29, // LOAD_ATTR 'BINARY'
+    0xdc, // BINARY_OP 5 __ne__
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0x12,0x81,0x02, // LOAD_GLOBAL 'TypeError'
+    0x23,0x0d, // LOAD_CONST_OBJ 13
+    0x14,0x17, // LOAD_METHOD 'format'
+    0xb1, // LOAD_FAST 1
+    0x13,0x19, // LOAD_ATTR 'type'
+    0xb1, // LOAD_FAST 1
+    0x13,0x1a, // LOAD_ATTR 'data'
+    0x36,0x02, // CALL_METHOD 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0xb1, // LOAD_FAST 1
+    0x13,0x1a, // LOAD_ATTR 'data'
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 59,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 91,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes[0]
+#endif
+
+// child of aiohttp_aiohttp_ws_ClientWebSocketResponse
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json
+static const byte fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json[25] = {
+    0xa1,0x40,0x0a, // prelude
+    0x5c,0x72, // names: receive_json, self
+    0x90,0x02,0x29, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x5a, // LOAD_METHOD 'receive_str'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc1, // STORE_FAST 1
+    0x12,0x66, // LOAD_GLOBAL '_json'
+    0x14,0x5d, // LOAD_METHOD 'loads'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 25,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 92,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json + 8,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws_ClientWebSocketResponse[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___aiter__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse___anext__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_close,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_str,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_bytes,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_send_json,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_str,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_bytes,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse_receive_json,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse,
+    .children = (void *)&children_aiohttp_aiohttp_ws_ClientWebSocketResponse,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 69,
+    .n_children = 10,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 15,
+        .line_info = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse + 19,
+        .opcodes = fun_data_aiohttp_aiohttp_ws_ClientWebSocketResponse + 19,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp_aiohttp_ws__lt_module_gt_
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws__WSRequestContextManager
+static const byte fun_data_aiohttp_aiohttp_ws__WSRequestContextManager[30] = {
+    0x00,0x0c, // prelude
+    0x10, // names: _WSRequestContextManager
+    0x98,0x07,0x64,0x20,0x64, // code info
+    0x11,0x6c, // LOAD_NAME '__name__'
+    0x16,0x6d, // STORE_NAME '__module__'
+    0x10,0x10, // LOAD_CONST_STRING '_WSRequestContextManager'
+    0x16,0x6e, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x18, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x60, // STORE_NAME '__aenter__'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x61, // STORE_NAME '__aexit__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp_aiohttp_ws__WSRequestContextManager
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws__WSRequestContextManager___init__
+static const byte fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__[20] = {
+    0x23,0x10, // prelude
+    0x18,0x72,0x5f,0x81,0x05, // names: __init__, self, client, request_co
+    0x90,0x08,0x24, // code info
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x5e, // STORE_ATTR 'reqco'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x5f, // STORE_ATTR 'client'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 24,
+        .line_info = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__ + 7,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___init__ fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___init__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws__WSRequestContextManager
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws__WSRequestContextManager___aenter__
+static const byte fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__[14] = {
+    0x91,0x40,0x08, // prelude
+    0x60,0x72, // names: __aenter__, self
+    0x90,0x0c, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x5e, // LOAD_ATTR 'reqco'
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 14,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 96,
+        .line_info = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__ + 5,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__ + 7,
+        .opcodes = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__ fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__[0]
+#endif
+
+// child of aiohttp_aiohttp_ws__WSRequestContextManager
+// frozen bytecode for file aiohttp/aiohttp_ws.py, scope aiohttp_aiohttp_ws__WSRequestContextManager___aexit__
+static const byte fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__[34] = {
+    0xa1,0xc0,0x80,0x40,0x0a, // prelude
+    0x61,0x72, // names: __aexit__, self
+    0x90,0x0f,0x2d, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x5f, // LOAD_ATTR 'client'
+    0x13,0x62, // LOAD_ATTR '_reader'
+    0x14,0x63, // LOAD_METHOD 'aclose'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x12,0x02, // LOAD_GLOBAL 'asyncio'
+    0x14,0x64, // LOAD_METHOD 'sleep'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 5,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 97,
+        .line_info = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__ + 7,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__ + 10,
+        .opcodes = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__ fun_data_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws__WSRequestContextManager[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aenter__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager___aexit__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager,
+    .children = (void *)&children_aiohttp_aiohttp_ws__WSRequestContextManager,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 30,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 16,
+        .line_info = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager + 8,
+        .opcodes = fun_data_aiohttp_aiohttp_ws__WSRequestContextManager + 8,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_aiohttp_aiohttp_ws__lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_urlparse,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketMessage,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WSMsgType,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_WebSocketClient,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws_ClientWebSocketResponse,
+    (const mp_raw_code_t *)&proto_fun_aiohttp_aiohttp_ws__WSRequestContextManager,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp_aiohttp_ws__lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp_aiohttp_ws__lt_module_gt_,
+    .children = (void *)&children_aiohttp_aiohttp_ws__lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 149,
+    .n_children = 6,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_aiohttp_aiohttp_ws__lt_module_gt_ + 3,
+        .line_info_top = fun_data_aiohttp_aiohttp_ws__lt_module_gt_ + 26,
+        .opcodes = fun_data_aiohttp_aiohttp_ws__lt_module_gt_ + 26,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_aiohttp_aiohttp_ws[135] = {
+    MP_QSTR_aiohttp_slash_aiohttp_ws_dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_asyncio,
+    MP_QSTR_random,
+    MP_QSTR_json,
+    MP_QSTR_binascii,
+    MP_QSTR_re,
+    MP_QSTR_struct,
+    MP_QSTR_namedtuple,
+    MP_QSTR_collections,
+    MP_QSTR_compile,
+    MP_QSTR_URI,
+    MP_QSTR_WebSocketMessage,
+    MP_QSTR_WSMsgType,
+    MP_QSTR_WebSocketClient,
+    MP_QSTR_ClientWebSocketResponse,
+    MP_QSTR__WSRequestContextManager,
+    MP_QSTR_0_dot_0_dot_8,
+    MP_QSTR_urlparse,
+    MP_QSTR_match,
+    MP_QSTR_group,
+    MP_QSTR_wss,
+    MP_QSTR_ws,
+    MP_QSTR_format,
+    MP_QSTR___init__,
+    MP_QSTR_type,
+    MP_QSTR_data,
+    MP_QSTR_params,
+    MP_QSTR_closed,
+    MP_QSTR_reader,
+    MP_QSTR_writer,
+    MP_QSTR_connect,
+    MP_QSTR_AssertionError,
+    MP_QSTR_protocol,
+    MP_QSTR_handshake,
+    MP_QSTR__parse_frame_header,
+    MP_QSTR_unpack,
+    MP_QSTR__bang_BB,
+    MP_QSTR__process_websocket_frame,
+    MP_QSTR_TEXT,
+    MP_QSTR_utf_hyphen_8,
+    MP_QSTR_BINARY,
+    MP_QSTR_CLOSE,
+    MP_QSTR_PING,
+    MP_QSTR_PONG,
+    MP_QSTR__encode_websocket_frame,
+    MP_QSTR_encode,
+    MP_QSTR_pack,
+    MP_QSTR__bang_BBH,
+    MP_QSTR__bang_BBQ,
+    MP_QSTR__bang_I,
+    MP_QSTR_getrandbits,
+    MP_QSTR_http,
+    MP_QSTR_https,
+    MP_QSTR_hostname,
+    MP_QSTR_port,
+    MP_QSTR_path,
+    MP_QSTR__slash_,
+    MP_QSTR_b2a_base64,
+    MP_QSTR__brace_open__brace_close__colon__brace_open__brace_close_,
+    MP_QSTR_Host,
+    MP_QSTR_Upgrade,
+    MP_QSTR_Connection,
+    MP_QSTR_websocket,
+    MP_QSTR_13,
+    MP_QSTR__brace_open__brace_close__colon__slash__slash__brace_open__brace_close__colon__brace_open__brace_close_,
+    MP_QSTR_Origin,
+    MP_QSTR_GET,
+    MP_QSTR_ssl,
+    MP_QSTR_headers,
+    MP_QSTR_is_handshake,
+    MP_QSTR_version,
+    MP_QSTR_HTTP_slash_1_dot_1,
+    MP_QSTR_readline,
+    MP_QSTR_startswith,
+    MP_QSTR_receive,
+    MP_QSTR__read_frame,
+    MP_QSTR_send,
+    MP_QSTR_write,
+    MP_QSTR_drain,
+    MP_QSTR_close,
+    MP_QSTR_readexactly,
+    MP_QSTR__bang_H,
+    MP_QSTR__bang_Q,
+    MP_QSTR___aiter__,
+    MP_QSTR___anext__,
+    MP_QSTR_send_str,
+    MP_QSTR_send_bytes,
+    MP_QSTR_send_json,
+    MP_QSTR_dumps,
+    MP_QSTR_receive_str,
+    MP_QSTR_receive_bytes,
+    MP_QSTR_receive_json,
+    MP_QSTR_loads,
+    MP_QSTR_reqco,
+    MP_QSTR_client,
+    MP_QSTR___aenter__,
+    MP_QSTR___aexit__,
+    MP_QSTR__reader,
+    MP_QSTR_aclose,
+    MP_QSTR_sleep,
+    MP_QSTR__lt_genexpr_gt_,
+    MP_QSTR__json,
+    MP_QSTR_URL_RE,
+    MP_QSTR___version__,
+    MP_QSTR_uri,
+    MP_QSTR_ValueError,
+    MP_QSTR_int,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_ERROR,
+    MP_QSTR_CONT,
+    MP_QSTR_classmethod,
+    MP_QSTR_self,
+    MP_QSTR_opcode,
+    MP_QSTR_handshake_request,
+    MP_QSTR_cls,
+    MP_QSTR_header,
+    MP_QSTR_bool,
+    MP_QSTR_payload,
+    MP_QSTR_str,
+    MP_QSTR_len,
+    MP_QSTR_bytes,
+    MP_QSTR_enumerate,
+    MP_QSTR_req,
+    MP_QSTR_range,
+    MP_QSTR_isinstance,
+    MP_QSTR_wsclient,
+    MP_QSTR_StopAsyncIteration,
+    MP_QSTR_TypeError,
+    MP_QSTR_bytearray,
+    MP_QSTR_memoryview,
+    MP_QSTR_request_co,
+    MP_QSTR__star_,
+};
+
+// constants
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_0 = {{&mp_type_str}, 57511, 49, (const byte*)"\x28\x77\x73\x73\x7c\x77\x73\x29\x3a\x2f\x2f\x28\x5b\x41\x2d\x5a\x61\x2d\x7a\x30\x2d\x39\x2d\x5c\x2e\x5d\x2b\x29\x28\x3f\x3a\x5c\x3a\x28\x5b\x30\x2d\x39\x5d\x2b\x29\x29\x3f\x28\x2f\x2e\x2b\x29\x3f"};
+static const mp_rom_obj_tuple_t const_obj_aiohttp_aiohttp_ws_1 = {{&mp_type_tuple}, 4, {
+    MP_ROM_QSTR(MP_QSTR_protocol),
+    MP_ROM_QSTR(MP_QSTR_hostname),
+    MP_ROM_QSTR(MP_QSTR_port),
+    MP_ROM_QSTR(MP_QSTR_path),
+}};
+static const mp_rom_obj_tuple_t const_obj_aiohttp_aiohttp_ws_3 = {{&mp_type_tuple}, 2, {
+    MP_ROM_NONE,
+    MP_ROM_NONE,
+}};
+static const mp_obj_int_t const_obj_aiohttp_aiohttp_ws_4 = {{&mp_type_int}, {.neg=0, .fixed_dig=1, .alloc=5, .len=5, .dig=(uint16_t*)(const uint16_t[]){0x0,0x0,0x0,0x0,0x1}}};
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_8 = {{&mp_type_bytes}, 23052, 13, (const byte*)"\x48\x54\x54\x50\x2f\x31\x2e\x31\x20\x31\x30\x31\x20"};
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_10 = {{&mp_type_str}, 58333, 30, (const byte*)"\x64\x61\x74\x61\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x20\x6d\x75\x73\x74\x20\x62\x65\x20\x73\x74\x72\x20\x28\x25\x72\x29"};
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_11 = {{&mp_type_str}, 21181, 35, (const byte*)"\x64\x61\x74\x61\x20\x61\x72\x67\x75\x6d\x65\x6e\x74\x20\x6d\x75\x73\x74\x20\x62\x65\x20\x62\x79\x74\x65\x2d\x69\x73\x68\x20\x28\x25\x72\x29"};
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_12 = {{&mp_type_str}, 36882, 35, (const byte*)"\x52\x65\x63\x65\x69\x76\x65\x64\x20\x6d\x65\x73\x73\x61\x67\x65\x20\x7b\x7d\x3a\x7b\x21\x72\x7d\x20\x69\x73\x20\x6e\x6f\x74\x20\x73\x74\x72"};
+static const mp_obj_str_t const_obj_aiohttp_aiohttp_ws_13 = {{&mp_type_str}, 23582, 37, (const byte*)"\x52\x65\x63\x65\x69\x76\x65\x64\x20\x6d\x65\x73\x73\x61\x67\x65\x20\x7b\x7d\x3a\x7b\x21\x72\x7d\x20\x69\x73\x20\x6e\x6f\x74\x20\x62\x79\x74\x65\x73"};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_aiohttp_aiohttp_ws[14] = {
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_0),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_1),
+    MP_ROM_QSTR(MP_QSTR_Scheme_space__brace_open__brace_close__space_is_space_invalid),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_3),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_4),
+    MP_ROM_QSTR(MP_QSTR__brace_open__brace_close__colon__slash__slash__brace_open__brace_close__colon__brace_open__brace_close__brace_open__brace_close_),
+    MP_ROM_QSTR(MP_QSTR_Sec_hyphen_WebSocket_hyphen_Key),
+    MP_ROM_QSTR(MP_QSTR_Sec_hyphen_WebSocket_hyphen_Version),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_8),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_10),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_11),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_12),
+    MP_ROM_PTR(&const_obj_aiohttp_aiohttp_ws_13),
+};
+
+static const mp_frozen_module_t frozen_module_aiohttp_aiohttp_ws = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_aiohttp_aiohttp_ws,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_aiohttp_aiohttp_ws,
+    },
+    .proto_fun = &proto_fun_aiohttp_aiohttp_ws__lt_module_gt_,
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// frozen module aiohttp___init__
+// - original source file: build/frozen_mpy/aiohttp/__init__.mpy
+// - frozen file name: aiohttp/__init__.py
+// - .mpy header: 4d:06:00:1f
+
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init____lt_module_gt_
+static const byte fun_data_aiohttp___init____lt_module_gt_[113] = {
+    0x20,0x22, // prelude
+    0x01, // names: <module>
+    0x60,0x26,0x26,0x7e,0x60,0x20,0x24,0x64,0x89,0x2a,0x8b,0x1a,0x89,0x0d,0x89,0xb7, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x02, // IMPORT_NAME 'asyncio'
+    0x16,0x02, // STORE_NAME 'asyncio'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x03, // IMPORT_NAME 'json'
+    0x16,0x6c, // STORE_NAME '_json'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x10,0x04, // LOAD_CONST_STRING '_WSRequestContextManager'
+    0x10,0x05, // LOAD_CONST_STRING 'ClientWebSocketResponse'
+    0x10,0x06, // LOAD_CONST_STRING 'WebSocketClient'
+    0x10,0x07, // LOAD_CONST_STRING 'WSMsgType'
+    0x2a,0x04, // BUILD_TUPLE 4
+    0x1b,0x08, // IMPORT_NAME 'aiohttp_ws'
+    0x1c,0x04, // IMPORT_FROM '_WSRequestContextManager'
+    0x16,0x04, // STORE_NAME '_WSRequestContextManager'
+    0x1c,0x05, // IMPORT_FROM 'ClientWebSocketResponse'
+    0x16,0x05, // STORE_NAME 'ClientWebSocketResponse'
+    0x1c,0x06, // IMPORT_FROM 'WebSocketClient'
+    0x16,0x06, // STORE_NAME 'WebSocketClient'
+    0x1c,0x07, // IMPORT_FROM 'WSMsgType'
+    0x16,0x07, // STORE_NAME 'WSMsgType'
+    0x59, // POP_TOP
+    0x10,0x09, // LOAD_CONST_STRING 'HTTP/1.0'
+    0x16,0x6d, // STORE_NAME 'HttpVersion10'
+    0x10,0x0a, // LOAD_CONST_STRING 'HTTP/1.1'
+    0x16,0x6e, // STORE_NAME 'HttpVersion11'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x10,0x0b, // LOAD_CONST_STRING 'ClientResponse'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0b, // STORE_NAME 'ClientResponse'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x10,0x0c, // LOAD_CONST_STRING 'ChunkedClientResponse'
+    0x11,0x0b, // LOAD_NAME 'ClientResponse'
+    0x34,0x03, // CALL_FUNCTION 3
+    0x16,0x0c, // STORE_NAME 'ChunkedClientResponse'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x10,0x0d, // LOAD_CONST_STRING '_RequestContextManager'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0d, // STORE_NAME '_RequestContextManager'
+    0x54, // LOAD_BUILD_CLASS
+    0x32,0x03, // MAKE_FUNCTION 3
+    0x10,0x0e, // LOAD_CONST_STRING 'ClientSession'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x16,0x0e, // STORE_NAME 'ClientSession'
+    0x10,0x0f, // LOAD_CONST_STRING '0.0.8'
+    0x16,0x6f, // STORE_NAME '__version__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init____lt_module_gt_
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse
+static const byte fun_data_aiohttp___init___ClientResponse[61] = {
+    0x08,0x18, // prelude
+    0x0b, // names: ClientResponse
+    0x88,0x11,0x64,0x64,0x60,0x84,0x11,0x68,0x40,0x69,0x64, // code info
+    0x11,0x70, // LOAD_NAME '__name__'
+    0x16,0x71, // STORE_NAME '__module__'
+    0x10,0x0b, // LOAD_CONST_STRING 'ClientResponse'
+    0x16,0x72, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x12, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x14, // STORE_NAME '_get_header'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x17, // STORE_NAME '_decode'
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x03, // MAKE_FUNCTION_DEFARGS 3
+    0x16,0x1d, // STORE_NAME 'read'
+    0x10,0x10, // LOAD_CONST_STRING 'utf-8'
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x04, // MAKE_FUNCTION_DEFARGS 4
+    0x16,0x21, // STORE_NAME 'text'
+    0x32,0x05, // MAKE_FUNCTION 5
+    0x16,0x03, // STORE_NAME 'json'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x24, // STORE_NAME '__repr__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse___init__
+static const byte fun_data_aiohttp___init___ClientResponse___init__[13] = {
+    0x1a,0x0a, // prelude
+    0x12,0x73,0x64, // names: __init__, self, reader
+    0x80,0x12, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x13, // STORE_ATTR 'content'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientResponse___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 13,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_aiohttp___init___ClientResponse___init__ + 5,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse___init__ + 7,
+        .opcodes = fun_data_aiohttp___init___ClientResponse___init__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse___init__ fun_data_aiohttp___init___ClientResponse___init__[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse__get_header
+static const byte fun_data_aiohttp___init___ClientResponse__get_header[37] = {
+    0x4b,0x12, // prelude
+    0x14,0x73,0x74,0x75, // names: _get_header, self, keyname, default
+    0x80,0x15,0x27,0x29,0x28, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'headers'
+    0x5f, // GET_ITER_STACK
+    0x4b,0x12, // FOR_ITER 18
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x14,0x16, // LOAD_METHOD 'lower'
+    0x36,0x00, // CALL_METHOD 0
+    0xb1, // LOAD_FAST 1
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'headers'
+    0xb3, // LOAD_FAST 3
+    0x55, // LOAD_SUBSCR
+    0x63, // RETURN_VALUE
+    0x42,0x2c, // JUMP -20
+    0xb2, // LOAD_FAST 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse__get_header = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientResponse__get_header,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 37,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 20,
+        .line_info = fun_data_aiohttp___init___ClientResponse__get_header + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse__get_header + 11,
+        .opcodes = fun_data_aiohttp___init___ClientResponse__get_header + 11,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse__get_header fun_data_aiohttp___init___ClientResponse__get_header[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse__decode
+static const byte fun_data_aiohttp___init___ClientResponse__decode[136] = {
+    0xda,0x02,0x22, // prelude
+    0x17,0x73,0x51, // names: _decode, self, data
+    0x80,0x1b,0x29,0x27,0x22,0x25,0x45,0x26,0x31,0x2a,0x26,0x32,0x53,0x2a, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x14, // LOAD_METHOD '_get_header'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x51, // LOAD_CONST_NONE
+    0x36,0x02, // CALL_METHOD 2
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x23,0x01, // LOAD_CONST_OBJ 1
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0xe2,0x80, // POP_JUMP_IF_FALSE 98
+    0x48,0x4f, // SETUP_EXCEPT 79
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x18, // IMPORT_NAME 'deflate'
+    0xc3, // STORE_FAST 3
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x51, // LOAD_CONST_NONE
+    0x1b,0x19, // IMPORT_NAME 'io'
+    0xc4, // STORE_FAST 4
+    0xb2, // LOAD_FAST 2
+    0x10,0x18, // LOAD_CONST_STRING 'deflate'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x5b, // POP_JUMP_IF_FALSE 27
+    0xb3, // LOAD_FAST 3
+    0x14,0x1a, // LOAD_METHOD 'DeflateIO'
+    0xb4, // LOAD_FAST 4
+    0x14,0x1b, // LOAD_METHOD 'BytesIO'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0xb3, // LOAD_FAST 3
+    0x13,0x1c, // LOAD_ATTR 'ZLIB'
+    0x36,0x02, // CALL_METHOD 2
+    0x47,0x07, // SETUP_WITH 7
+    0xc5, // STORE_FAST 5
+    0xb5, // LOAD_FAST 5
+    0x14,0x1d, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+    0x5c, // WITH_CLEANUP
+    0x5d, // END_FINALLY
+    0x42,0x62, // JUMP 34
+    0xb2, // LOAD_FAST 2
+    0x10,0x1e, // LOAD_CONST_STRING 'gzip'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x5c, // POP_JUMP_IF_FALSE 28
+    0xb3, // LOAD_FAST 3
+    0x14,0x1a, // LOAD_METHOD 'DeflateIO'
+    0xb4, // LOAD_FAST 4
+    0x14,0x1b, // LOAD_METHOD 'BytesIO'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0xb3, // LOAD_FAST 3
+    0x13,0x1f, // LOAD_ATTR 'GZIP'
+    0x8f, // LOAD_CONST_SMALL_INT 15
+    0x36,0x03, // CALL_METHOD 3
+    0x47,0x07, // SETUP_WITH 7
+    0xc5, // STORE_FAST 5
+    0xb5, // LOAD_FAST 5
+    0x14,0x1d, // LOAD_METHOD 'read'
+    0x36,0x00, // CALL_METHOD 0
+    0x63, // RETURN_VALUE
+    0x5c, // WITH_CLEANUP
+    0x5d, // END_FINALLY
+    0x42,0x40, // JUMP 0
+    0x4a,0x11, // POP_EXCEPT_JUMP 17
+    0x57, // DUP_TOP
+    0x12,0x76, // LOAD_GLOBAL 'ImportError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x59, // POP_TOP
+    0x12,0x77, // LOAD_GLOBAL 'print'
+    0x23,0x02, // LOAD_CONST_OBJ 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x59, // POP_TOP
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb1, // LOAD_FAST 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse__decode = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientResponse__decode,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 136,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 2,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 23,
+        .line_info = fun_data_aiohttp___init___ClientResponse__decode + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse__decode + 20,
+        .opcodes = fun_data_aiohttp___init___ClientResponse__decode + 20,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse__decode fun_data_aiohttp___init___ClientResponse__decode[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse_read
+static const byte fun_data_aiohttp___init___ClientResponse_read[41] = {
+    0xb2,0x41,0x0c, // prelude
+    0x1d,0x73,0x78, // names: read, self, sz
+    0x80,0x2c,0x23, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x17, // LOAD_METHOD '_decode'
+    0xb1, // LOAD_FAST 1
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x1d, // LOAD_METHOD 'read'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x42,0x48, // JUMP 8
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x20, // LOAD_METHOD 'readexactly'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse_read = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientResponse_read,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 41,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 29,
+        .line_info = fun_data_aiohttp___init___ClientResponse_read + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse_read + 9,
+        .opcodes = fun_data_aiohttp___init___ClientResponse_read + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse_read fun_data_aiohttp___init___ClientResponse_read[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse_text
+static const byte fun_data_aiohttp___init___ClientResponse_text[34] = {
+    0xc2,0x41,0x0a, // prelude
+    0x21,0x73,0x79, // names: text, self, encoding
+    0x80,0x31, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x1d, // LOAD_METHOD 'read'
+    0x12,0x7a, // LOAD_GLOBAL 'int'
+    0xb0, // LOAD_FAST 0
+    0x14,0x14, // LOAD_METHOD '_get_header'
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x36,0x02, // CALL_METHOD 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x14,0x22, // LOAD_METHOD 'decode'
+    0xb1, // LOAD_FAST 1
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse_text = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientResponse_text,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 33,
+        .line_info = fun_data_aiohttp___init___ClientResponse_text + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse_text + 8,
+        .opcodes = fun_data_aiohttp___init___ClientResponse_text + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse_text fun_data_aiohttp___init___ClientResponse_text[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse_json
+static const byte fun_data_aiohttp___init___ClientResponse_json[34] = {
+    0xc9,0x40,0x08, // prelude
+    0x03,0x73, // names: json, self
+    0x80,0x34, // code info
+    0x12,0x6c, // LOAD_GLOBAL '_json'
+    0x14,0x23, // LOAD_METHOD 'loads'
+    0xb0, // LOAD_FAST 0
+    0x14,0x1d, // LOAD_METHOD 'read'
+    0x12,0x7a, // LOAD_GLOBAL 'int'
+    0xb0, // LOAD_FAST 0
+    0x14,0x14, // LOAD_METHOD '_get_header'
+    0x23,0x03, // LOAD_CONST_OBJ 3
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x36,0x02, // CALL_METHOD 2
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse_json = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientResponse_json,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 3,
+        .line_info = fun_data_aiohttp___init___ClientResponse_json + 5,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse_json + 7,
+        .opcodes = fun_data_aiohttp___init___ClientResponse_json + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse_json fun_data_aiohttp___init___ClientResponse_json[0]
+#endif
+
+// child of aiohttp___init___ClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientResponse___repr__
+static const byte fun_data_aiohttp___init___ClientResponse___repr__[18] = {
+    0x19,0x08, // prelude
+    0x24,0x73, // names: __repr__, self
+    0x80,0x37, // code info
+    0x23,0x04, // LOAD_CONST_OBJ 4
+    0xb0, // LOAD_FAST 0
+    0x13,0x25, // LOAD_ATTR 'status'
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'headers'
+    0x2a,0x02, // BUILD_TUPLE 2
+    0xf8, // BINARY_OP 33 __mod__
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse___repr__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientResponse___repr__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 18,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 36,
+        .line_info = fun_data_aiohttp___init___ClientResponse___repr__ + 4,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse___repr__ + 6,
+        .opcodes = fun_data_aiohttp___init___ClientResponse___repr__ + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientResponse___repr__ fun_data_aiohttp___init___ClientResponse___repr__[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init___ClientResponse[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse__get_header,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse__decode,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse_read,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse_text,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse_json,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse___repr__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientResponse = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientResponse,
+    .children = (void *)&children_aiohttp___init___ClientResponse,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 61,
+    .n_children = 7,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 11,
+        .line_info = fun_data_aiohttp___init___ClientResponse + 3,
+        .line_info_top = fun_data_aiohttp___init___ClientResponse + 14,
+        .opcodes = fun_data_aiohttp___init___ClientResponse + 14,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp___init____lt_module_gt_
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ChunkedClientResponse
+static const byte fun_data_aiohttp___init___ChunkedClientResponse[39] = {
+    0x08,0x0e, // prelude
+    0x0c, // names: ChunkedClientResponse
+    0x88,0x3b,0x64,0x20,0x8c,0x11, // code info
+    0x11,0x70, // LOAD_NAME '__name__'
+    0x16,0x71, // STORE_NAME '__module__'
+    0x10,0x0c, // LOAD_CONST_STRING 'ChunkedClientResponse'
+    0x16,0x72, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x12, // STORE_NAME '__init__'
+    0x22,0x82,0x80,0x80,0x00, // LOAD_CONST_SMALL_INT 4194304
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x01, // MAKE_FUNCTION_DEFARGS 1
+    0x16,0x1d, // STORE_NAME 'read'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x24, // STORE_NAME '__repr__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init___ChunkedClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ChunkedClientResponse___init__
+static const byte fun_data_aiohttp___init___ChunkedClientResponse___init__[18] = {
+    0x1a,0x0c, // prelude
+    0x12,0x73,0x64, // names: __init__, self, reader
+    0x80,0x3c,0x24, // code info
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x13, // STORE_ATTR 'content'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xb0, // LOAD_FAST 0
+    0x18,0x26, // STORE_ATTR 'chunk_size'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ChunkedClientResponse___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ChunkedClientResponse___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 18,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_aiohttp___init___ChunkedClientResponse___init__ + 5,
+        .line_info_top = fun_data_aiohttp___init___ChunkedClientResponse___init__ + 8,
+        .opcodes = fun_data_aiohttp___init___ChunkedClientResponse___init__ + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ChunkedClientResponse___init__ fun_data_aiohttp___init___ChunkedClientResponse___init__[0]
+#endif
+
+// child of aiohttp___init___ChunkedClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ChunkedClientResponse_read
+static const byte fun_data_aiohttp___init___ChunkedClientResponse_read[157] = {
+    0xca,0x41,0x24, // prelude
+    0x1d,0x73,0x78, // names: read, self, sz
+    0x80,0x40,0x27,0x2b,0x2b,0x29,0x47,0x2c,0x29,0x23,0x33,0x2d,0x27,0x2c,0x29, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x26, // LOAD_ATTR 'chunk_size'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x7e, // POP_JUMP_IF_FALSE 62
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x27, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc2, // STORE_FAST 2
+    0xb2, // LOAD_FAST 2
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x23,0x05, // LOAD_CONST_OBJ 5
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0xc2, // STORE_FAST 2
+    0x12,0x7a, // LOAD_GLOBAL 'int'
+    0xb2, // LOAD_FAST 2
+    0x90, // LOAD_CONST_SMALL_INT 16
+    0x34,0x02, // CALL_FUNCTION 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x26, // STORE_ATTR 'chunk_size'
+    0xb0, // LOAD_FAST 0
+    0x13,0x26, // LOAD_ATTR 'chunk_size'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x58, // POP_JUMP_IF_FALSE 24
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x20, // LOAD_METHOD 'readexactly'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x29, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0x23,0x07, // LOAD_CONST_OBJ 7
+    0x63, // RETURN_VALUE
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x20, // LOAD_METHOD 'readexactly'
+    0x12,0x7b, // LOAD_GLOBAL 'min'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x26, // LOAD_ATTR 'chunk_size'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc4, // STORE_FAST 4
+    0xb0, // LOAD_FAST 0
+    0x57, // DUP_TOP
+    0x13,0x26, // LOAD_ATTR 'chunk_size'
+    0x12,0x7c, // LOAD_GLOBAL 'len'
+    0xb4, // LOAD_FAST 4
+    0x34,0x01, // CALL_FUNCTION 1
+    0xe6, // BINARY_OP 15 __isub__
+    0x5a, // ROT_TWO
+    0x18,0x26, // STORE_ATTR 'chunk_size'
+    0xb0, // LOAD_FAST 0
+    0x13,0x26, // LOAD_ATTR 'chunk_size'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x55, // POP_JUMP_IF_FALSE 21
+    0xb0, // LOAD_FAST 0
+    0x13,0x13, // LOAD_ATTR 'content'
+    0x14,0x20, // LOAD_METHOD 'readexactly'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0xd9, // BINARY_OP 2 __eq__
+    0x43,0x43, // POP_JUMP_IF_TRUE 3
+    0x12,0x29, // LOAD_GLOBAL 'AssertionError'
+    0x65, // RAISE_OBJ
+    0xb0, // LOAD_FAST 0
+    0x14,0x17, // LOAD_METHOD '_decode'
+    0xb4, // LOAD_FAST 4
+    0x36,0x01, // CALL_METHOD 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ChunkedClientResponse_read = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ChunkedClientResponse_read,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 157,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 29,
+        .line_info = fun_data_aiohttp___init___ChunkedClientResponse_read + 6,
+        .line_info_top = fun_data_aiohttp___init___ChunkedClientResponse_read + 21,
+        .opcodes = fun_data_aiohttp___init___ChunkedClientResponse_read + 21,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ChunkedClientResponse_read fun_data_aiohttp___init___ChunkedClientResponse_read[0]
+#endif
+
+// child of aiohttp___init___ChunkedClientResponse
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ChunkedClientResponse___repr__
+static const byte fun_data_aiohttp___init___ChunkedClientResponse___repr__[18] = {
+    0x19,0x08, // prelude
+    0x24,0x73, // names: __repr__, self
+    0x80,0x51, // code info
+    0x23,0x08, // LOAD_CONST_OBJ 8
+    0xb0, // LOAD_FAST 0
+    0x13,0x25, // LOAD_ATTR 'status'
+    0xb0, // LOAD_FAST 0
+    0x13,0x15, // LOAD_ATTR 'headers'
+    0x2a,0x02, // BUILD_TUPLE 2
+    0xf8, // BINARY_OP 33 __mod__
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ChunkedClientResponse___repr__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ChunkedClientResponse___repr__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 18,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 4,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 36,
+        .line_info = fun_data_aiohttp___init___ChunkedClientResponse___repr__ + 4,
+        .line_info_top = fun_data_aiohttp___init___ChunkedClientResponse___repr__ + 6,
+        .opcodes = fun_data_aiohttp___init___ChunkedClientResponse___repr__ + 6,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ChunkedClientResponse___repr__ fun_data_aiohttp___init___ChunkedClientResponse___repr__[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init___ChunkedClientResponse[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ChunkedClientResponse___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ChunkedClientResponse_read,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ChunkedClientResponse___repr__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ChunkedClientResponse = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ChunkedClientResponse,
+    .children = (void *)&children_aiohttp___init___ChunkedClientResponse,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 39,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 12,
+        .line_info = fun_data_aiohttp___init___ChunkedClientResponse + 3,
+        .line_info_top = fun_data_aiohttp___init___ChunkedClientResponse + 9,
+        .opcodes = fun_data_aiohttp___init___ChunkedClientResponse + 9,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp___init____lt_module_gt_
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init____RequestContextManager
+static const byte fun_data_aiohttp___init____RequestContextManager[30] = {
+    0x00,0x0c, // prelude
+    0x0d, // names: _RequestContextManager
+    0x88,0x55,0x64,0x20,0x64, // code info
+    0x11,0x70, // LOAD_NAME '__name__'
+    0x16,0x71, // STORE_NAME '__module__'
+    0x10,0x0d, // LOAD_CONST_STRING '_RequestContextManager'
+    0x16,0x72, // STORE_NAME '__qualname__'
+    0x32,0x00, // MAKE_FUNCTION 0
+    0x16,0x12, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x2c, // STORE_NAME '__aenter__'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x2d, // STORE_NAME '__aexit__'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init____RequestContextManager
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init____RequestContextManager___init__
+static const byte fun_data_aiohttp___init____RequestContextManager___init__[19] = {
+    0x23,0x0e, // prelude
+    0x12,0x73,0x2b,0x7d, // names: __init__, self, client, request_co
+    0x80,0x56,0x24, // code info
+    0xb2, // LOAD_FAST 2
+    0xb0, // LOAD_FAST 0
+    0x18,0x2a, // STORE_ATTR 'reqco'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x2b, // STORE_ATTR 'client'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init____RequestContextManager___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init____RequestContextManager___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 19,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_aiohttp___init____RequestContextManager___init__ + 6,
+        .line_info_top = fun_data_aiohttp___init____RequestContextManager___init__ + 9,
+        .opcodes = fun_data_aiohttp___init____RequestContextManager___init__ + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init____RequestContextManager___init__ fun_data_aiohttp___init____RequestContextManager___init__[0]
+#endif
+
+// child of aiohttp___init____RequestContextManager
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init____RequestContextManager___aenter__
+static const byte fun_data_aiohttp___init____RequestContextManager___aenter__[14] = {
+    0x91,0x40,0x08, // prelude
+    0x2c,0x73, // names: __aenter__, self
+    0x80,0x5a, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x2a, // LOAD_ATTR 'reqco'
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init____RequestContextManager___aenter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init____RequestContextManager___aenter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 14,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 3,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 44,
+        .line_info = fun_data_aiohttp___init____RequestContextManager___aenter__ + 5,
+        .line_info_top = fun_data_aiohttp___init____RequestContextManager___aenter__ + 7,
+        .opcodes = fun_data_aiohttp___init____RequestContextManager___aenter__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init____RequestContextManager___aenter__ fun_data_aiohttp___init____RequestContextManager___aenter__[0]
+#endif
+
+// child of aiohttp___init____RequestContextManager
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init____RequestContextManager___aexit__
+static const byte fun_data_aiohttp___init____RequestContextManager___aexit__[34] = {
+    0xa1,0xc0,0x80,0x40,0x0a, // prelude
+    0x2d,0x73, // names: __aexit__, self
+    0x80,0x5d,0x2d, // code info
+    0xb0, // LOAD_FAST 0
+    0x13,0x2b, // LOAD_ATTR 'client'
+    0x13,0x2e, // LOAD_ATTR '_reader'
+    0x14,0x2f, // LOAD_METHOD 'aclose'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x12,0x02, // LOAD_GLOBAL 'asyncio'
+    0x14,0x30, // LOAD_METHOD 'sleep'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init____RequestContextManager___aexit__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init____RequestContextManager___aexit__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 5,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 45,
+        .line_info = fun_data_aiohttp___init____RequestContextManager___aexit__ + 7,
+        .line_info_top = fun_data_aiohttp___init____RequestContextManager___aexit__ + 10,
+        .opcodes = fun_data_aiohttp___init____RequestContextManager___aexit__ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init____RequestContextManager___aexit__ fun_data_aiohttp___init____RequestContextManager___aexit__[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init____RequestContextManager[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init____RequestContextManager___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init____RequestContextManager___aenter__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init____RequestContextManager___aexit__,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init____RequestContextManager = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init____RequestContextManager,
+    .children = (void *)&children_aiohttp___init____RequestContextManager,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 30,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 1,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 13,
+        .line_info = fun_data_aiohttp___init____RequestContextManager + 3,
+        .line_info_top = fun_data_aiohttp___init____RequestContextManager + 8,
+        .opcodes = fun_data_aiohttp___init____RequestContextManager + 8,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp___init____lt_module_gt_
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession
+static const byte fun_data_aiohttp___init___ClientSession[142] = {
+    0x30,0x30, // prelude
+    0x0e, // names: ClientSession
+    0x88,0x62,0x8d,0x07,0x64,0x64,0x40,0x8d,0x2e,0x84,0x08,0x8b,0x44,0x8d,0x0e,0x64,0x64,0x64,0x64,0x64,0x64,0x64,0x68, // code info
+    0x11,0x70, // LOAD_NAME '__name__'
+    0x16,0x71, // STORE_NAME '__module__'
+    0x10,0x0e, // LOAD_CONST_STRING 'ClientSession'
+    0x16,0x72, // STORE_NAME '__qualname__'
+    0x10,0x11, // LOAD_CONST_STRING ''
+    0x2c,0x00, // BUILD_MAP 0
+    0x11,0x6d, // LOAD_NAME 'HttpVersion10'
+    0x2a,0x03, // BUILD_TUPLE 3
+    0x53, // LOAD_NULL
+    0x33,0x00, // MAKE_FUNCTION_DEFARGS 0
+    0x16,0x12, // STORE_NAME '__init__'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x16,0x2c, // STORE_NAME '__aenter__'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0x16,0x2d, // STORE_NAME '__aexit__'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x2c,0x00, // BUILD_MAP 0
+    0x2a,0x05, // BUILD_TUPLE 5
+    0x53, // LOAD_NULL
+    0x33,0x03, // MAKE_FUNCTION_DEFARGS 3
+    0x16,0x39, // STORE_NAME '_request'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x2c,0x00, // BUILD_MAP 0
+    0x50, // LOAD_CONST_FALSE
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x07, // BUILD_TUPLE 7
+    0x53, // LOAD_NULL
+    0x33,0x04, // MAKE_FUNCTION_DEFARGS 4
+    0x16,0x3a, // STORE_NAME 'request_raw'
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x51, // LOAD_CONST_NONE
+    0x2c,0x00, // BUILD_MAP 0
+    0x2a,0x05, // BUILD_TUPLE 5
+    0x53, // LOAD_NULL
+    0x33,0x05, // MAKE_FUNCTION_DEFARGS 5
+    0x16,0x50, // STORE_NAME 'request'
+    0x32,0x06, // MAKE_FUNCTION 6
+    0x16,0x53, // STORE_NAME 'get'
+    0x32,0x07, // MAKE_FUNCTION 7
+    0x16,0x54, // STORE_NAME 'post'
+    0x32,0x08, // MAKE_FUNCTION 8
+    0x16,0x55, // STORE_NAME 'put'
+    0x32,0x09, // MAKE_FUNCTION 9
+    0x16,0x57, // STORE_NAME 'patch'
+    0x32,0x0a, // MAKE_FUNCTION 10
+    0x16,0x59, // STORE_NAME 'delete'
+    0x32,0x0b, // MAKE_FUNCTION 11
+    0x16,0x5b, // STORE_NAME 'head'
+    0x32,0x0c, // MAKE_FUNCTION 12
+    0x16,0x5d, // STORE_NAME 'options'
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x0d, // MAKE_FUNCTION_DEFARGS 13
+    0x16,0x5f, // STORE_NAME 'ws_connect'
+    0x51, // LOAD_CONST_NONE
+    0x2a,0x01, // BUILD_TUPLE 1
+    0x53, // LOAD_NULL
+    0x33,0x0e, // MAKE_FUNCTION_DEFARGS 14
+    0x16,0x60, // STORE_NAME '_ws_connect'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession___init__
+static const byte fun_data_aiohttp___init___ClientSession___init__[56] = {
+    0xc0,0x85,0x01,0x16, // prelude
+    0x12,0x73,0x7e,0x15,0x7f, // names: __init__, self, base_url, headers, version
+    0x80,0x63,0x24,0x24,0x2f,0x2c, // code info
+    0x51, // LOAD_CONST_NONE
+    0xb0, // LOAD_FAST 0
+    0x18,0x2e, // STORE_ATTR '_reader'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x18,0x31, // STORE_ATTR '_base_url'
+    0x2c,0x02, // BUILD_MAP 2
+    0x10,0x32, // LOAD_CONST_STRING 'close'
+    0x10,0x33, // LOAD_CONST_STRING 'Connection'
+    0x62, // STORE_MAP
+    0x10,0x34, // LOAD_CONST_STRING 'compat'
+    0x10,0x35, // LOAD_CONST_STRING 'User-Agent'
+    0x62, // STORE_MAP
+    0xb0, // LOAD_FAST 0
+    0x18,0x36, // STORE_ATTR '_base_headers'
+    0xb0, // LOAD_FAST 0
+    0x13,0x36, // LOAD_ATTR '_base_headers'
+    0x14,0x37, // LOAD_METHOD 'update'
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x00, // CALL_METHOD_VAR_KW 256
+    0x59, // POP_TOP
+    0xb3, // LOAD_FAST 3
+    0xb0, // LOAD_FAST 0
+    0x18,0x38, // STORE_ATTR '_http_version'
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession___init__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession___init__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 56,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 4,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 3,
+        .qstr_block_name_idx = 18,
+        .line_info = fun_data_aiohttp___init___ClientSession___init__ + 9,
+        .line_info_top = fun_data_aiohttp___init___ClientSession___init__ + 15,
+        .opcodes = fun_data_aiohttp___init___ClientSession___init__ + 15,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession___init__ fun_data_aiohttp___init___ClientSession___init__[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession___aenter__
+static const byte fun_data_aiohttp___init___ClientSession___aenter__[9] = {
+    0x89,0x40,0x08, // prelude
+    0x2c,0x73, // names: __aenter__, self
+    0x80,0x6a, // code info
+    0xb0, // LOAD_FAST 0
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession___aenter__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession___aenter__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 9,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 2,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 44,
+        .line_info = fun_data_aiohttp___init___ClientSession___aenter__ + 5,
+        .line_info_top = fun_data_aiohttp___init___ClientSession___aenter__ + 7,
+        .opcodes = fun_data_aiohttp___init___ClientSession___aenter__ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession___aenter__ fun_data_aiohttp___init___ClientSession___aenter__[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession___aexit__
+static const byte fun_data_aiohttp___init___ClientSession___aexit__[20] = {
+    0xa1,0xc0,0x80,0x40,0x08, // prelude
+    0x2d,0x73, // names: __aexit__, self
+    0x80,0x6d, // code info
+    0x12,0x02, // LOAD_GLOBAL 'asyncio'
+    0x14,0x30, // LOAD_METHOD 'sleep'
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession___aexit__ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession___aexit__,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 20,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 5,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 45,
+        .line_info = fun_data_aiohttp___init___ClientSession___aexit__ + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession___aexit__ + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession___aexit__ + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession___aexit__ fun_data_aiohttp___init___ClientSession___aexit__[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession__request
+static const byte fun_data_aiohttp___init___ClientSession__request[340] = {
+    0xcc,0xd1,0x84,0x01,0x65, // prelude
+    0x39,0x73,0x81,0x00,0x3e,0x51,0x03,0x4a,0x52,0x15, // names: _request, self, method, url, data, json, ssl, params, headers
+    0x80,0x72,0x22,0x23,0x31,0x23,0x29,0x28,0x28,0x22,0x20,0x29,0x29,0x23,0x27,0x26,0x29,0x26,0x24,0x29,0x57,0x33,0x24,0x29,0x22,0x48,0x23,0x49,0x27,0x25,0x25,0x25,0x24,0x1f,0x21,0x22,0x42,0x75,0x23,0x24,0x06, // code info
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0xc8, // STORE_FAST 8
+    0x42,0xa8,0x81, // JUMP 168
+    0xb0, // LOAD_FAST 0
+    0x14,0x3a, // LOAD_METHOD 'request_raw'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0xb3, // LOAD_FAST 3
+    0xb4, // LOAD_FAST 4
+    0xb5, // LOAD_FAST 5
+    0x25,0x06, // LOAD_DEREF 6
+    0xb7, // LOAD_FAST 7
+    0x36,0x07, // CALL_METHOD 7
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xc9, // STORE_FAST 9
+    0x2b,0x00, // BUILD_LIST 0
+    0xca, // STORE_FAST 10
+    0xb9, // LOAD_FAST 9
+    0x14,0x27, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xcb, // STORE_FAST 11
+    0xbb, // LOAD_FAST 11
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x51, // LOAD_CONST_NONE
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0xcb, // STORE_FAST 11
+    0x12,0x7a, // LOAD_GLOBAL 'int'
+    0xbb, // LOAD_FAST 11
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0x34,0x01, // CALL_FUNCTION 1
+    0xcc, // STORE_FAST 12
+    0x50, // LOAD_CONST_FALSE
+    0xcd, // STORE_FAST 13
+    0xb9, // LOAD_FAST 9
+    0x14,0x27, // LOAD_METHOD 'readline'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0xce, // STORE_FAST 14
+    0xbe, // LOAD_FAST 14
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0xbe, // LOAD_FAST 14
+    0x23,0x06, // LOAD_CONST_OBJ 6
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x42,0xc0,0x80, // JUMP 64
+    0xba, // LOAD_FAST 10
+    0x14,0x3b, // LOAD_METHOD 'append'
+    0xbe, // LOAD_FAST 14
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0xbe, // LOAD_FAST 14
+    0x14,0x16, // LOAD_METHOD 'lower'
+    0x36,0x00, // CALL_METHOD 0
+    0xcf, // STORE_FAST 15
+    0xbf, // LOAD_FAST 15
+    0x14,0x3c, // LOAD_METHOD 'startswith'
+    0x23,0x09, // LOAD_CONST_OBJ 9
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0x23,0x0a, // LOAD_CONST_OBJ 10
+    0xbe, // LOAD_FAST 14
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x52, // LOAD_CONST_TRUE
+    0xcd, // STORE_FAST 13
+    0x42,0x5d, // JUMP 29
+    0xbf, // LOAD_FAST 15
+    0x14,0x3c, // LOAD_METHOD 'startswith'
+    0x23,0x0b, // LOAD_CONST_OBJ 11
+    0x36,0x01, // CALL_METHOD 1
+    0x44,0x54, // POP_JUMP_IF_FALSE 20
+    0xbe, // LOAD_FAST 14
+    0x14,0x3d, // LOAD_METHOD 'rstrip'
+    0x36,0x00, // CALL_METHOD 0
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x51, // LOAD_CONST_NONE
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x55, // LOAD_SUBSCR
+    0x14,0x22, // LOAD_METHOD 'decode'
+    0x36,0x00, // CALL_METHOD 0
+    0xc2, // STORE_FAST 2
+    0x42,0x40, // JUMP 0
+    0x42,0xab,0x7f, // JUMP -85
+    0x22,0x82,0x2d, // LOAD_CONST_SMALL_INT 301
+    0xbc, // LOAD_FAST 12
+    0x57, // DUP_TOP
+    0x5b, // ROT_THREE
+    0xda, // BINARY_OP 3 __le__
+    0x46,0x06, // JUMP_IF_FALSE_OR_POP 6
+    0x22,0x82,0x2f, // LOAD_CONST_SMALL_INT 303
+    0xda, // BINARY_OP 3 __le__
+    0x42,0x42, // JUMP 2
+    0x5a, // ROT_TWO
+    0x59, // POP_TOP
+    0x44,0x4f, // POP_JUMP_IF_FALSE 15
+    0xb8, // LOAD_FAST 8
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc8, // STORE_FAST 8
+    0xb9, // LOAD_FAST 9
+    0x14,0x2f, // LOAD_METHOD 'aclose'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0x42,0x42, // JUMP 2
+    0x42,0x46, // JUMP 6
+    0xb8, // LOAD_FAST 8
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0xd7, // BINARY_OP 0 __lt__
+    0x43,0xd2,0x7e, // POP_JUMP_IF_TRUE -174
+    0xbd, // LOAD_FAST 13
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0x12,0x0c, // LOAD_GLOBAL 'ChunkedClientResponse'
+    0xb9, // LOAD_FAST 9
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x10, // STORE_FAST_N 16
+    0x42,0x47, // JUMP 7
+    0x12,0x0b, // LOAD_GLOBAL 'ClientResponse'
+    0xb9, // LOAD_FAST 9
+    0x34,0x01, // CALL_FUNCTION 1
+    0x26,0x10, // STORE_FAST_N 16
+    0xbc, // LOAD_FAST 12
+    0x24,0x10, // LOAD_FAST_N 16
+    0x18,0x25, // STORE_ATTR 'status'
+    0xba, // LOAD_FAST 10
+    0x24,0x10, // LOAD_FAST_N 16
+    0x18,0x15, // STORE_ATTR 'headers'
+    0xb2, // LOAD_FAST 2
+    0x24,0x10, // LOAD_FAST_N 16
+    0x18,0x3e, // STORE_ATTR 'url'
+    0x25,0x06, // LOAD_DEREF 6
+    0x44,0x60, // POP_JUMP_IF_FALSE 32
+    0x24,0x10, // LOAD_FAST_N 16
+    0x57, // DUP_TOP
+    0x13,0x3e, // LOAD_ATTR 'url'
+    0x10,0x3f, // LOAD_CONST_STRING '?'
+    0x10,0x40, // LOAD_CONST_STRING '&'
+    0x14,0x41, // LOAD_METHOD 'join'
+    0xb6, // LOAD_FAST 6
+    0x20,0x00,0x01, // MAKE_CLOSURE 0
+    0x12,0x81,0x01, // LOAD_GLOBAL 'sorted'
+    0x25,0x06, // LOAD_DEREF 6
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0xf2, // BINARY_OP 27 __add__
+    0xe5, // BINARY_OP 14 __iadd__
+    0x5a, // ROT_TWO
+    0x18,0x3e, // STORE_ATTR 'url'
+    0x48,0x0f, // SETUP_EXCEPT 15
+    0x32,0x01, // MAKE_FUNCTION 1
+    0x32,0x02, // MAKE_FUNCTION 2
+    0xba, // LOAD_FAST 10
+    0x34,0x01, // CALL_FUNCTION 1
+    0x34,0x01, // CALL_FUNCTION 1
+    0x24,0x10, // LOAD_FAST_N 16
+    0x18,0x15, // STORE_ATTR 'headers'
+    0x4a,0x0b, // POP_EXCEPT_JUMP 11
+    0x57, // DUP_TOP
+    0x12,0x81,0x02, // LOAD_GLOBAL 'Exception'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x59, // POP_TOP
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xb9, // LOAD_FAST 9
+    0xb0, // LOAD_FAST 0
+    0x18,0x2e, // STORE_ATTR '_reader'
+    0x24,0x10, // LOAD_FAST_N 16
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init___ClientSession__request
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession__request__lt_genexpr_gt_
+static const byte fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_[34] = {
+    0xda,0x40,0x0e, // prelude
+    0x65,0x81,0x08,0x81,0x08, // names: <genexpr>, *, *
+    0x80,0x94, // code info
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0xc2, // STORE_FAST 2
+    0x10,0x66, // LOAD_CONST_STRING '{}={}'
+    0x14,0x67, // LOAD_METHOD 'format'
+    0xb2, // LOAD_FAST 2
+    0x25,0x00, // LOAD_DEREF 0
+    0xb2, // LOAD_FAST 2
+    0x55, // LOAD_SUBSCR
+    0x36,0x02, // CALL_METHOD 2
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession__request__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_ + 8,
+        .line_info_top = fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_ + 10,
+        .opcodes = fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession__request__lt_genexpr_gt_ fun_data_aiohttp___init___ClientSession__request__lt_genexpr_gt_[0]
+#endif
+
+// child of aiohttp___init___ClientSession__request
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession__request__lt_dictcomp_gt_
+static const byte fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_[43] = {
+    0x59,0x0a, // prelude
+    0x68,0x81,0x08, // names: <dictcomp>, *
+    0x80,0x97, // code info
+    0x2c,0x00, // BUILD_MAP 0
+    0xb0, // LOAD_FAST 0
+    0x5f, // GET_ITER_STACK
+    0x4b,0x1d, // FOR_ITER 29
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x10,0x48, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x7f, // LOAD_CONST_SMALL_INT -1
+    0x55, // LOAD_SUBSCR
+    0x14,0x69, // LOAD_METHOD 'strip'
+    0x36,0x00, // CALL_METHOD 0
+    0xb1, // LOAD_FAST 1
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x10,0x48, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x55, // LOAD_SUBSCR
+    0x2f,0x19, // STORE_COMP 25
+    0x42,0x21, // JUMP -31
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession__request__lt_dictcomp_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 43,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 104,
+        .line_info = fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_ + 5,
+        .line_info_top = fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_ + 7,
+        .opcodes = fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession__request__lt_dictcomp_gt_ fun_data_aiohttp___init___ClientSession__request__lt_dictcomp_gt_[0]
+#endif
+
+// child of aiohttp___init___ClientSession__request
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession__request__lt_listcomp_gt_
+static const byte fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_[28] = {
+    0x41,0x0a, // prelude
+    0x6a,0x81,0x08, // names: <listcomp>, *
+    0x80,0x98, // code info
+    0x2b,0x00, // BUILD_LIST 0
+    0xb0, // LOAD_FAST 0
+    0x5f, // GET_ITER_STACK
+    0x4b,0x0e, // FOR_ITER 14
+    0xc1, // STORE_FAST 1
+    0xb1, // LOAD_FAST 1
+    0x14,0x22, // LOAD_METHOD 'decode'
+    0x36,0x00, // CALL_METHOD 0
+    0x14,0x69, // LOAD_METHOD 'strip'
+    0x36,0x00, // CALL_METHOD 0
+    0x2f,0x14, // STORE_COMP 20
+    0x42,0x30, // JUMP -16
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession__request__lt_listcomp_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 28,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 9,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 106,
+        .line_info = fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_ + 5,
+        .line_info_top = fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_ + 7,
+        .opcodes = fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_ + 7,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession__request__lt_listcomp_gt_ fun_data_aiohttp___init___ClientSession__request__lt_listcomp_gt_[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init___ClientSession__request[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession__request__lt_genexpr_gt_,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession__request__lt_dictcomp_gt_,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession__request__lt_listcomp_gt_,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession__request = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession__request,
+    .children = (void *)&children_aiohttp___init___ClientSession__request,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 340,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 26,
+        .n_exc_stack = 1,
+        .scope_flags = 1,
+        .n_pos_args = 8,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 5,
+        .qstr_block_name_idx = 57,
+        .line_info = fun_data_aiohttp___init___ClientSession__request + 15,
+        .line_info_top = fun_data_aiohttp___init___ClientSession__request + 55,
+        .opcodes = fun_data_aiohttp___init___ClientSession__request + 56,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_request_raw
+static const byte fun_data_aiohttp___init___ClientSession_request_raw[470] = {
+    0xd6,0xd1,0x85,0x01,0x77, // prelude
+    0x3a,0x73,0x81,0x00,0x3e,0x51,0x03,0x4a,0x52,0x15,0x81,0x03,0x7f, // names: request_raw, self, method, url, data, json, ssl, params, headers, is_handshake, version
+    0x80,0xab,0x2e,0x28,0x2c,0x23,0x24,0x3a,0x22,0x58,0x2d,0x46,0x26,0x26,0x26,0x24,0x25,0x44,0x4a,0x26,0x2c,0x46,0x74,0x40,0x25,0x24,0x27,0x2a,0x23,0x65,0x20,0x1f,0x63,0x23,0x30,0x2b,0x52,0x46,0x33,0x65,0x20,0x79,0x23,0x2c,0x42,0x2c,0x06, // code info
+    0xb4, // LOAD_FAST 4
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x12,0x81,0x04, // LOAD_GLOBAL 'isinstance'
+    0xb4, // LOAD_FAST 4
+    0x12,0x81,0x05, // LOAD_GLOBAL 'dict'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x48, // POP_JUMP_IF_FALSE 8
+    0x12,0x6c, // LOAD_GLOBAL '_json'
+    0x14,0x42, // LOAD_METHOD 'dumps'
+    0xb4, // LOAD_FAST 4
+    0x36,0x01, // CALL_METHOD 1
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x49, // POP_JUMP_IF_FALSE 9
+    0xb1, // LOAD_FAST 1
+    0x10,0x43, // LOAD_CONST_STRING 'GET'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x43, // POP_JUMP_IF_FALSE 3
+    0x10,0x44, // LOAD_CONST_STRING 'POST'
+    0xc1, // STORE_FAST 1
+    0x25,0x06, // LOAD_DEREF 6
+    0x44,0x5a, // POP_JUMP_IF_FALSE 26
+    0xb2, // LOAD_FAST 2
+    0x10,0x3f, // LOAD_CONST_STRING '?'
+    0x10,0x40, // LOAD_CONST_STRING '&'
+    0x14,0x41, // LOAD_METHOD 'join'
+    0xb6, // LOAD_FAST 6
+    0x20,0x00,0x01, // MAKE_CLOSURE 0
+    0x12,0x81,0x01, // LOAD_GLOBAL 'sorted'
+    0x25,0x06, // LOAD_DEREF 6
+    0x34,0x01, // CALL_FUNCTION 1
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0xf2, // BINARY_OP 27 __add__
+    0xe5, // BINARY_OP 14 __iadd__
+    0xc2, // STORE_FAST 2
+    0x48,0x10, // SETUP_EXCEPT 16
+    0xb2, // LOAD_FAST 2
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x10,0x45, // LOAD_CONST_STRING '/'
+    0x83, // LOAD_CONST_SMALL_INT 3
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x04, // UNPACK_SEQUENCE 4
+    0xca, // STORE_FAST 10
+    0xcb, // STORE_FAST 11
+    0xcc, // STORE_FAST 12
+    0xcd, // STORE_FAST 13
+    0x4a,0x1b, // POP_EXCEPT_JUMP 27
+    0x57, // DUP_TOP
+    0x12,0x81,0x06, // LOAD_GLOBAL 'ValueError'
+    0xdf, // BINARY_OP 8 <exception match>
+    0x44,0x53, // POP_JUMP_IF_FALSE 19
+    0x59, // POP_TOP
+    0xb2, // LOAD_FAST 2
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x10,0x45, // LOAD_CONST_STRING '/'
+    0x82, // LOAD_CONST_SMALL_INT 2
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x03, // UNPACK_SEQUENCE 3
+    0xca, // STORE_FAST 10
+    0xcb, // STORE_FAST 11
+    0xcc, // STORE_FAST 12
+    0x10,0x11, // LOAD_CONST_STRING ''
+    0xcd, // STORE_FAST 13
+    0x4a,0x01, // POP_EXCEPT_JUMP 1
+    0x5d, // END_FINALLY
+    0xba, // LOAD_FAST 10
+    0x10,0x46, // LOAD_CONST_STRING 'http:'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x46, // POP_JUMP_IF_FALSE 6
+    0x22,0x80,0x50, // LOAD_CONST_SMALL_INT 80
+    0xce, // STORE_FAST 14
+    0x42,0x5d, // JUMP 29
+    0xba, // LOAD_FAST 10
+    0x10,0x47, // LOAD_CONST_STRING 'https:'
+    0xd9, // BINARY_OP 2 __eq__
+    0x44,0x4d, // POP_JUMP_IF_FALSE 13
+    0x22,0x83,0x3b, // LOAD_CONST_SMALL_INT 443
+    0xce, // STORE_FAST 14
+    0xb5, // LOAD_FAST 5
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x42, // POP_JUMP_IF_FALSE 2
+    0x52, // LOAD_CONST_TRUE
+    0xc5, // STORE_FAST 5
+    0x42,0x4a, // JUMP 10
+    0x12,0x81,0x06, // LOAD_GLOBAL 'ValueError'
+    0x23,0x0c, // LOAD_CONST_OBJ 12
+    0xba, // LOAD_FAST 10
+    0xf2, // BINARY_OP 27 __add__
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
+    0x10,0x48, // LOAD_CONST_STRING ':'
+    0xbc, // LOAD_FAST 12
+    0xdd, // BINARY_OP 6 <in>
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0xbc, // LOAD_FAST 12
+    0x14,0x28, // LOAD_METHOD 'split'
+    0x10,0x48, // LOAD_CONST_STRING ':'
+    0x81, // LOAD_CONST_SMALL_INT 1
+    0x36,0x02, // CALL_METHOD 2
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xcc, // STORE_FAST 12
+    0xce, // STORE_FAST 14
+    0x12,0x7a, // LOAD_GLOBAL 'int'
+    0xbe, // LOAD_FAST 14
+    0x34,0x01, // CALL_FUNCTION 1
+    0xce, // STORE_FAST 14
+    0x12,0x02, // LOAD_GLOBAL 'asyncio'
+    0x14,0x49, // LOAD_METHOD 'open_connection'
+    0xbc, // LOAD_FAST 12
+    0xbe, // LOAD_FAST 14
+    0x10,0x4a, // LOAD_CONST_STRING 'ssl'
+    0xb5, // LOAD_FAST 5
+    0x36,0x82,0x02, // CALL_METHOD 258
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xcf, // STORE_FAST 15
+    0x26,0x10, // STORE_FAST_N 16
+    0xb9, // LOAD_FAST 9
+    0x51, // LOAD_CONST_NONE
+    0xde, // BINARY_OP 7 <is>
+    0x44,0x44, // POP_JUMP_IF_FALSE 4
+    0xb0, // LOAD_FAST 0
+    0x13,0x38, // LOAD_ATTR '_http_version'
+    0xc9, // STORE_FAST 9
+    0x10,0x4b, // LOAD_CONST_STRING 'Host'
+    0xb7, // LOAD_FAST 7
+    0xdd, // BINARY_OP 6 <in>
+    0xd3, // UNARY_OP 3 <not>
+    0x44,0x4a, // POP_JUMP_IF_FALSE 10
+    0xb7, // LOAD_FAST 7
+    0x14,0x37, // LOAD_METHOD 'update'
+    0x10,0x4b, // LOAD_CONST_STRING 'Host'
+    0xbc, // LOAD_FAST 12
+    0x36,0x82,0x00, // CALL_METHOD 256
+    0x59, // POP_TOP
+    0xb3, // LOAD_FAST 3
+    0x43,0x67, // POP_JUMP_IF_TRUE 39
+    0x23,0x0d, // LOAD_CONST_OBJ 13
+    0xb1, // LOAD_FAST 1
+    0xbd, // LOAD_FAST 13
+    0xb9, // LOAD_FAST 9
+    0xb7, // LOAD_FAST 7
+    0x44,0x55, // POP_JUMP_IF_FALSE 21
+    0x10,0x4c, // LOAD_CONST_STRING '\r\n'
+    0x14,0x41, // LOAD_METHOD 'join'
+    0x32,0x01, // MAKE_FUNCTION 1
+    0xb7, // LOAD_FAST 7
+    0x14,0x4d, // LOAD_METHOD 'items'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x10,0x4c, // LOAD_CONST_STRING '\r\n'
+    0xf2, // BINARY_OP 27 __add__
+    0x42,0x42, // JUMP 2
+    0x10,0x11, // LOAD_CONST_STRING ''
+    0x2a,0x04, // BUILD_TUPLE 4
+    0xf8, // BINARY_OP 33 __mod__
+    0x26,0x11, // STORE_FAST_N 17
+    0x42,0xe7,0x80, // JUMP 103
+    0xb4, // LOAD_FAST 4
+    0x44,0x50, // POP_JUMP_IF_FALSE 16
+    0xb7, // LOAD_FAST 7
+    0x14,0x37, // LOAD_METHOD 'update'
+    0x53, // LOAD_NULL
+    0x2c,0x01, // BUILD_MAP 1
+    0x23,0x0e, // LOAD_CONST_OBJ 14
+    0x23,0x0f, // LOAD_CONST_OBJ 15
+    0x62, // STORE_MAP
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x00, // CALL_METHOD_VAR_KW 256
+    0x59, // POP_TOP
+    0x12,0x81,0x04, // LOAD_GLOBAL 'isinstance'
+    0xb3, // LOAD_FAST 3
+    0x12,0x81,0x07, // LOAD_GLOBAL 'bytes'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x44,0x52, // POP_JUMP_IF_FALSE 18
+    0xb7, // LOAD_FAST 7
+    0x14,0x37, // LOAD_METHOD 'update'
+    0x53, // LOAD_NULL
+    0x2c,0x01, // BUILD_MAP 1
+    0x23,0x10, // LOAD_CONST_OBJ 16
+    0x23,0x0f, // LOAD_CONST_OBJ 15
+    0x62, // STORE_MAP
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x00, // CALL_METHOD_VAR_KW 256
+    0x59, // POP_TOP
+    0x42,0x46, // JUMP 6
+    0xb3, // LOAD_FAST 3
+    0x14,0x4e, // LOAD_METHOD 'encode'
+    0x36,0x00, // CALL_METHOD 0
+    0xc3, // STORE_FAST 3
+    0xb7, // LOAD_FAST 7
+    0x14,0x37, // LOAD_METHOD 'update'
+    0x53, // LOAD_NULL
+    0x2c,0x01, // BUILD_MAP 1
+    0x12,0x7c, // LOAD_GLOBAL 'len'
+    0xb3, // LOAD_FAST 3
+    0x34,0x01, // CALL_FUNCTION 1
+    0x23,0x11, // LOAD_CONST_OBJ 17
+    0x62, // STORE_MAP
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x00, // CALL_METHOD_VAR_KW 256
+    0x59, // POP_TOP
+    0x23,0x12, // LOAD_CONST_OBJ 18
+    0xb1, // LOAD_FAST 1
+    0xbd, // LOAD_FAST 13
+    0xb9, // LOAD_FAST 9
+    0x10,0x4c, // LOAD_CONST_STRING '\r\n'
+    0x14,0x41, // LOAD_METHOD 'join'
+    0x32,0x02, // MAKE_FUNCTION 2
+    0xb7, // LOAD_FAST 7
+    0x14,0x4d, // LOAD_METHOD 'items'
+    0x36,0x00, // CALL_METHOD 0
+    0x5e, // GET_ITER
+    0x34,0x01, // CALL_FUNCTION 1
+    0x36,0x01, // CALL_METHOD 1
+    0x10,0x4c, // LOAD_CONST_STRING '\r\n'
+    0xf2, // BINARY_OP 27 __add__
+    0xb3, // LOAD_FAST 3
+    0x2a,0x05, // BUILD_TUPLE 5
+    0xf8, // BINARY_OP 33 __mod__
+    0x26,0x11, // STORE_FAST_N 17
+    0xb8, // LOAD_FAST 8
+    0x43,0x4e, // POP_JUMP_IF_TRUE 14
+    0x24,0x10, // LOAD_FAST_N 16
+    0x14,0x4f, // LOAD_METHOD 'awrite'
+    0x24,0x11, // LOAD_FAST_N 17
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0xbf, // LOAD_FAST 15
+    0x63, // RETURN_VALUE
+    0x24,0x10, // LOAD_FAST_N 16
+    0x14,0x4f, // LOAD_METHOD 'awrite'
+    0x24,0x11, // LOAD_FAST_N 17
+    0x36,0x01, // CALL_METHOD 1
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0xbf, // LOAD_FAST 15
+    0x24,0x10, // LOAD_FAST_N 16
+    0x2a,0x02, // BUILD_TUPLE 2
+    0x63, // RETURN_VALUE
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+// child of aiohttp___init___ClientSession_request_raw
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_
+static const byte fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_[34] = {
+    0xda,0x40,0x0e, // prelude
+    0x65,0x81,0x08,0x81,0x08, // names: <genexpr>, *, *
+    0x80,0xb0, // code info
+    0x53, // LOAD_NULL
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0xc2, // STORE_FAST 2
+    0x10,0x66, // LOAD_CONST_STRING '{}={}'
+    0x14,0x67, // LOAD_METHOD 'format'
+    0xb2, // LOAD_FAST 2
+    0x25,0x00, // LOAD_DEREF 0
+    0xb2, // LOAD_FAST 2
+    0x55, // LOAD_SUBSCR
+    0x36,0x02, // CALL_METHOD 2
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 34,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 12,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_ + 8,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_ + 10,
+        .opcodes = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_ + 10,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_ fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_[0]
+#endif
+
+// child of aiohttp___init___ClientSession_request_raw
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2
+static const byte fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2[32] = {
+    0xd1,0x40,0x0a, // prelude
+    0x65,0x81,0x08, // names: <genexpr>, *
+    0x80,0xd2, // code info
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0x10,0x6b, // LOAD_CONST_STRING '{}: {}'
+    0x14,0x67, // LOAD_METHOD 'format'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2 = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 32,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2 + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2 + 8,
+        .opcodes = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2 + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2 fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2[0]
+#endif
+
+// child of aiohttp___init___ClientSession_request_raw
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3
+static const byte fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3[32] = {
+    0xd1,0x40,0x0a, // prelude
+    0x65,0x81,0x08, // names: <genexpr>, *
+    0x80,0xe1, // code info
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x53, // LOAD_NULL
+    0x53, // LOAD_NULL
+    0x4b,0x10, // FOR_ITER 16
+    0x30,0x02, // UNPACK_SEQUENCE 2
+    0xc1, // STORE_FAST 1
+    0xc2, // STORE_FAST 2
+    0x10,0x6b, // LOAD_CONST_STRING '{}: {}'
+    0x14,0x67, // LOAD_METHOD 'format'
+    0xb1, // LOAD_FAST 1
+    0xb2, // LOAD_FAST 2
+    0x36,0x02, // CALL_METHOD 2
+    0x67, // YIELD_VALUE
+    0x59, // POP_TOP
+    0x42,0x2e, // JUMP -18
+    0x51, // LOAD_CONST_NONE
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3 = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 32,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 1,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 101,
+        .line_info = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3 + 6,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3 + 8,
+        .opcodes = fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3 + 8,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3 fun_data_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init___ClientSession_request_raw[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_2,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_request_raw__lt_genexpr_gt_3,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_request_raw = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession_request_raw,
+    .children = (void *)&children_aiohttp___init___ClientSession_request_raw,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 470,
+    .n_children = 3,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 27,
+        .n_exc_stack = 1,
+        .scope_flags = 1,
+        .n_pos_args = 10,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 7,
+        .qstr_block_name_idx = 58,
+        .line_info = fun_data_aiohttp___init___ClientSession_request_raw + 18,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_request_raw + 64,
+        .opcodes = fun_data_aiohttp___init___ClientSession_request_raw + 65,
+    },
+    #endif
+    #endif
+};
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_request
+static const byte fun_data_aiohttp___init___ClientSession_request[66] = {
+    0xe0,0x91,0x84,0x01,0x20, // prelude
+    0x50,0x73,0x81,0x00,0x3e,0x51,0x03,0x4a,0x52,0x15, // names: request, self, method, url, data, json, ssl, params, headers
+    0x80,0xec,0x43,0x44,0x73,0x40, // code info
+    0x12,0x0d, // LOAD_GLOBAL '_RequestContextManager'
+    0xb0, // LOAD_FAST 0
+    0xb0, // LOAD_FAST 0
+    0x14,0x39, // LOAD_METHOD '_request'
+    0xb1, // LOAD_FAST 1
+    0xb0, // LOAD_FAST 0
+    0x13,0x31, // LOAD_ATTR '_base_url'
+    0xb2, // LOAD_FAST 2
+    0xf2, // BINARY_OP 27 __add__
+    0x10,0x51, // LOAD_CONST_STRING 'data'
+    0xb3, // LOAD_FAST 3
+    0x10,0x03, // LOAD_CONST_STRING 'json'
+    0xb4, // LOAD_FAST 4
+    0x10,0x4a, // LOAD_CONST_STRING 'ssl'
+    0xb5, // LOAD_FAST 5
+    0x10,0x52, // LOAD_CONST_STRING 'params'
+    0xb6, // LOAD_FAST 6
+    0x10,0x15, // LOAD_CONST_STRING 'headers'
+    0x12,0x81,0x05, // LOAD_GLOBAL 'dict'
+    0x53, // LOAD_NULL
+    0xb0, // LOAD_FAST 0
+    0x13,0x36, // LOAD_ATTR '_base_headers'
+    0x53, // LOAD_NULL
+    0xb7, // LOAD_FAST 7
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x35,0x84,0x00, // CALL_FUNCTION_VAR_KW 512
+    0x36,0x8a,0x02, // CALL_METHOD 1282
+    0x34,0x02, // CALL_FUNCTION 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_request = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_request,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 66,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 29,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 8,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 5,
+        .qstr_block_name_idx = 80,
+        .line_info = fun_data_aiohttp___init___ClientSession_request + 15,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_request + 21,
+        .opcodes = fun_data_aiohttp___init___ClientSession_request + 21,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_request fun_data_aiohttp___init___ClientSession_request[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_get
+static const byte fun_data_aiohttp___init___ClientSession_get[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x53,0x73,0x3e, // names: get, self, url
+    0x80,0xfa, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x43, // LOAD_CONST_STRING 'GET'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_get = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_get,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 83,
+        .line_info = fun_data_aiohttp___init___ClientSession_get + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_get + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_get + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_get fun_data_aiohttp___init___ClientSession_get[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_post
+static const byte fun_data_aiohttp___init___ClientSession_post[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x54,0x73,0x3e, // names: post, self, url
+    0x80,0xfd, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x44, // LOAD_CONST_STRING 'POST'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_post = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_post,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 84,
+        .line_info = fun_data_aiohttp___init___ClientSession_post + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_post + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_post + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_post fun_data_aiohttp___init___ClientSession_post[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_put
+static const byte fun_data_aiohttp___init___ClientSession_put[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x55,0x73,0x3e, // names: put, self, url
+    0x90,0x00, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x56, // LOAD_CONST_STRING 'PUT'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_put = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_put,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 85,
+        .line_info = fun_data_aiohttp___init___ClientSession_put + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_put + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_put + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_put fun_data_aiohttp___init___ClientSession_put[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_patch
+static const byte fun_data_aiohttp___init___ClientSession_patch[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x57,0x73,0x3e, // names: patch, self, url
+    0x90,0x03, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x58, // LOAD_CONST_STRING 'PATCH'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_patch = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_patch,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 87,
+        .line_info = fun_data_aiohttp___init___ClientSession_patch + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_patch + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_patch + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_patch fun_data_aiohttp___init___ClientSession_patch[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_delete
+static const byte fun_data_aiohttp___init___ClientSession_delete[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x59,0x73,0x3e, // names: delete, self, url
+    0x90,0x06, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x5a, // LOAD_CONST_STRING 'DELETE'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_delete = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_delete,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 89,
+        .line_info = fun_data_aiohttp___init___ClientSession_delete + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_delete + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_delete + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_delete fun_data_aiohttp___init___ClientSession_delete[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_head
+static const byte fun_data_aiohttp___init___ClientSession_head[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x5b,0x73,0x3e, // names: head, self, url
+    0x90,0x09, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x5c, // LOAD_CONST_STRING 'HEAD'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_head = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_head,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 91,
+        .line_info = fun_data_aiohttp___init___ClientSession_head + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_head + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_head + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_head fun_data_aiohttp___init___ClientSession_head[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_options
+static const byte fun_data_aiohttp___init___ClientSession_options[22] = {
+    0xca,0x80,0x40,0x0a, // prelude
+    0x5d,0x73,0x3e, // names: options, self, url
+    0x90,0x0c, // code info
+    0xb0, // LOAD_FAST 0
+    0x14,0x50, // LOAD_METHOD 'request'
+    0x10,0x5e, // LOAD_CONST_STRING 'OPTIONS'
+    0xb1, // LOAD_FAST 1
+    0x53, // LOAD_NULL
+    0xb2, // LOAD_FAST 2
+    0x80, // LOAD_CONST_SMALL_INT 0
+    0x37,0x82,0x02, // CALL_METHOD_VAR_KW 258
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_options = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_options,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 22,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 2,
+        .n_pos_args = 2,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 93,
+        .line_info = fun_data_aiohttp___init___ClientSession_options + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_options + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_options + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_options fun_data_aiohttp___init___ClientSession_options[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession_ws_connect
+static const byte fun_data_aiohttp___init___ClientSession_ws_connect[25] = {
+    0xcb,0x01,0x0c, // prelude
+    0x5f,0x73,0x3e,0x4a, // names: ws_connect, self, url, ssl
+    0x90,0x0f, // code info
+    0x12,0x04, // LOAD_GLOBAL '_WSRequestContextManager'
+    0xb0, // LOAD_FAST 0
+    0xb0, // LOAD_FAST 0
+    0x14,0x60, // LOAD_METHOD '_ws_connect'
+    0xb1, // LOAD_FAST 1
+    0x10,0x4a, // LOAD_CONST_STRING 'ssl'
+    0xb2, // LOAD_FAST 2
+    0x36,0x82,0x01, // CALL_METHOD 257
+    0x34,0x02, // CALL_FUNCTION 2
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession_ws_connect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession_ws_connect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 25,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 10,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 95,
+        .line_info = fun_data_aiohttp___init___ClientSession_ws_connect + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession_ws_connect + 9,
+        .opcodes = fun_data_aiohttp___init___ClientSession_ws_connect + 9,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession_ws_connect fun_data_aiohttp___init___ClientSession_ws_connect[0]
+#endif
+
+// child of aiohttp___init___ClientSession
+// frozen bytecode for file aiohttp/__init__.py, scope aiohttp___init___ClientSession__ws_connect
+static const byte fun_data_aiohttp___init___ClientSession__ws_connect[55] = {
+    0xd3,0x41,0x12, // prelude
+    0x60,0x73,0x3e,0x4a, // names: _ws_connect, self, url, ssl
+    0x90,0x12,0x2c,0x33,0x26, // code info
+    0x12,0x06, // LOAD_GLOBAL 'WebSocketClient'
+    0xb0, // LOAD_FAST 0
+    0x13,0x36, // LOAD_ATTR '_base_headers'
+    0x14,0x61, // LOAD_METHOD 'copy'
+    0x36,0x00, // CALL_METHOD 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0xc3, // STORE_FAST 3
+    0xb3, // LOAD_FAST 3
+    0x14,0x62, // LOAD_METHOD 'connect'
+    0xb1, // LOAD_FAST 1
+    0x10,0x4a, // LOAD_CONST_STRING 'ssl'
+    0xb2, // LOAD_FAST 2
+    0x10,0x63, // LOAD_CONST_STRING 'handshake_request'
+    0xb0, // LOAD_FAST 0
+    0x13,0x3a, // LOAD_ATTR 'request_raw'
+    0x36,0x84,0x01, // CALL_METHOD 513
+    0x5e, // GET_ITER
+    0x51, // LOAD_CONST_NONE
+    0x68, // YIELD_FROM
+    0x59, // POP_TOP
+    0xb3, // LOAD_FAST 3
+    0x13,0x64, // LOAD_ATTR 'reader'
+    0xb0, // LOAD_FAST 0
+    0x18,0x2e, // STORE_ATTR '_reader'
+    0x12,0x05, // LOAD_GLOBAL 'ClientWebSocketResponse'
+    0xb3, // LOAD_FAST 3
+    0x34,0x01, // CALL_FUNCTION 1
+    0x63, // RETURN_VALUE
+};
+#if MICROPY_PERSISTENT_CODE_SAVE
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession__ws_connect = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 1,
+    .fun_data = fun_data_aiohttp___init___ClientSession__ws_connect,
+    .children = NULL,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 55,
+    .n_children = 0,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 11,
+        .n_exc_stack = 0,
+        .scope_flags = 1,
+        .n_pos_args = 3,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 1,
+        .qstr_block_name_idx = 96,
+        .line_info = fun_data_aiohttp___init___ClientSession__ws_connect + 7,
+        .line_info_top = fun_data_aiohttp___init___ClientSession__ws_connect + 12,
+        .opcodes = fun_data_aiohttp___init___ClientSession__ws_connect + 12,
+    },
+    #endif
+    #endif
+};
+#else
+#define proto_fun_aiohttp___init___ClientSession__ws_connect fun_data_aiohttp___init___ClientSession__ws_connect[0]
+#endif
+
+static const mp_raw_code_t *const children_aiohttp___init___ClientSession[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession___init__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession___aenter__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession___aexit__,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession__request,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_request_raw,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_request,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_get,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_post,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_put,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_patch,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_delete,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_head,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_options,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession_ws_connect,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession__ws_connect,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init___ClientSession = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init___ClientSession,
+    .children = (void *)&children_aiohttp___init___ClientSession,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 142,
+    .n_children = 15,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 7,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 14,
+        .line_info = fun_data_aiohttp___init___ClientSession + 3,
+        .line_info_top = fun_data_aiohttp___init___ClientSession + 26,
+        .opcodes = fun_data_aiohttp___init___ClientSession + 26,
+    },
+    #endif
+    #endif
+};
+
+static const mp_raw_code_t *const children_aiohttp___init____lt_module_gt_[] = {
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientResponse,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ChunkedClientResponse,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init____RequestContextManager,
+    (const mp_raw_code_t *)&proto_fun_aiohttp___init___ClientSession,
+};
+
+static const mp_raw_code_truncated_t proto_fun_aiohttp___init____lt_module_gt_ = {
+    .proto_fun_indicator[0] = MP_PROTO_FUN_INDICATOR_RAW_CODE_0,
+    .proto_fun_indicator[1] = MP_PROTO_FUN_INDICATOR_RAW_CODE_1,
+    .kind = MP_CODE_BYTECODE,
+    .is_generator = 0,
+    .fun_data = fun_data_aiohttp___init____lt_module_gt_,
+    .children = (void *)&children_aiohttp___init____lt_module_gt_,
+    #if MICROPY_PERSISTENT_CODE_SAVE
+    .fun_data_len = 113,
+    .n_children = 4,
+    #if MICROPY_EMIT_MACHINE_CODE
+    .prelude_offset = 0,
+    #endif
+    #if MICROPY_PY_SYS_SETTRACE
+    .line_of_definition = 0,
+    .prelude = {
+        .n_state = 5,
+        .n_exc_stack = 0,
+        .scope_flags = 0,
+        .n_pos_args = 0,
+        .n_kwonly_args = 0,
+        .n_def_pos_args = 0,
+        .qstr_block_name_idx = 1,
+        .line_info = fun_data_aiohttp___init____lt_module_gt_ + 3,
+        .line_info_top = fun_data_aiohttp___init____lt_module_gt_ + 19,
+        .opcodes = fun_data_aiohttp___init____lt_module_gt_ + 19,
+    },
+    #endif
+    #endif
+};
+
+static const qstr_short_t const_qstr_table_data_aiohttp___init__[137] = {
+    MP_QSTR_aiohttp_slash___init___dot_py,
+    MP_QSTR__lt_module_gt_,
+    MP_QSTR_asyncio,
+    MP_QSTR_json,
+    MP_QSTR__WSRequestContextManager,
+    MP_QSTR_ClientWebSocketResponse,
+    MP_QSTR_WebSocketClient,
+    MP_QSTR_WSMsgType,
+    MP_QSTR_aiohttp_ws,
+    MP_QSTR_HTTP_slash_1_dot_0,
+    MP_QSTR_HTTP_slash_1_dot_1,
+    MP_QSTR_ClientResponse,
+    MP_QSTR_ChunkedClientResponse,
+    MP_QSTR__RequestContextManager,
+    MP_QSTR_ClientSession,
+    MP_QSTR_0_dot_0_dot_8,
+    MP_QSTR_utf_hyphen_8,
+    MP_QSTR_,
+    MP_QSTR___init__,
+    MP_QSTR_content,
+    MP_QSTR__get_header,
+    MP_QSTR_headers,
+    MP_QSTR_lower,
+    MP_QSTR__decode,
+    MP_QSTR_deflate,
+    MP_QSTR_io,
+    MP_QSTR_DeflateIO,
+    MP_QSTR_BytesIO,
+    MP_QSTR_ZLIB,
+    MP_QSTR_read,
+    MP_QSTR_gzip,
+    MP_QSTR_GZIP,
+    MP_QSTR_readexactly,
+    MP_QSTR_text,
+    MP_QSTR_decode,
+    MP_QSTR_loads,
+    MP_QSTR___repr__,
+    MP_QSTR_status,
+    MP_QSTR_chunk_size,
+    MP_QSTR_readline,
+    MP_QSTR_split,
+    MP_QSTR_AssertionError,
+    MP_QSTR_reqco,
+    MP_QSTR_client,
+    MP_QSTR___aenter__,
+    MP_QSTR___aexit__,
+    MP_QSTR__reader,
+    MP_QSTR_aclose,
+    MP_QSTR_sleep,
+    MP_QSTR__base_url,
+    MP_QSTR_close,
+    MP_QSTR_Connection,
+    MP_QSTR_compat,
+    MP_QSTR_User_hyphen_Agent,
+    MP_QSTR__base_headers,
+    MP_QSTR_update,
+    MP_QSTR__http_version,
+    MP_QSTR__request,
+    MP_QSTR_request_raw,
+    MP_QSTR_append,
+    MP_QSTR_startswith,
+    MP_QSTR_rstrip,
+    MP_QSTR_url,
+    MP_QSTR__question_,
+    MP_QSTR__amp_,
+    MP_QSTR_join,
+    MP_QSTR_dumps,
+    MP_QSTR_GET,
+    MP_QSTR_POST,
+    MP_QSTR__slash_,
+    MP_QSTR_http_colon_,
+    MP_QSTR_https_colon_,
+    MP_QSTR__colon_,
+    MP_QSTR_open_connection,
+    MP_QSTR_ssl,
+    MP_QSTR_Host,
+    MP_QSTR__0x0d__0x0a_,
+    MP_QSTR_items,
+    MP_QSTR_encode,
+    MP_QSTR_awrite,
+    MP_QSTR_request,
+    MP_QSTR_data,
+    MP_QSTR_params,
+    MP_QSTR_get,
+    MP_QSTR_post,
+    MP_QSTR_put,
+    MP_QSTR_PUT,
+    MP_QSTR_patch,
+    MP_QSTR_PATCH,
+    MP_QSTR_delete,
+    MP_QSTR_DELETE,
+    MP_QSTR_head,
+    MP_QSTR_HEAD,
+    MP_QSTR_options,
+    MP_QSTR_OPTIONS,
+    MP_QSTR_ws_connect,
+    MP_QSTR__ws_connect,
+    MP_QSTR_copy,
+    MP_QSTR_connect,
+    MP_QSTR_handshake_request,
+    MP_QSTR_reader,
+    MP_QSTR__lt_genexpr_gt_,
+    MP_QSTR__brace_open__brace_close__equals__brace_open__brace_close_,
+    MP_QSTR_format,
+    MP_QSTR__lt_dictcomp_gt_,
+    MP_QSTR_strip,
+    MP_QSTR__lt_listcomp_gt_,
+    MP_QSTR__brace_open__brace_close__colon__space__brace_open__brace_close_,
+    MP_QSTR__json,
+    MP_QSTR_HttpVersion10,
+    MP_QSTR_HttpVersion11,
+    MP_QSTR___version__,
+    MP_QSTR___name__,
+    MP_QSTR___module__,
+    MP_QSTR___qualname__,
+    MP_QSTR_self,
+    MP_QSTR_keyname,
+    MP_QSTR_default,
+    MP_QSTR_ImportError,
+    MP_QSTR_print,
+    MP_QSTR_sz,
+    MP_QSTR_encoding,
+    MP_QSTR_int,
+    MP_QSTR_min,
+    MP_QSTR_len,
+    MP_QSTR_request_co,
+    MP_QSTR_base_url,
+    MP_QSTR_version,
+    MP_QSTR_method,
+    MP_QSTR_sorted,
+    MP_QSTR_Exception,
+    MP_QSTR_is_handshake,
+    MP_QSTR_isinstance,
+    MP_QSTR_dict,
+    MP_QSTR_ValueError,
+    MP_QSTR_bytes,
+    MP_QSTR__star_,
+};
+
+// constants
+static const mp_rom_obj_tuple_t const_obj_aiohttp___init___1 = {{&mp_type_tuple}, 3, {
+    MP_ROM_QSTR(MP_QSTR_gzip),
+    MP_ROM_QSTR(MP_QSTR_deflate),
+    MP_ROM_QSTR(MP_QSTR_gzip_comma_deflate),
+}};
+static const mp_obj_str_t const_obj_aiohttp___init___2 = {{&mp_type_str}, 62397, 32, (const byte*)"\x57\x41\x52\x4e\x49\x4e\x47\x3a\x20\x64\x65\x66\x6c\x61\x74\x65\x20\x6d\x6f\x64\x75\x6c\x65\x20\x72\x65\x71\x75\x69\x72\x65\x64"};
+static const mp_obj_str_t const_obj_aiohttp___init___5 = {{&mp_type_bytes}, 46494, 1, (const byte*)"\x3b"};
+static const mp_obj_str_t const_obj_aiohttp___init___6 = {{&mp_type_bytes}, 27298, 2, (const byte*)"\x0d\x0a"};
+static const mp_obj_str_t const_obj_aiohttp___init___8 = {{&mp_type_str}, 7088, 29, (const byte*)"\x3c\x43\x68\x75\x6e\x6b\x65\x64\x43\x6c\x69\x65\x6e\x74\x52\x65\x73\x70\x6f\x6e\x73\x65\x20\x25\x64\x20\x25\x73\x3e"};
+static const mp_obj_str_t const_obj_aiohttp___init___9 = {{&mp_type_bytes}, 8890, 18, (const byte*)"\x74\x72\x61\x6e\x73\x66\x65\x72\x2d\x65\x6e\x63\x6f\x64\x69\x6e\x67\x3a"};
+static const mp_obj_str_t const_obj_aiohttp___init___10 = {{&mp_type_bytes}, 3583, 7, (const byte*)"\x63\x68\x75\x6e\x6b\x65\x64"};
+static const mp_obj_str_t const_obj_aiohttp___init___11 = {{&mp_type_bytes}, 674, 9, (const byte*)"\x6c\x6f\x63\x61\x74\x69\x6f\x6e\x3a"};
+static const mp_obj_str_t const_obj_aiohttp___init___13 = {{&mp_type_bytes}, 10026, 15, (const byte*)"\x25\x73\x20\x2f\x25\x73\x20\x25\x73\x0d\x0a\x25\x73\x0d\x0a"};
+static const mp_obj_str_t const_obj_aiohttp___init___18 = {{&mp_type_bytes}, 38492, 17, (const byte*)"\x25\x73\x20\x2f\x25\x73\x20\x25\x73\x0d\x0a\x25\x73\x0d\x0a\x25\x73"};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_aiohttp___init__[19] = {
+    MP_ROM_QSTR(MP_QSTR_content_hyphen_encoding),
+    MP_ROM_PTR(&const_obj_aiohttp___init___1),
+    MP_ROM_PTR(&const_obj_aiohttp___init___2),
+    MP_ROM_QSTR(MP_QSTR_content_hyphen_length),
+    MP_ROM_QSTR(MP_QSTR__lt_ClientResponse_space__percent_d_space__percent_s_gt_),
+    MP_ROM_PTR(&const_obj_aiohttp___init___5),
+    MP_ROM_PTR(&const_obj_aiohttp___init___6),
+    MP_ROM_PTR(&mp_const_empty_bytes_obj),
+    MP_ROM_PTR(&const_obj_aiohttp___init___8),
+    MP_ROM_PTR(&const_obj_aiohttp___init___9),
+    MP_ROM_PTR(&const_obj_aiohttp___init___10),
+    MP_ROM_PTR(&const_obj_aiohttp___init___11),
+    MP_ROM_QSTR(MP_QSTR_Unsupported_space_protocol_colon__space_),
+    MP_ROM_PTR(&const_obj_aiohttp___init___13),
+    MP_ROM_QSTR(MP_QSTR_application_slash_json),
+    MP_ROM_QSTR(MP_QSTR_Content_hyphen_Type),
+    MP_ROM_QSTR(MP_QSTR_application_slash_octet_hyphen_stream),
+    MP_ROM_QSTR(MP_QSTR_Content_hyphen_Length),
+    MP_ROM_PTR(&const_obj_aiohttp___init___18),
+};
+
+static const mp_frozen_module_t frozen_module_aiohttp___init__ = {
+    .constants = {
+        .qstr_table = (qstr_short_t *)&const_qstr_table_data_aiohttp___init__,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_aiohttp___init__,
+    },
+    .proto_fun = &proto_fun_aiohttp___init____lt_module_gt_,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -31189,6 +45125,13 @@ const char mp_frozen_names[] = {
     "asyncio/lock.py\0"
     "asyncio/stream.py\0"
     "neopixel.py\0"
+    "websocket.py\0"
+    "ssl.py\0"
+    "umqtt/simple.py\0"
+    "umqtt/robust.py\0"
+    "requests/__init__.py\0"
+    "aiohttp/aiohttp_ws.py\0"
+    "aiohttp/__init__.py\0"
     "tdui.py\0"
     "tdapp.py\0"
     "\0"
@@ -31202,6 +45145,13 @@ const mp_frozen_module_t *const mp_frozen_mpy_content[] = {
     &frozen_module_asyncio_lock,
     &frozen_module_asyncio_stream,
     &frozen_module_neopixel,
+    &frozen_module_websocket,
+    &frozen_module_ssl,
+    &frozen_module_umqtt_simple,
+    &frozen_module_umqtt_robust,
+    &frozen_module_requests___init__,
+    &frozen_module_aiohttp_aiohttp_ws,
+    &frozen_module_aiohttp___init__,
     &frozen_module_tdui,
     &frozen_module_tdapp,
 };
@@ -31214,21 +45164,28 @@ MICROPY_FROZEN_LIST_ITEM("asyncio/funcs", "asyncio/funcs.py")
 MICROPY_FROZEN_LIST_ITEM("asyncio/lock", "asyncio/lock.py")
 MICROPY_FROZEN_LIST_ITEM("asyncio/stream", "asyncio/stream.py")
 MICROPY_FROZEN_LIST_ITEM("neopixel", "neopixel.py")
+MICROPY_FROZEN_LIST_ITEM("websocket", "websocket.py")
+MICROPY_FROZEN_LIST_ITEM("ssl", "ssl.py")
+MICROPY_FROZEN_LIST_ITEM("umqtt/simple", "umqtt/simple.py")
+MICROPY_FROZEN_LIST_ITEM("umqtt/robust", "umqtt/robust.py")
+MICROPY_FROZEN_LIST_ITEM("requests", "requests/__init__.py")
+MICROPY_FROZEN_LIST_ITEM("aiohttp/aiohttp_ws", "aiohttp/aiohttp_ws.py")
+MICROPY_FROZEN_LIST_ITEM("aiohttp", "aiohttp/__init__.py")
 MICROPY_FROZEN_LIST_ITEM("tdui", "tdui.py")
 MICROPY_FROZEN_LIST_ITEM("tdapp", "tdapp.py")
 #endif
 
 /*
 byte sizes:
-qstr content: 549 unique, 6159 bytes
-bc content: 23854
-const str content: 900
-const int content: 30
-const obj content: 544
+qstr content: 765 unique, 8896 bytes
+bc content: 34469
+const str content: 1630
+const int content: 40
+const obj content: 1216
 const table qstr content: 0 entries, 0 bytes
-const table ptr content: 99 entries, 396 bytes
-raw code content: 329 * 4 = 5264
-mp_frozen_mpy_names_content: 134
-mp_frozen_mpy_content_size: 36
-total: 37317
+const table ptr content: 171 entries, 684 bytes
+raw code content: 479 * 4 = 7664
+mp_frozen_mpy_names_content: 249
+mp_frozen_mpy_content_size: 64
+total: 54912
 */

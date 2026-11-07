@@ -10,5 +10,6 @@ tdsh_micropython_component(
     EXTRA_SRCS "${TD_ROOT}/ports/common/python/td_py_mod.c" "${TD_ROOT}/ports/common/python/td_py_tdui.c"
     EXTRA_INCLUDES "${TD_ROOT}/ports/common/python"
     EXTRA_REQUIRES tinydesk
+    BOARD_NAME TinyDesk
     HELP_EXTERNAL   # td_py_mod.c's help() text
 )
