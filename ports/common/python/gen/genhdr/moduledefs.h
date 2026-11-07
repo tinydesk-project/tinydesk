@@ -92,6 +92,10 @@ extern const struct _mp_obj_module_t mp_module_micropython;
 #undef MODULE_DEF_MICROPYTHON
 #define MODULE_DEF_MICROPYTHON { MP_ROM_QSTR(MP_QSTR_micropython), MP_ROM_PTR(&mp_module_micropython) },
 
+extern const struct _mp_obj_module_t td_network_module;
+#undef MODULE_DEF_NETWORK
+#define MODULE_DEF_NETWORK { MP_ROM_QSTR(MP_QSTR_network), MP_ROM_PTR(&td_network_module) },
+
 extern const struct _mp_obj_module_t td_socket_module;
 #undef MODULE_DEF_SOCKET
 #define MODULE_DEF_SOCKET { MP_ROM_QSTR(MP_QSTR_socket), MP_ROM_PTR(&td_socket_module) },
@@ -115,6 +119,7 @@ extern const struct _mp_obj_module_t mp_module_tls;
     MODULE_DEF_GC \
     MODULE_DEF_MATH \
     MODULE_DEF_MICROPYTHON \
+    MODULE_DEF_NETWORK \
     MODULE_DEF_SOCKET \
     MODULE_DEF_SYS \
     MODULE_DEF_TINYDESK \

@@ -228,7 +228,7 @@ const char td_py_help_text[] =
     "\n"
     "Modules: sys, os, time, json, re, math, random, binascii, hashlib, heapq,\n"
     "collections, struct, errno, gc, select, asyncio, micropython, machine and\n"
-    "neopixel (pins and buses, for root), socket, ssl, requests (HTTP),\n"
+    "neopixel (pins and buses, for root), network, socket, ssl, requests (HTTP),\n"
     "umqtt.simple (MQTT), websocket, aiohttp, tdui (windows on the desktop),\n"
     "tdapp (what tdui apps share) and tinydesk:\n"
     "  tinydesk.shell('ls -l')               run a shell command, get its status\n"

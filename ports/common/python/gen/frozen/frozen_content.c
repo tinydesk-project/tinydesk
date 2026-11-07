@@ -380,7 +380,6 @@ enum {
     MP_QSTR_compat,
     MP_QSTR_config,
     MP_QSTR_confirm,
-    MP_QSTR_connected,
     MP_QSTR_connection_space_closed,
     MP_QSTR_constant,
     MP_QSTR_content,
@@ -710,7 +709,6 @@ enum {
     MP_QSTR_ssl_params,
     MP_QSTR_staleMs,
     MP_QSTR_start_server,
-    MP_QSTR_status,
     MP_QSTR_statusElement,
     MP_QSTR_status_code,
     MP_QSTR_status_target,
@@ -764,7 +762,6 @@ enum {
     MP_QSTR_visible,
     MP_QSTR_visible_pictures,
     MP_QSTR_w,
-    MP_QSTR_wait,
     MP_QSTR_wait_closed,
     MP_QSTR_wait_for,
     MP_QSTR_wait_for_ms,
@@ -1144,7 +1141,6 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     23137,
     41551,
     60919,
-    9594,
     21825,
     25083,
     55724,
@@ -1474,7 +1470,6 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     30954,
     4692,
     63679,
-    2417,
     54575,
     62819,
     52479,
@@ -1528,7 +1523,6 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     27275,
     23947,
     46546,
-    21902,
     29411,
     40746,
     25035,
@@ -1908,7 +1902,6 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     6,
     6,
     7,
-    9,
     17,
     8,
     7,
@@ -2238,7 +2231,6 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     10,
     7,
     12,
-    6,
     13,
     11,
     13,
@@ -2292,7 +2284,6 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     7,
     16,
     1,
-    4,
     11,
     8,
     11,
@@ -2339,7 +2330,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
     MP_QSTRnumber_of, // previous pool size
     true, // is_sorted
     10, // allocated entries
-    761, // used entries
+    758, // used entries
     (qstr_hash_t *)mp_qstr_frozen_const_hashes,
     (qstr_len_t *)mp_qstr_frozen_const_lengths,
     {
@@ -2681,7 +2672,6 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "compat",
         "config",
         "confirm",
-        "connected",
         "connection closed",
         "constant",
         "content",
@@ -3011,7 +3001,6 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "ssl_params",
         "staleMs",
         "start_server",
-        "status",
         "statusElement",
         "status_code",
         "status_target",
@@ -3065,7 +3054,6 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "visible",
         "visible_pictures",
         "w",
-        "wait",
         "wait_closed",
         "wait_for",
         "wait_for_ms",
@@ -45048,7 +45036,7 @@ MICROPY_FROZEN_LIST_ITEM("tdapp", "tdapp.py")
 
 /*
 byte sizes:
-qstr content: 761 unique, 8860 bytes
+qstr content: 758 unique, 8829 bytes
 bc content: 33808
 const str content: 1600
 const int content: 40
@@ -45058,5 +45046,5 @@ const table ptr content: 169 entries, 676 bytes
 raw code content: 479 * 4 = 7664
 mp_frozen_mpy_names_content: 249
 mp_frozen_mpy_content_size: 64
-total: 54145
+total: 54114
 */
