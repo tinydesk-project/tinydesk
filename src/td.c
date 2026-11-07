@@ -31,7 +31,7 @@ typedef struct
     td_buffer_t *front;           /* what it shows */
     td_renderer_t renderer;
     td_input_t input;
-    int x0, w;                    /* the shared screen's columns it shows */
+    int x0, y0, w, h;             /* the part of the shared screen it shows */
     int cols, rows;               /* its size, limited to TD_MIN..TD_MAX */
     int term_cols, term_rows;     /* the size it reported */
     bool sized;                   /* it has reported a size */
@@ -55,7 +55,7 @@ typedef struct
 static const td_hal_t *s_hal;
 static td_buffer_t s_front, s_back;
 static term_t s_term[2];          /* [0] the primary, [1] an attached second terminal */
-static int s_mode = TD_SCREENS_DUPLICATE;
+static td_screens_layout_t s_layout = {.mode = TD_SCREENS_DUPLICATE, .place = TD_PLACE_RIGHT};
 static td_stats_t s_stats;
 
 static bool s_running;
@@ -112,37 +112,95 @@ static int clampi(int v, int lo, int hi)
                                 : v;
 }
 
-/* ------------------------------------------------------------- layout */
+  /* ------------------------------------------------------------- layout */
 
-/* The shared screen's size from the terminals' sizes and the mode, and
- * which columns each terminal shows. */
+  /* A display's size: its terminal's, or the chosen resolution when that is
+ * smaller (a terminal cannot show more than it has). */
+static int want(int term, int chosen, int min)
+{
+    return chosen > 0 && chosen < term ? (chosen < min ? min : chosen) : term;
+}
+
+  /* The shared screen's size from the terminals' sizes and the layout, and
+ * the part of it each terminal shows. */
 static void layout(void)
 {
     term_t *p = &s_term[0], *s = &s_term[1];
-    int cols = p->cols, rows = p->rows, main_cols = 0;
+    const td_screens_layout_t *L = &s_layout;
     bool second = s->used && s->sized;
-    if (second && s_mode == TD_SCREENS_EXTEND && p->cols + TD_MIN_COLS <= TD_MAX_COLS)
+    int pc = want(p->cols, L->cols[0], TD_MIN_COLS), pr = want(p->rows, L->rows[0], TD_MIN_ROWS);
+    int sc = want(s->cols, L->cols[1], TD_MIN_COLS), sr = want(s->rows, L->rows[1], TD_MIN_ROWS);
+    int cols = pc, rows = pr;
+    td_rect_t pa = td_rect(0, 0, pc, pr), sa = td_rect(0, 0, 0, 0);
+    bool extended = false;
+    if (second && L->mode == TD_SCREENS_EXTEND)
     {
-        cols = p->cols + s->cols;
-        if (cols > TD_MAX_COLS)
-            cols = TD_MAX_COLS;
-        rows = p->rows < s->rows ? p->rows : s->rows;
-        main_cols = p->cols;
+         /* Display 2 beside display 1, touching it along one edge. When the
+         * two do not fit a buffer, display 2 gets smaller along that edge's
+         * other direction first (fewer columns beside, fewer rows above or
+         * below), then the other way. */
+        bool beside = L->place == TD_PLACE_RIGHT || L->place == TD_PLACE_LEFT;
+        for (int guard = 0; guard < 2 * (TD_MAX_SCREEN_COLS + TD_MAX_SCREEN_ROWS) && !extended; guard++)
+        {
+            int off = L->offset, sx, sy;
+            if (beside)
+                off = clampi(off, -(sr - 1), pr - 1);
+            else
+                off = clampi(off, -(sc - 1), pc - 1);
+            switch (L->place)
+            {
+            case TD_PLACE_LEFT:
+                sx = -sc, sy = off;
+                break;
+            case TD_PLACE_BELOW:
+                sx = off, sy = pr;
+                break;
+            case TD_PLACE_ABOVE:
+                sx = off, sy = -sr;
+                break;
+            default:
+                sx = pc, sy = off;
+                break;
+            }
+            int mx = sx < 0 ? sx : 0, my = sy < 0 ? sy : 0;
+            pa = td_rect(-mx, -my, pc, pr);
+            sa = td_rect(sx - mx, sy - my, sc, sr);
+            int w = pa.x + pc > sa.x + sc ? pa.x + pc : sa.x + sc;
+            int h = pa.y + pr > sa.y + sr ? pa.y + pr : sa.y + sr;
+            if (w <= TD_MAX_SCREEN_COLS && h <= TD_MAX_SCREEN_ROWS && w * h <= TD_MAX_COLS * TD_MAX_ROWS)
+            {
+                cols = w;
+                rows = h;
+                extended = true;
+            }
+            else if (beside ? sc > TD_MIN_COLS : sr > TD_MIN_ROWS)
+                --*(beside ? &sc : &sr);
+            else if (beside ? sr > TD_MIN_ROWS : sc > TD_MIN_COLS)
+                --*(beside ? &sr : &sc);
+            else
+                break;
+        }
     }
-    else if (second)
+    if (second && !extended)
     {
-        cols = p->cols < s->cols ? p->cols : s->cols;   /* duplicate: what both can show */
-        rows = p->rows < s->rows ? p->rows : s->rows;
+        cols = pc < sc ? pc : sc;   /* duplicate: what both can show */
+        rows = pr < sr ? pr : sr;
+        pa = sa = td_rect(0, 0, cols, rows);
     }
-    p->x0 = 0;
-    p->w = main_cols ? main_cols : cols;
+    p->x0 = pa.x, p->y0 = pa.y, p->w = pa.w, p->h = pa.h;
     if (s->used)
     {
-        s->x0 = main_cols;
-        s->w = main_cols ? cols - main_cols : cols;
+        if (!second)
+            sa = td_rect(0, 0, cols, rows);
+        s->x0 = sa.x, s->y0 = sa.y, s->w = sa.w, s->h = sa.h;
     }
-    td_pictures_clip(main_cols);
-    if (cols != s_stats.cols || rows != s_stats.rows || main_cols != td_wm_main_cols())
+    td_pictures_clip(extended ? pa : td_rect(0, 0, 0, 0));
+    td_rect_t mons[2] = {pa, sa}, old[2];
+    int old_main = 0, n = extended ? 2 : 0;
+    int old_n = td_wm_monitors(old, 2, &old_main);
+    bool same = (old_n < 2 && !extended) ||
+                (extended && old_n == 2 && old_main == L->main && !memcmp(old, mons, sizeof(mons)));
+    if (cols != s_stats.cols || rows != s_stats.rows || !same)
     {
         s_stats.cols = cols;
         s_stats.rows = rows;
@@ -153,15 +211,15 @@ static void layout(void)
                 td_buffer_init(s_term[i].front, cols, rows);
                 s_term[i].repaint_pending = true;   /* clear stray cells outside the old area too */
             }
-        td_wm_set_main_cols(main_cols);
+        td_wm_set_monitors(mons, n, L->main);
         td_wm_set_screen_size(cols, rows);
     }
 }
 
-/* Apply a size reported by a terminal. */
+  /* Apply a size reported by a terminal. */
 static void apply_size(term_t *t, int cols, int rows)
 {
-    /* A terminal that changed size has usually cleared or shifted what it
+     /* A terminal that changed size has usually cleared or shifted what it
      * showed, even when the size we use stays the same (the window grew
      * past TD_MAX_COLS x TD_MAX_ROWS, or shrank back to it): redraw all.
      * Only repaint, without the terminal setup: the Windows console
@@ -184,9 +242,9 @@ static void apply_size(term_t *t, int cols, int rows)
     layout();
 }
 
-/* ------------------------------------------------- one terminal's link */
+  /* ------------------------------------------------- one terminal's link */
 
-/* Clear the terminal and send the whole screen again. */
+  /* Clear the terminal and send the whole screen again. */
 static void repaint(term_t *t)
 {
     t->renderer.write_failed = false;
@@ -197,7 +255,7 @@ static void repaint(term_t *t)
     t->repaint_pending = false;
 }
 
-/* After frames were dropped on a link that is still open: the terminal still
+  /* After frames were dropped on a link that is still open: the terminal still
  * shows the last good picture, so every cell is sent again over it, without
  * clearing (a clear would flash the whole screen). CAN ends an escape
  * sequence that was cut off. */
@@ -211,7 +269,7 @@ static void redraw(term_t *t)
     t->redraw_pending = false;
 }
 
-/* Send the terminal setup and the size query, and force a full redraw. */
+  /* Send the terminal setup and the size query, and force a full redraw. */
 static void resync(term_t *t)
 {
     t->renderer.write_failed = false;
@@ -219,7 +277,7 @@ static void resync(term_t *t)
     td_render_query_size(&t->renderer);
     if (t == &s_term[0])
     {
-        /* Can it show pictures (Sixel in the device attributes), and how
+         /* Can it show pictures (Sixel in the device attributes), and how
          * big are its cells in pixels? Until it says so: no pictures. */
         td_term_set_sixel(false);
         td_pictures_forget();
@@ -264,6 +322,7 @@ int td_init(const td_hal_t *hal)
     s_stats.cols = t->cols = TD_DEFAULT_COLS;
     s_stats.rows = t->rows = TD_DEFAULT_ROWS;
     t->w = s_stats.cols;
+    t->h = s_stats.rows;
     td_buffer_init(&s_back, s_stats.cols, s_stats.rows);
     td_buffer_init(&s_front, s_stats.cols, s_stats.rows);
     td_wm_init(s_stats.cols, s_stats.rows);
@@ -271,7 +330,7 @@ int td_init(const td_hal_t *hal)
     resync(t);
     t->link_up = s_stats.link_up = !t->renderer.write_failed;
 
-    /* Wait briefly for the size answer; keep any other input for later. */
+      /* Wait briefly for the size answer; keep any other input for later. */
     uint32_t start = td_millis();
     bool answered = false;
     while (!answered && td_millis() - start < TD_SIZE_QUERY_TIMEOUT_MS)
@@ -307,23 +366,50 @@ int td_init(const td_hal_t *hal)
     return 0;
 }
 
-/* ------------------------------------------------------ a second screen */
+  /* ------------------------------------------------------ a second screen */
 
 int td_screens_mode(void)
 {
-    return s_mode;
+    return s_layout.mode;
 }
 
 void td_screens_set_mode(int mode)
 {
-    if (mode != TD_SCREENS_DUPLICATE && mode != TD_SCREENS_EXTEND)
+    td_screens_layout_t l = s_layout;
+    l.mode = (uint8_t)mode;
+    td_screens_set_layout(&l);
+}
+
+void td_screens_set_layout(const td_screens_layout_t *l)
+{
+    if (!l || (l->mode != TD_SCREENS_DUPLICATE && l->mode != TD_SCREENS_EXTEND) || l->place > TD_PLACE_ABOVE)
         return;
-    s_mode = mode;
-    if (s_term[1].used)
+    if (!memcmp(l, &s_layout, sizeof(*l)))
+        return;
+    s_layout = *l;
+    s_layout.main = l->main ? 1 : 0;
+    if (s_hal)
     {
         layout();
         td_full_redraw();
     }
+}
+
+void td_screens_layout(td_screens_layout_t *out)
+{
+    *out = s_layout;
+}
+
+bool td_screens_display(int index, td_display_info_t *out)
+{
+    memset(out, 0, sizeof(*out));
+    if (index < 0 || index > 1 || !s_term[index].used)
+        return false;
+    const term_t *t = &s_term[index];
+    out->term_cols = t->term_cols;
+    out->term_rows = t->term_rows;
+    out->area = td_rect(t->x0, t->y0, t->w, t->h);
+    return true;
 }
 
 bool td_screen2_attach(int (*read_byte)(void *ctx), int (*write)(void *ctx, const uint8_t *buf, int len), void *ctx)
@@ -341,12 +427,13 @@ bool td_screen2_attach(int (*read_byte)(void *ctx), int (*write)(void *ctx, cons
     t->front = front;
     td_hal_t hal = {read_byte, write, s_hal->millis, s_hal->sleep_ms, ctx};
     term_start(t, &hal);
-    /* Until it reports its size it shows the primary's screen. */
+     /* Until it reports its size it shows the primary's screen. */
     t->cols = s_stats.cols;
     t->rows = s_stats.rows;
     td_buffer_init(front, s_stats.cols, s_stats.rows);
-    t->x0 = 0;
+    t->x0 = t->y0 = 0;
     t->w = s_stats.cols;
+    t->h = s_stats.rows;
     resync(t);
     return true;
 }
@@ -367,7 +454,7 @@ bool td_screen2_attached(void)
     return s_term[1].used;
 }
 
-/* --------------------------------------------------------------- input */
+  /* --------------------------------------------------------------- input */
 
 static void dispatch_events(void)
 {
@@ -384,7 +471,7 @@ static void dispatch_events(void)
     }
 }
 
-/* The events terminal t's parser just queued: its size and frame answers
+  /* The events terminal t's parser just queued: its size and frame answers
  * are its own; mouse positions move by the columns it shows. */
 static void own_events(term_t *t)
 {
@@ -403,7 +490,11 @@ static void own_events(term_t *t)
         else if (n < TD_EVENT_QUEUE_SIZE)
         {
             if (ev.type == TD_EV_MOUSE)
-                ev.x += t->x0;
+            {
+                 /* Its own cells, inside the part it shows. */
+                ev.x = t->x0 + clampi(ev.x, 0, t->w - 1);
+                ev.y = t->y0 + clampi(ev.y, 0, t->h - 1);
+            }
             keep[n++] = ev;
         }
     }
@@ -411,7 +502,7 @@ static void own_events(term_t *t)
         td_event_push(&keep[i]);
 }
 
-/* Read everything waiting on a terminal's link. Returns true if bytes arrived. */
+  /* Read everything waiting on a terminal's link. Returns true if bytes arrived. */
 static bool read_input(term_t *t, uint32_t now)
 {
     bool got = false;
@@ -420,7 +511,7 @@ static bool read_input(term_t *t, uint32_t now)
     {
         if (!got)
         {
-            /* Input after a long silence, or while frames were being
+             /* Input after a long silence, or while frames were being
              * dropped, usually means a terminal has just been opened. */
             bool silent = t->have_input && now - t->last_input_ms > TD_RECONNECT_SILENCE_MS;
             bool lost = !t->link_up && now - t->link_down_ms >= TD_LINK_LOST_MS;
@@ -429,7 +520,7 @@ static bool read_input(term_t *t, uint32_t now)
         }
         got = true;
         td_input_feed(&t->input, (uint8_t)b, now);
-        /* A paste can hold far more keys than the queue: hand them out
+         /* A paste can hold far more keys than the queue: hand them out
          * before it fills up. */
         if (td_event_count() >= TD_EVENT_QUEUE_SIZE - 4)
         {
@@ -447,7 +538,7 @@ static bool read_input(term_t *t, uint32_t now)
     return got;
 }
 
-/* ------------------------------------------------ the PC's clipboard */
+  /* ------------------------------------------------ the PC's clipboard */
 
 void td_host_clipboard_set(const char *text, int len)
 {
@@ -482,7 +573,7 @@ void td_host_clipboard_set(const char *text, int len)
     td_render_flush(r);
 }
 
-/* -------------------------------------------------------------- frames */
+  /* -------------------------------------------------------------- frames */
 
 static void update_rate(uint32_t now)
 {
@@ -500,7 +591,7 @@ static void picture_write(void *user, const char *s, int n)
     td_render_write(user, s, n);
 }
 
-/* Send terminal t its part of the composed screen. */
+  /* Send terminal t its part of the composed screen. */
 static void send_frame(term_t *t)
 {
     uint32_t sent_before = t->renderer.bytes_sent;
@@ -508,7 +599,7 @@ static void send_frame(term_t *t)
     if (primary)
         td_pictures_mark(t->front, &s_back);   /* before front catches up */
     td_render_write(&t->renderer, "\x1b[?2026h", 8);
-    bool ok = td_render_diff_region(&t->renderer, t->front, &s_back, t->x0, t->w);
+    bool ok = td_render_diff_region(&t->renderer, t->front, &s_back, t->x0, t->y0, t->w, t->h);
     if (ok)
         ok = td_render_flush(&t->renderer); /* cells/frame begin precede a local picture sink */
     if (ok)
@@ -530,11 +621,11 @@ static void send_frame(term_t *t)
     }
     if (!ok)
     {
-        /* Part of the frame never reached the terminal: resend it all
+         /* Part of the frame never reached the terminal: resend it all
          * later, and stop trying every frame. */
         if (primary)
             s_stats.dropped_frames++;
-        /* A terminal that took part of the frame is still there, only slow:
+         /* A terminal that took part of the frame is still there, only slow:
          * the outage counts from the last frame that got nothing through. */
         if (t->link_up || t->renderer.bytes_sent != sent_before)
             t->link_down_ms = td_millis();
@@ -544,7 +635,7 @@ static void send_frame(term_t *t)
     }
     else
     {
-        /* While frames were dropped no size query went out, so the terminal
+         /* While frames were dropped no size query went out, so the terminal
          * had nothing to answer: that silence does not mean it was replaced
          * (a terminal that was gone is caught by TD_LINK_LOST_MS). */
         if (!t->link_up)
@@ -552,7 +643,7 @@ static void send_frame(term_t *t)
         t->link_up = true;
         if (TD_ACK_TIMEOUT_MS > 0 && !t->pacing_off)
         {
-            /* Its answer means the terminal has shown this frame. */
+             /* Its answer means the terminal has shown this frame. */
             td_render_raw(&t->renderer, "\x1b[5n");
             td_render_flush(&t->renderer);
             t->ack_pending = true;
@@ -563,7 +654,7 @@ static void send_frame(term_t *t)
         s_stats.link_up = t->link_up;
 }
 
-/* True while the last frame is still on its way through the terminal.
+  /* True while the last frame is still on its way through the terminal.
  * Without an answer in TD_ACK_TIMEOUT_MS the next frame goes anyway; a
  * terminal that never answers stops being waited for after three. */
 static bool waiting_for_terminal(term_t *t, uint32_t now)
@@ -580,7 +671,7 @@ static bool waiting_for_terminal(term_t *t, uint32_t now)
     return false;
 }
 
-/* The link watch and the size poll of one terminal. */
+  /* The link watch and the size poll of one terminal. */
 static void watch(term_t *t, uint32_t now)
 {
     if (!t->link_up)
@@ -595,7 +686,7 @@ static void watch(term_t *t, uint32_t now)
     }
     else if (TD_SIZE_POLL_MS > 0 && now - t->last_size_query_ms >= TD_SIZE_POLL_MS && !td_input_pasting(&t->input))
     {
-        /* Terminals do not report resizes over a serial line; ask. Not
+         /* Terminals do not report resizes over a serial line; ask. Not
          * during a paste: the reply would arrive in the middle of it (the
          * parser copes, but there is no need). */
         t->renderer.write_failed = false;
@@ -605,7 +696,7 @@ static void watch(term_t *t, uint32_t now)
     }
 }
 
-/* Whether terminal t takes a frame now, after its pending resync / repaint
+  /* Whether terminal t takes a frame now, after its pending resync / repaint
  * / redraw. */
 static bool due(term_t *t, uint32_t now)
 {
@@ -631,7 +722,7 @@ bool td_step(void)
 {
     uint32_t now = td_millis();
 
-    /* Each terminal's events are dispatched before the next one is read,
+      /* Each terminal's events are dispatched before the next one is read,
      * so its mouse positions and answers stay its own. */
     for (int i = 0; i < 2; i++)
         if (s_term[i].used)
@@ -641,7 +732,7 @@ bool td_step(void)
         }
     td_timers_run(now);
 
-    /* The taskbar clock changes once a second. */
+      /* The taskbar clock changes once a second. */
     uint32_t sec = now / 1000u;
     if (sec != s_last_clock_s)
     {
@@ -653,7 +744,7 @@ bool td_step(void)
         if (s_term[i].used)
             watch(&s_term[i], now);
 
-    /* Even a resize or reconnect must not publish a partial batch. The
+      /* Even a resize or reconnect must not publish a partial batch. The
      * deadline is absolute: a dead producer cannot freeze the desktop. */
     if (s_hold_ms && td_millis() - s_hold_start < s_hold_ms)
     {
@@ -673,7 +764,7 @@ bool td_step(void)
         }
     if (take[0] || take[1])
     {
-        /* One composition for every terminal that takes this frame; one
+         /* One composition for every terminal that takes this frame; one
          * that waits catches up from its own front buffer next time. */
         uint32_t t0 = td_millis();
         td_pictures_begin();

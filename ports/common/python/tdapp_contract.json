@@ -1,0 +1,322 @@
+{
+ "python": {
+  "classes": {
+   "App": {
+    "after": {
+     "params": [
+      "ms",
+      "fn"
+     ],
+     "required": 2
+    },
+    "bind": {
+     "params": [
+      "widget",
+      "spec",
+      "kind"
+     ],
+     "required": 2
+    },
+    "every": {
+     "params": [
+      "ms",
+      "fn"
+     ],
+     "required": 2
+    },
+    "link": {
+     "params": [
+      "config",
+      "simulated"
+     ],
+     "required": 1
+    },
+    "page": {
+     "params": [
+      "name"
+     ],
+     "required": 1
+    },
+    "run": {
+     "params": [],
+     "required": 0
+    },
+    "show": {
+     "params": [
+      "name"
+     ],
+     "required": 1
+    }
+   },
+   "Field": {
+    "draw": {
+     "params": [],
+     "required": 0
+    },
+    "set": {
+     "params": [
+      "**changes"
+     ],
+     "required": 0
+    }
+   },
+   "Link": {
+    "bind": {
+     "params": [
+      "element",
+      "spec",
+      "kind"
+     ],
+     "required": 3
+    },
+    "close": {
+     "params": [],
+     "required": 0
+    },
+    "get": {
+     "params": [
+      "table",
+      "address",
+      "count"
+     ],
+     "required": 2
+    },
+    "put": {
+     "params": [
+      "table",
+      "address",
+      "*words"
+     ],
+     "required": 2
+    },
+    "start": {
+     "params": [],
+     "required": 0
+    },
+    "tick": {
+     "params": [],
+     "required": 0
+    },
+    "write": {
+     "params": [
+      "spec",
+      "value",
+      "coalesce"
+     ],
+     "required": 2
+    }
+   },
+   "Page": {
+    "add": {
+     "params": [
+      "*widgets"
+     ],
+     "required": 0
+    },
+    "canvas": {
+     "params": [
+      "x",
+      "y",
+      "w",
+      "h",
+      "on_mouse",
+      "pages"
+     ],
+     "required": 4
+    }
+   }
+  },
+  "module": {
+   "App": {
+    "class": true
+   },
+   "Field": {
+    "class": true
+   },
+   "Link": {
+    "class": true
+   },
+   "PAGED": {
+    "constant": true
+   },
+   "PARK": {
+    "constant": true
+   },
+   "Page": {
+    "class": true
+   },
+   "VERSION": {
+    "constant": true
+   },
+   "alias_canvas": {
+    "params": [
+     "base",
+     "win",
+     "x",
+     "y",
+     "w",
+     "h"
+    ],
+    "required": 6
+   },
+   "batch": {
+    "params": [],
+    "required": 0
+   },
+   "canvas_page": {
+    "params": [
+     "cv",
+     "name"
+    ],
+    "required": 2
+   },
+   "control_mouse": {
+    "params": [
+     "cv",
+     "x",
+     "y",
+     "button",
+     "action"
+    ],
+    "required": 5
+   },
+   "crc16": {
+    "params": [
+     "data"
+    ],
+    "required": 1
+   },
+   "gauge": {
+    "params": [
+     "cv",
+     "x",
+     "y",
+     "w",
+     "h",
+     "value",
+     "maximum",
+     "color",
+     "track",
+     "bg",
+     "gradient",
+     "radius"
+    ],
+    "required": 6
+   },
+   "hide_canvas": {
+    "params": [
+     "cv",
+     "clear"
+    ],
+    "required": 1
+   },
+   "make_canvas": {
+    "params": [
+     "win",
+     "x",
+     "y",
+     "w",
+     "h",
+     "pages"
+    ],
+    "required": 6
+   },
+   "panel": {
+    "params": [
+     "cv",
+     "img",
+     "x",
+     "y",
+     "w",
+     "h",
+     "src",
+     "border",
+     "text",
+     "fg",
+     "scale",
+     "font"
+    ],
+    "required": 6
+   },
+   "place_canvas": {
+    "params": [
+     "cv",
+     "x",
+     "y"
+    ],
+    "required": 3
+   },
+   "preparing": {
+    "params": [
+     "on"
+    ],
+    "required": 1
+   },
+   "register_canvas": {
+    "params": [
+     "win",
+     "group",
+     "base",
+     "cv",
+     "own",
+     "page",
+     "x",
+     "y",
+     "paint",
+     "visible",
+     "mouse"
+    ],
+    "required": 11
+   },
+   "require": {
+    "params": [
+     "cells",
+     "pixels",
+     "rgb",
+     "cache",
+     "pictures",
+     "visible_pictures",
+     "fonts",
+     "gradients",
+     "pixel_widgets"
+    ],
+    "required": 0
+   },
+   "select_canvas": {
+    "params": [
+     "cv",
+     "page"
+    ],
+    "required": 2
+   },
+   "show_canvases": {
+    "params": [
+     "win",
+     "name"
+    ],
+    "required": 2
+   },
+   "slider": {
+    "params": [
+     "cv",
+     "x",
+     "y",
+     "w",
+     "h",
+     "value",
+     "maximum",
+     "color",
+     "track",
+     "knob",
+     "gradient",
+     "radius"
+    ],
+    "required": 6
+   }
+  }
+ },
+ "version": [
+  1,
+  0
+ ]
+}

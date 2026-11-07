@@ -17,6 +17,24 @@
 #ifndef TD_MAX_ROWS
 #define TD_MAX_ROWS 150
 #endif
+/* Items one drag and drop can carry (td_window_desc_t.on_drag_more). */
+#ifndef TD_DRAG_MAX
+#define TD_DRAG_MAX 64
+#endif
+
+/* Displays the desktop can extend over (td_screens_set_layout). */
+#ifndef TD_MAX_MONITORS
+#define TD_MAX_MONITORS 2
+#endif
+/* An extended screen (two terminals side by side or one above the other)
+ * may be wider or taller than one terminal, up to these, while its
+ * columns x rows still fit a buffer (TD_MAX_COLS * TD_MAX_ROWS cells). */
+#ifndef TD_MAX_SCREEN_COLS
+#define TD_MAX_SCREEN_COLS (2 * TD_MAX_COLS)
+#endif
+#ifndef TD_MAX_SCREEN_ROWS
+#define TD_MAX_SCREEN_ROWS (2 * TD_MAX_ROWS)   /* one display above the other */
+#endif
 
 /* Longest real path the apps handle: the file system root plus the path
  * the shell sees ("/fs" + "/home/bob/Desktop/notes.txt" on a board). On a

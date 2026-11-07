@@ -150,6 +150,8 @@ static void reload_select(const char *select)
         if (strcmp(s_entries[i].name, select) == 0)
             sel = i;
     td_list_select(s_list, sel);
+    td_list_mark_all(s_list, false);   /* the entries may have changed */
+    td_list_mark(s_list, sel, true);
     td_desktop_refresh();   /* the folder may be the Desktop */
 }
 
@@ -304,10 +306,52 @@ static void do_rename(void)
         td_inputbox("Rename", "New name:", s_target, rename_answer, NULL);
 }
 
-/* Into the Recycle Bin, or with for_good straight away (asks first). */
+/* The selected entries but "..": how many, and (when not NULL) their
+ * indexes, at most max. */
+static int marked(int *out, int max)
+{
+    int n = 0;
+    for (int i = 0; i < s_count; i++)
+        if (td_list_marked(s_list, i) && strcmp(s_entries[i].name, "..") != 0)
+        {
+            if (out && n < max)
+                out[n] = i;
+            n++;
+        }
+    return n;
+}
+
+/* Into the Recycle Bin, or with for_good straight away (asks first): all
+ * the selected entries, with one question. */
 static void do_delete(bool for_good)
 {
-    if (!target_selected() || !fs()->remove)
+    if (!fs()->remove)
+        return;
+    int n = marked(NULL, 0);
+    if (n > 1)
+    {
+        int *rows = malloc((size_t)n * sizeof(int));
+        char *paths = malloc((size_t)n * PATH_MAX_);
+        const char **list = malloc((size_t)n * sizeof(char *));
+        bool *dirs = malloc((size_t)n * sizeof(bool));
+        if (rows && paths && list && dirs)
+        {
+            marked(rows, n);
+            for (int k = 0; k < n; k++)
+            {
+                join(paths + (size_t)k * PATH_MAX_, s_cwd, s_entries[rows[k]].name);
+                list[k] = paths + (size_t)k * PATH_MAX_;
+                dirs[k] = s_entries[rows[k]].is_dir;
+            }
+            td_trash_ask_delete_many(list, dirs, n, for_good, deleted);   /* copies the paths */
+        }
+        free(rows);
+        free(paths);
+        free(list);
+        free(dirs);
+        return;
+    }
+    if (!target_selected())
         return;
     char path[PATH_MAX_];
     join(path, s_cwd, s_target);
@@ -434,7 +478,17 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
     int row = s_list->scroll + (ay - lr.y);
     bool on_entry = td_rect_contains(lr, ax, ay) && row >= 0 && row < s_count;
     if (on_entry)
+    {
         td_list_select(s_list, row);
+        if (!td_list_marked(s_list, row))
+        {
+            /* Outside the selection: this entry alone. */
+            td_list_mark_all(s_list, false);
+            td_list_mark(s_list, row, true);
+        }
+    }
+    int many = marked(NULL, 0);
+    static char del[32], del_good[48];
 
     if (on_entry && strcmp(s_entries[row].name, "..") != 0)
     {
@@ -445,6 +499,13 @@ static void context_menu(td_window_t *win, const td_event_t *ev)
             "Delete (Del)",
             "Delete for good (Shift+Del)",
         };
+        if (many > 1)
+        {
+            snprintf(del, sizeof(del), "Delete %d items (Del)", many);
+            snprintf(del_good, sizeof(del_good), "Delete %d items for good (Shift+Del)", many);
+            items[3] = del;
+            items[4] = del_good;
+        }
         char path[PATH_MAX_];
         join(path, s_cwd, s_entries[row].name);
         s_extra = td_shortcut_menu(path, false, items + 5, 4);
@@ -511,12 +572,42 @@ static int row_at(td_window_t *win, int x, int y)
     return td_rect_contains(lr, ax, ay) && row >= 0 && row < s_count ? row : -1;
 }
 
-/* Drag an entry out of the list. */
+static void describe(int row, td_drag_item_t *item)
+{
+    char path[PATH_MAX_];
+    join(path, s_cwd, s_entries[row].name);
+    snprintf(item->path, sizeof(item->path), "%s", path);
+    snprintf(item->name, sizeof(item->name), "%s", s_entries[row].name);
+    item->is_dir = s_entries[row].is_dir;
+}
+
+/* The other selected entries of a drag (the first came from on_drag_start). */
+static int s_drag_row;
+static bool on_drag_more(td_window_t *win, int index, td_drag_item_t *item)
+{
+    (void)win;
+    int n = 0;
+    for (int i = 0; i < s_count; i++)
+        if (i != s_drag_row && td_list_marked(s_list, i) && strcmp(s_entries[i].name, "..") != 0 && ++n == index)
+        {
+            describe(i, item);
+            return true;
+        }
+    return false;
+}
+
+/* Drag an entry (and the others selected with it) out of the list. */
 static bool on_drag_start(td_window_t *win, int x, int y, td_drag_item_t *item)
 {
     int row = row_at(win, x, y);
     if (row < 0 || strcmp(s_entries[row].name, "..") == 0)
         return false;
+    s_drag_row = row;
+    if (!td_list_marked(s_list, row))
+    {
+        td_list_mark_all(s_list, false);
+        td_list_mark(s_list, row, true);
+    }
     char path[PATH_MAX_];
     join(path, s_cwd, s_entries[row].name);
     snprintf(item->path, sizeof(item->path), "%s", path);
@@ -589,6 +680,7 @@ static void open_window(void)
         .on_event = on_event,
         .on_close = on_close,
         .on_drag_start = on_drag_start,
+        .on_drag_more = on_drag_more,
         .on_drop = on_drop,
     };
     s_win = td_win_create(&d);
@@ -600,6 +692,7 @@ static void open_window(void)
     }
     s_path_label = td_label(s_win, 0, 0, 0, "");
     s_list = td_list(s_win, td_rect(0, 1, -1, -1), get_item, on_activate, NULL);
+    td_list_set_multi(s_list, true);   /* Ctrl+click, Shift+click, drag over rows, Ctrl+A */
     td_scrollbar(s_win, -1, 1, -1, s_list);
     td_button(s_win, 0, -1, "Open", on_activate, NULL);
     td_button(s_win, 9, -1, "New", on_new, NULL);

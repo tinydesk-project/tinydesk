@@ -128,10 +128,12 @@ add_library(tinydesk_apps STATIC
     apps/modbus.c
     apps/mqtt.c
     apps/network.c
+    apps/displays.c
     apps/pyui.c
     apps/pyui_cache.c
     apps/pyui_font.c
     apps/trash.c
+    apps/search.c
     apps/kiosk.c
     apps/session.c
     apps/login.c
@@ -360,7 +362,7 @@ if(TD_BUILD_TESTS)
         target_compile_options(test_users_storage PRIVATE -Wall -Wextra -Werror)
         add_test(NAME test_users_storage COMMAND test_users_storage)
     endif()
-    foreach(t test_utf8 test_input test_render test_vterm test_wm test_widgets test_canvas test_link test_font)
+    foreach(t test_utf8 test_input test_render test_vterm test_wm test_select test_widgets test_canvas test_link test_font)
         add_executable(${t} tests/${t}.c)
         target_link_libraries(${t} PRIVATE tinydesk_core)
         set_target_properties(${t} PROPERTIES C_STANDARD 11)
@@ -379,6 +381,9 @@ if(TD_BUILD_TESTS)
         # The tdui frozen into the firmware is tdui.py (run in the simulator).
         if(TD_WITH_TDSH AND TD_WITH_PYTHON)
             add_test(NAME tdui_frozen COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdui_frozen.py
+                     $<TARGET_FILE:tdsim>)
+            # The app library (tdapp) works there: pages, links, bindings.
+            add_test(NAME tdapp_works COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdapp.py
                      $<TARGET_FILE:tdsim>)
         endif()
     endif()

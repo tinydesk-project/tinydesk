@@ -1,11 +1,10 @@
-# tinydesk on ESP32-C6-WROOM-1/1U-N8 (8 MB flash), with two OTA app slots.
-# NVS stays where it was (users, Wi-Fi, settings). The /fs partition moved
-# and shrank from 4.9 MB to 2.9 MB: see README "Updating the firmware (OTA)"
-# for moving its files over (tools/lfs_migrate.c).
+# tinydesk on ESP32-C6-WROOM-1/1U-N8 (8 MB flash): two 3 MB OTA app slots,
+# 1.9 MB /fs. NVS stays where it was (users, Wi-Fi, settings). The /fs
+# partition moved: back up its files before flashing this table.
 # Name,     Type, SubType,  Offset,   Size,
 nvs,        data, nvs,      0x9000,   0x6000,
 phy_init,   data, phy,      0xF000,   0x1000,
-ota_0,      app,  ota_0,    0x10000,  0x280000,
-ota_1,      app,  ota_1,    0x290000, 0x280000,
-otadata,    data, ota,      0x510000, 0x2000,
-storage,    data, littlefs, 0x520000, 0x2E0000,
+ota_0,      app,  ota_0,    0x10000,  0x300000,
+ota_1,      app,  ota_1,    0x310000, 0x300000,
+otadata,    data, ota,      0x610000, 0x2000,
+storage,    data, littlefs, 0x620000, 0x1E0000,

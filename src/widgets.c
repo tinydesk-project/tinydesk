@@ -5,8 +5,10 @@
  * Widgets come from one static pool and are linked into their window.
  * All coordinates here are relative to the window's client area.
  */
+#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
 #include <string.h>
 
@@ -118,6 +120,8 @@ void td_widgets_free(td_window_t *win)
     {
         if (s_pressed == w)
             s_pressed = NULL;
+        free(w->marks);
+        w->marks = NULL;
         w->used = false;
     }
     win->widgets = NULL;
@@ -126,6 +130,8 @@ void td_widgets_free(td_window_t *win)
 
 void td_widgets_reset(void)
 {
+    for (int i = 0; i < TD_MAX_WIDGETS; i++)
+        free(s_pool[i].marks);
     memset(s_pool, 0, sizeof(s_pool));
     s_pressed = NULL;
 }
@@ -334,10 +340,143 @@ static void list_ensure_visible(td_widget_t *w)
     list_clamp_scroll(w);
 }
 
+/* ------------------------------------------------- several selected items */
+
+static bool marks_room(td_widget_t *w, int count)
+{
+    if (count <= w->marks_cap)
+        return true;
+    int cap = (count + 63) & ~63;
+    uint8_t *m = realloc(w->marks, (size_t)cap / 8);
+    if (!m)
+        return false;
+    memset(m + w->marks_cap / 8, 0, (size_t)(cap - w->marks_cap) / 8);
+    w->marks = m;
+    w->marks_cap = cap;
+    return true;
+}
+
+void td_list_set_multi(td_widget_t *w, bool on)
+{
+    if (!w || w->type != TD_WT_LIST)
+        return;
+    w->multi = on;
+    if (!on)
+    {
+        free(w->marks);
+        w->marks = NULL;
+        w->marks_cap = 0;
+    }
+    else if (marks_room(w, w->count > 0 ? w->count : 1) && w->count > 0)
+        td_list_mark(w, w->value, true);
+    w->anchor = w->value;
+    td_wm_invalidate();
+}
+
+bool td_list_marked(const td_widget_t *w, int index)
+{
+    if (!w || index < 0 || index >= w->count)
+        return false;
+    if (!w->multi || !w->marks)
+        return index == w->value;
+    return index < w->marks_cap && (w->marks[index / 8] >> (index % 8)) & 1;
+}
+
+void td_list_mark(td_widget_t *w, int index, bool on)
+{
+    if (!w || !w->multi || index < 0 || index >= w->count || !marks_room(w, index + 1))
+        return;
+    if (on)
+        w->marks[index / 8] |= (uint8_t)(1u << (index % 8));
+    else
+        w->marks[index / 8] &= (uint8_t) ~(1u << (index % 8));
+    td_wm_invalidate();
+}
+
+void td_list_mark_all(td_widget_t *w, bool on)
+{
+    if (!w || !w->multi || !marks_room(w, w->count > 0 ? w->count : 1))
+        return;
+    memset(w->marks, 0, (size_t)w->marks_cap / 8);
+    for (int i = 0; on && i < w->count; i++)
+        w->marks[i / 8] |= (uint8_t)(1u << (i % 8));
+    td_wm_invalidate();
+}
+
+int td_list_marked_count(const td_widget_t *w)
+{
+    int n = 0;
+    for (int i = 0; w && i < w->count; i++)
+        n += td_list_marked(w, i);
+    return n;
+}
+
+/* Only the items from a to b (either order) selected. */
+static void mark_range(td_widget_t *w, int a, int b, bool keep)
+{
+    if (!keep)
+        td_list_mark_all(w, false);
+    if (a > b)
+    {
+        int t = a;
+        a = b;
+        b = t;
+    }
+    for (int i = a; i <= b; i++)
+        td_list_mark(w, i, true);
+}
+
+void td_widgets_cancel_press(void)
+{
+    if (s_pressed)
+    {
+        s_pressed->band = false;
+        s_pressed->pressed = false;
+    }
+    s_pressed = NULL;
+}
+
+int td_type_ahead(int count, int from, uint32_t key, const char *(*name)(int index, void *user), void *user)
+{
+    if (key > 127 || !isalnum((int)key) || count <= 0)
+        return -1;
+    int want = tolower((int)key);
+    for (int n = 1; n <= count; n++)
+    {
+        int i = ((from < 0 ? -1 : from) + n) % count;
+        const char *s = name(i, user);
+        while (s && *s && !isalnum((unsigned char)*s))
+            s++;
+        if (s && *s && tolower((unsigned char)*s) == want)
+            return i;
+    }
+    return -1;
+}
+
+static const char *list_name(int i, void *user)
+{
+    td_widget_t *w = user;
+    int fg = -1;
+    return w->get_item ? w->get_item(w, i, &fg, w->user) : NULL;
+}
+
+bool td_widgets_keeps_drag(td_window_t *win, int x, int y)
+{
+    td_widget_t *w = s_pressed;
+    return w && w->win == win && w->type == TD_WT_LIST && w->multi && w->band && td_rect_contains(local_rect(w), x, y);
+}
+
 void td_list_set_count(td_widget_t *w, int count)
 {
     if (!w)
         return;
+    if (w->multi && count != w->count)
+    {
+        /* Other items: what was selected is no longer the same. */
+        w->count = count < 0 ? 0 : count;
+        if (marks_room(w, w->count > 0 ? w->count : 1))
+            memset(w->marks, 0, (size_t)w->marks_cap / 8);
+    }
     w->count = count < 0 ? 0 : count;
     if (w->value >= w->count)
         w->value = w->count > 0 ? w->count - 1 : 0;
@@ -457,13 +596,16 @@ static void draw_list(td_widget_t *w, td_rect_t r, bool focused, const td_theme_
         const char *text = w->get_item ? w->get_item((td_widget_t *)w, i, &item_fg, w->user) : "";
         uint8_t ifg = pick(item_fg, fg);
         uint8_t ibg = bg;
-        if (i == w->value)
+        bool marked = w->multi ? td_list_marked(w, i) : i == w->value;
+        if (marked)
         {
             ifg = focused ? t->select_fg : ifg;
             ibg = focused ? t->select_bg : t->dim;
             td_fill(td_rect(r.x, r.y + row, r.w, 1), ' ', ifg, ibg);
         }
         td_textn(r.x + 1, r.y + row, text ? text : "", r.w - 1, ifg, ibg, 0);
+        if (w->multi && focused && i == w->value)
+            td_putc(r.x, r.y + row, 0x25BA, marked ? ifg : t->accent, ibg, TD_BOLD);   /* the current item */
     }
 }
 
@@ -661,9 +803,76 @@ bool td_widgets_paste(td_window_t *win)
     return true;
 }
 
+/* Moving the current item: one item selected, or with Shift the range
+ * from the anchor. */
+static void list_move(td_widget_t *w, int to, const td_event_t *ev)
+{
+    td_list_select(w, to);
+    if (!w->multi)
+        return;
+    if (ev->mods & TD_MOD_SHIFT)
+        mark_range(w, w->anchor, w->value, false);
+    else if (!(ev->mods & TD_MOD_CTRL))
+    {
+        mark_range(w, w->value, w->value, false);
+        w->anchor = w->value;
+    }
+}
+
 static bool list_key(td_widget_t *w, const td_event_t *ev)
 {
     int rows = list_rows(w);
+    if (ev->mods == 0 && ev->key != ' ')
+    {
+        int i = td_type_ahead(w->count, w->value, ev->key, list_name, w);
+        if (i >= 0)
+        {
+            td_list_select(w, i);
+            if (w->multi)
+            {
+                mark_range(w, i, i, false);
+                w->anchor = i;
+            }
+            return true;
+        }
+    }
+    if (w->multi)
+    {
+        if (ev->key == 'a' && ev->mods == TD_MOD_CTRL)
+        {
+            td_list_mark_all(w, true);
+            return true;
+        }
+        if (ev->key == ' ' && !(ev->mods & ~TD_MOD_CTRL) && w->count > 0)
+        {
+            td_list_mark(w, w->value, !td_list_marked(w, w->value));
+            w->anchor = w->value;
+            return true;
+        }
+        switch (ev->key)
+        {
+        case TD_KEY_UP:
+            list_move(w, w->value - 1, ev);
+            return true;
+        case TD_KEY_DOWN:
+            list_move(w, w->value + 1, ev);
+            return true;
+        case TD_KEY_PGUP:
+            list_move(w, w->value - rows, ev);
+            return true;
+        case TD_KEY_PGDN:
+            list_move(w, w->value + rows, ev);
+            return true;
+        case TD_KEY_HOME:
+            list_move(w, 0, ev);
+            return true;
+        case TD_KEY_END:
+            list_move(w, w->count - 1, ev);
+            return true;
+        default:
+            break;
+        }
+    }
     switch (ev->key)
     {
     case TD_KEY_UP:
@@ -767,8 +976,31 @@ static void widget_press(td_widget_t *w, const td_event_t *ev, td_rect_t r)
         int i = w->scroll + ev->y - r.y;
         if (i >= w->count)
             break;
-        bool dbl = (i == w->value) && (ev->time_ms - w->last_click_ms < TD_DOUBLE_CLICK_MS);
+        bool dbl = (i == w->value) && (ev->time_ms - w->last_click_ms < TD_DOUBLE_CLICK_MS) && !(ev->mods & (TD_MOD_CTRL | TD_MOD_SHIFT));
         td_list_select(w, i);
+        if (w->multi)
+        {
+            if (ev->mods & TD_MOD_CTRL)
+            {
+                td_list_mark(w, i, !td_list_marked(w, i));
+                w->anchor = i;
+            }
+            else if (ev->mods & TD_MOD_SHIFT)
+                mark_range(w, w->anchor, i, false);
+            else
+            {
+                /* A press on a selected item keeps the selection: it may
+                 * be dragged somewhere. Otherwise just this one, and
+                 * dragging over the rows selects them. */
+                w->band = !td_list_marked(w, i);
+                if (w->band)
+                    mark_range(w, i, i, false);
+                w->anchor = i;
+            }
+            if (ev->mods & (TD_MOD_CTRL | TD_MOD_SHIFT))
+                w->band = false;
+            s_pressed = w;
+        }
         w->last_click_ms = ev->time_ms;
         if (dbl)
         {
@@ -805,6 +1037,34 @@ static bool widgets_mouse(td_window_t *win, const td_event_t *ev)
     {
         td_widget_t *w = s_pressed;
         td_rect_t r = local_rect(w);
+        if (ev->action == TD_MOUSE_DRAG && w->type == TD_WT_LIST && !w->band)
+            return true;   /* a drag of the selection: the window manager's */
+        if (ev->action == TD_MOUSE_DRAG && w->type == TD_WT_LIST)
+        {
+            /* Dragging over the rows selects them (scrolling at the edges). */
+            if (ev->y < r.y)
+                scroll_target(w, -1);
+            else if (ev->y >= r.y + r.h)
+                scroll_target(w, 1);
+            int i = clamp(w->scroll + ev->y - r.y, 0, w->count - 1);
+            if (w->count > 0 && (i != w->value || !td_list_marked(w, i)))
+            {
+                w->value = i;
+                mark_range(w, w->anchor, i, false);
+            }
+            td_wm_invalidate();
+            return true;
+        }
+        if (ev->action == TD_MOUSE_RELEASE && w->type == TD_WT_LIST)
+        {
+            /* A click on one of several selected items, not dragged: that one. */
+            if (!w->band && !(ev->mods & (TD_MOD_CTRL | TD_MOD_SHIFT)) && td_list_marked_count(w) > 1 &&
+                td_rect_contains(r, ev->x, ev->y))
+                mark_range(w, w->value, w->value, false);
+            w->band = false;
+            s_pressed = NULL;
+            return true;
+        }
         if (ev->action == TD_MOUSE_DRAG)
         {
             if (w->type == TD_WT_SCROLLBAR)

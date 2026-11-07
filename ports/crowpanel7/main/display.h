@@ -16,10 +16,11 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define DISPLAY_W        800
-#define DISPLAY_H        480
-#define DISPLAY_MAX_COLS (DISPLAY_W / 8)    /* with the smallest font */
-#define DISPLAY_MAX_ROWS (DISPLAY_H / 16)
+#define DISPLAY_W         800
+#define DISPLAY_H         480
+#define DISPLAY_MAX_COLS  (DISPLAY_W / 8)    /* with the smallest font */
+#define DISPLAY_MAX_ROWS  (DISPLAY_H / 16)
+#define DISPLAY_MAX_CELLS (DISPLAY_MAX_COLS * DISPLAY_MAX_ROWS)   /* turned or not */
 
 /* The cells the panel shows (after display_init()). */
 int display_cols(void);
@@ -28,6 +29,16 @@ int display_rows(void);
 /* Called with the terminal's answers (to the desktop's size and status
  * queries); they go back to the desktop as input. */
 typedef void (*display_reply_fn)(const char *data, int len);
+
+/* Orientation, before display_init(): 0 (the default), 90, 180 or 270
+ * degrees clockwise. Turned by 90 or 270 the panel is portrait, 480 x 800
+ * pixels (60 x 50 cells of 8 x 16). Painting goes into a frame of that
+ * shape that is turned into the panel's when shown (one more frame of
+ * PSRAM, and a copy per frame). display_touch_point() gives a touch at
+ * panel pixel tx, ty as pixel x, y of the turned w x h picture. */
+void display_set_rotation(int degrees);
+int display_rotation(void);
+void display_touch_point(int tx, int ty, int *x, int *y, int *w, int *h);
 
 /* Panel, backlight, terminal and painting task; false on error. */
 bool display_init(display_reply_fn reply);

@@ -6,6 +6,7 @@
  * (touch ~/Desktop/notes.txt) appear without doing anything.
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "td_apps.h"
@@ -263,9 +264,45 @@ static void rename_answer(const char *name, void *user)
     td_desktop_refresh();
 }
 
+/* The selected icons (td_desktop_selection), into the bin or for good:
+ * one question for them all. */
+static void delete_selection(bool for_good)
+{
+    int sel[64];
+    int n = td_desktop_selection(sel, 64);
+    char *paths = malloc((size_t)(n > 0 ? n : 1) * PATH_LEN);
+    const char *list[64];
+    bool dirs[64];
+    int k = 0;
+    for (int j = 0; paths && j < n; j++)
+    {
+        if (sel[j] < 0 || sel[j] >= s_count)
+            continue;
+        item_path(paths + (size_t)k * PATH_LEN, s_items[sel[j]].name);
+        list[k] = paths + (size_t)k * PATH_LEN;
+        dirs[k] = s_items[sel[j]].is_dir;
+        k++;
+    }
+    if (k)
+        td_trash_ask_delete_many(list, dirs, k, for_good, td_desktop_refresh);   /* copies the paths */
+    free(paths);
+}
+
+static void prov_remove(bool for_good, void *user)
+{
+    (void)user;
+    delete_selection(for_good);
+}
+
 /* Into the Recycle Bin, or with for_good straight away (asks first). */
 static void ask_delete(bool for_good)
 {
+    int sel[2];
+    if (td_desktop_selection(sel, 2) > 1)
+    {
+        delete_selection(for_good);   /* the icon is one of several selected */
+        return;
+    }
     char path[PATH_LEN];
     item_path(path, s_target_name);
     td_trash_ask_delete(path, s_items[s_target].is_dir, for_good, td_desktop_refresh);
@@ -351,6 +388,16 @@ static void prov_context(int i, int x, int y, void *user)
     if (i >= 0 && i < s_count)
     {
         const char *items[9] = {"Run", "Open", "Rename", "Delete", "Delete for good"};
+        int sel[64];
+        int many = td_desktop_selection(sel, 64);
+        static char del[32], del_good[40];
+        if (many > 1)
+        {
+            snprintf(del, sizeof(del), "Delete %d items", many);
+            snprintf(del_good, sizeof(del_good), "Delete %d items for good", many);
+            items[3] = del;
+            items[4] = del_good;
+        }
         bool script = !s_items[i].is_dir && td_is_runnable(s_items[i].name);
         s_target = i;
         snprintf(s_target_name, sizeof(s_target_name), "%s", s_items[i].name);
@@ -425,6 +472,7 @@ static const td_desktop_provider_t s_provider = {
     .context = prov_context,
     .drag = prov_drag,
     .drop = prov_drop,
+    .remove = prov_remove,
 };
 
 /* ------------------------------------------------------------ init */

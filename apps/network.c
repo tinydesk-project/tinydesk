@@ -18,7 +18,6 @@
 
 static td_window_t *s_win;
 static td_widget_t *s_wifi, *s_addr, *s_eth, *s_telnet, *s_telnet_mode, *s_peer, *s_list, *s_msg;
-static const char *const s_mode_names[] = {"Telnet only", "Duplicate", "Extend"};
 static td_widget_t *s_srv_label[2], *s_srv_button[2];
 static td_wifi_ap_t s_aps[AP_MAX];
 static int s_ap_count;
@@ -98,11 +97,6 @@ static void update_status(void)
     }
     if (net()->telnet_enabled)
         td_checkbox_set(s_telnet, net()->telnet_enabled());
-    if (s_telnet_mode && net()->telnet_mode)
-    {
-        int m = net()->telnet_mode();
-        td_widget_set_text(s_telnet_mode, s_mode_names[m >= 0 && m <= 2 ? m : 0]);
-    }
 }
 
 static void start_scan(void)
@@ -227,19 +221,12 @@ static void on_telnet(td_widget_t *w, void *user)
         net()->telnet_enable(td_checkbox_get(w));
 }
 
-/* Telnet only -> Duplicate -> Extend: what a Telnet client gets. */
+/* Which display a Telnet client gets is a Displays setting. */
 static void on_telnet_mode(td_widget_t *w, void *user)
 {
     (void)w;
     (void)user;
-    if (!net()->telnet_mode || !net()->telnet_set_mode)
-        return;
-    if (!td_session_has_right(TD_RIGHT_NETWORK))
-    {
-        td_msgbox("Network", "Changing the Telnet screen needs the Network permission.", "OK", NULL, NULL);
-        return;
-    }
-    net()->telnet_set_mode((net()->telnet_mode() + 1) % 3);
+    td_app_launch("Displays");
 }
 
 static void on_activate(td_widget_t *w, void *user)
@@ -300,8 +287,8 @@ static void launch(void)
     if (net()->telnet_enable)
     {
         s_telnet = td_checkbox(s_win, 1, 3, "Telnet desktop (port 23)", false, on_telnet, NULL);
-        if (net()->telnet_mode)
-            s_telnet_mode = td_button(s_win, 30, 3, "Telnet only", on_telnet_mode, NULL);
+        if (td_sysinfo()->displays)
+            s_telnet_mode = td_button(s_win, 30, 3, "Displays...", on_telnet_mode, NULL);
         s_peer = td_label(s_win, 47, 3, 0, "");
     }
     if (net()->server_status)

@@ -2,12 +2,14 @@
  * telnet.c - the desktop over Wi-Fi / Ethernet on TCP port 23.
  *
  * Polled from the UI loop with non-blocking sockets, so it costs no task
- * stack (RAM is tight next to TinyDesk Shell's SSH server). One client at a time:
+ * stack (RAM is tight next to TinyDesk Shell's SSH server). Up to
+ * TELNET_CLIENTS clients at once, as many as telnet_set_clients() allows
+ * (two when both displays show Telnet clients), each:
  *
- *   LISTEN -> LOGIN (username, password; TinyDesk Shell accounts) -> ACTIVE
+ *   FREE -> LOGIN (username, password; TinyDesk Shell accounts) -> ACTIVE
  *
- * While ACTIVE the client owns the desktop: hal_mux.c reads and writes
- * through here instead of USB until the connection ends. Telnet commands
+ * While ACTIVE hal_mux.c shows the client a display of the desktop
+ * (display 1 or 2, Settings -> Displays) until the connection ends. Telnet commands
  * are negotiated for character mode with the server echoing, and stripped
  * from the input together with the NUL / LF that telnet sends after CR.
  *
@@ -49,35 +51,40 @@ enum
 };
 typedef enum
 {
-    ST_OFF,
-    ST_LISTEN,
+    ST_FREE,
     ST_USER,
     ST_PASS,
     ST_ACTIVE
 } state_t;
 
+  /* One connection: its login, input filter and a small buffer of filtered
+ * bytes. */
+typedef struct
+{
+    state_t state;
+    int fd;
+    int64_t login_deadline_us;
+    int tries;
+    char peer[16];
+    char line[65];
+    int line_len;
+    char user[TDSH_USERNAME_MAX];
+    uint8_t filter_state;
+    bool after_cr;
+    uint8_t in[64];
+    int in_len, in_pos;
+} client_t;
+
 static const char *TAG = "telnet";
 
-static state_t s_state = ST_OFF;
 static bool s_enabled = false;
 static int s_mode = 0;   /* TD_TELNET_* */
+static int s_allowed = 1;   /* clients at once (telnet_set_clients) */
 static int s_listen = -1;
-static int s_fd = -1;
 static int64_t s_next_try_us;
-static int64_t s_login_deadline_us;
-static int s_tries;
-static char s_peer[16];
-static char s_line[65];
-static int s_line_len;
-static char s_user[TDSH_USERNAME_MAX];
+static client_t s_cl[TELNET_CLIENTS] = {{.fd = -1}, {.fd = -1}};
 
-/* Input filter state and a small buffer of filtered bytes. */
-static uint8_t s_filter_state;
-static bool s_after_cr;
-static uint8_t s_in[64];
-static int s_in_len, s_in_pos;
-
-/* ------------------------------------------------------------ helpers */
+  /* ------------------------------------------------------------ helpers */
 
 static int64_t now_us(void)
 {
@@ -90,95 +97,95 @@ static void set_nonblocking(int fd)
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-static void say(const char *s)
+static void say(client_t *c, const char *s)
 {
-    if (s_fd >= 0)
-        send(s_fd, s, strlen(s), 0);
+    if (c->fd >= 0)
+        send(c->fd, s, strlen(s), 0);
 }
 
-/* Strip telnet commands in place; returns the number of data bytes. */
-static int filter(uint8_t *buf, int n)
+  /* Strip telnet commands in place; returns the number of data bytes. */
+static int filter(client_t *c, uint8_t *buf, int n)
 {
     int m = 0;
     for (int i = 0; i < n; i++)
     {
         uint8_t b = buf[i];
-        switch (s_filter_state)
+        switch (c->filter_state)
         {
         case 0:
             if (b == IAC)
             {
-                s_filter_state = 1;
+                c->filter_state = 1;
                 break;
             }
-            if (s_after_cr && (b == '\n' || b == 0))
+            if (c->after_cr && (b == '\n' || b == 0))
             {
-                s_after_cr = false;
+                c->after_cr = false;
                 break;
             }
-            s_after_cr = (b == '\r');
+            c->after_cr = (b == '\r');
             buf[m++] = b;
             break;
         case 1:
             if (b == IAC)
             {
                 buf[m++] = IAC;
-                s_filter_state = 0;
+                c->filter_state = 0;
             }    /* escaped 0xFF */
             else if (b == SB)
-                s_filter_state = 3;
+                c->filter_state = 3;
             else if (b >= WILL && b <= DONT)
-                s_filter_state = 2;
+                c->filter_state = 2;
             else
-                s_filter_state = 0;
+                c->filter_state = 0;
             break;
         case 2:
-            s_filter_state = 0;
+            c->filter_state = 0;
             break;                           /* option code */
         case 3:
             if (b == IAC)
-                s_filter_state = 4;
+                c->filter_state = 4;
             break;
         case 4:
-            s_filter_state = (b == SE) ? 0 : 3;
+            c->filter_state = (b == SE) ? 0 : 3;
             break;
         default:
-            s_filter_state = 0;
+            c->filter_state = 0;
             break;
         }
     }
     return m;
 }
 
-/* Fetch whatever the client sent (non-blocking). Returns false when the
+  /* Fetch whatever the client sent (non-blocking). Returns false when the
  * connection has ended. */
-static bool fill_input(void)
+static bool fill_input(client_t *c)
 {
-    if (s_in_pos < s_in_len)
+    if (c->in_pos < c->in_len)
         return true;
-    int n = recv(s_fd, s_in, sizeof(s_in), MSG_DONTWAIT);
+    int n = recv(c->fd, c->in, sizeof(c->in), MSG_DONTWAIT);
     if (n == 0)
         return false;
     if (n < 0)
         return errno == EAGAIN || errno == EWOULDBLOCK;
-    s_in_len = filter(s_in, n);
-    s_in_pos = 0;
+    c->in_len = filter(c, c->in, n);
+    c->in_pos = 0;
     return true;
 }
 
-static void drop_client(void)
+static void drop_client(client_t *c)
 {
-    if (s_fd >= 0)
+    if (c->fd >= 0)
     {
-        shutdown(s_fd, SHUT_RDWR);
-        close(s_fd);
+        shutdown(c->fd, SHUT_RDWR);
+        close(c->fd);
     }
-    if (s_state == ST_ACTIVE)
-        ESP_LOGI(TAG, "client %s left", s_peer);
-    s_fd = -1;
-    s_peer[0] = '\0';
-    s_in_len = s_in_pos = 0;
-    s_state = s_enabled ? ST_LISTEN : ST_OFF;
+    if (c->state == ST_ACTIVE)
+        ESP_LOGI(TAG, "client %s left", c->peer);
+    c->fd = -1;
+    c->peer[0] = '\0';
+    c->in_len = c->in_pos = 0;
+    c->state = ST_FREE;
 }
 
 static void close_listener(void)
@@ -188,7 +195,7 @@ static void close_listener(void)
     s_listen = -1;
 }
 
-/* ----------------------------------------------------------- states */
+  /* ----------------------------------------------------------- states */
 
 static void open_listener(void)
 {
@@ -218,103 +225,116 @@ static void try_accept(void)
     int fd = accept(s_listen, (struct sockaddr *)&peer, &plen);
     if (fd < 0)
         return;
+    client_t *c = NULL;
+    for (int i = 0; i < s_allowed && i < TELNET_CLIENTS && !c; i++)
+        if (s_cl[i].state == ST_FREE)
+            c = &s_cl[i];
+    if (!c)
+    {
+        static const char busy[] = "\r\ntinydesk: the desktop is already in use over Telnet.\r\n";
+        send(fd, busy, sizeof(busy) - 1, 0);
+        shutdown(fd, SHUT_RDWR);
+        close(fd);
+        return;
+    }
 
-    s_fd = fd;
-    inet_ntoa_r(peer.sin_addr, s_peer, sizeof(s_peer));
+    memset(c, 0, sizeof(*c));
+    c->fd = fd;
+    inet_ntoa_r(peer.sin_addr, c->peer, sizeof(c->peer));
     int one = 1;
     setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
-    /* Sends may block briefly, so a full frame (larger than the TCP send
+     /* Sends may block briefly, so a full frame (larger than the TCP send
      * buffer) still gets out; reads never block (MSG_DONTWAIT). */
     struct timeval tv = {.tv_sec = 0, .tv_usec = 300000};
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
-    s_filter_state = 0;
-    s_after_cr = false;
-    s_in_len = s_in_pos = 0;
-    s_tries = 0;
-    s_line_len = 0;
-    s_login_deadline_us = now_us() + LOGIN_TIMEOUT_US;
+    c->login_deadline_us = now_us() + LOGIN_TIMEOUT_US;
 
     static const uint8_t negotiate[] = {IAC, WILL, OPT_ECHO, IAC, WILL, OPT_SGA, IAC, DO, OPT_SGA};
     send(fd, negotiate, sizeof(negotiate), 0);
-    say("\r\ntinydesk - log in with your TinyDesk account.\r\n\r\nlogin: ");
-    s_state = ST_USER;
+    say(c, "\r\ntinydesk - log in with your TinyDesk account.\r\n\r\nlogin: ");
+    c->state = ST_USER;
 }
 
-/* Collect a line of input during login; true when Enter was pressed. */
-static bool login_line(bool secret)
+  /* Collect a line of input during login; true when Enter was pressed. */
+static bool login_line(client_t *c, bool secret)
 {
-    while (s_in_pos < s_in_len)
+    while (c->in_pos < c->in_len)
     {
-        uint8_t b = s_in[s_in_pos++];
+        uint8_t b = c->in[c->in_pos++];
         if (b == '\r' || b == '\n')
         {
-            s_line[s_line_len] = '\0';
-            s_line_len = 0;
-            say("\r\n");
+            c->line[c->line_len] = '\0';
+            c->line_len = 0;
+            say(c, "\r\n");
             return true;
         }
-        if ((b == 0x7F || b == 0x08) && s_line_len > 0)
+        if ((b == 0x7F || b == 0x08) && c->line_len > 0)
         {
-            s_line_len--;
-            say("\b \b");
+            c->line_len--;
+            say(c, "\b \b");
         }
-        else if (b >= 0x20 && b < 0x7F && s_line_len < (int)sizeof(s_line) - 1)
+        else if (b >= 0x20 && b < 0x7F && c->line_len < (int)sizeof(c->line) - 1)
         {
-            s_line[s_line_len++] = (char)b;
+            c->line[c->line_len++] = (char)b;
             char echo[2] = {secret ? '*' : (char)b, 0};
-            say(echo);
+            say(c, echo);
         }
     }
     return false;
 }
 
-static void login_step(void)
+static void login_step(client_t *c)
 {
-    if (!fill_input() || now_us() > s_login_deadline_us)
+    if (!fill_input(c) || now_us() > c->login_deadline_us)
     {
-        drop_client();
+        drop_client(c);
         return;
     }
-    if (s_state == ST_USER)
+    if (c->state == ST_USER)
     {
-        if (!login_line(false))
+        if (!login_line(c, false))
             return;
-        snprintf(s_user, sizeof(s_user), "%.*s", (int)sizeof(s_user) - 1, s_line);
-        say("Password: ");
-        s_state = ST_PASS;
+        snprintf(c->user, sizeof(c->user), "%.*s", (int)sizeof(c->user) - 1, c->line);
+        say(c, "Password: ");
+        c->state = ST_PASS;
         return;
     }
-    if (!login_line(true))
+    if (!login_line(c, true))
         return;
-    /* This takes over a shared shell, including any command already running.
+     /* This takes over a shared shell, including any command already running.
      * Until isolated sessions exist, only root may take over the desktop. */
-    bool ok = strcmp(s_user, "root") == 0 && tdsh_user_authenticate_remote(s_user, s_line);
-    memset(s_line, 0, sizeof(s_line));
+    bool ok = strcmp(c->user, "root") == 0 && tdsh_user_authenticate_remote(c->user, c->line);
+    memset(c->line, 0, sizeof(c->line));
     if (ok)
     {
         if (!tdsh_console_mark_remote())
         {
-            say("Physical recovery is in progress. Try again later.\r\n");
-            drop_client();
+            say(c, "Physical recovery is in progress. Try again later.\r\n");
+            drop_client(c);
             return;
         }
-        ESP_LOGI(TAG, "%s logged in from %s", s_user, s_peer);
-        s_in_len = s_in_pos = 0;
-        s_state = ST_ACTIVE;              /* the HAL now hands over the desktop */
+        ESP_LOGI(TAG, "%s logged in from %s", c->user, c->peer);
+        c->in_len = c->in_pos = 0;
+        c->state = ST_ACTIVE;              /* the HAL now shows it the desktop */
         return;
     }
-    ESP_LOGW(TAG, "failed login for '%s' from %s", s_user, s_peer);
-    if (++s_tries >= LOGIN_TRIES)
+    ESP_LOGW(TAG, "failed login for '%s' from %s", c->user, c->peer);
+    if (++c->tries >= LOGIN_TRIES)
     {
-        say("Login incorrect. Goodbye.\r\n");
-        drop_client();
+        say(c, "Login incorrect. Goodbye.\r\n");
+        drop_client(c);
         return;
     }
-    say("Login incorrect.\r\n\r\nlogin: ");
-    s_state = ST_USER;
+    say(c, "Login incorrect.\r\n\r\nlogin: ");
+    c->state = ST_USER;
 }
 
-/* --------------------------------------------------------------- api */
+static client_t *active(int i)
+{
+    return i >= 0 && i < TELNET_CLIENTS && s_cl[i].state == ST_ACTIVE ? &s_cl[i] : NULL;
+}
+
+  /* --------------------------------------------------------------- api */
 
 void telnet_start(void)
 {
@@ -329,68 +349,110 @@ void telnet_start(void)
         nvs_close(h);
     }
     s_enabled = v != 0 && tdsh_remote_access_ready();
-    s_state = s_enabled ? ST_LISTEN : ST_OFF;
+    s_next_try_us = 0;
+}
+
+void telnet_set_clients(int n)
+{
+    s_allowed = n < 1 ? 1 : n > TELNET_CLIENTS ? TELNET_CLIENTS
+                                               : n;
+    for (int i = s_allowed; i < TELNET_CLIENTS; i++)
+        if (s_cl[i].state != ST_FREE)
+        {
+            say(&s_cl[i], "\r\nThe second Telnet display was switched off.\r\n");
+            drop_client(&s_cl[i]);
+        }
 }
 
 void telnet_poll(void)
 {
-    switch (s_state)
+    if (!s_enabled)
+        return;
+    if (s_listen < 0)
+        open_listener();
+    if (s_listen >= 0)
+        try_accept();
+    for (int i = 0; i < TELNET_CLIENTS; i++)
     {
-    case ST_OFF:
-        break;
-    case ST_LISTEN:
-        if (s_listen < 0)
-            open_listener();
-        if (s_listen >= 0)
-            try_accept();
-        break;
-    case ST_USER:
-    case ST_PASS:
-        login_step();
-        break;
-    case ST_ACTIVE:
-        if (!fill_input())
-            drop_client();
-        break;
+        client_t *c = &s_cl[i];
+        if (c->state == ST_USER || c->state == ST_PASS)
+            login_step(c);
+        else if (c->state == ST_ACTIVE && !fill_input(c))
+            drop_client(c);
     }
 }
 
-bool telnet_active(void)
+bool telnet_active_n(int i)
 {
-    return s_state == ST_ACTIVE;
+    return active(i) != NULL;
 }
 
-int telnet_read_byte(void)
+int telnet_read_byte_n(int i)
 {
-    if (s_state != ST_ACTIVE)
+    client_t *c = active(i);
+    if (!c)
         return -1;
-    if (s_in_pos >= s_in_len && !fill_input())
+    if (c->in_pos >= c->in_len && !fill_input(c))
     {
-        drop_client();
+        drop_client(c);
         return -1;
     }
-    return s_in_pos < s_in_len ? s_in[s_in_pos++] : -1;
+    return c->in_pos < c->in_len ? c->in[c->in_pos++] : -1;
 }
 
-int telnet_write(const uint8_t *buf, int len)
+int telnet_write_n(int i, const uint8_t *buf, int len)
 {
-    if (s_state != ST_ACTIVE)
+    client_t *c = active(i);
+    if (!c)
         return 0;
     int done = 0;
     while (done < len)
     {
-        int n = send(s_fd, buf + done, (size_t)(len - done), 0);
+        int n = send(c->fd, buf + done, (size_t)(len - done), 0);
         if (n <= 0)
         {
             if (n < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
                 break;   /* stalled: drop frame */
             if (n < 0)
-                drop_client();
+                drop_client(c);
             break;
         }
         done += n;
     }
     return done;
+}
+
+const char *telnet_peer_n(int i)
+{
+    client_t *c = active(i);
+    return c && c->peer[0] ? c->peer : NULL;
+}
+
+const char *telnet_user_n(int i)
+{
+    client_t *c = active(i);
+    return c ? c->user : NULL;
+}
+
+bool telnet_active(void)
+{
+    return telnet_active_n(0);
+}
+int telnet_read_byte(void)
+{
+    return telnet_read_byte_n(0);
+}
+int telnet_write(const uint8_t *buf, int len)
+{
+    return telnet_write_n(0, buf, len);
+}
+const char *telnet_peer(void)
+{
+    return telnet_peer_n(0) ? telnet_peer_n(0) : telnet_peer_n(1);
+}
+const char *telnet_user(void)
+{
+    return telnet_user_n(0);
 }
 
 bool telnet_enabled(void)
@@ -415,17 +477,15 @@ void telnet_set_enabled(bool on)
     }
     if (!on)
     {
-        if (s_fd >= 0)
-            say("\r\nTelnet access was switched off.\r\n");
-        drop_client();
+        for (int i = 0; i < TELNET_CLIENTS; i++)
+        {
+            say(&s_cl[i], "\r\nTelnet access was switched off.\r\n");
+            drop_client(&s_cl[i]);
+        }
         close_listener();
-        s_state = ST_OFF;
     }
-    else if (s_state == ST_OFF)
-    {
-        s_state = ST_LISTEN;
+    else
         s_next_try_us = 0;
-    }
 }
 
 int telnet_mode(void)
@@ -445,14 +505,4 @@ void telnet_set_mode(int mode)
         nvs_commit(h);
         nvs_close(h);
     }
-}
-
-const char *telnet_peer(void)
-{
-    return s_state == ST_ACTIVE && s_peer[0] ? s_peer : NULL;
-}
-
-const char *telnet_user(void)
-{
-    return s_state == ST_ACTIVE ? s_user : NULL;
 }

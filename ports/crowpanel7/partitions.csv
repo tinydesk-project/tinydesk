@@ -1,7 +1,8 @@
-# tinydesk on the CrowPanel 7.0 (4 MB flash): one 2.5 MB app (no OTA
-# slots), 1.4 MB /fs. The same layout as the 4 MB ESP32 port.
+# tinydesk on the CrowPanel 7.0 (4 MB flash): one 2.75 MB app (no OTA
+# slots) and a 1.19 MB /fs, room for a kiosk app package and its unpacked
+# copy (a kiosk app needs about 1 MB).
 # Name,     Type, SubType,  Offset,   Size,
 nvs,        data, nvs,      0x9000,   0x6000,
 phy_init,   data, phy,      0xF000,   0x1000,
-factory,    app,  factory,  0x10000,  0x280000,
-storage,    data, littlefs, 0x290000, 0x170000,
+factory,    app,  factory,  0x10000,  0x2C0000,
+storage,    data, littlefs, 0x2D0000, 0x130000,

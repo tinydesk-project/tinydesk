@@ -12,7 +12,7 @@ CONFIG_LOG_MAXIMUM_LEVEL_INFO=y
 
 CONFIG_FREERTOS_HZ=1000
 
-# --- Flash: one 2.5 MB app, 1.4 MB /fs (partitions.csv); no PSRAM ----------
+# --- Flash: one 3 MB app, 960 KB /fs (partitions.csv); no PSRAM ----------
 CONFIG_ESPTOOLPY_FLASHSIZE_4MB=y
 CONFIG_ESPTOOLPY_FLASHMODE_DIO=y
 CONFIG_PARTITION_TABLE_CUSTOM=y

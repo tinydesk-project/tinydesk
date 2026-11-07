@@ -8,8 +8,8 @@
 # the ESP-IDF console is off (logs go to the Log Viewer). The application
 # is shared with the other ESP-IDF projects (../esp_idf/app), with the same
 # UART link as ports/esp32. Differences to ports/esp32: no PSRAM (screen at
-# most 80x25, all buffers in internal RAM), one 2.5 MB app slot (no
-# over-the-air updates), 1.4 MB /fs.
+# most 80x25, all buffers in internal RAM), one 3 MB app slot (no
+# over-the-air updates), 960 KB /fs.
 cmake_minimum_required(VERSION 3.16)
 
 get_filename_component(TD_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)

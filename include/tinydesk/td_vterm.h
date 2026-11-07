@@ -48,6 +48,8 @@ typedef struct
     bool cursor_visible;
     bool synchronized_output; /* DEC 2026: retain display until frame end */
     bool newline_mode;    /* LF also returns the carriage (default on) */
+    uint16_t mouse;       /* mouse reports the program asked for: 0 none,
+                           * 1000 clicks, 1002 also drags, 1003 also moves */
 
     uint8_t state;
     char params[40];

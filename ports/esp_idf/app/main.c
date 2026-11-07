@@ -489,6 +489,7 @@ static void fill_sysinfo(void)
     s_info.get_tz = get_tz;
     s_info.set_tz = set_tz;
     s_info.net = net_esp_ops();
+    s_info.displays = hal_mux_displays();
     /* Updates need a second app slot (not on the 4 MB ESP32 layout). */
     if (esp_ota_get_next_update_partition(NULL))
     {

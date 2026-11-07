@@ -27,8 +27,10 @@ void td_apps_register_all(void)
 {
     td_terminal_register();
     td_files_register();
+    td_search_register();
     td_editor_register();
     td_network_register();
+    td_displays_register();
     td_mqtt_register();
     td_modbus_register();
     td_sysmon_register();

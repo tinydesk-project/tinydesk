@@ -13,7 +13,10 @@ the code may only add to it. Removing or renaming a function, method,
 property or constant, changing a function's parameters or giving it a new
 required one fails, because apps already made call them. New names fail
 too until --record writes them into the contract (raise the api minor
-number with them). Run by ctest.
+number with them). The app library tdapp.py is pinned the same way by
+ports/common/python/tdapp_contract.json: its "version" is tdapp.VERSION
+(raise the minor number with new names), its "python" part only grows.
+Run by ctest.
 """
 import json
 import re
@@ -69,6 +72,36 @@ def write_python(path, code):
     text += ('  "python": {\n    "module": %s,\n    "classes": {\n%s\n    }\n  }\n}\n'
              % (block(code["module"], "      "), classes))
     path.write_text(text, encoding="utf-8", newline="\n")
+
+
+def check_tdapp(errors):
+    """tdapp.py against tdapp_contract.json: the version, and a surface that only grows."""
+    path = ROOT / "ports/common/python/tdapp_contract.json"
+    text = tdui_surface.TDAPP_SOURCE.read_text(encoding="utf-8")
+    m = re.search(r"^VERSION = \((\d+), (\d+)\)", text, re.M)
+    version = [int(m.group(1)), int(m.group(2))] if m else None
+    code = tdui_surface.surface(tdui_surface.TDAPP_SOURCE)
+    contract = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    problems = []
+    recorded = contract.get("python", {"module": {}, "classes": {}})
+    tdui_surface.compatible(recorded["module"], code["module"], "tdapp", problems)
+    for cls, members in recorded["classes"].items():
+        tdui_surface.compatible(members, code["classes"].get(cls, {}), "tdapp." + cls, problems)
+    breaking = [p for p in problems if " is new:" not in p]
+    if "--record" in sys.argv and not breaking:
+        grown = bool(problems)
+        if grown and contract.get("version") == version and "python" in contract:
+            errors.append("tdapp has new names: raise tdapp.VERSION's minor number, then --record")
+            return
+        out = {"version": version, "python": code}
+        path.write_text(json.dumps(out, indent=1, sort_keys=True) + "\n", encoding="utf-8", newline="\n")
+        print("check_tdui_contract: recorded tdapp %d.%d" % tuple(version))
+        return
+    errors += problems
+    if "python" not in contract:
+        errors.append("there is no tdapp_contract.json: run with --record")
+    elif contract.get("version") != version:
+        errors.append("tdapp.VERSION is %s, tdapp_contract.json %s" % (version, contract.get("version")))
 
 
 def main():
@@ -136,6 +169,7 @@ def main():
         for cls, members in recorded["classes"].items():
             tdui_surface.compatible(members, code["classes"].get(cls, {}), "tdui." + cls, errors)
 
+    check_tdapp(errors)
     for e in errors:
         print("check_tdui_contract:", e)
     if not errors:

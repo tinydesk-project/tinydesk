@@ -11,7 +11,6 @@ static int s_fails;
 static uint32_t s_retry;
 static int s_selected = -1;
 static bool s_keyboard;
-static td_osk_t s_osk;   /* the touch keys (apps/osk.c) */
 static void login_layout(void);
 static void sign_in(td_widget_t *button, void *user);
 
@@ -38,8 +37,9 @@ static void login_closed(td_window_t *win)
     s_message[0] = 0;
     s_win = NULL;
     s_accounts = s_password = s_remember = s_note = s_sign_in = s_keyboard_button = s_hint_button = NULL;
+    if (s_keyboard)
+        td_osk_show(false);   /* the On-screen keyboard Sign in opened */
     s_keyboard = false;
-    s_osk.held = -1;
 }
 static const char *login_item(td_widget_t *list, int index, int *fg, void *user)
 {
@@ -84,9 +84,9 @@ static void keyboard_toggle(td_widget_t *button, void *user)
     (void)button;
     (void)user;
     s_keyboard = !s_keyboard;
-    s_osk.held = -1;
     login_layout();
     td_widget_focus(s_password);
+    td_osk_show(s_keyboard);   /* the one On-screen keyboard, below the form */
     td_win_invalidate(s_win);
 }
 static void show_hint(td_widget_t *button, void *user)
@@ -102,9 +102,9 @@ static void show_hint(td_widget_t *button, void *user)
     td_login_status(line);
     td_widget_focus(s_password);
 }
-/* Without the keys: the account list in the middle. With them: the
- * password at the top, the keys below, the buttons and the note at the
- * bottom. */
+/* Without the keys: the account list in the middle. With them (the On-screen
+ * keyboard window, apps/osk.c, at the bottom): the password, the buttons
+ * and the note at the top. */
 static void login_layout(void)
 {
     if (!s_accounts || !s_password || !s_remember || !s_sign_in || !s_note || !s_keyboard_button || !s_hint_button)
@@ -118,17 +118,16 @@ static void login_layout(void)
     s_accounts->visible = !s_keyboard;
     if (s_keyboard)
     {
-        s_password->rect = td_rect(3, 3, w - 6, 1);
-        td_osk_init(&s_osk, td_rect(1, 5, w - 2, h - 10), "Sign in", true);
+        s_password->rect = td_rect(3, 2, w - 6, 1);
         s_remember->rect.x = 3;
-        s_remember->rect.y = h - 4;
+        s_remember->rect.y = 3;
         s_sign_in->rect.x = 3;
-        s_sign_in->rect.y = h - 3;
+        s_sign_in->rect.y = 4;
         s_keyboard_button->rect.x = 17;
-        s_keyboard_button->rect.y = h - 3;
+        s_keyboard_button->rect.y = 4;
         s_hint_button->rect.x = 31;
-        s_hint_button->rect.y = h - 3;
-        s_note->rect = td_rect(3, h - 2, w - 6, 1);
+        s_hint_button->rect.y = 4;
+        s_note->rect = td_rect(3, 5, w - 6, 1);
     }
     else
     {
@@ -144,32 +143,6 @@ static void login_layout(void)
         s_note->rect = td_rect(x, y + 17, w - x - 1 < 60 ? w - x - 1 : 60, 1);
     }
     td_widget_set_text(s_keyboard_button, s_keyboard ? "Accounts" : "Keyboard");
-}
-/* Touch keys live inside the authentication gate: no extra window, and no
- * shell command or password bytes are emitted to the terminal. */
-static bool login_event(td_window_t *win, const td_event_t *event)
-{
-    if (!s_keyboard || td_session_auth_pending())
-        return false;
-    bool used;
-    int code = td_osk_mouse(&s_osk, event, &used);
-    if (used)
-        td_win_invalidate(win);
-    if (code == TD_OSK_NONE)
-        return used;
-    if (code == TD_OSK_HIDE)
-        keyboard_toggle(NULL, NULL);
-    else if (code == TD_OSK_CLEAR)
-        wipe_secret();
-    else if (code == TD_KEY_ENTER)
-        sign_in(NULL, NULL);
-    else
-    {
-        td_event_t press = {.type = TD_EV_KEY, .key = (uint32_t)code};
-        td_widget_focus(s_password);
-        (void)td_widgets_event(win, &press);
-    }
-    return true;
 }
 void td_login_status(const char *message)
 {
@@ -229,11 +202,9 @@ static void draw_login(td_window_t *win, int w, int h)
     td_fill(td_rect(0, 0, w, h), ' ', t->win_fg, t->win_bg);
     if (s_keyboard)
     {
-        td_text(3, 0, "TINYDESK  /  SIGN IN", t->accent, t->win_bg, TD_BOLD);
-        char label[64];
-        snprintf(label, sizeof(label), "Password for %s", s_name);
-        td_text(3, 2, label, t->win_fg, t->win_bg, 0);
-        td_osk_draw(&s_osk);
+        char label[96];
+        snprintf(label, sizeof(label), "TINYDESK  /  SIGN IN  /  password for %s", s_name);
+        td_textn(3, 0, label, w - 6, t->accent, t->win_bg, TD_BOLD);
     }
     /* The note is drawn here, not by its label: labels hold only
      * TD_TEXT_MAX bytes and a hint line can be longer. */
@@ -248,9 +219,15 @@ static void draw_login(td_window_t *win, int w, int h)
 }
 static void login_tick(td_window_t *win)
 {
-    (void)win;
     if (s_accounts && s_accounts->value != s_selected && !td_session_auth_pending())
         chosen(s_accounts, NULL);
+    if (s_keyboard && !td_osk_shown())
+    {
+        /* Its Hide key closed the keyboard: the account list again. */
+        s_keyboard = false;
+        login_layout();
+        td_win_invalidate(win);
+    }
 }
 void td_login_open(void)
 {
@@ -266,7 +243,7 @@ void td_login_open(void)
         x = 1;
     if (y < 0)
         y = 0;
-    td_window_desc_t d = {.title = "Sign in", .rect = td_rect(0, 0, st->cols, st->rows), .flags = TD_WIN_FULLSCREEN | TD_WIN_MODAL, .on_draw = draw_login, .on_event = login_event, .on_close = login_closed, .on_close_request = prevent_close, .on_tick = login_tick, .tick_ms = 200};
+    td_window_desc_t d = {.title = "Sign in", .rect = td_rect(0, 0, st->cols, st->rows), .flags = TD_WIN_FULLSCREEN | TD_WIN_MODAL, .on_draw = draw_login, .on_close = login_closed, .on_close_request = prevent_close, .on_tick = login_tick, .tick_ms = 200};
     s_win = td_win_create(&d);
     if (!s_win)
         return;
@@ -299,7 +276,6 @@ void td_login_open(void)
         s_hint_button->visible = ops && ops->hint_get;
     if (s_note)
         s_note->visible = false;   /* drawn by draw_login */
-    s_osk.held = -1;
     if (s_accounts)
         chosen(s_accounts, NULL);
     login_layout();

@@ -62,6 +62,7 @@ static void reset_state(td_vterm_t *vt)
     vt->cursor_visible = true;
     vt->synchronized_output = false;
     vt->newline_mode = true;
+    vt->mouse = 0;
     vt->state = VS_GROUND;
     vt->plen = 0;
     memset(&vt->utf8, 0, sizeof(vt->utf8));
@@ -353,6 +354,14 @@ static void set_mode(td_vterm_t *vt, const int *p, int n, bool on)
             break;
         case 25:
             vt->cursor_visible = on;
+            break;
+        case 1000:
+        case 1002:
+        case 1003:
+            if (on && p[i] > vt->mouse)
+                vt->mouse = (uint16_t)p[i];
+            else if (!on)
+                vt->mouse = 0;
             break;
         case 47:
         case 1047:

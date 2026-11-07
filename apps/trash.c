@@ -413,6 +413,85 @@ void td_trash_ask_delete(const char *path, bool is_dir, bool for_good, void (*do
     td_msgbox("Confirm", text, "Delete|Cancel", ask_answer, NULL);
 }
 
+/* Several items: their paths in one heap block, one question. */
+static char *s_many;          /* count paths, each PATH_LEN bytes */
+static bool *s_many_dir;
+static int s_many_count;
+static bool s_many_bin;
+static void (*s_many_done)(void);
+
+static void many_free(void)
+{
+    free(s_many);
+    free(s_many_dir);
+    s_many = NULL;
+    s_many_dir = NULL;
+    s_many_count = 0;
+}
+
+static void many_answer(int button, void *user)
+{
+    (void)user;
+    int failed = 0;
+    for (int i = 0; button == 0 && i < s_many_count; i++)
+    {
+        const char *p = s_many + (size_t)i * PATH_LEN;
+        bool bin = s_many_bin && path_size(p, s_many_dir[i]) <= td_trash_limit();
+        if (bin ? td_trash_put(p, s_many_dir[i]) != TD_TRASH_OK : (!fs() || !fs()->remove || fs()->remove(p) != 0))
+            failed++;
+    }
+    many_free();
+    if (failed)
+    {
+        char text[64];
+        snprintf(text, sizeof(text), "%d of the items could not be deleted.", failed);
+        td_msgbox("Delete", text, "OK", NULL, NULL);
+    }
+    if (s_many_done)
+        s_many_done();
+}
+
+void td_trash_ask_delete_many(const char *const *paths, const bool *is_dir, int count, bool for_good,
+                              void (*done)(void))
+{
+    if (count == 1)
+    {
+        td_trash_ask_delete(paths[0], is_dir[0], for_good, done);
+        return;
+    }
+    if (count < 1)
+        return;
+    many_free();
+    s_many = malloc((size_t)count * PATH_LEN);
+    s_many_dir = malloc((size_t)count * sizeof(bool));
+    if (!s_many || !s_many_dir)
+    {
+        many_free();
+        td_msgbox("Delete", "Not enough memory for that many items.", "OK", NULL, NULL);
+        return;
+    }
+    bool bin = !for_good && td_trash_limit() > 0 && usable();
+    int dirs = 0;
+    for (int i = 0; i < count; i++)
+    {
+        snprintf(s_many + (size_t)i * PATH_LEN, PATH_LEN, "%s", paths[i]);
+        s_many_dir[i] = is_dir[i];
+        dirs += is_dir[i];
+        if (in_trash(paths[i]))
+            bin = false;
+    }
+    s_many_count = count;
+    s_many_bin = bin;
+    s_many_done = done;
+    char text[160];
+    if (bin)
+        snprintf(text, sizeof(text), "Move %d items%s to the Recycle Bin?\n(Any too big for it are deleted for good.)",
+                 count, dirs ? ", folders with everything in them," : "");
+    else
+        snprintf(text, sizeof(text), "Delete %d items%s for good?", count, dirs ? ",\nfolders with everything in them," : "");
+    td_msgbox(bin ? "Delete" : "Confirm", text, bin ? "Move|Cancel" : "Delete|Cancel", many_answer, NULL);
+}
+
 /* ------------------------------------------------------------ restore */
 
 /* Every folder on the way to path (inside the file system's root). */

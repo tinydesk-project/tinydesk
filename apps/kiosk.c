@@ -172,7 +172,8 @@ static uint32_t s_hold_ms, s_release_ms;
 
 static bool in_corner(int x, int y)
 {
-    return x >= td_stats()->cols - CORNER_W && y < CORNER_H;
+    td_rect_t m = td_wm_main_monitor();   /* the main display's corner */
+    return x >= m.x + m.w - CORNER_W && x < m.x + m.w && y >= m.y && y < m.y + CORNER_H;
 }
 
 static void open_unlock(void);
@@ -236,32 +237,24 @@ static bool kiosk_hook(const td_event_t *ev)
 
 /* ------------------------------------------------- the unlock keyboard */
 
-/* The shared touch keys (apps/osk.c), as large as the screen allows. */
+/* A password box at the top; the On-screen keyboard (apps/osk.c, the one
+ * keyboard) opens below it and types into it as a keyboard would. */
 static td_window_t *s_kb;
 static char s_pw[PW_MAX + 1];
 static char s_note[48];
 static int s_fails;
 static uint32_t s_pause_until;
-static td_osk_t s_osk;
 
 static void kb_draw(td_window_t *win, int w, int h)
 {
     (void)win;
     const td_theme_t *t = td_theme();
     td_text(2, 0, "Root's password leaves kiosk mode until the next restart.", t->win_fg, t->win_bg, 0);
-    td_fill(td_rect(2, 2, w - 4, 1), ' ', t->input_fg, t->input_bg);
+    td_fill(td_rect(2, 1, w - 4, 1), ' ', t->input_fg, t->input_bg);
     for (int i = 0; s_pw[i] && i < w - 6; i++)
-        td_putc(3 + i, 2, '*', t->input_fg, t->input_bg, 0);
-    td_text(2, 3, s_note, t->accent, t->win_bg, TD_BOLD);
-    if (s_osk.area.w != w || s_osk.area.h != h - 5)
-    {
-        td_osk_t was = s_osk;   /* keep Shift (also a lock) and the symbols */
-        td_osk_init(&s_osk, td_rect(0, 5, w, h - 5), "Unlock", true);
-        s_osk.shift = was.shift;
-        s_osk.shift_ms = was.shift_ms;
-        s_osk.sym = was.sym;
-    }
-    td_osk_draw(&s_osk);
+        td_putc(3 + i, 1, '*', t->input_fg, t->input_bg, 0);
+    td_text(2, 2, s_note, t->accent, t->win_bg, TD_BOLD);
+    (void)h;
 }
 
 static void kb_close(void)
@@ -307,10 +300,8 @@ static void type_key(int code)
     s_note[0] = '\0';
     if (code == TD_KEY_ENTER)
         unlock();
-    else if (code == TD_KEY_ESC || code == TD_OSK_HIDE)
+    else if (code == TD_KEY_ESC)
         kb_close();
-    else if (code == TD_OSK_CLEAR)
-        memset(s_pw, 0, sizeof(s_pw));
     else if (code == TD_KEY_BACKSPACE && n > 0)
         s_pw[n - 1] = '\0';
     else if (code >= 32 && code < 127 && n < PW_MAX)
@@ -320,13 +311,8 @@ static void type_key(int code)
 static bool kb_event(td_window_t *win, const td_event_t *ev)
 {
     if (ev->type == TD_EV_MOUSE)
-    {
-        bool used;
-        int code = td_osk_mouse(&s_osk, ev, &used);
-        if (code != TD_OSK_NONE)
-            type_key(code);   /* may close the window */
-    }
-    else if (ev->type == TD_EV_KEY)
+        return true;   /* nothing to click: the keys are the keyboard's */
+    if (ev->type == TD_EV_KEY)
     {
         if (!(ev->mods & (TD_MOD_CTRL | TD_MOD_ALT)))
             type_key((int)ev->key);
@@ -343,6 +329,7 @@ static void kb_closed(td_window_t *win)
     (void)win;
     memset(s_pw, 0, sizeof(s_pw));
     s_kb = NULL;
+    td_osk_show(false);
 }
 
 static void open_unlock(void)
@@ -352,17 +339,18 @@ static void open_unlock(void)
     memset(s_pw, 0, sizeof(s_pw));
     s_note[0] = '\0';
     const td_stats_t *st = td_stats();
-    int w = st->cols - 4 < 100 ? st->cols - 4 : 100, h = st->rows - 2 < 26 ? st->rows - 2 : 26;
-    td_osk_init(&s_osk, td_rect(0, 5, w - 2, h - 7), "Unlock", true);
+    int w = st->cols - 4 < 70 ? st->cols - 4 : 70;
     td_window_desc_t d = {
         .title = "Leave kiosk mode",
-        .rect = td_rect(-1, -1, w, h),
+        .rect = td_rect(-1, 0, w, 5),   /* at the top: the keyboard goes below */
         .flags = TD_WIN_MODAL | TD_WIN_RAW_KEYS,
         .on_draw = kb_draw,
         .on_event = kb_event,
         .on_close = kb_closed,
     };
     s_kb = td_win_create(&d);
+    if (s_kb)
+        td_osk_show(true);
 }
 
 /* ----------------------------------------------------- the app itself */

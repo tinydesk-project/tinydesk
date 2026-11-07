@@ -29,6 +29,7 @@ void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set *
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);
+void td_displays_register(void);      /* Settings -> Displays */
 void td_osk_register(void);        /* the On-screen keyboard app */
 void td_store_register(void);      /* the Store: apps from a catalog */
 void td_remote_register(void);     /* Remote Desktop: another TinyDesk over Telnet */
@@ -83,6 +84,10 @@ int td_osk_mouse(td_osk_t *k, const td_event_t *ev, bool *used);
 /* The On-screen keyboard app opens by itself while a text box has the
  * focus (the "Keyboard for text fields" setting). */
 void td_osk_follow_focus(bool on);
+/* Open or close the On-screen keyboard window (Sign in, the kiosk's way
+ * out); its keys go to the focused window as key presses. */
+void td_osk_show(bool on);
+bool td_osk_shown(void);
 bool td_osk_follows_focus(void);
 
 /* ------------------------------------------------- files & desktop */
@@ -260,6 +265,12 @@ td_trash_result_t td_trash_put(const char *path, bool is_dir);
  * or for good when for_good, when the bin is off or the item is bigger than
  * it holds. done (optional) runs after the answer, to show the change. */
 void td_trash_ask_delete(const char *path, bool is_dir, bool for_good, void (*done)(void));
+/* The same for several items with one question ("Move 5 items to the
+ * Recycle Bin?"): those too big for the bin, or all when for_good or the
+ * bin is off, are deleted for good. The paths are copied. One item asks as
+ * td_trash_ask_delete does. */
+void td_trash_ask_delete_many(const char *const *paths, const bool *is_dir, int count, bool for_good,
+                              void (*done)(void));
 
 /* Apply the size and time limits now (also hourly and after each delete). */
 void td_trash_purge(void);
@@ -672,6 +683,7 @@ bool td_session_path_allowed(const char *path, int action);
 void td_login_open(void);
 void td_login_status(const char *message);
 void td_users_register(void);
+void td_search_register(void);   /* search.c: Alt+S, Win+S */
 const char *td_session_home(void);   /* real path, e.g. "/fs/home/bob" */
 const char *td_session_jail(void);   /* the Files app cannot go above this */
 

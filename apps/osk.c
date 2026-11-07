@@ -348,6 +348,21 @@ bool td_osk_follows_focus(void)
     return s_follow;
 }
 
+/* The one keyboard for Sign in and the kiosk's way out too: they open it
+ * (below their text, which the placement keeps in view) and close it. */
+void td_osk_show(bool on)
+{
+    if (on)
+        osk_open(false);
+    else if (td_win_is_open(s_win))
+        td_win_close(s_win);
+}
+
+bool td_osk_shown(void)
+{
+    return td_win_is_open(s_win);
+}
+
 static const td_app_t s_app = {"On-screen keyboard", launch, "KB"};
 
 void td_osk_register(void)

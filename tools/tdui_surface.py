@@ -2,7 +2,8 @@
 
 What an app may call: the module's public functions and constants, and each
 public class's public methods and properties (also those it inherits from
-tdui's private base classes), with every function's parameters. Used by
+tdui's private base classes), with every function's parameters. The same
+for tdapp.py, the app library (surface(TDAPP_SOURCE)). Used by
 check_tdui_contract.py (the surface must only grow) and
 check_tdui_frozen.py (the firmware's frozen tdui must have it).
 """
@@ -11,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "ports/common/python/modules/tdui.py"
+TDAPP_SOURCE = ROOT / "ports/common/python/modules/tdapp.py"   # the app library, pinned the same way
 
 
 def _params(fn):

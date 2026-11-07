@@ -33,10 +33,12 @@ void td_buffer_init(td_buffer_t *buf, int cols, int rows)
         cols = 1;
     if (rows < 1)
         rows = 1;
-    if (cols > TD_MAX_COLS)
-        cols = TD_MAX_COLS;
-    if (rows > TD_MAX_ROWS)
-        rows = TD_MAX_ROWS;
+    if (cols > TD_MAX_SCREEN_COLS)
+        cols = TD_MAX_SCREEN_COLS;
+    if (rows > TD_MAX_SCREEN_ROWS)
+        rows = TD_MAX_SCREEN_ROWS;
+    if (cols * rows > TD_MAX_COLS * TD_MAX_ROWS)
+        rows = TD_MAX_COLS * TD_MAX_ROWS / cols;   /* a wide extended screen */
     buf->cols = cols;
     buf->rows = rows;
 

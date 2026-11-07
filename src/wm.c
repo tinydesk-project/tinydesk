@@ -11,35 +11,74 @@
 #include <string.h>
 
 #include "tinydesk/td.h"
+#include "tinydesk/td_picture.h"
 
-/* ------------------------------------------------------------- state */
+  /* ------------------------------------------------------------- state */
 
 static td_window_t s_wins[TD_MAX_WINDOWS];
 static int s_order[TD_MAX_WINDOWS];   /* pool indexes, bottom to top */
 static int s_order_count;
 static int s_cols = TD_DEFAULT_COLS, s_rows = TD_DEFAULT_ROWS;
-static int s_main_cols;   /* an extended screen: the main monitor's width (0: one monitor) */
+static td_rect_t s_mons[TD_MAX_MONITORS];   /* the displays' places on the screen */
+static int s_mon_count;                      /* 0 or 1: one display, the whole screen */
+static int s_mon_main;                       /* the one with the taskbar */
 
-/* The main monitor's width: the taskbar, icons, new windows. */
+  /* The main display: the taskbar, icons, new windows. */
+static td_rect_t main_mon(void)
+{
+    return s_mon_count > 1 ? s_mons[s_mon_main] : td_rect(0, 0, s_cols, s_rows);
+}
+static int main_x(void)
+{
+    return main_mon().x;
+}
+static int main_y(void)
+{
+    return main_mon().y;
+}
 static int main_w(void)
 {
-    return s_main_cols > 0 && s_main_cols < s_cols ? s_main_cols : s_cols;
+    return main_mon().w;
+}
+static int main_h(void)
+{
+    return main_mon().h;
+}
+static int main_bottom(void)
+{
+    return main_y() + main_h();
 }
 
-/* The monitor that holds r's centre: its first column and width. */
-static void monitor_of(td_rect_t r, int *x0, int *w)
+  /* The index of the display that holds r's centre, or the nearest one. */
+static int monitor_index(td_rect_t r)
 {
-    int m = main_w();
-    if (m < s_cols && r.x + r.w / 2 >= m)
+    if (s_mon_count < 2)
+        return 0;
+    int cx = r.x + r.w / 2, cy = r.y + r.h / 2, best = s_mon_main;
+    long best_d = -1;
+    for (int i = 0; i < s_mon_count; i++)
     {
-        *x0 = m;
-        *w = s_cols - m;
+        td_rect_t m = s_mons[i];
+        if (td_rect_contains(m, cx, cy))
+            return i;
+        int dx = cx < m.x ? m.x - cx : cx >= m.x + m.w ? cx - (m.x + m.w - 1)
+                                                       : 0;
+        int dy = cy < m.y ? m.y - cy : cy >= m.y + m.h ? cy - (m.y + m.h - 1)
+                                                       : 0;
+        long d = (long)dx * dx + (long)dy * dy;
+        if (best_d < 0 || d < best_d)
+        {
+            best_d = d;
+            best = i;
+        }
     }
-    else
-    {
-        *x0 = 0;
-        *w = m;
-    }
+    return best;
+}
+
+  /* The display that holds r's centre (or the nearest one). */
+static td_rect_t monitor_of(td_rect_t r)
+{
+    return s_mon_count > 1 ? s_mons[monitor_index(r)] : td_rect(0, 0, s_cols, s_rows);
 }
 static bool s_dirty = true;
 
@@ -68,7 +107,7 @@ static const td_app_t *s_apps[TD_MAX_APPS];
 static uint32_t s_window_generation;
 static int s_app_count;
 
-/* Drag and drop of files: a press on a draggable thing arms it, moving
+  /* Drag and drop of files: a press on a draggable thing arms it, moving
  * the mouse a little starts it, releasing drops it. */
 static struct
 {
@@ -78,9 +117,41 @@ static struct
     int icon;               /* desktop icon pressed, or -1 */
     td_window_t *win;       /* window pressed in, or NULL */
     td_drag_item_t item;
+    td_drag_item_t *more;   /* the other items of a several-item drag (heap) */
+    int more_count;
 } s_dnd;
 
-/* Extra start-menu entries (above "Redraw screen" / "Exit"). */
+/* Desktop icons selected together (Ctrl+click, a rectangle). */
+static uint8_t s_icon_marks[(TD_MAX_ICON_PLACES + 7) / 8 + 32];
+static struct
+{
+    bool on;
+    int x0, y0, x1, y1;     /* the rectangle being dragged on the desktop */
+    uint8_t before[sizeof(s_icon_marks)];   /* what Ctrl kept selected */
+} s_band;
+
+static bool icon_marked(int i)
+{
+    return i >= 0 && i < (int)sizeof(s_icon_marks) * 8 && (s_icon_marks[i / 8] >> (i % 8)) & 1;
+}
+
+static void icon_mark(int i, bool on)
+{
+    if (i < 0 || i >= (int)sizeof(s_icon_marks) * 8)
+        return;
+    if (on)
+        s_icon_marks[i / 8] |= (uint8_t)(1u << (i % 8));
+    else
+        s_icon_marks[i / 8] &= (uint8_t) ~(1u << (i % 8));
+}
+
+static void dnd_end(void)
+{
+    free(s_dnd.more);
+    memset(&s_dnd, 0, sizeof(s_dnd));
+}
+
+  /* Extra start-menu entries (above "Redraw screen" / "Exit"). */
 #define START_EXTRA_MAX 4
 static struct
 {
@@ -89,20 +160,20 @@ static struct
 } s_start_extra[START_EXTRA_MAX];
 static int s_start_extra_count;
 
-/* The logged-in user, shown in the taskbar tray. */
+  /* The logged-in user, shown in the taskbar tray. */
 static char s_user_label[24];
 
-/* Taskbar tray hit area: the network indicator. */
+  /* Taskbar tray hit area: the network indicator. */
 static int s_tray_net_x0 = -1, s_tray_net_x1 = -1;
 
-/* Popup menu (start menu or context menu), see "popup menus" below. */
+  /* Popup menu (start menu or context menu), see "popup menus" below. */
 static bool s_menu_open;
 static int s_menu_sel;
 
-/* Extra desktop icons (the Desktop folder), after the app icons. */
+  /* Extra desktop icons (the Desktop folder), after the app icons. */
 static const td_desktop_provider_t *s_provider;
 
-/* Taskbar hit areas, filled in while composing. */
+  /* Taskbar hit areas, filled in while composing. */
 #define TASKBAR_START_W 7
 static td_ui_size_t s_icon_size = TD_UI_MEDIUM, s_menu_size = TD_UI_MEDIUM, s_bar_size = TD_UI_MEDIUM;
 static const char *s_launch_icon;   /* glyph of the app being launched */
@@ -113,14 +184,14 @@ static struct
 } s_task_btn[TD_MAX_WINDOWS];
 static int s_task_btn_count;
 
-/* Mouse position for hover highlights, and an id for what is under it: a
+  /* Mouse position for hover highlights, and an id for what is under it: a
  * frame is only recomposed when the pointer moves onto something else. */
 static int s_mouse_x = -1, s_mouse_y = -1;
 static uintptr_t s_hover_id;
 static volatile bool s_pointer;   /* td_wm_set_pointer */
 
-/* Desktop icons: one per app, in columns from the top-left corner. */
-/* Icon slots (cells), by td_ui_size_t: small = one line; medium = 3 rows
+  /* Desktop icons: one per app, in columns from the top-left corner. */
+ /* Icon slots (cells), by td_ui_size_t: small = one line; medium = 3 rows
  * of glyph box + 2 label rows + gap; large = 5 rows of box + 1 label row +
  * gap. */
 static const int s_icon_slot_w[3] = {21, 12, 16};
@@ -140,7 +211,7 @@ static int s_icon_sel = -1;
 static int s_icon_click = -1;
 static uint32_t s_icon_click_ms;
 
-/* ------------------------------------------------------------ helpers */
+  /* ------------------------------------------------------------ helpers */
 
 static int clamp(int v, int lo, int hi)
 {
@@ -164,7 +235,7 @@ static td_window_t *top_window(bool include_hidden)
     return NULL;
 }
 
-/* Top-most open modal window, or NULL. */
+  /* Top-most open modal window, or NULL. */
 static td_window_t *modal_window(void)
 {
     for (int i = s_order_count - 1; i >= 0; i--)
@@ -176,7 +247,7 @@ static td_window_t *modal_window(void)
     return NULL;
 }
 
-/* Kiosk mode: one application on the whole screen (td_wm_set_kiosk). */
+  /* Kiosk mode: one application on the whole screen (td_wm_set_kiosk). */
 static bool s_kiosk;
 static td_window_t *s_input_gate;
 static bool s_input_locked;
@@ -203,12 +274,23 @@ static int taskbar_h(void)
 }
 static bool in_taskbar(int x, int y)
 {
-    return taskbar_visible() && x < main_w() && y >= s_rows - taskbar_h() && y < s_rows;
+    return taskbar_visible() && x >= main_x() && x < main_x() + main_w() && y >= main_bottom() - taskbar_h() &&
+           y < main_bottom();
 }
 
 int td_wm_desktop_rows(void)
 {
-    return s_rows - taskbar_h();
+    return main_h() - taskbar_h();
+}
+
+  /* The part of display m windows may use: all of it, but the taskbar's
+ * rows on the main one. */
+static td_rect_t desk_of(td_rect_t m)
+{
+    td_rect_t main = main_mon();
+    if (m.x == main.x && m.y == main.y && m.w == main.w && m.h == main.h)
+        m.h -= taskbar_h();
+    return m;
 }
 
 void td_wm_set_pointer(bool on)
@@ -226,7 +308,7 @@ bool td_wm_mouse_pos(int *x, int *y)
     return true;
 }
 
-/* Roughly how light a 256-colour palette entry is (xterm's colours). */
+  /* Roughly how light a 256-colour palette entry is (xterm's colours). */
 static bool colour_is_light(uint8_t c)
 {
     if (c < 16)
@@ -239,7 +321,7 @@ static bool colour_is_light(uint8_t c)
     return r * 299 + g * 587 + b * 114 >= 128 * 1000;
 }
 
-/* Swap colours to show that the mouse is over something. */
+  /* Swap colours to show that the mouse is over something. */
 static void hover_colours(uint8_t *fg, uint8_t *bg)
 {
     uint8_t t = *fg;
@@ -251,7 +333,7 @@ static bool mouse_over(int x, int y, int w)
 {
     return s_mouse_y == y && s_mouse_x >= x && s_mouse_x < x + w;
 }
-/* Over a taskbar item: every row of the taskbar counts. */
+ /* Over a taskbar item: every row of the taskbar counts. */
 static bool mouse_over_bar(int x, int w)
 {
     return in_taskbar(s_mouse_x, s_mouse_y) && s_mouse_x >= x && s_mouse_x < x + w;
@@ -274,7 +356,7 @@ static int win_index(const td_window_t *w)
     return (int)(w - s_wins);
 }
 
-/* Tool windows (TD_WIN_NO_FOCUS) stay above all others, in their order. */
+  /* Tool windows (TD_WIN_NO_FOCUS) stay above all others, in their order. */
 static void tools_on_top(void)
 {
     int tools[TD_MAX_WINDOWS], n = 0, k = 0;
@@ -288,7 +370,7 @@ static void tools_on_top(void)
     memcpy(&s_order[k], tools, (size_t)n * sizeof(int));
 }
 
-/* Put a new window on top, except that an open modal dialog stays above
+  /* Put a new window on top, except that an open modal dialog stays above
  * ordinary windows (otherwise it would be hidden yet still hold the input). */
 static void order_push(int idx)
 {
@@ -311,7 +393,7 @@ static void order_push(int idx)
     tools_on_top();
 }
 
-/* Window frames (td_wm_set_window_size): small = one title row and
+  /* Window frames (td_wm_set_window_size): small = one title row and
  * buttons "[x]"; medium = buttons "[ x ]" and a wider resize corner; large
  * = the same with two title rows. */
 static td_ui_size_t s_win_size = TD_UI_SMALL;
@@ -329,7 +411,7 @@ static int grip_w(void)
     return s_win_size == TD_UI_SMALL ? 2 : 4;
 }
 
-/* Title-bar button positions (absolute x). */
+  /* Title-bar button positions (absolute x). */
 static int close_x(const td_window_t *w)
 {
     return w->rect.x + w->rect.w - 1 - button_w();
@@ -348,7 +430,7 @@ static bool has_frame(const td_window_t *w)
     return !(w->flags & TD_WIN_FULLSCREEN);
 }
 
-/* ------------------------------------------------------------ windows */
+  /* ------------------------------------------------------------ windows */
 
 bool td_win_is_open(const td_window_t *win)
 {
@@ -380,7 +462,7 @@ void td_wm_set_window_size(td_ui_size_t size)
     int old = title_h();
     s_win_size = size;
     int delta = title_h() - old;
-    /* Open windows keep their contents' size: they grow or shrink by the
+     /* Open windows keep their contents' size: they grow or shrink by the
      * title bar's change. */
     for (int i = 0; delta && i < TD_MAX_WINDOWS; i++)
     {
@@ -422,31 +504,40 @@ static void tick_cb(void *user)
         w->on_tick(w);
 }
 
-/* Keep a window's rectangle inside the screen. */
+  /* Keep a window's rectangle inside the screen. */
 static void clamp_rect(td_window_t *w)
 {
-    int desk = td_wm_desktop_rows();
-    int mx, mw;
-    monitor_of((w->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) ? w->restore_rect : w->rect, &mx, &mw);
+    td_rect_t mon = monitor_of((w->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) ? w->restore_rect : w->rect);
+    td_rect_t d = desk_of(mon);
+    int desk = d.h;
     if (w->flags & TD_WIN_FULLSCREEN)
     {
-        w->rect = td_rect(mx, 0, mw, s_rows);
+        w->rect = mon;
         return;
     }
     if (w->flags & TD_WIN_MAXIMIZED)
     {
-        w->rect = td_rect(mx, 0, mw, desk);
+        w->rect = d;
         return;
     }
     td_rect_t *r = &w->rect;
     r->w = clamp(r->w, w->min_w < s_cols ? w->min_w : s_cols, s_cols);
     r->h = clamp(r->h, w->min_h < desk ? w->min_h : desk, desk);
-    /* The title bar always stays on screen. */
+     /* The title bar always stays on screen. */
     r->x = clamp(r->x, 0, s_cols - r->w);
-    r->y = clamp(r->y, 0, desk - 1);
+    r->y = clamp(r->y, d.y, d.y + desk - 1);
+    if (s_mon_count > 1)
+    {
+         /* Not in the gap beside a smaller display: its title bar stays on
+         * the display nearest to it. */
+        td_rect_t m = monitor_of(*r);
+        r->x = clamp(r->x, m.x - r->w + 4 < 0 ? 0 : m.x - r->w + 4, m.x + m.w - 4);
+        td_rect_t md = desk_of(m);
+        r->y = clamp(r->y, md.y, md.y + md.h - 1);
+    }
 }
 
-/* Set when an ordinary window was refused because the pool is (nearly) full. */
+  /* Set when an ordinary window was refused because the pool is (nearly) full. */
 static bool s_win_refused;
 
 td_window_t *td_win_create(const td_window_desc_t *desc)
@@ -460,7 +551,7 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
             idx = i;
         free_slots++;
     }
-    /* The last free slot is kept for a modal dialog, so "too many windows"
+     /* The last free slot is kept for a modal dialog, so "too many windows"
      * can still be said when the pool is full. */
     if (idx < 0 || (free_slots <= 1 && !(desc->flags & TD_WIN_MODAL)))
     {
@@ -483,6 +574,7 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
     w->on_close_request = desc->on_close_request;
     w->on_tick = desc->on_tick;
     w->on_drag_start = desc->on_drag_start;
+    w->on_drag_more = desc->on_drag_more;
     w->on_drop = desc->on_drop;
     w->user = desc->user;
     w->timer_id = -1;
@@ -502,15 +594,16 @@ td_window_t *td_win_create(const td_window_desc_t *desc)
         w->rect.w = main_w();
     if (w->rect.h > td_wm_desktop_rows())
         w->rect.h = td_wm_desktop_rows();
-    if (desc->rect.x < 0)
-        w->rect.x = (main_w() - w->rect.w) / 2;
-    if (desc->rect.y < 0)
-        w->rect.y = (td_wm_desktop_rows() - w->rect.h) / 2;
+     /* Places are on the main display (its own corner is 0, 0). */
+    w->rect.x = desc->rect.x < 0 ? (main_w() - w->rect.w) / 2 : w->rect.x;
+    w->rect.y = desc->rect.y < 0 ? (td_wm_desktop_rows() - w->rect.h) / 2 : w->rect.y;
+    w->rect.x += main_x();
+    w->rect.y += main_y();
     w->restore_rect = w->rect;
-    /* In kiosk mode every window but a dialog covers the screen, with no
+     /* In kiosk mode every window but a dialog covers the screen, with no
      * frame to move, resize, minimise or close it by. */
-    if (s_kiosk && !(w->flags & TD_WIN_MODAL))
-        w->flags |= TD_WIN_FULLSCREEN;
+    if (s_kiosk && !(w->flags & (TD_WIN_MODAL | TD_WIN_NO_FOCUS)))
+        w->flags |= TD_WIN_FULLSCREEN;   /* not a tool such as the On-screen keyboard */
     clamp_rect(w);
 
     if (w->on_tick && desc->tick_ms > 0)
@@ -530,7 +623,7 @@ void td_win_close(td_window_t *win)
 {
     if (!td_win_is_open(win))
         return;
-    /* A closed gate must stay locked even when its window slot is reused. */
+     /* A closed gate must stay locked even when its window slot is reused. */
     if (s_input_gate == win)
         s_input_gate = NULL;
     void (*on_close)(td_window_t *) = win->on_close;
@@ -554,7 +647,7 @@ void td_win_close(td_window_t *win)
 
 void td_wm_close_all(void)
 {
-    /* Close from the top; on_close handlers may open nothing new here. */
+     /* Close from the top; on_close handlers may open nothing new here. */
     for (int pass = 0; pass < TD_MAX_WINDOWS && s_order_count > 0; pass++)
     {
         td_window_t *w = &s_wins[s_order[s_order_count - 1]];
@@ -619,7 +712,8 @@ void td_win_resize(td_window_t *win, int w, int h)
     if (!td_win_is_open(win))
         return;
     win->rect.w = clamp(w, win->min_w, s_cols - win->rect.x);
-    win->rect.h = clamp(h, win->min_h, td_wm_desktop_rows() - win->rect.y);
+    td_rect_t d = desk_of(monitor_of(win->rect));
+    win->rect.h = clamp(h, win->min_h, d.y + d.h - win->rect.y);
     clamp_rect(win);
     s_dirty = true;
 }
@@ -674,7 +768,7 @@ void td_win_set_fullscreen(td_window_t *win, bool on)
     s_dirty = true;
 }
 
-/* Alt+Shift+Tab: the bottom visible window to the top. */
+  /* Alt+Shift+Tab: the bottom visible window to the top. */
 static void cycle_windows_back(void)
 {
     for (int i = 0; i < s_order_count; i++)
@@ -688,7 +782,7 @@ static void cycle_windows_back(void)
     }
 }
 
-/* Move the top window to the bottom so the next one comes forward. */
+  /* Move the top window to the bottom so the next one comes forward. */
 static void cycle_windows(void)
 {
     td_window_t *top = top_window(false);
@@ -702,7 +796,7 @@ static void cycle_windows(void)
     s_dirty = true;
 }
 
-/* ------------------------------------------------------------ manager */
+  /* ------------------------------------------------------------ manager */
 
 void td_wm_init(int cols, int rows)
 {
@@ -730,15 +824,76 @@ void td_wm_screen_size(int *cols, int *rows)
     *rows = s_rows;
 }
 
-void td_wm_set_main_cols(int main_cols)
+void td_wm_set_monitors(const td_rect_t *mons, int count, int main)
 {
-    s_main_cols = main_cols > 0 ? main_cols : 0;
+    if (!mons || count < 2)
+        count = 0;
+    if (count > TD_MAX_MONITORS)
+        count = TD_MAX_MONITORS;
+    if (count == s_mon_count && count > 1)
+    {
+         /* The displays moved: their windows go with them. */
+        for (int i = 0; i < s_order_count; i++)
+        {
+            td_window_t *w = &s_wins[s_order[i]];
+            bool big = (w->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) != 0;
+            int k = monitor_index(big ? w->restore_rect : w->rect);
+            int dx = mons[k].x - s_mons[k].x, dy = mons[k].y - s_mons[k].y;
+            w->rect.x += dx, w->rect.y += dy;
+            w->restore_rect.x += dx, w->restore_rect.y += dy;
+        }
+    }
+    for (int i = 0; i < count; i++)
+        s_mons[i] = mons[i];
+    s_mon_count = count;
+    s_mon_main = main >= 0 && main < count ? main : 0;
     s_dirty = true;
 }
 
-int td_wm_main_cols(void)
+int td_wm_monitors(td_rect_t *mons, int max, int *main)
 {
-    return s_main_cols;
+    int n = s_mon_count > 1 ? s_mon_count : 1;
+    for (int i = 0; i < n && i < max; i++)
+        mons[i] = s_mon_count > 1 ? s_mons[i] : td_rect(0, 0, s_cols, s_rows);
+    if (main)
+        *main = s_mon_count > 1 ? s_mon_main : 0;
+    return n;
+}
+
+td_rect_t td_wm_main_monitor(void)
+{
+    return main_mon();
+}
+
+int td_wm_monitor_of(td_window_t *win)
+{
+    if (!td_win_is_open(win))
+        return -1;
+    return monitor_index((win->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) ? win->restore_rect : win->rect);
+}
+
+bool td_win_move_to_monitor(td_window_t *win, int index)
+{
+    if (!td_win_is_open(win) || s_mon_count < 2 || index < 0 || index >= s_mon_count)
+        return false;
+    int from = td_wm_monitor_of(win);
+    if (from == index)
+        return true;
+    td_rect_t a = desk_of(s_mons[from]), b = desk_of(s_mons[index]);
+     /* The same place relative to the display's corner, inside it. */
+    td_rect_t *r = (win->flags & (TD_WIN_FULLSCREEN | TD_WIN_MAXIMIZED)) ? &win->restore_rect : &win->rect;
+    if (r->w > b.w)
+        r->w = b.w;
+    if (r->h > b.h)
+        r->h = b.h;
+    r->x = clamp(b.x + (r->x - a.x), b.x, b.x + b.w - r->w);
+    r->y = clamp(b.y + (r->y - a.y), b.y, b.y + b.h - r->h);
+    if (r == &win->restore_rect)
+        win->rect = win->restore_rect;
+    clamp_rect(win);
+    td_win_focus(win);
+    s_dirty = true;
+    return true;
 }
 
 void td_wm_set_screen_size(int cols, int rows)
@@ -751,7 +906,7 @@ void td_wm_set_screen_size(int cols, int rows)
     s_dirty = true;
 }
 
-/* -------------------------------------------------------------- apps */
+  /* -------------------------------------------------------------- apps */
 
 int td_app_register(const td_app_t *app)
 {
@@ -780,7 +935,7 @@ const td_app_t *td_app_get(int index)
     return (index >= 0 && index < s_app_count) ? s_apps[index] : NULL;
 }
 
-/* Windows an app opens while launching get its glyph on the taskbar. A
+  /* Windows an app opens while launching get its glyph on the taskbar. A
  * window whose widgets did not all fit in the shared pool (TD_MAX_WIDGETS),
  * or that got no tick timer (TD_MAX_TIMERS), would be missing parts or never
  * update: it is closed again and the user is told why, as when no window
@@ -824,9 +979,9 @@ bool td_app_launch(const char *name)
     return false;
 }
 
-/* ------------------------------------------------------ popup menus */
+  /* ------------------------------------------------------ popup menus */
 
-/* One popup at a time: the start menu or a right-click (context) menu.
+  /* One popup at a time: the start menu or a right-click (context) menu.
  * Labels are copied; "-" is a separator line. */
 #define MENU_MAX   (TD_MAX_APPS + START_EXTRA_MAX + TD_START_USER_MAX + 4)
 #define MENU_LABEL 28
@@ -860,7 +1015,7 @@ static int menu_item_rows(int i)
     return menu_is_sep(i) ? 1 : s_menu.row_h;
 }
 
-/* Screen row of item i's first line. */
+  /* Screen row of item i's first line. */
 static int menu_item_y(int i)
 {
     int y = s_menu.rect.y + 1;
@@ -869,7 +1024,7 @@ static int menu_item_y(int i)
     return y;
 }
 
-/* Item on screen row y, or -1. */
+  /* Item on screen row y, or -1. */
 static int menu_index_at(int y)
 {
     int top = s_menu.rect.y + 1;
@@ -885,7 +1040,7 @@ static int menu_index_at(int y)
     return -1;
 }
 
-/* Next selectable item from i in direction dir (wrapping). */
+  /* Next selectable item from i in direction dir (wrapping). */
 static int menu_step(int i, int dir)
 {
     for (int n = 0; n < s_menu.count; n++)
@@ -1000,7 +1155,7 @@ static void menu_activate(int i)
         fn(i, user);
 }
 
-/* The start menu: every app, the user's entries, then the extra ones.
+  /* The start menu: every app, the user's entries, then the extra ones.
  * Where each part starts is noted when the menu opens. */
 static const td_start_provider_t *s_start_provider;
 static int s_start_user_first, s_start_user_count, s_start_extra_first;
@@ -1048,7 +1203,7 @@ void td_wm_set_kiosk(bool on, bool (*hook)(const td_event_t *ev))
         td_window_t *w = &s_wins[i];
         if (!w->used || (w->flags & TD_WIN_MODAL))
             continue;
-        /* On: everything covers the screen. Off: back to windows. */
+         /* On: everything covers the screen. Off: back to windows. */
         td_win_set_fullscreen(w, on);
         if (!on)
             w->flags &= (uint16_t)~TD_WIN_HIDDEN;
@@ -1076,6 +1231,7 @@ void td_wm_set_icon_size(td_ui_size_t size)
 {
     s_icon_size = valid_size(size);
     s_icon_sel = -1;
+    memset(s_icon_marks, 0, sizeof(s_icon_marks));
     s_dirty = true;
 }
 td_ui_size_t td_wm_icon_size(void)
@@ -1159,7 +1315,7 @@ void td_wm_toggle_start_menu(void)
     glyphs[n] = NULL;
     items[n++] = "Exit";
     bool with_glyphs = s_menu_size != TD_UI_SMALL;
-    menu_open_at(0, s_rows, items, with_glyphs ? glyphs : NULL, n, s_menu_size == TD_UI_LARGE ? 2 : 1,
+    menu_open_at(main_x(), main_bottom(), items, with_glyphs ? glyphs : NULL, n, s_menu_size == TD_UI_LARGE ? 2 : 1,
                  start_menu_chosen, NULL, true);
 }
 
@@ -1203,6 +1359,12 @@ static void draw_menu(void)
         td_putc(r.x + r.w - 3, r.y + r.h - 1, 0x25BC, t->menu_fg, t->menu_bg, 0);
 }
 
+static const char *menu_name(int i, void *user)
+{
+    (void)user;
+    return menu_is_sep(i) ? "" : s_menu.labels[i];
+}
+
 static void menu_key(const td_event_t *ev)
 {
     switch (ev->key)
@@ -1227,14 +1389,19 @@ static void menu_key(const td_event_t *ev)
         s_menu_open = false;
         break;
     default:
+    {
+        int i = ev->mods ? -1 : td_type_ahead(s_menu.count, s_menu_sel, ev->key, menu_name, NULL);
+        if (i >= 0)
+            s_menu_sel = i;
         break;
+    }
     }
     if (s_menu_open)
         menu_ensure_visible();
     s_dirty = true;
 }
 
-/* Returns true if the menu consumed the mouse event. A click outside
+  /* Returns true if the menu consumed the mouse event. A click outside
  * closes the menu and then goes on to whatever is under it. */
 static bool menu_mouse(const td_event_t *ev)
 {
@@ -1246,8 +1413,8 @@ static bool menu_mouse(const td_event_t *ev)
             bool was_start = s_menu.is_start;
             s_menu_open = false;
             s_dirty = true;
-            /* A click on [Start] while the start menu is open just closes it. */
-            return was_start && in_taskbar(ev->x, ev->y) && ev->x < TASKBAR_START_W;
+             /* A click on [Start] while the start menu is open just closes it. */
+            return was_start && in_taskbar(ev->x, ev->y) && ev->x < main_x() + TASKBAR_START_W;
         }
         return false;
     }
@@ -1285,17 +1452,19 @@ static bool menu_mouse(const td_event_t *ev)
     return true;
 }
 
-/* ------------------------------------------------- window menus */
+  /* ------------------------------------------------- window menus */
 
 enum
 {
     WA_MAXIMIZE,
     WA_MINIMIZE,
     WA_FULLSCREEN,
-    WA_CLOSE
+    WA_CLOSE,
+    WA_DISPLAY
 };
 static td_window_t *s_menu_win;
 static int s_win_actions[MENU_MAX];
+static void move_to_next_monitor(td_window_t *w, bool forward);
 
 static void window_menu_chosen(int i, void *user)
 {
@@ -1320,17 +1489,20 @@ static void window_menu_chosen(int i, void *user)
     case WA_CLOSE:
         td_win_request_close(w);
         break;
+    case WA_DISPLAY:
+        move_to_next_monitor(w, true);
+        break;
     default:
         break;
     }
 }
 
-/* Right-click on a title bar or taskbar button. */
+  /* Right-click on a title bar or taskbar button. */
 static void window_menu(td_window_t *w, int x, int y)
 {
     if (s_kiosk)
         return;
-    const char *items[6];
+    const char *items[8];
     int n = 0;
     if (w->flags & TD_WIN_RESIZABLE)
     {
@@ -1348,6 +1520,11 @@ static void window_menu(td_window_t *w, int x, int y)
         s_win_actions[n] = WA_FULLSCREEN;
         items[n++] = "Full screen (F11)";
     }
+    if (s_mon_count > 1 && !(w->flags & TD_WIN_MODAL))
+    {
+        s_win_actions[n] = WA_DISPLAY;
+        items[n++] = "Other display (Alt+Shift+\xE2\x86\x92)";   /* U+2192 */
+    }
     if (w->flags & TD_WIN_CLOSABLE)
     {
         if (n > 0)
@@ -1364,9 +1541,9 @@ static void window_menu(td_window_t *w, int x, int y)
     td_menu_popup(x, y, items, n, window_menu_chosen, NULL);
 }
 
-/* ----------------------------------------------------------- taskbar */
+  /* ----------------------------------------------------------- taskbar */
 
-/* Date and time (from the clock provider); the uptime is shown by System
+  /* Date and time (from the clock provider); the uptime is shown by System
  * Monitor and About. Returns false when there is no clock to show. */
 static const td_clock_provider_t *s_clock;
 static int s_clock_x0 = -1, s_clock_x1 = -1;
@@ -1383,7 +1560,7 @@ static bool format_clock(char *buf, int cap)
     return s_clock && s_clock->text && s_clock->text(buf, cap) && buf[0];
 }
 
-/* Network indicator: "LAN", "Wi-Fi" with 1..3 signal bars, or "Offline".
+  /* Network indicator: "LAN", "Wi-Fi" with 1..3 signal bars, or "Offline".
  * Draws right-aligned so that it ends at x_end; returns its start column. */
 static int draw_tray_net(int x_end, int y)
 {
@@ -1431,22 +1608,23 @@ static void draw_taskbar(void)
 {
     const td_theme_t *t = td_theme();
     int h = taskbar_h();
-    int y = s_rows - h;                       /* top row of the taskbar */
-    td_fill(td_rect(0, y, main_w(), h), ' ', t->taskbar_fg, t->taskbar_bg);
+    int y = main_bottom() - h;                /* top row of the taskbar */
+    int x0 = main_x();                        /* on the main display */
+    td_fill(td_rect(x0, y, main_w(), h), ' ', t->taskbar_fg, t->taskbar_bg);
 
     bool start_open = s_menu_open && s_menu.is_start;
     uint8_t sfg = start_open ? t->taskbar_active_fg : t->taskbar_fg;
     uint8_t sbg = start_open ? t->taskbar_active_bg : t->taskbar_bg;
-    if (!start_open && mouse_over_bar(0, TASKBAR_START_W))
+    if (!start_open && mouse_over_bar(x0, TASKBAR_START_W))
         hover_colours(&sfg, &sbg);
-    td_fill(td_rect(0, y, TASKBAR_START_W, h), ' ', sfg, sbg);
-    td_text(0, y, "[Start]", sfg, sbg, TD_BOLD);
+    td_fill(td_rect(x0, y, TASKBAR_START_W, h), ' ', sfg, sbg);
+    td_text(x0, y, "[Start]", sfg, sbg, TD_BOLD);
 
-    /* Clock: the time only (small), time and date (medium), or the time
+      /* Clock: the time only (small), time and date (medium), or the time
      * over the date (large). */
     char clock[32], tm[16], dt[24];
     bool parts = s_clock && s_clock->parts && s_clock->parts(tm, sizeof(tm), dt, sizeof(dt));
-    int clock_x = main_w() - 1;
+    int clock_x = x0 + main_w() - 1;
     s_clock_x0 = s_clock_x1 = -1;
     bool have_clock = format_clock(clock, sizeof(clock));
     if (have_clock)
@@ -1463,7 +1641,7 @@ static void draw_taskbar(void)
         if (l2 && td_utf8_len(l2) > len)
             len = td_utf8_len(l2);
         int w = len + 2;
-        clock_x = main_w() - w;
+        clock_x = x0 + main_w() - w;
         uint8_t fg = t->taskbar_fg, bg = t->taskbar_bg;
         if (s_clock->click && mouse_over_bar(clock_x, w))
             hover_colours(&fg, &bg);
@@ -1482,12 +1660,12 @@ static void draw_taskbar(void)
         td_text(clock_x + 1, y, s_user_label, t->taskbar_fg, t->taskbar_bg, TD_BOLD);
     }
 
-    /* One button per window, in creation (pool) order so they don't jump
+      /* One button per window, in creation (pool) order so they don't jump
      * around when the focus changes. */
     int max_title = s_bar_size == TD_UI_SMALL ? 8 : s_bar_size == TD_UI_LARGE ? 18
                                                                               : 14;
     td_window_t *focused = td_win_focused();
-    int x = TASKBAR_START_W + 1;
+    int x = x0 + TASKBAR_START_W + 1;
     s_task_btn_count = 0;
     for (int i = 0; i < TD_MAX_WINDOWS; i++)
     {
@@ -1518,7 +1696,7 @@ static void draw_taskbar(void)
         td_textn(tx, y, w->title, len, fg, bg, 0);
         if (h > 1)
         {
-            /* A line under the button: bright for the active window, dim
+             /* A line under the button: bright for the active window, dim
              * for the others, none for minimised ones. */
             if (!hidden)
                 for (int k = x + 1; k < x + bw - 1; k++)
@@ -1537,7 +1715,7 @@ static void taskbar_click(int x)
 {
     if (x >= s_clock_x0 && x < s_clock_x1 && s_clock && s_clock->click)
     {
-        s_clock->click(TD_BUTTON_LEFT, x, s_rows - 1);
+        s_clock->click(TD_BUTTON_LEFT, x, main_bottom() - 1);
         return;
     }
     if (x >= s_tray_net_x0 && x < s_tray_net_x1)
@@ -1545,7 +1723,7 @@ static void taskbar_click(int x)
         td_app_launch("Network");
         return;
     }
-    if (x < TASKBAR_START_W)
+    if (x < main_x() + TASKBAR_START_W)
     {
         td_wm_toggle_start_menu();
         return;
@@ -1555,7 +1733,7 @@ static void taskbar_click(int x)
         if (x < s_task_btn[i].x0 || x >= s_task_btn[i].x1)
             continue;
         td_window_t *w = s_task_btn[i].win;
-        /* Clicking the focused window's button minimises it. */
+         /* Clicking the focused window's button minimises it. */
         if (w == td_win_focused())
             td_win_minimize(w);
         else
@@ -1564,7 +1742,7 @@ static void taskbar_click(int x)
     }
 }
 
-/* Top-most visible window containing the cell, or NULL for the desktop. */
+  /* Top-most visible window containing the cell, or NULL for the desktop. */
 td_window_t *td_wm_window_at(int x, int y)
 {
     for (int i = s_order_count - 1; i >= 0; i--)
@@ -1578,7 +1756,7 @@ td_window_t *td_wm_window_at(int x, int y)
     return NULL;
 }
 
-/* ------------------------------------------------------ desktop icons */
+  /* ------------------------------------------------------ desktop icons */
 
 void td_desktop_set_provider(const td_desktop_provider_t *provider)
 {
@@ -1611,7 +1789,7 @@ static const char *icon_glyph(int i)
     return s_provider->icon ? s_provider->icon(i - s_app_count, s_provider->user) : NULL;
 }
 
-/* The glyph colour a provider item asks for, or -1. */
+  /* The glyph colour a provider item asks for, or -1. */
 static int icon_glyph_fg(int i)
 {
     if (i < s_app_count || !s_provider->icon_fg)
@@ -1619,7 +1797,7 @@ static int icon_glyph_fg(int i)
     return s_provider->icon_fg(i - s_app_count, s_provider->user);
 }
 
-/* How many icons of a size fit on the desktop. */
+  /* How many icons of a size fit on the desktop. */
 static int icon_capacity(td_ui_size_t sz)
 {
     int per = (td_wm_desktop_rows() - 1) / s_icon_slot_h[sz];
@@ -1627,7 +1805,7 @@ static int icon_capacity(td_ui_size_t sz)
     return (per < 1 ? 1 : per) * (cols < 1 ? 1 : cols);
 }
 
-/* The size in use: the chosen one, or smaller while the icons would not
+  /* The size in use: the chosen one, or smaller while the icons would not
  * fit on the screen. */
 static td_ui_size_t icon_eff(void)
 {
@@ -1650,7 +1828,7 @@ static int icon_columns(void)
     return n < 1 ? 1 : n;
 }
 
-/* Icon places (td_wm_set_icon_arrange): s_slot[i] is icon i's slot,
+  /* Icon places (td_wm_set_icon_arrange): s_slot[i] is icon i's slot,
  * column * icons_per_column() + row, or -1 when it has none. */
 #define ICON_MAX TD_MAX_ICON_PLACES
 #define SLOT_MAX 256
@@ -1694,7 +1872,7 @@ static bool place_set(uint32_t key, int slot, int per)
     return true;
 }
 
-/* Give every icon a slot: its own place when not arranged, the pinned
+  /* Give every icon a slot: its own place when not arranged, the pinned
  * icon the bottom right, the rest the first free slots down the columns. */
 static void layout_icons(void)
 {
@@ -1737,18 +1915,18 @@ static void layout_icons(void)
     }
 }
 
-/* Slots are spread over the whole desktop, so the last column and row
+  /* Slots are spread over the whole desktop, so the last column and row
  * touch its right and bottom edges (where the pinned icon goes). */
 static int slot_x(int col)
 {
     int cols = icon_columns(), span = main_w() - 1 - icon_w();
-    return 1 + (cols > 1 && span > 0 ? col * span / (cols - 1) : col * icon_w());
+    return main_x() + 1 + (cols > 1 && span > 0 ? col * span / (cols - 1) : col * icon_w());
 }
 
 static int slot_y(int row)
 {
     int per = icons_per_column(), span = td_wm_desktop_rows() - 1 - icon_h();
-    return 1 + (per > 1 && span > 0 ? row * span / (per - 1) : row * icon_h());
+    return main_y() + 1 + (per > 1 && span > 0 ? row * span / (per - 1) : row * icon_h());
 }
 
 static td_rect_t icon_rect(int i)
@@ -1761,7 +1939,7 @@ static td_rect_t icon_rect(int i)
     return td_rect(slot_x(slot / per), slot_y(slot % per), icon_w() - (small ? 1 : 0), h);
 }
 
-/* The slot whose cell (up to the next slot) holds x, y, or -1. */
+  /* The slot whose cell (up to the next slot) holds x, y, or -1. */
 static int slot_at(int x, int y)
 {
     int per = icons_per_column(), cols = icon_columns(), col = -1, row = -1;
@@ -1769,12 +1947,12 @@ static int slot_at(int x, int y)
         col = c;
     for (int r = 0; r < per && slot_y(r) <= y; r++)
         row = r;
-    if (col < 0 || row < 0 || y >= td_wm_desktop_rows() || col * per + row >= SLOT_MAX)
+    if (col < 0 || row < 0 || y >= main_y() + td_wm_desktop_rows() || x >= main_x() + main_w() || col * per + row >= SLOT_MAX)
         return -1;
     return col * per + row;
 }
 
-/* Icon i dragged to the slot under x, y (swapping with an icon there).
+  /* Icon i dragged to the slot under x, y (swapping with an icon there).
  * The others keep where they are: arranging stops. */
 static void move_icon(int i, int x, int y)
 {
@@ -1838,7 +2016,7 @@ void td_wm_pin_icon(const char *app_name)
     s_dirty = true;
 }
 
-/* Icon under the cell, or -1. Windows cover icons. */
+  /* Icon under the cell, or -1. Windows cover icons. */
 static int icon_at(int x, int y)
 {
     if (!td_desktop_icons() || td_wm_window_at(x, y))
@@ -1850,7 +2028,7 @@ static int icon_at(int x, int y)
     return -1;
 }
 
-/* Split an app or file name into at most two label lines of icon_w() - 1
+  /* Split an app or file name into at most two label lines of icon_w() - 1
  * columns, breaking at a space ("System Monitor" -> "System" / "Monitor").
  * Columns are code points, as the screen draws them; a character is never
  * cut in half. */
@@ -1905,14 +2083,14 @@ static void draw_icon(int i)
     td_rect_t r = icon_rect(i);
     const char *name = icon_name(i);
     const char *icon = icon_glyph(i);
-    bool selected = (i == s_icon_sel);
+    bool selected = (i == s_icon_sel) || icon_marked(i);
     bool hover = icon_at(s_mouse_x, s_mouse_y) == i;
     char glyph[16];
     if (icon)
         snprintf(glyph, sizeof(glyph), "%s", icon);
     else
     {
-        /* The name's first character (whole, even if it is not ASCII) and a space. */
+         /* The name's first character (whole, even if it is not ASCII) and a space. */
         int n = td_utf8_copy(glyph, sizeof(glyph) - 1, name, 1);
         glyph[n] = ' ';
         glyph[n + 1] = '\0';
@@ -1929,7 +2107,7 @@ static void draw_icon(int i)
     td_ui_size_t sz = icon_eff();
     if (sz == TD_UI_SMALL)
     {
-        /* One line: glyph and name, like a list. */
+         /* One line: glyph and name, like a list. */
         if (!selected && hover)
         {
             lfg = fg;
@@ -1941,7 +2119,7 @@ static void draw_icon(int i)
         return;
     }
 
-    /* The glyph in a box centred in the slot: 4 x 3 cells, or 8 x 5 with a
+      /* The glyph in a box centred in the slot: 4 x 3 cells, or 8 x 5 with a
      * double frame for large icons. */
     bool large = sz == TD_UI_LARGE;
     int bw = large ? 8 : 4, bh = large ? 5 : 3;
@@ -1953,7 +2131,7 @@ static void draw_icon(int i)
     char l1[ICON_LABEL_MAX], l2[ICON_LABEL_MAX];
     if (large)
     {
-        /* One wider label line (15 columns fit every app name). */
+         /* One wider label line (15 columns fit every app name). */
         td_utf8_copy(l1, sizeof(l1), name, icon_w() - 1);
         draw_label_line(r.x, r.y + bh, l1, lfg, lbg, attr);
         return;
@@ -1984,10 +2162,16 @@ static void app_icon_menu_chosen(int item, void *user)
     launch_icon(s_menu_icon);
 }
 
-/* Right-click on the desktop: the icon's menu, or the desktop menu. */
+  /* Right-click on the desktop: the icon's menu, or the desktop menu. */
 static void desktop_context(const td_event_t *ev)
 {
     int i = icon_at(ev->x, ev->y);
+    if (!icon_marked(i))
+    {
+        /* Outside the selection: this icon alone (its menu acts on it). */
+        memset(s_icon_marks, 0, sizeof(s_icon_marks));
+        icon_mark(i, true);
+    }
     s_icon_sel = i;
     s_dirty = true;
     if (i >= 0 && i < s_app_count)
@@ -2003,16 +2187,39 @@ static void desktop_context(const td_event_t *ev)
     else
     {
         td_wm_toggle_start_menu();
-        s_menu.rect.x = clamp(ev->x, 0, s_cols - s_menu.rect.w);
-        s_menu.rect.y = clamp(ev->y, 0, td_wm_desktop_rows() - s_menu.rect.h);
+        td_rect_t d = desk_of(monitor_of(td_rect(ev->x, ev->y, 1, 1)));
+        s_menu.rect.x = clamp(ev->x, d.x, d.x + d.w - s_menu.rect.w);
+        s_menu.rect.y = clamp(ev->y, d.y, d.y + d.h - s_menu.rect.h);
     }
 }
 
-/* A click selects an icon, a double-click opens its app. */
+  /* A click selects an icon, a double-click opens its app. */
 static void desktop_press(const td_event_t *ev)
 {
     int i = icon_at(ev->x, ev->y);
-    bool dbl = i >= 0 && i == s_icon_click && ev->time_ms - s_icon_click_ms < TD_DOUBLE_CLICK_MS;
+    bool ctrl = (ev->mods & TD_MOD_CTRL) != 0;
+    bool dbl = i >= 0 && !ctrl && i == s_icon_click && ev->time_ms - s_icon_click_ms < TD_DOUBLE_CLICK_MS;
+    if (ctrl && i >= 0)
+        icon_mark(i, !icon_marked(i));            /* add or remove one */
+    else if (i < 0 || !icon_marked(i))
+    {
+        if (!ctrl)
+            memset(s_icon_marks, 0, sizeof(s_icon_marks));
+        icon_mark(i, true);                       /* just this one; a marked one keeps the others for a drag */
+    }
+    if (i < 0)
+    {
+        /* The empty desktop: drag a rectangle to select the icons in it. */
+        s_band.on = true;
+        s_band.x0 = s_band.x1 = ev->x;
+        s_band.y0 = s_band.y1 = ev->y;
+        memcpy(s_band.before, s_icon_marks, sizeof(s_icon_marks));
+        if (!ctrl)
+            memset(s_band.before, 0, sizeof(s_band.before));
+        s_dnd.armed = false;
+        s_dnd.icon = -1;   /* no icon pressed */
+        s_drag.mode = DRAG_DESKTOP;
+    }
     s_icon_sel = i;
     s_icon_click = i;
     s_icon_click_ms = ev->time_ms;
@@ -2023,7 +2230,7 @@ static void desktop_press(const td_event_t *ev)
         launch_icon(i);
         return;
     }
-    /* Icons can be dragged: to another place, and files and folders also
+     /* Icons can be dragged: to another place, and files and folders also
      * into folders and windows. */
     if (i >= 0)
     {
@@ -2036,12 +2243,49 @@ static void desktop_press(const td_event_t *ev)
     }
 }
 
-/* While no window has the focus, arrow keys move between icons and Enter
+  /* While no window has the focus, arrow keys move between icons and Enter
  * opens one. Returns true if the key was used. */
+static const char *icon_name_of(int i, void *user)
+{
+    (void)user;
+    return icon_name(i);
+}
+
 static bool desktop_key(const td_event_t *ev)
 {
-    if (!td_desktop_icons() || icon_count() == 0 || ev->mods)
+    if (!td_desktop_icons() || icon_count() == 0)
         return false;
+    if (ev->key == TD_KEY_DELETE && (ev->mods == 0 || ev->mods == TD_MOD_SHIFT))
+    {
+        int n = 0;
+        if (s_provider && s_provider->remove && td_desktop_selection(&n, 1) > 0)
+            s_provider->remove(ev->mods == TD_MOD_SHIFT, s_provider->user);
+        return true;
+    }
+    if (ev->key == 'a' && ev->mods == TD_MOD_CTRL)
+    {
+        for (int i = 0; i < icon_count(); i++)
+            icon_mark(i, true);
+        s_dirty = true;
+        return true;
+    }
+    if (ev->key == TD_KEY_ESC && ev->mods == 0)
+    {
+        memset(s_icon_marks, 0, sizeof(s_icon_marks));
+        s_icon_sel = -1;
+        s_dirty = true;
+        return true;
+    }
+    if (ev->mods)
+        return false;
+    int ta = td_type_ahead(icon_count(), s_icon_sel, ev->key, icon_name_of, NULL);
+    if (ta >= 0)
+    {
+        memset(s_icon_marks, 0, sizeof(s_icon_marks));
+        s_icon_sel = ta;
+        s_dirty = true;
+        return true;
+    }
     int per = icons_per_column();
     int sel = s_icon_sel;
     switch (ev->key)
@@ -2071,7 +2315,7 @@ static bool desktop_key(const td_event_t *ev)
     return true;
 }
 
-/* Identify what the mouse is over, so hover highlights only cost a frame
+  /* Identify what the mouse is over, so hover highlights only cost a frame
  * when the pointer moves onto something different. */
 static uintptr_t hover_id(int x, int y)
 {
@@ -2079,7 +2323,7 @@ static uintptr_t hover_id(int x, int y)
         return 0x10000u + (uintptr_t)y;
     if (in_taskbar(x, y))
     {
-        if (x < TASKBAR_START_W)
+        if (x < main_x() + TASKBAR_START_W)
             return 0x20000u;
         if (x >= s_tray_net_x0 && x < s_tray_net_x1)
             return 0x2FFFFu;
@@ -2117,7 +2361,7 @@ static void update_hover(void)
     }
 }
 
-/* ---------------------------------------------------------- composing */
+  /* ---------------------------------------------------------- composing */
 
 static void draw_window(td_window_t *w, bool focused)
 {
@@ -2132,7 +2376,7 @@ static void draw_window(td_window_t *w, bool focused)
         uint8_t ffg = focused ? t->frame_active_fg : t->frame_fg;
         td_box(r, focused ? TD_BOX_DOUBLE : TD_BOX_SINGLE, ffg, t->win_bg);
 
-        /* Title bar: the top row(s) between the corners; the title and the
+          /* Title bar: the top row(s) between the corners; the title and the
          * buttons' captions on its last row. */
         uint8_t tfg = focused ? t->title_fg : t->title_inactive_fg;
         uint8_t tbg = focused ? t->title_bg : t->title_inactive_bg;
@@ -2158,7 +2402,7 @@ static void draw_window(td_window_t *w, bool focused)
             td_text(close_x(w), ty, wide ? "[ x ]" : "[x]", fg, bg, hot ? TD_BOLD : 0);
         }
 
-        /* Resize grip: the bottom-right corner (and more of the bottom edge
+          /* Resize grip: the bottom-right corner (and more of the bottom edge
          * with larger frames), highlighted. */
         if ((w->flags & TD_WIN_RESIZABLE) && !(w->flags & TD_WIN_MAXIMIZED))
         {
@@ -2193,6 +2437,17 @@ void td_wm_compose(td_buffer_t *back)
         td_fill(td_rect(0, 0, s_cols, s_rows), ' ', t->win_fg, 0);
         if (td_win_is_open(s_input_gate))
             draw_window(s_input_gate, true);
+         /* Tools stay usable above the gate: the On-screen keyboard types
+         * into Sign in. */
+        for (int i = 0; i < s_order_count; i++)
+        {
+            td_window_t *w = &s_wins[s_order[i]];
+            if ((w->flags & TD_WIN_NO_FOCUS) && !(w->flags & TD_WIN_HIDDEN))
+            {
+                td_pictures_cover(0, td_pictures_count(), w->rect);
+                draw_window(w, false);
+            }
+        }
     }
     else
     {
@@ -2203,26 +2458,49 @@ void td_wm_compose(td_buffer_t *back)
             for (int i = 0; i < icon_count(); i++)
                 draw_icon(i);
         }
+        if (s_band.on && (s_band.x0 != s_band.x1 || s_band.y0 != s_band.y1))
+        {
+            /* The selection rectangle being dragged. */
+            int x0 = s_band.x0 < s_band.x1 ? s_band.x0 : s_band.x1, y0 = s_band.y0 < s_band.y1 ? s_band.y0 : s_band.y1;
+            td_box(td_rect(x0, y0, abs(s_band.x1 - s_band.x0) + 1, abs(s_band.y1 - s_band.y0) + 1),
+                   td_get_ascii_mode() ? TD_BOX_ASCII : TD_BOX_SINGLE, t->accent, t->desktop_bg);
+        }
 
         td_window_t *focused = td_win_focused();
+         /* Each window's pictures, so a window drawn above can drop the ones
+         * it overlaps (td_pictures_cover). */
+        int first[TD_MAX_WINDOWS], last[TD_MAX_WINDOWS];
+        int drawn = 0;
         for (int i = 0; i < s_order_count; i++)
         {
             td_window_t *w = &s_wins[s_order[i]];
             if (w->flags & TD_WIN_HIDDEN)
                 continue;
+            for (int k = 0; k < drawn; k++)
+                td_pictures_cover(first[k], last[k], w->rect);
+            first[drawn] = td_pictures_count();
             draw_window(w, w == focused);
+            last[drawn++] = td_pictures_count();
         }
         if (taskbar_visible())
         {
+            int h = taskbar_h();
+            td_pictures_cover(0, td_pictures_count(), td_rect(main_x(), main_bottom() - h, main_w(), h));
             draw_taskbar();
             if (s_menu_open)
+            {
+                td_pictures_cover(0, td_pictures_count(), menu_rect());
                 draw_menu();
+            }
         }
         if (s_dnd.active)
         {
-        /* The dragged item follows the pointer. */
+         /* The dragged item follows the pointer. */
             char label[64];
-            snprintf(label, sizeof(label), " %s %s ", s_dnd.item.is_dir ? "[/" : "\xC2\xB6", s_dnd.item.name);
+            if (s_dnd.more_count)
+                snprintf(label, sizeof(label), " \xC2\xB6 %d items ", s_dnd.more_count + 1);
+            else
+                snprintf(label, sizeof(label), " %s %s ", s_dnd.item.is_dir ? "[/" : "\xC2\xB6", s_dnd.item.name);
             int len = td_utf8_len(label);
             int x = clamp(s_mouse_x + 1, 0, s_cols - len);
             int y = clamp(s_mouse_y, 0, s_rows - 1);
@@ -2231,7 +2509,7 @@ void td_wm_compose(td_buffer_t *back)
     }
     if (s_pointer && s_mouse_x >= 0 && s_mouse_x < s_cols && s_mouse_y < s_rows)
     {
-        /* The pointer: a triangle pointing up ('^' in ASCII mode), black on
+         /* The pointer: a triangle pointing up ('^' in ASCII mode), black on
          * light cells and white on dark ones, on the cell's own background. */
         td_cell_t *c = td_buffer_cell(back, s_mouse_x, s_mouse_y);
         if (c)
@@ -2246,9 +2524,9 @@ void td_wm_compose(td_buffer_t *back)
     s_dirty = false;
 }
 
-/* ---------------------------------------------------------- dispatch */
+  /* ---------------------------------------------------------- dispatch */
 
-/* Deliver an event to a window's client area (coordinates made relative). */
+  /* Deliver an event to a window's client area (coordinates made relative). */
 static void client_event(td_window_t *w, const td_event_t *ev)
 {
     td_event_t e = *ev;
@@ -2287,7 +2565,7 @@ static void drag_motion(const td_event_t *ev)
     }
 }
 
-/* Press on a window frame. Returns true if it was handled here. */
+  /* Press on a window frame. Returns true if it was handled here. */
 static bool frame_press(td_window_t *w, const td_event_t *ev)
 {
     td_rect_t r = w->rect;
@@ -2337,7 +2615,38 @@ bool td_drag_active(void)
     return s_dnd.active;
 }
 
-/* Turn an armed press into a drag once the mouse has moved a little. */
+  /* A rectangle dragged over the desktop selects the icons it touches
+ * (with Ctrl, also those selected before). */
+static void band_motion(const td_event_t *ev)
+{
+    s_band.x1 = ev->x;
+    s_band.y1 = ev->y;
+    int x0 = s_band.x0 < s_band.x1 ? s_band.x0 : s_band.x1, y0 = s_band.y0 < s_band.y1 ? s_band.y0 : s_band.y1;
+    td_rect_t band = td_rect(x0, y0, abs(s_band.x1 - s_band.x0) + 1, abs(s_band.y1 - s_band.y0) + 1);
+    memcpy(s_icon_marks, s_band.before, sizeof(s_icon_marks));
+    for (int i = 0; i < icon_count(); i++)
+    {
+        td_rect_t r = icon_rect(i);
+        if (r.w > 0 && r.x < band.x + band.w && band.x < r.x + r.w && r.y < band.y + band.h && band.y < r.y + r.h)
+            icon_mark(i, true);
+    }
+    s_dirty = true;
+}
+
+int td_desktop_selection(int *items, int max)
+{
+    int n = 0;
+    for (int i = s_app_count; i < icon_count(); i++)
+        if (icon_marked(i) || i == s_icon_sel)
+        {
+            if (n < max)
+                items[n] = i - s_app_count;
+            n++;
+        }
+    return n < max ? n : max;
+}
+
+  /* Turn an armed press into a drag once the mouse has moved a little. */
 static bool dnd_try_start(const td_event_t *ev)
 {
     int moved = abs(ev->x - s_dnd.x0) + abs(ev->y - s_dnd.y0);
@@ -2352,7 +2661,7 @@ static bool dnd_try_start(const td_event_t *ev)
     }
     else if (s_dnd.icon >= 0 && s_dnd.icon < s_app_count)
     {
-        /* An app icon only moves on the desktop: no path for windows. */
+         /* An app icon only moves on the desktop: no path for windows. */
         snprintf(s_dnd.item.name, sizeof(s_dnd.item.name), "%s", icon_name(s_dnd.icon));
         ok = true;
     }
@@ -2363,10 +2672,41 @@ static bool dnd_try_start(const td_event_t *ev)
     }
     s_dnd.active = ok;
     s_dirty = true;
-    return ok;
+    if (!ok)
+        return false;
+    td_widgets_cancel_press();
+    /* The other items of a several-item drag. */
+    td_drag_item_t extra;
+    for (int k = 1; k < TD_DRAG_MAX; k++)
+    {
+        bool got = false;
+        memset(&extra, 0, sizeof(extra));
+        if (s_dnd.icon >= 0)
+        {
+            /* The other selected file icons. */
+            int n = 0;
+            for (int i = s_app_count; i < icon_count() && !got; i++)
+                if (i != s_dnd.icon && icon_marked(i) && ++n == k)
+                    got = s_provider && s_provider->drag && s_provider->drag(i - s_app_count, &extra, s_provider->user);
+            if (n < k)
+                break;
+            if (!got)
+                continue;
+        }
+        else if (td_win_is_open(s_dnd.win) && s_dnd.win->on_drag_more)
+            got = s_dnd.win->on_drag_more(s_dnd.win, k, &extra);
+        if (!got)
+            break;
+        td_drag_item_t *more = realloc(s_dnd.more, (size_t)(s_dnd.more_count + 1) * sizeof(*more));
+        if (!more)
+            break;
+        s_dnd.more = more;
+        s_dnd.more[s_dnd.more_count++] = extra;
+    }
+    return true;
 }
 
-/* Hand the dragged item to whatever is under the pointer. */
+  /* Hand the dragged item to whatever is under the pointer. */
 static void dnd_drop(int x, int y)
 {
     if (in_taskbar(x, y))
@@ -2377,7 +2717,7 @@ static void dnd_drop(int x, int y)
         return;
     if (!w && s_dnd.icon >= 0 && td_desktop_icons() && !s_kiosk)
     {
-        /* A desktop icon dropped on the desktop: a new place, or a swap,
+         /* A desktop icon dropped on the desktop: a new place, or a swap,
          * unless a file goes onto a folder (then it moves into it). */
         int target = icon_at(x, y);
         td_drag_item_t onto = {0};
@@ -2395,13 +2735,19 @@ static void dnd_drop(int x, int y)
     {
         td_rect_t c = td_win_client(w);
         if (w->on_drop && td_rect_contains(c, x, y))
+        {
             w->on_drop(w, x - c.x, y - c.y, &s_dnd.item);
+            for (int k = 0; k < s_dnd.more_count && td_win_is_open(w); k++)
+                w->on_drop(w, x - c.x, y - c.y, &s_dnd.more[k]);
+        }
         return;
     }
     if (s_provider && s_provider->drop)
     {
         int i = icon_at(x, y);
         s_provider->drop(i >= s_app_count ? i - s_app_count : -1, &s_dnd.item, s_provider->user);
+        for (int k = 0; k < s_dnd.more_count; k++)
+            s_provider->drop(i >= s_app_count ? i - s_app_count : -1, &s_dnd.more[k], s_provider->user);
     }
 }
 
@@ -2412,11 +2758,25 @@ static void dispatch_mouse(const td_event_t *ev)
     if (s_kiosk && s_kiosk_hook && s_kiosk_hook(ev))
         return;
 
-    /* Plain movement (no button) only moves highlights around. */
+      /* Plain movement (no button) only moves highlights around. */
     if (ev->action == TD_MOUSE_MOVE && s_drag.mode == DRAG_NONE)
     {
         if (s_menu_open)
+        {
             menu_mouse(ev);
+            return;
+        }
+        /* A window that asked for them sees the pointer move (Remote
+         * Desktop passes it on, so the remote's hover highlights follow). */
+        td_window_t *w = td_wm_window_at(ev->x, ev->y);
+        if (w && (w->flags & TD_WIN_MOUSE_MOVES) && w->on_event && td_rect_contains(td_win_client(w), ev->x, ev->y))
+        {
+            td_rect_t c = td_win_client(w);
+            td_event_t e = *ev;
+            e.x = (int16_t)(e.x - c.x);
+            e.y = (int16_t)(e.y - c.y);
+            w->on_event(w, &e);
+        }
         return;
     }
     s_dirty = true;
@@ -2430,7 +2790,18 @@ static void dispatch_mouse(const td_event_t *ev)
         {
             if (s_dnd.active)
                 return;               /* the item follows the mouse */
-            if (s_dnd.armed && dnd_try_start(ev))
+            if (s_band.on)
+            {
+                band_motion(ev);
+                return;
+            }
+            bool keep = false;   /* a list selecting the rows dragged over */
+            if (s_dnd.armed && td_win_is_open(s_dnd.win))
+            {
+                td_rect_t c = td_win_client(s_dnd.win);
+                keep = td_widgets_keeps_drag(s_dnd.win, ev->x - c.x, ev->y - c.y);
+            }
+            if (s_dnd.armed && !keep && dnd_try_start(ev))
                 return;
             if (s_drag.mode != DRAG_DESKTOP)
                 drag_motion(ev);
@@ -2440,9 +2811,17 @@ static void dispatch_mouse(const td_event_t *ev)
         {
             if (s_dnd.active)
                 dnd_drop(ev->x, ev->y);
+            else if (s_drag.mode == DRAG_DESKTOP && s_dnd.icon >= 0 && !(ev->mods & (TD_MOD_CTRL | TD_MOD_SHIFT)))
+            {
+                /* A click on one of several selected icons: that one. */
+                memset(s_icon_marks, 0, sizeof(s_icon_marks));
+                icon_mark(s_dnd.icon, true);
+                s_dirty = true;
+            }
             else if (s_drag.mode == DRAG_CAPTURE && td_win_is_open(s_drag.win))
                 client_event(s_drag.win, ev);
-            memset(&s_dnd, 0, sizeof(s_dnd));
+            dnd_end();
+            s_band.on = false;
             s_drag.mode = DRAG_NONE;
             s_drag.win = NULL;
             return;
@@ -2509,7 +2888,28 @@ static void dispatch_mouse(const td_event_t *ev)
     client_event(w, ev);
 }
 
-/* Windows-key shortcuts (TD_MOD_SUPER, from a USB keyboard only):
+  /* The display before or after w's one, in the order of their places
+ * (left to right, then top to bottom). */
+static void move_to_next_monitor(td_window_t *w, bool forward)
+{
+    if (s_mon_count < 2 || !w)
+        return;
+    int from = td_wm_monitor_of(w), best = -1;
+    td_rect_t f = s_mons[from];
+    for (int i = 0; i < s_mon_count; i++)
+    {
+        if (i == from)
+            continue;
+        td_rect_t m = s_mons[i];
+        bool after = m.x > f.x || (m.x == f.x && m.y > f.y);
+        if (after == forward || best < 0)
+            best = i;
+    }
+    if (best >= 0)
+        td_win_move_to_monitor(w, best);
+}
+
+  /* Windows-key shortcuts (TD_MOD_SUPER, from a USB keyboard only):
  * Up maximizes, Down restores or minimizes, Left / Right fill that half of
  * the screen, D minimizes every window (again: brings them back), E opens
  * Files, R the Terminal, I Settings. */
@@ -2530,15 +2930,19 @@ static void super_key(const td_event_t *ev, td_window_t *w)
         break;
     case TD_KEY_LEFT:
     case TD_KEY_RIGHT:
+        if (w && (ev->mods & TD_MOD_SHIFT))
+        {
+            move_to_next_monitor(w, ev->key == TD_KEY_RIGHT);   /* Win+Shift+Left / Right */
+            break;
+        }
         if (sizable)
         {
             if (w->flags & TD_WIN_MAXIMIZED)
                 td_win_toggle_maximize(w);
-            int mx, mw;
-            monitor_of(w->rect, &mx, &mw);
-            int half = mw / 2;
-            td_win_move(w, ev->key == TD_KEY_LEFT ? mx : mx + mw - half, 0);
-            td_win_resize(w, half, td_wm_desktop_rows());
+            td_rect_t d = desk_of(monitor_of(w->rect));
+            int half = d.w / 2;
+            td_win_move(w, ev->key == TD_KEY_LEFT ? d.x : d.x + d.w - half, d.y);
+            td_win_resize(w, half, d.h);
         }
         break;
     case 'd':
@@ -2578,7 +2982,7 @@ static void dispatch_key(const td_event_t *ev)
 
     if (s_kiosk)
     {
-        /* Only the application gets keys: no Start menu, window switching,
+         /* Only the application gets keys: no Start menu, window switching,
          * closing, full screen or Windows-key shortcuts. The hook sees
          * every key first (the way out of kiosk mode). */
         if (s_kiosk_hook && s_kiosk_hook(ev))
@@ -2595,6 +2999,13 @@ static void dispatch_key(const td_event_t *ev)
     if (ev->key == TD_KEY_F10 && plain)
     {
         td_wm_toggle_start_menu();
+        return;
+    }
+    if (!s_kiosk && ev->key == 's' && (ev->mods == TD_MOD_ALT || ev->mods == TD_MOD_SUPER))
+    {
+        s_menu_open = false;   /* Search: apps and files, from anywhere */
+        td_app_launch("Search");
+        s_dirty = true;
         return;
     }
     if (s_menu_open)
@@ -2623,7 +3034,7 @@ static void dispatch_key(const td_event_t *ev)
             super_key(ev, w);
         return;
     }
-    /* Ctrl+Q (or Alt+F4, where the terminal lets it through) closes the
+     /* Ctrl+Q (or Alt+F4, where the terminal lets it through) closes the
      * focused window, as its [x] would: it may ask about unsaved work. */
     if ((ev->key == 'q' && ev->mods == TD_MOD_CTRL) || (ev->key == TD_KEY_F4 && ev->mods == TD_MOD_ALT))
     {
@@ -2637,6 +3048,13 @@ static void dispatch_key(const td_event_t *ev)
             return;
         if (ev->key == TD_KEY_ENTER || ev->key == TD_KEY_ESC)
             td_wm_toggle_start_menu();
+        return;
+    }
+     /* Alt+Shift+Left / Right (also through a terminal): to the other display. */
+    if ((ev->key == TD_KEY_LEFT || ev->key == TD_KEY_RIGHT) && ev->mods == (TD_MOD_ALT | TD_MOD_SHIFT) && s_mon_count > 1 &&
+        !(w->flags & TD_WIN_MODAL))
+    {
+        move_to_next_monitor(w, ev->key == TD_KEY_RIGHT);
         return;
     }
     if (ev->key == TD_KEY_F11 && plain && (w->flags & TD_WIN_RESIZABLE))
@@ -2670,7 +3088,7 @@ static void dispatch_key(const td_event_t *ev)
     }
 }
 
-/* Pasted text goes to the focused text box, else to the focused window
+  /* Pasted text goes to the focused text box, else to the focused window
  * (the Editor inserts it, the Terminal types it). */
 static void dispatch_paste(const td_event_t *ev)
 {
@@ -2696,6 +3114,17 @@ void td_wm_dispatch(const td_event_t *ev)
         {
             s_mouse_x = ev->x;
             s_mouse_y = ev->y;
+             /* A tool window drawn above the gate (the On-screen keyboard)
+             * gets the clicks over it; its keys come back here as keys. */
+            for (int i = s_order_count - 1; i >= 0; i--)
+            {
+                td_window_t *tw = &s_wins[s_order[i]];
+                if ((tw->flags & TD_WIN_NO_FOCUS) && !(tw->flags & TD_WIN_HIDDEN) && td_rect_contains(tw->rect, ev->x, ev->y))
+                {
+                    w = tw;
+                    break;
+                }
+            }
             client_event(w, ev);
         }
         else if (ev->type == TD_EV_PASTE)

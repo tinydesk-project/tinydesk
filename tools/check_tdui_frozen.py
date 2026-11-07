@@ -1,4 +1,4 @@
-"""check_tdui_frozen.py - the tdui frozen into the firmware is tdui.py.
+"""check_tdui_frozen.py - the tdui and tdapp frozen into the firmware are tdui.py and tdapp.py.
 
     python tools/check_tdui_frozen.py PATH/TO/tdsim
 
@@ -32,8 +32,18 @@ for cls, members in want["classes"].items():
         if c is None or not hasattr(c, name):
             missing.append(cls + "." + name)
 extra = [n for n in dir(tdui) if not n.startswith("_") and n not in want["module"] and n not in want["imports"]]
+import tdapp
+for name in want["tdapp"]:
+    if not hasattr(tdapp, name):
+        missing.append("tdapp." + name)
+for cls, members in want["tdapp_classes"].items():
+    c = getattr(tdapp, cls, None)
+    for name in members:
+        if c is None or not hasattr(c, name):
+            missing.append("tdapp." + cls + "." + name)
 f = open("/root/tdui_frozen.json", "w")
-f.write(json.dumps({"missing": missing, "extra": extra, "api": list(tdui.API), "caps": list(tdui.CAPABILITIES)}))
+f.write(json.dumps({"missing": missing, "extra": extra, "api": list(tdui.API), "caps": list(tdui.CAPABILITIES),
+                    "tdapp": list(tdapp.VERSION)}))
 f.close()
 '''
 
@@ -50,8 +60,10 @@ def main():
     for node in ast.parse(source).body:
         if isinstance(node, (ast.Import, ast.ImportFrom)):
             imports += [(a.asname or a.name).split(".")[0] for a in node.names]
+    app = tdui_surface.surface(tdui_surface.TDAPP_SOURCE)
     want = {"module": sorted(code["module"]), "imports": imports,
-            "classes": {c: sorted(m) for c, m in code["classes"].items()}}
+            "classes": {c: sorted(m) for c, m in code["classes"].items()},
+            "tdapp": sorted(app["module"]), "tdapp_classes": {c: sorted(m) for c, m in app["classes"].items()}}
     with tempfile.TemporaryDirectory(prefix="tdui-frozen-") as work:
         root = Path(work) / "tinydesk_fs" / "root"
         root.mkdir(parents=True)
@@ -67,6 +79,9 @@ def main():
     contract = json.loads((tdui_surface.ROOT / "ports/common/python/tdui_contract.json").read_text(encoding="utf-8"))
     errors = ["frozen tdui lacks %s" % n for n in got["missing"]]
     errors += ["frozen tdui has %s, which tdui.py does not" % n for n in got["extra"]]
+    app_contract = json.loads((tdui_surface.ROOT / "ports/common/python/tdapp_contract.json").read_text(encoding="utf-8"))
+    if got.get("tdapp") != app_contract["version"]:
+        errors.append("frozen tdapp.VERSION is %s, the contract %s" % (got.get("tdapp"), app_contract["version"]))
     if got["api"] != contract["api"]:
         errors.append("frozen tdui.API is %s, the contract %s" % (got["api"], contract["api"]))
     for e in errors:

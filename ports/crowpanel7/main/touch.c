@@ -112,7 +112,9 @@ typedef struct
 static void finger(finger_t *f, bool touching, int x, int y)
 {
     int cols = display_cols(), rows = display_rows();
-    int col = x * cols / DISPLAY_W, row = y * rows / DISPLAY_H;
+    int lx, ly, lw, lh;
+    display_touch_point(x, y, &lx, &ly, &lw, &lh);   /* the turned picture's pixel */
+    int col = lx * cols / lw, row = ly * rows / lh;
     if (col >= cols)
         col = cols - 1;
     if (row >= rows)

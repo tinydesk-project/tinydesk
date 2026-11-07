@@ -292,6 +292,11 @@ static void send_mouse(const td_event_t *ev)
     int x = ev->x + 1, y = ev->y - BAR_ROWS + 1;
     if (y < 1 || !s_vt || x > s_vt->cols || y > s_vt->rows)
         return;
+    /* Only what the remote asked for: at its login prompt nothing, so the
+     * reports are not typed into the user name. */
+    if (!s_vt->mouse || (ev->action == TD_MOUSE_MOVE && s_vt->mouse < 1003) ||
+        (ev->action == TD_MOUSE_DRAG && s_vt->mouse < 1002))
+        return;
     int b;
     char final = 'M';
     if (ev->button == TD_BUTTON_WHEEL_UP || ev->button == TD_BUTTON_WHEEL_DOWN)
@@ -399,7 +404,7 @@ static void launch(void)
         .rect = td_rect(-1, -1, 82, 28),
         .min_w = 60,
         .min_h = 10,
-        .flags = TD_WIN_DEFAULT,
+        .flags = TD_WIN_DEFAULT | TD_WIN_MOUSE_MOVES,
         .on_draw = on_draw,
         .on_event = on_event,
         .on_tick = on_tick,

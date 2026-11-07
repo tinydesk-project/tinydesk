@@ -304,16 +304,17 @@ typedef struct
     void *user;
     bool send;
     bool retained, completed;
+    bool covered;   /* a window, menu or taskbar drawn above it overlaps it */
     uint32_t previous_id;
 } pic_t;
 
 static pic_t s_cur[MAX_PICS];
 static int s_ncur;
-static int s_clip_cols;   /* 0: all; else only pictures within these columns go out */
+static td_rect_t s_clip;   /* w 0: all; else only pictures inside it go out, from its corner */
 
-void td_pictures_clip(int cols)
+void td_pictures_clip(td_rect_t area)
 {
-    s_clip_cols = cols > 0 ? cols : 0;
+    s_clip = area.w > 0 && area.h > 0 ? area : td_rect(0, 0, 0, 0);
 }
 int td_pictures_available(void)
 {
@@ -371,6 +372,23 @@ void td_pictures_begin(void)
     s_ncur = 0;
 }
 
+int td_pictures_count(void)
+{
+    return s_ncur;
+}
+
+void td_pictures_cover(int first, int last, td_rect_t r)
+{
+    if (last > s_ncur)
+        last = s_ncur;
+    for (int i = first < 0 ? 0 : first; i < last; i++)
+    {
+        pic_t *p = &s_cur[i];
+        if (p->x < r.x + r.w && r.x < p->x + p->w && p->y < r.y + r.h && r.y < p->y + p->h)
+            p->covered = true;
+    }
+}
+
 void td_picture_add(int x, int y, int cols, int rows, uint32_t id, td_picture_render_fn render, void *user)
 {
     const td_stats_t *st = td_stats();
@@ -400,6 +418,14 @@ void td_picture_add_rgb_runs(int x, int y, int cols, int rows, uint32_t id, td_p
 
 void td_pictures_mark(td_buffer_t *front, const td_buffer_t *back)
 {
+    /* Pictures under a window, menu or taskbar drawn above them are not
+     * sent: they would cover it (a dialog over a full-screen Python app).
+     * What their window drew under them shows instead. */
+    int n = 0;
+    for (int i = 0; i < s_ncur; i++)
+        if (!s_cur[i].covered)
+            s_cur[n++] = s_cur[i];
+    s_ncur = n;
     /* An image that disappears must expose all its fallback cells, even
      * those whose logical contents have not changed since it was drawn. */
     for (int j = 0; j < s_nsent; j++)
@@ -478,13 +504,15 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
     for (int i = 0; i < s_ncur; i++)
     {
         pic_t *p = &s_cur[i];
-        if (!p->send || (s_clip_cols && p->x + p->w > s_clip_cols))
+        if (!p->send || (s_clip.w && (p->x < s_clip.x || p->y < s_clip.y || p->x + p->w > s_clip.x + s_clip.w ||
+                                      p->y + p->h > s_clip.y + s_clip.h)))
         {
-            /* Nothing new, or on the extended part of the screen, which the
-             * second terminal shows (without pictures). */
+            /* Nothing new, or on the other display, which the second
+             * terminal shows (without pictures). */
             p->completed = true;
             continue;
         }
+        int px0 = p->x - s_clip.x, py0 = p->y - s_clip.y;   /* the terminal's own cells */
         int w = p->w * cw, h = p->h * ch;
         changed = true;
         atomic_fetch_add(&s_render_count, 1);
@@ -495,7 +523,7 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
             if (s_runs_sink && p->runs && p->runs(p->user, w, h, &runs, &words))
             {
                 uint32_t began = td_millis();
-                bool completed = s_runs_sink(s_runs_user, p->x, p->y, runs, words, w, h);
+                bool completed = s_runs_sink(s_runs_user, px0, py0, runs, words, w, h);
                 atomic_fetch_add(&s_runs_ms, td_millis() - began);
                 if (completed)
                 {
@@ -511,7 +539,7 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
                 continue;
             }
             p->render_rgb(p->user, rgb, w, h);
-            bool completed = s_rgb_sink && s_rgb_sink(s_rgb_user, p->x, p->y, rgb, w, h);
+            bool completed = s_rgb_sink && s_rgb_sink(s_rgb_user, px0, py0, rgb, w, h);
             if (s_rgb_sink && !completed)
                 atomic_fetch_add(&s_sink_failures, 1);
             if (!completed)
@@ -519,7 +547,7 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
                 char seq[32];
                 int n = snprintf(seq, sizeof(seq), "\x1b"
                                                    "7\x1b[%d;%dH",
-                                 p->y + 1, p->x + 1);
+                                 py0 + 1, px0 + 1);
                 write(user, seq, n);
                 completed = td_sixel_encode_rgb(rgb, w, h, write, user);
                 write(user, "\x1b"
@@ -538,7 +566,7 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
             continue;
         }
         p->render(p->user, px, w, h);
-        if (s_sink && s_sink(s_sink_user, p->x, p->y, px, w, h))
+        if (s_sink && s_sink(s_sink_user, px0, py0, px, w, h))
         {
             free(px);
             p->completed = true;
@@ -547,7 +575,7 @@ void td_pictures_send(void (*write)(void *user, const char *s, int n), void *use
         char seq[32];
         int n = snprintf(seq, sizeof(seq), "\x1b"
                                            "7\x1b[%d;%dH",
-                         p->y + 1, p->x + 1);
+                         py0 + 1, px0 + 1);
         write(user, seq, n);
         td_sixel_encode(px, w, h, write, user);
         write(user, "\x1b"

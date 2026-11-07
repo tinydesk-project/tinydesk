@@ -69,6 +69,12 @@ struct td_widget
     td_widget_t *target;     /* scrollbar: the list it controls */
     uint32_t last_click_ms;  /* list double-click detection */
     void *user;
+    /* A list with several selected items (td_list_set_multi). */
+    bool multi;
+    bool band;               /* the press started selecting by dragging */
+    int anchor;              /* where Shift+click and a drag select from */
+    uint8_t *marks;          /* one bit per item, from the heap */
+    int marks_cap;           /* items it has room for */
 };
 
 /* Static or dynamic text. width <= 0 means "to the right edge". */
@@ -135,6 +141,32 @@ int td_list_selected(const td_widget_t *w);
  * selection when the previously selected object has disappeared. */
 void td_list_set_view(td_widget_t *w, int selected, int scroll);
 void td_list_select(td_widget_t *w, int index);
+
+/* Several selected items, as in a file manager: a click selects one item,
+ * Ctrl+click adds or removes one, Shift+click (and Shift+Up / Down)
+ * selects from the last clicked item, Ctrl+A all, Space toggles the
+ * current one. Dragging from an item that is not selected selects the rows
+ * dragged over; dragging from a selected one drags the selection (drag
+ * and drop: td_window_desc_t on_drag_start / on_drag_more). td_list_selected() stays the current
+ * item. Off by default; a list without it has just the current item
+ * selected. */
+void td_list_set_multi(td_widget_t *w, bool on);
+bool td_list_marked(const td_widget_t *w, int index);
+void td_list_mark(td_widget_t *w, int index, bool on);
+void td_list_mark_all(td_widget_t *w, bool on);
+int td_list_marked_count(const td_widget_t *w);
+/* The window's pressed list keeps a drag at x, y (client cells) for
+ * selecting: the window manager starts no drag and drop there. */
+bool td_widgets_keeps_drag(td_window_t *win, int x, int y);
+
+/* Type-ahead: the next item after `from` (wrapping round, -1 starts at the
+ * top) whose name begins with the letter or digit `key`, ignoring case and
+ * any leading symbols ("[/ ", a glyph); -1 if none. A list, the desktop's
+ * icons and the start menu jump there when a letter is typed, so pressing F
+ * again and again goes round the items starting with F. */
+int td_type_ahead(int count, int from, uint32_t key, const char *(*name)(int index, void *user), void *user);
+/* The window manager took the pressed widget's drag over (drag and drop). */
+void td_widgets_cancel_press(void);
 
 /* Modal message box. `buttons` is a '|' separated list such as "OK" or
  * "Yes|No". fn receives the index of the chosen button, or -1 for Esc.

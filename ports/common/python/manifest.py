@@ -14,3 +14,7 @@ module("neopixel.py", base_path="$(PORT_DIR)/modules", opt=3)
 
 # tdui: windows on the desktop, over the _tdui module (TinyDesk's own).
 module("tdui.py", base_path="$(PORT_DIR)/modules", opt=3)
+
+# tdapp: what most tdui apps share (pages, canvas elements, Modbus / UART
+# links with bound widgets), so an app keeps only its own logic.
+module("tdapp.py", base_path="$(PORT_DIR)/modules", opt=3)
