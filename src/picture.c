@@ -11,6 +11,7 @@
 
 #include "tinydesk/td.h"
 #include "tinydesk/td_wm.h"
+#include "td_internal.h"
 
 #ifndef TD_PICTURE_MAX
 #define TD_PICTURE_MAX 64

@@ -155,9 +155,6 @@ bool td_list_marked(const td_widget_t *w, int index);
 void td_list_mark(td_widget_t *w, int index, bool on);
 void td_list_mark_all(td_widget_t *w, bool on);
 int td_list_marked_count(const td_widget_t *w);
-/* The window's pressed list keeps a drag at x, y (client cells) for
- * selecting: the window manager starts no drag and drop there. */
-bool td_widgets_keeps_drag(td_window_t *win, int x, int y);
 
 /* Type-ahead: the next item after `from` (wrapping round, -1 starts at the
  * top) whose name begins with the letter or digit `key`, ignoring case and
@@ -165,8 +162,6 @@ bool td_widgets_keeps_drag(td_window_t *win, int x, int y);
  * icons and the start menu jump there when a letter is typed, so pressing F
  * again and again goes round the items starting with F. */
 int td_type_ahead(int count, int from, uint32_t key, const char *(*name)(int index, void *user), void *user);
-/* The window manager took the pressed widget's drag over (drag and drop). */
-void td_widgets_cancel_press(void);
 
 /* Modal message box. `buttons` is a '|' separated list such as "OK" or
  * "Yes|No". fn receives the index of the chosen button, or -1 for Esc.
@@ -184,21 +179,5 @@ td_window_t *td_passwordbox(const char *title, const char *prompt,
                             void (*fn)(const char *text, void *user), void *user);
 
 /* --- used by the window manager ------------------------------------- */
-
-/* Draw all widgets of a window (origin/clip set to the client area). */
-void td_widgets_draw(td_window_t *win);
-
-/* Offer an event to the widgets. Mouse coordinates are client-relative.
- * Returns true if a widget consumed it. */
-bool td_widgets_event(td_window_t *win, const td_event_t *ev);
-
-/* Free every widget belonging to win. */
-void td_widgets_free(td_window_t *win);
-
-/* Move keyboard focus to the next (dir > 0) or previous focusable widget. */
-void td_widgets_focus_next(td_window_t *win, int dir);
-
-/* Free every widget in the pool. */
-void td_widgets_reset(void);
 
 #endif /* TD_WIDGETS_H */

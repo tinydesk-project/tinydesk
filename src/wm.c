@@ -12,6 +12,7 @@
 
 #include "tinydesk/td.h"
 #include "tinydesk/td_picture.h"
+#include "td_internal.h"
 
   /* ------------------------------------------------------------- state */
 

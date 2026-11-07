@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "tinydesk/td.h"
+#include "td_internal.h"
 
 static td_widget_t s_pool[TD_MAX_WIDGETS];
 

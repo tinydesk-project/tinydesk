@@ -355,6 +355,21 @@ if(TD_BUILD_TESTS)
     find_package(Python3 COMPONENTS Interpreter QUIET)
     if(Python3_Interpreter_FOUND)
         add_test(NAME tdui_contract COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdui_contract.py)
+        # The public C API against api/tinydesk.api (the shell's tools/check_api.py;
+        # see STABILITY.md). Record a meant change with --record.
+        file(GLOB TD_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/include/tinydesk/*.h)
+        list(APPEND TD_PUBLIC_HEADERS
+             ${CMAKE_CURRENT_SOURCE_DIR}/apps/td_apps.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/proto/td_modbus.h ${CMAKE_CURRENT_SOURCE_DIR}/proto/td_mqtt.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/proto/td_sock.h ${CMAKE_CURRENT_SOURCE_DIR}/proto/td_tls.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/ports/common/td_fs_stdio.h ${CMAKE_CURRENT_SOURCE_DIR}/ports/common/td_host_hal.h
+             ${CMAKE_CURRENT_SOURCE_DIR}/ports/common/python/td_py_desktop.h)
+        add_test(NAME api_stable COMMAND Python3::Interpreter ${TDSH_ROOT}/tools/check_api.py
+                 ${CMAKE_CURRENT_SOURCE_DIR}/api/tinydesk.api ${TD_PUBLIC_HEADERS})
+        # The board.conf keys TinyDesk reads against api/board_keys.txt.
+        add_test(NAME board_keys COMMAND Python3::Interpreter ${TDSH_ROOT}/tools/check_board_keys.py
+                 api/board_keys.txt apps ports proto src
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
         # The tdui frozen into the firmware is tdui.py (run in the simulator).
         if(TD_WITH_TDSH AND TD_WITH_PYTHON)
             add_test(NAME tdui_frozen COMMAND Python3::Interpreter ${CMAKE_CURRENT_SOURCE_DIR}/tools/check_tdui_frozen.py

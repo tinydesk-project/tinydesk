@@ -1,0 +1,671 @@
+td.h: #define TD_REPO_URL "https:
+td.h: #define TD_SHELL_REPO_URL "https:
+td.h: ﻿ void td_host_clipboard_set(const char *text, int len);
+td.h: typedef struct { int cols, rows; int term_cols, term_rows; uint32_t frames; uint32_t frame_ms; uint32_t loop_ms; uint32_t bytes_sent; uint32_t bytes_per_sec; uint32_t dropped_frames; bool link_up; } td_stats_t;
+td.h: int td_init(const td_hal_t *hal);
+td.h: void td_run(void);
+td.h: bool td_step(void);
+td.h: void td_quit(void);
+td.h: void td_shutdown(void);
+td.h: void td_full_redraw(void);
+td.h: bool td_screen2_attach(int (*read_byte)(void *ctx), int (*write)(void *ctx, const uint8_t *buf, int len), void *ctx);
+td.h: void td_screen2_detach(void);
+td.h: bool td_screen2_attached(void);
+td.h: void td_screens_set_layout(const td_screens_layout_t *layout);
+td.h: void td_screens_layout(td_screens_layout_t *out);
+td.h: bool td_screens_display(int index, td_display_info_t *out);
+td.h: void td_screens_set_mode(int mode);
+td.h: int td_screens_mode(void);
+td.h: void td_frame_hold(uint32_t timeout_ms);
+td.h: uint32_t td_millis(void);
+td.h: uint32_t td_uptime_ms(void);
+td.h: const td_stats_t *td_stats(void);
+td_apps.h: #define TD_OSK_NONE 0
+td_apps.h: #define TD_OSK_HIDE (-1)
+td_apps.h: #define TD_OSK_CLEAR (-2)
+td_apps.h: #define TD_IMAGE_MAX_W 4096
+td_apps.h: #define TD_TRASH_SIZES 6
+td_apps.h: #define TD_TRASH_KEEPS 5
+td_apps.h: #define TD_SCRIPT_EXT ".tdsh"
+td_apps.h: #define TD_PYUI_CLEAR (-2)
+td_apps.h: #define TD_PYUI_TEXT_MAX 1024
+td_apps.h: #define TD_PYUI_MAX_PAGES 16
+td_apps.h: #define TD_PYUI_MAX_CELLS 2000
+td_apps.h: #define TD_PYUI_MAX_PIXELS 16384
+td_apps.h: void td_apps_register_all(void);
+td_apps.h: void td_about_register(void);
+td_apps.h: void td_sysmon_register(void);
+td_apps.h: void td_taskmgr_register(void);
+td_apps.h: void td_logview_register(void);
+td_apps.h: void td_settings_register(void);
+td_apps.h: void td_files_register(void);
+td_apps.h: void td_counter_register(void);
+td_apps.h: void td_pixels_register(void);
+td_apps.h: void td_imageview_register(void);
+td_apps.h: void td_trash_register(void);
+td_apps.h: void td_mouse_register(void);
+td_apps.h: void td_keyboard_register(void);
+td_apps.h: void td_terminal_register(void);
+td_apps.h: void td_editor_register(void);
+td_apps.h: void td_network_register(void);
+td_apps.h: void td_displays_register(void);
+td_apps.h: void td_osk_register(void);
+td_apps.h: void td_store_register(void);
+td_apps.h: void td_remote_register(void);
+td_apps.h: int td_terminal_encode_key(const td_event_t *ev, char *out);
+td_apps.h: int td_store_parse(char *text, void *list, int max);
+td_apps.h: int td_store_entry_size(void);
+td_apps.h: const char *td_store_cannot_run(const void *entry);
+td_apps.h: void td_store_sha256(const void *data, uint32_t len, char out[65]);
+td_apps.h: enum { TD_OSK_SHIFT_OFF, TD_OSK_SHIFT_ONCE, TD_OSK_SHIFT_LOCK };
+td_apps.h: typedef struct { td_rect_t area; const char *enter; bool password; uint8_t shift; bool sym; uint32_t shift_ms; int held; } td_osk_t;
+td_apps.h: void td_osk_init(td_osk_t *k, td_rect_t area, const char *enter, bool password);
+td_apps.h: void td_osk_draw(const td_osk_t *k);
+td_apps.h: int td_osk_mouse(td_osk_t *k, const td_event_t *ev, bool *used);
+td_apps.h: void td_osk_follow_focus(bool on);
+td_apps.h: void td_osk_show(bool on);
+td_apps.h: bool td_osk_shown(void);
+td_apps.h: bool td_osk_follows_focus(void);
+td_apps.h: void td_editor_open(const char *path);
+td_apps.h: bool td_is_image(const char *name);
+td_apps.h: void td_imageview_open(const char *path);
+td_apps.h: typedef struct { int w, h; char format[16]; const td_fs_ops_t *fs; char path[TD_PATH_MAX]; uint32_t data; uint32_t stride; int kind, bpp, maxval; bool bottom_up; bool plain; uint32_t pos; uint32_t mask[3]; uint8_t shift[3], bits[3]; int next; uint8_t *buf; int buf_cap, buf_len; uint32_t buf_off; uint8_t palette[256][3]; } td_image_t;
+td_apps.h: bool td_image_load(td_image_t *img, const td_fs_ops_t *fs, const char *path, char *err, int errcap);
+td_apps.h: bool td_image_row(td_image_t *img, int *y, uint8_t *rgb);
+td_apps.h: void td_image_rewind(td_image_t *img);
+td_apps.h: void td_image_close(td_image_t *img);
+td_apps.h: void td_files_open(const char *dir);
+td_apps.h: void td_files_changed(void);
+td_apps.h: const char *td_home_dir(void);
+td_apps.h: const char *td_desktop_dir(void);
+td_apps.h: void td_desktop_folder_init(void);
+td_apps.h: void td_desktop_refresh(void);
+td_apps.h: const char *td_move_into(const char *path, const char *dir);
+td_apps.h: const char *td_shell_path(const char *path);
+td_apps.h: bool td_valid_name(const char *name);
+td_apps.h: void td_log_append(char level, const char *text);
+td_apps.h: void td_logf(char level, const char *fmt, ...);
+td_apps.h: void td_log_set_lock(void (*lock)(void *ctx), void (*unlock)(void *ctx), void *ctx);
+td_apps.h: void td_settings_apply_saved(void);
+td_apps.h: bool td_settings_save(void);
+td_apps.h: enum { TD_DATE_DMY = 0, TD_DATE_YMD = 1, TD_DATE_MDY = 2, TD_DATE_FORMATS = 3 };
+td_apps.h: typedef struct { uint8_t clock_12h; uint8_t date_format; uint8_t hide_clock; } td_clock_prefs_t;
+td_apps.h: td_clock_prefs_t *td_clock_prefs(void);
+td_apps.h: typedef struct { uint8_t completion; } td_editor_prefs_t;
+td_apps.h: td_editor_prefs_t *td_editor_prefs(void);
+td_apps.h: typedef struct { uint8_t size; uint8_t keep; } td_trash_prefs_t;
+td_apps.h: td_trash_prefs_t *td_trash_prefs(void);
+td_apps.h: uint32_t td_trash_limit(void);
+td_apps.h: const char *td_trash_size_name(int code);
+td_apps.h: const char *td_trash_keep_name(int code);
+td_apps.h: int td_trash_next_size(int code);
+td_apps.h: typedef enum { TD_TRASH_OK, TD_TRASH_OFF, TD_TRASH_TOO_BIG, TD_TRASH_FAILED } td_trash_result_t;
+td_apps.h: td_trash_result_t td_trash_put(const char *path, bool is_dir);
+td_apps.h: void td_trash_ask_delete(const char *path, bool is_dir, bool for_good, void (*done)(void));
+td_apps.h: void td_trash_ask_delete_many(const char *const *paths, const bool *is_dir, int count, bool for_good, void (*done)(void));
+td_apps.h: void td_trash_purge(void);
+td_apps.h: const char *td_trash_restore(const char *id, char *where, int where_cap);
+td_apps.h: void td_trash_delete(const char *id);
+td_apps.h: void td_trash_empty(void);
+td_apps.h: bool td_clipboard_set(const char *text, int len);
+td_apps.h: const char *td_clipboard_get(int *len);
+td_apps.h: void td_clipboard_clear(void);
+td_apps.h: void td_datetime_open(void);
+td_apps.h: void td_date_time(int64_t utc, char *buf, int cap);
+td_apps.h: void td_datetime_install_clock(void);
+td_apps.h: void td_time_of_day(int64_t utc, char *buf, int cap);
+td_apps.h: bool td_session_real_path(const char *path, char *real, size_t cap);
+td_apps.h: void td_update_register(void);
+td_apps.h: void td_mqtt_register(void);
+td_apps.h: void td_modbus_register(void);
+td_apps.h: void td_proto_service_start(void);
+td_apps.h: typedef struct { const char *name; int (*start)(void *ctx, int cols, int rows); int (*read)(void *ctx, uint8_t *buf, int cap); int (*write)(void *ctx, const uint8_t *buf, int len); void (*resize)(void *ctx, int cols, int rows); const char *(*user)(void *ctx); void (*set_user)(void *ctx, const char *user); void *ctx; } td_term_backend_t;
+td_apps.h: void td_terminal_set_backend(const td_term_backend_t *backend);
+td_apps.h: const td_term_backend_t *td_terminal_backend(void);
+td_apps.h: void td_terminal_reset(void);
+td_apps.h: bool td_terminal_run(const char *command);
+td_apps.h: bool td_terminal_command(const char *command);
+td_apps.h: int td_terminal_draw_view(td_window_t *win, int x, int y, int w, int h, int scroll_back, bool cursor);
+td_apps.h: void td_terminal_key(const td_event_t *ev);
+td_apps.h: void td_terminal_send(const char *text, int len);
+td_apps.h: void td_terminal_set_viewer(td_window_t *win, void (*tap)(const uint8_t *data, int len));
+td_apps.h: void td_terminal_pump(void);
+td_apps.h: bool td_is_script(const char *name);
+td_apps.h: bool td_is_python(const char *name);
+td_apps.h: bool td_is_compiled_app(const char *name);
+td_apps.h: bool td_is_runnable(const char *name);
+td_apps.h: bool td_is_shortcut(const char *name);
+td_apps.h: bool td_shortcut_target(const char *link, char *target, int cap);
+td_apps.h: const char *td_shortcut_make(const char *dir, const char *target);
+td_apps.h: const char *td_apps_dir(void);
+td_apps.h: const char *td_start_dir(void);
+td_apps.h: bool td_in_start_menu(const char *target);
+td_apps.h: const char *td_start_menu_remove(const char *target);
+td_apps.h: const char *td_copy_to_apps(const char *path, char *copy, int cap);
+td_apps.h: void td_open_path(const char *path, bool is_dir);
+td_apps.h: void td_shortcuts_session(void);
+td_apps.h: int td_shortcut_menu(const char *path, bool on_desktop, const char **items, int max);
+td_apps.h: void td_shortcut_menu_chosen(const char *path, bool on_desktop, int index);
+td_apps.h: bool td_script_run(const char *path);
+td_apps.h: uint8_t td_script_colour(uint8_t bg);
+td_apps.h: enum { TD_PYUI_OPEN = 1, TD_PYUI_CLOSE, TD_PYUI_ADD, TD_PYUI_TEXT, TD_PYUI_VALUE, TD_PYUI_VISIBLE, TD_PYUI_COLOR, TD_PYUI_FOCUS, TD_PYUI_LIST_CLEAR, TD_PYUI_LIST_ADD, TD_PYUI_PUT, TD_PYUI_FILL, TD_PYUI_MSGBOX, TD_PYUI_INPUT, TD_PYUI_MENU, TD_PYUI_RESIZE, TD_PYUI_MOVE, TD_PYUI_SHOW, TD_PYUI_PAGE, TD_PYUI_PAGE_COPY, TD_PYUI_BIG, TD_PYUI_IMAGE, TD_PYUI_IMAGE_DATA, TD_PYUI_DRAW_IMAGE, TD_PYUI_RECT, TD_PYUI_LINE, TD_PYUI_GRADIENT, TD_PYUI_CIRCLE, TD_PYUI_PTEXT, TD_PYUI_PICTURE, TD_PYUI_BATCH_BEGIN, TD_PYUI_BATCH_END, TD_PYUI_BAR, TD_PYUI_FONT, TD_PYUI_FONT_TEXT, TD_PYUI_RENDER_CACHE, };
+td_apps.h: enum { TD_PYUI_SHOW_RESTORE, TD_PYUI_SHOW_MAXIMIZE, TD_PYUI_SHOW_MINIMIZE, TD_PYUI_SHOW_FULLSCREEN, };
+td_apps.h: enum { TD_PYUI_W_LABEL = 1, TD_PYUI_W_BUTTON, TD_PYUI_W_CHECKBOX, TD_PYUI_W_TEXTBOX, TD_PYUI_W_PROGRESS, TD_PYUI_W_LIST, TD_PYUI_W_CANVAS, };
+td_apps.h: enum { TD_PYUI_EV_CLICK = 1, TD_PYUI_EV_CHANGE, TD_PYUI_EV_CLOSE, TD_PYUI_EV_KEY, TD_PYUI_EV_MOUSE, TD_PYUI_EV_RESULT, TD_PYUI_EV_ERROR, TD_PYUI_EV_RESIZE, };
+td_apps.h: typedef struct { uint8_t op; uint8_t flags; uint16_t len; uint16_t id; uint16_t win; int16_t a, b, c, d, e, f; } td_pyui_msg_t;
+td_apps.h: typedef struct { int16_t w, h; uint8_t *px; uint8_t *mask; uint16_t *rgb; } td_pyui_image_t;
+td_apps.h: typedef struct { size_t bytes; td_font_t face; uint8_t data[]; } td_pyui_font_t;
+td_apps.h: void td_pyui_send_font(uint16_t id, td_pyui_font_t *font, void (*wait)(void));
+td_apps.h: typedef struct { int16_t w, h, border, fg, scale; } td_pyui_picture_t;
+td_apps.h: typedef struct { int16_t w, h, border; } td_pyui_part_t;
+td_apps.h: const uint8_t *td_pyui_glyph(uint32_t cp);
+td_apps.h: void td_pyui_start(void);
+td_apps.h: bool td_pyui_running(void);
+td_apps.h: void td_kiosk_start(void);
+td_apps.h: bool td_kiosk_active(void);
+td_apps.h: bool td_pyui_attach(void);
+td_apps.h: bool td_pyui_send(const td_pyui_msg_t *m, const char *text);
+td_apps.h: int td_pyui_recv(td_pyui_msg_t *m, char *text, int cap);
+td_apps.h: void td_pyui_detach_begin(void);
+td_apps.h: bool td_pyui_detach_done(void);
+td_apps.h: bool td_pyui_pixels_take(long bytes);
+td_apps.h: bool td_pyui_enable_rgb(void);
+td_apps.h: bool td_pyui_rgb_enabled(void);
+td_apps.h: void td_pyui_cache_stats(uint32_t out[12]);
+td_apps.h: void td_pyui_pixels_give(long bytes);
+td_apps.h: td_pyui_image_t *td_pyui_image_new(int w, int h, bool mask);
+td_apps.h: td_pyui_image_t *td_pyui_image_new_rgb(int w, int h, bool mask, bool rgb);
+td_apps.h: long td_pyui_image_bytes(const td_pyui_image_t *img);
+td_apps.h: void td_pyui_send_image(uint8_t op, uint16_t id, int a, int b, td_pyui_image_t *img, void (*wait)(void));
+td_apps.h: void td_session_init(void);
+td_apps.h: void td_session_switch(const char *user, bool switch_shell);
+td_apps.h: const char *td_session_user(void);
+td_apps.h: bool td_session_is_root(void);
+td_apps.h: bool td_session_locked(void);
+td_apps.h: bool td_session_auth_pending(void);
+td_apps.h: bool td_session_has_right(uint32_t right);
+td_apps.h: int td_session_role(void);
+td_apps.h: void td_session_lock(void);
+td_apps.h: void td_kiosk_stop_for_login(void);
+td_apps.h: void td_session_accept_authenticated(const char *user);
+td_apps.h: void td_session_accept_login(const char *user, uint32_t generation);
+td_apps.h: bool td_session_path_allowed(const char *path, int action);
+td_apps.h: void td_login_open(void);
+td_apps.h: void td_login_status(const char *message);
+td_apps.h: void td_users_register(void);
+td_apps.h: void td_search_register(void);
+td_apps.h: const char *td_session_home(void);
+td_apps.h: const char *td_session_jail(void);
+td_apps.h: void td_files_reset(void);
+td_canvas.h: typedef struct { int w, h; uint8_t *px; } td_canvas_t;
+td_canvas.h: typedef void *(*td_canvas_alloc_fn)(size_t bytes);
+td_canvas.h: typedef void (*td_canvas_free_fn)(void *ptr);
+td_canvas.h: void td_canvas_set_allocator(td_canvas_alloc_fn alloc_fn, td_canvas_free_fn free_fn);
+td_canvas.h: td_canvas_t *td_canvas_new(int w, int h);
+td_canvas.h: void td_canvas_free(td_canvas_t *c);
+td_canvas.h: bool td_canvas_resize(td_canvas_t *c, int w, int h);
+td_canvas.h: void td_canvas_clear(td_canvas_t *c, uint8_t color);
+td_canvas.h: void td_canvas_pixel(td_canvas_t *c, int x, int y, uint8_t color);
+td_canvas.h: uint8_t td_canvas_get(const td_canvas_t *c, int x, int y);
+td_canvas.h: void td_canvas_fill_rect(td_canvas_t *c, int x, int y, int w, int h, uint8_t color);
+td_canvas.h: void td_canvas_line(td_canvas_t *c, int x0, int y0, int x1, int y1, uint8_t color);
+td_canvas.h: void td_canvas_blit(td_canvas_t *c, int x, int y, const uint8_t *src, int w, int h, int stride);
+td_canvas.h: void td_canvas_draw(const td_canvas_t *c, int x, int y);
+td_canvas.h: typedef enum { TD_CANVAS_HALF, TD_CANVAS_QUAD } td_canvas_detail_t;
+td_canvas.h: void td_canvas_set_detail(td_canvas_detail_t detail);
+td_canvas.h: td_canvas_detail_t td_canvas_detail(void);
+td_canvas.h: void td_canvas_fit(int cols, int rows, int *w, int *h);
+td_canvas.h: void td_canvas_quad_cell(const uint8_t px[4], uint32_t *ch, uint8_t *fg, uint8_t *bg);
+td_canvas.h: uint8_t td_rgb256(uint8_t r, uint8_t g, uint8_t b);
+td_canvas.h: uint8_t td_rgb256_dither(uint8_t r, uint8_t g, uint8_t b, int x, int y);
+td_config.h: #define TD_MAX_COLS 400
+td_config.h: #define TD_MAX_ROWS 150
+td_config.h: #define TD_DRAG_MAX 64
+td_config.h: #define TD_MAX_MONITORS 2
+td_config.h: #define TD_MAX_SCREEN_COLS (2 * TD_MAX_COLS)
+td_config.h: #define TD_MAX_SCREEN_ROWS (2 * TD_MAX_ROWS)
+td_config.h: #define TD_PATH_MAX 160
+td_config.h: #define TD_DEFAULT_COLS 80
+td_config.h: #define TD_DEFAULT_ROWS 25
+td_config.h: #define TD_MIN_COLS 40
+td_config.h: #define TD_MIN_ROWS 12
+td_config.h: #define TD_OUT_BUF_SIZE 4096
+td_config.h: #define TD_EVENT_QUEUE_SIZE 32
+td_config.h: #define TD_ESC_TIMEOUT_MS 50
+td_config.h: #define TD_PASTE_MAX 8192
+td_config.h: #define TD_PASTE_TIMEOUT_MS 2000
+td_config.h: #define TD_OSC52_MAX 8192
+td_config.h: #define TD_SEQ_TIMEOUT_MS 500
+td_config.h: #define TD_SIZE_QUERY_TIMEOUT_MS 300
+td_config.h: #define TD_SIZE_POLL_MS 1000
+td_config.h: #define TD_LINK_RETRY_MS 500
+td_config.h: #define TD_LINK_LOST_MS 3000
+td_config.h: #define TD_ACK_TIMEOUT_MS 500
+td_config.h: #define TD_RECONNECT_SILENCE_MS 5000
+td_config.h: #define TD_MAX_WINDOWS 16
+td_config.h: #define TD_MAX_WIDGETS 128
+td_config.h: #define TD_MAX_TIMERS 24
+td_config.h: #define TD_MAX_APPS 32
+td_config.h: #define TD_TITLE_MAX 32
+td_config.h: #define TD_TEXT_MAX 64
+td_config.h: #define TD_DOUBLE_CLICK_MS 400
+td_config.h: #define TD_LOOP_SLEEP_MS 5
+td_config.h: #define TD_VT_MAX_COLS TD_MAX_COLS
+td_config.h: #define TD_VT_MAX_ROWS TD_MAX_ROWS
+td_config.h: #define TD_VT_SCROLLBACK 200
+td_font.h: #define TD_FONT_MAX_BYTES (256u * 1024u)
+td_font.h: typedef struct { const uint8_t *data; size_t size; uint16_t height, ascent, count, pixels; uint8_t bpp; } td_font_t;
+td_font.h: bool td_font_open(td_font_t *font, const uint8_t *data, size_t size);
+td_font.h: void td_font_measure(const td_font_t *font, const char *text, int width, bool wrap, int *w, int *h);
+td_font.h: void td_font_draw(const td_font_t *font, const char *text, uint8_t *pixels, int width, int height, uint8_t color, int align, int valign, bool wrap);
+td_font.h: void td_font_draw_rgb(const td_font_t *font, const char *text, uint16_t *pixels, int width, int height, uint8_t color, int align, int valign, bool wrap);
+td_fs_stdio.h: const td_fs_ops_t *td_fs_stdio(const char *root);
+td_fs_stdio.h: void td_fs_stdio_guard(bool (*allow)(const char *path, int action));
+td_fs_stdio.h: void td_fs_stdio_redirect(const char *from, const char *to, bool (*active)(void));
+td_hal.h: typedef struct td_hal { int (*read_byte)(void *ctx); int (*write)(void *ctx, const uint8_t *buf, int len); uint32_t (*millis)(void *ctx); void (*sleep_ms)(void *ctx, uint32_t ms); void *ctx; } td_hal_t;
+td_host_hal.h: const td_hal_t *td_host_hal_open(void);
+td_host_hal.h: void td_host_hal_close(void);
+td_host_hal.h: int td_host_main(const char *platform_name);
+td_host_hal.h: void td_host_setup(const td_hal_t *hal, const char *platform_name);
+td_host_hal.h: void td_host_use_net(const td_net_ops_t *net);
+td_host_hal.h: void td_host_use_users(bool (*exists)(const char *), bool (*auth)(const char *, const char *));
+td_input.h: #define TD_SEQ_REDRAW 5000
+td_input.h: #define TD_MOD_SHIFT 0x01u
+td_input.h: #define TD_MOD_ALT 0x02u
+td_input.h: #define TD_MOD_CTRL 0x04u
+td_input.h: #define TD_MOD_SUPER 0x08u
+td_input.h: #define TD_MOUSE_PRESS 0
+td_input.h: #define TD_MOUSE_RELEASE 1
+td_input.h: #define TD_MOUSE_DRAG 2
+td_input.h: #define TD_MOUSE_MOVE 3
+td_input.h: #define TD_BUTTON_LEFT 0
+td_input.h: #define TD_BUTTON_MIDDLE 1
+td_input.h: #define TD_BUTTON_RIGHT 2
+td_input.h: #define TD_BUTTON_NONE 3
+td_input.h: #define TD_BUTTON_WHEEL_UP 4
+td_input.h: #define TD_BUTTON_WHEEL_DOWN 5
+td_input.h: typedef enum { TD_EV_KEY, TD_EV_MOUSE, TD_EV_RESIZE, TD_EV_TICK, TD_EV_PASTE, TD_EV_ACK } td_ev_type_t;
+td_input.h: enum { TD_KEY_BASE = 0x110000, TD_KEY_ENTER, TD_KEY_TAB, TD_KEY_BACKSPACE, TD_KEY_ESC, TD_KEY_UP, TD_KEY_DOWN, TD_KEY_RIGHT, TD_KEY_LEFT, TD_KEY_HOME, TD_KEY_END, TD_KEY_INSERT, TD_KEY_DELETE, TD_KEY_PGUP, TD_KEY_PGDN, TD_KEY_F1, TD_KEY_F2, TD_KEY_F3, TD_KEY_F4, TD_KEY_F5, TD_KEY_F6, TD_KEY_F7, TD_KEY_F8, TD_KEY_F9, TD_KEY_F10, TD_KEY_F11, TD_KEY_F12, };
+td_input.h: typedef struct { td_ev_type_t type; uint32_t key; uint8_t mods; int16_t x, y; uint8_t button; uint8_t action; uint32_t time_ms; } td_event_t;
+td_input.h: const char *td_key_name(const td_event_t *ev, char *buf, int cap);
+td_input.h: bool td_event_push(const td_event_t *ev);
+td_input.h: bool td_event_pop(td_event_t *ev);
+td_input.h: int td_event_count(void);
+td_input.h: void td_event_clear(void);
+td_input.h: typedef struct { uint8_t state; uint8_t seq[32]; uint8_t seq_len; bool seq_overflow; uint8_t x10_left; uint32_t seq_start; td_utf8_decoder_t utf8; uint32_t last_byte_ms; char *paste; int paste_len, paste_cap; uint8_t paste_match; bool paste_cut; char *pasted; int pasted_len; } td_input_t;
+td_input.h: void td_input_init(td_input_t *p);
+td_input.h: const char *td_paste_text(int *len);
+td_input.h: void td_input_paste_done(td_input_t *p);
+td_input.h: void td_input_feed(td_input_t *p, uint8_t byte, uint32_t now_ms);
+td_input.h: bool td_input_pasting(const td_input_t *p);
+td_input.h: void td_input_poll_timeouts(td_input_t *p, uint32_t now_ms);
+td_input.h: typedef void (*td_timer_fn)(void *user);
+td_input.h: int td_timer_start(uint32_t interval_ms, bool repeat, td_timer_fn fn, void *user, uint32_t now_ms);
+td_input.h: void td_timer_stop(int id);
+td_input.h: void td_timers_run(uint32_t now_ms);
+td_input.h: void td_timers_reset(void);
+td_modbus.h: #define TD_MB_TCP_PORT 502
+td_modbus.h: #define TD_MB_MAX_READ 125
+td_modbus.h: #define TD_MB_MAX_WRITE 64
+td_modbus.h: #define TD_MB_TABLE_SIZE 128
+td_modbus.h: typedef enum { TD_MB_COILS = 1, TD_MB_DISCRETE = 2, TD_MB_HOLDING = 3, TD_MB_INPUT = 4, } td_mb_table_t;
+td_modbus.h: typedef struct { int ports; const char *(*name)(int port); bool (*open)(int port, uint32_t baud, char parity, int stop_bits, char *err, size_t cap); int (*write)(const uint8_t *buf, int len); int (*read)(uint8_t *buf, int cap); void (*close)(void); } td_mb_serial_t;
+td_modbus.h: void td_mb_set_serial(const td_mb_serial_t *serial);
+td_modbus.h: const td_mb_serial_t *td_mb_serial(void);
+td_modbus.h: typedef struct { char target[64]; uint8_t unit; uint8_t fc; uint16_t addr; uint16_t count; uint16_t nvalues; uint16_t values[TD_MB_MAX_WRITE]; } td_mb_request_t;
+td_modbus.h: typedef struct { int status; char text[72]; uint8_t fc; uint16_t addr; uint16_t count; uint16_t values[TD_MB_MAX_READ]; uint32_t ms; } td_mb_result_t;
+td_modbus.h: bool td_mb_parse_table(const char *name, td_mb_table_t *out);
+td_modbus.h: const char *td_mb_table_name(td_mb_table_t t);
+td_modbus.h: const char *td_mb_exception_text(int code);
+td_modbus.h: int td_mb_submit(const td_mb_request_t *req, char *err, size_t cap);
+td_modbus.h: bool td_mb_result(int ticket, td_mb_result_t *out);
+td_modbus.h: bool td_mb_busy(void);
+td_modbus.h: bool td_mb_transact(const td_mb_request_t *req, td_mb_result_t *out, char *err, size_t cap);
+td_modbus.h: bool td_mb_server_start(uint16_t port, char *err, size_t cap);
+td_modbus.h: void td_mb_server_stop(void);
+td_modbus.h: bool td_mb_server_status(uint16_t *port, int *clients, uint32_t *requests);
+td_modbus.h: int td_mb_server_get(td_mb_table_t t, uint16_t addr, uint16_t count, uint16_t *out);
+td_modbus.h: int td_mb_server_set(td_mb_table_t t, uint16_t addr, uint16_t count, const uint16_t *in);
+td_modbus.h: void td_mb_poll(void);
+td_modbus.h: uint16_t td_mb_crc16(const uint8_t *p, int len);
+td_modbus.h: typedef struct { uint8_t coils[TD_MB_TABLE_SIZE / 8]; uint8_t discrete[TD_MB_TABLE_SIZE / 8]; uint16_t holding[TD_MB_TABLE_SIZE]; uint16_t input[TD_MB_TABLE_SIZE]; } td_mb_tables_t;
+td_modbus.h: int td_mb_serve_pdu(td_mb_tables_t *t, const uint8_t *req, int len, uint8_t *resp);
+td_modbus.h: int td_mb_build_pdu(const td_mb_request_t *req, uint8_t *pdu);
+td_modbus.h: void td_mb_decode_pdu(const td_mb_request_t *req, const uint8_t *pdu, int len, td_mb_result_t *res);
+td_mqtt.h: #define TD_MQTT_DEFAULT_PORT 1883
+td_mqtt.h: #define TD_MQTT_TLS_PORT 8883
+td_mqtt.h: #define TD_MQTT_PATH_MAX 160
+td_mqtt.h: #define TD_MQTT_CERT_MAX 16384
+td_mqtt.h: #define TD_MQTT_TOPIC_MAX 64
+td_mqtt.h: #define TD_MQTT_PAYLOAD_KEEP 120
+td_mqtt.h: #define TD_MQTT_LOG 20
+td_mqtt.h: #define TD_MQTT_SUBS 8
+td_mqtt.h: typedef struct { char host[64]; uint16_t port; char client_id[32]; char user[32]; char pass[64]; uint16_t keepalive; bool auto_reconnect; bool persistent; bool tls; bool insecure; char ca_file[TD_MQTT_PATH_MAX]; char cert_file[TD_MQTT_PATH_MAX]; char key_file[TD_MQTT_PATH_MAX]; char key_pass[64]; char will_topic[TD_MQTT_TOPIC_MAX]; char will_payload[128]; uint8_t will_qos; bool will_retain; int nsubs; char sub_topic[TD_MQTT_SUBS][TD_MQTT_TOPIC_MAX]; uint8_t sub_qos[TD_MQTT_SUBS]; } td_mqtt_config_t;
+td_mqtt.h: bool td_mqtt_parse_broker(const char *text, td_mqtt_config_t *cfg);
+td_mqtt.h: typedef bool (*td_mqtt_resolve_fn)(const char *path, char *real, size_t cap, void *ctx);
+td_mqtt.h: bool td_mqtt_load_config(const char *path, td_mqtt_resolve_fn resolve, void *ctx, td_mqtt_config_t *cfg, char *err, size_t cap);
+td_mqtt.h: extern const char td_mqtt_config_template[];
+td_mqtt.h: typedef enum { TD_MQTT_OFF, TD_MQTT_CONNECTING, TD_MQTT_TLS_HANDSHAKE, TD_MQTT_WAIT_CONNACK, TD_MQTT_CONNECTED, TD_MQTT_RETRY, } td_mqtt_state_t;
+td_mqtt.h: typedef struct { uint32_t seq; uint32_t ms; int64_t utc; bool outgoing; uint8_t qos; bool retain; uint16_t len; char topic[TD_MQTT_TOPIC_MAX]; char payload[TD_MQTT_PAYLOAD_KEEP + 1]; } td_mqtt_msg_t;
+td_mqtt.h: typedef struct { td_mqtt_state_t state; char text[80]; char broker[72]; uint32_t rx, tx; uint32_t connected_ms; int subs; bool tls; char security[72]; } td_mqtt_status_t;
+td_mqtt.h: bool td_mqtt_connect(const td_mqtt_config_t *cfg, char *err, size_t cap);
+td_mqtt.h: void td_mqtt_disconnect(void);
+td_mqtt.h: void td_mqtt_status(td_mqtt_status_t *out);
+td_mqtt.h: int td_mqtt_subscribe(const char *topic, int qos);
+td_mqtt.h: int td_mqtt_unsubscribe(const char *topic);
+td_mqtt.h: bool td_mqtt_subscription(int i, char *topic, size_t cap, int *qos);
+td_mqtt.h: int td_mqtt_publish(const char *topic, const void *payload, int len, int qos, bool retain);
+td_mqtt.h: uint32_t td_mqtt_last_seq(void);
+td_mqtt.h: bool td_mqtt_message(uint32_t seq, td_mqtt_msg_t *out);
+td_mqtt.h: void td_mqtt_poll(void);
+td_mqtt.h: int td_mqtt_encode_length(uint32_t len, uint8_t out[4]);
+td_mqtt.h: int td_mqtt_decode_length(const uint8_t *p, int avail, uint32_t *len);
+td_mqtt.h: bool td_mqtt_topic_matches(const char *filter, const char *topic);
+td_picture.h: bool td_term_images(void);
+td_picture.h: void td_term_cell_px(int *w, int *h);
+td_picture.h: void td_term_set_sixel(bool on);
+td_picture.h: void td_term_set_cell_px(int w, int h);
+td_picture.h: typedef void (*td_picture_render_fn)(void *user, uint8_t *px, int w, int h);
+td_picture.h: typedef void (*td_picture_render_rgb_fn)(void *user, uint16_t *px, int w, int h);
+td_picture.h: typedef bool (*td_picture_rgb_sink_fn)(void *user, int x, int y, const uint16_t *px, int w, int h);
+td_picture.h: void td_picture_set_rgb_sink(td_picture_rgb_sink_fn sink, void *user);
+td_picture.h: bool td_picture_local_rgb(void);
+td_picture.h: typedef bool (*td_picture_runs_fn)(void *user, int w, int h, const uint16_t **runs, size_t *words);
+td_picture.h: typedef bool (*td_picture_runs_sink_fn)(void *user, int x, int y, const uint16_t *runs, size_t words, int w, int h);
+td_picture.h: void td_picture_set_runs_sink(td_picture_runs_sink_fn sink, void *user);
+td_picture.h: void td_picture_add_rgb_runs(int x, int y, int cols, int rows, uint32_t id, td_picture_render_fn fallback, td_picture_render_rgb_fn render, td_picture_runs_fn cached, void *user);
+td_picture.h: uint32_t td_picture_runs_ms(void);
+td_picture.h: void td_picture_stats(uint32_t *renders, uint32_t *allocation_failures, uint32_t *sink_failures);
+td_picture.h: void td_picture_profile_reset(void);
+td_picture.h: void td_picture_profile(uint32_t out[4]);
+td_picture.h: void td_picture_set_scanout_monitor(void (*monitor)(uint32_t out[12]));
+td_picture.h: void td_picture_scanout_info(uint32_t out[8]);
+td_picture.h: void td_picture_scanout_timing(uint32_t out[4]);
+td_picture.h: typedef bool (*td_picture_sink_fn)(void *user, int x, int y, const uint8_t *px, int w, int h);
+td_picture.h: void td_picture_set_sink(td_picture_sink_fn sink, void *user);
+td_picture.h: void td_picture_add(int x, int y, int cols, int rows, uint32_t id, td_picture_render_fn render, void *user);
+td_picture.h: void td_picture_add_rgb(int x, int y, int cols, int rows, uint32_t id, td_picture_render_fn fallback, td_picture_render_rgb_fn render, void *user);
+td_picture.h: uint16_t td_rgb565(uint8_t r, uint8_t g, uint8_t b);
+td_picture.h: uint16_t td_palette_rgb565(uint8_t index);
+td_picture.h: void td_rgb565_rgb(uint16_t pixel, uint8_t rgb[3]);
+td_picture.h: bool td_sixel_encode_rgb(const uint16_t *px, int w, int h, void (*write)(void *user, const char *s, int n), void *user);
+td_picture.h: void td_palette_rgb(uint8_t i, uint8_t rgb[3]);
+td_picture.h: void td_sixel_encode(const uint8_t *px, int w, int h, void (*write)(void *user, const char *s, int n), void *user);
+td_picture.h: int td_pictures_available(void);
+td_picture.h: void td_pictures_forget(void);
+td_py_desktop.h: void td_py_desktop_setup(bool (*desktop_check)(void));
+td_py_desktop.h: void td_py_set_desktop_check(bool (*fn)(void));
+td_py_desktop.h: void td_tdui_release(void);
+td_screen.h: #define TD_BOLD 0x01u
+td_screen.h: #define TD_UNDERLINE 0x02u
+td_screen.h: #define TD_REVERSE 0x04u
+td_screen.h: #define TD_CH_INVALID 0xFFFFFFFFu
+td_screen.h: typedef struct { uint32_t ch; uint8_t fg, bg; uint8_t attr; uint8_t _pad; } td_cell_t;
+td_screen.h: typedef struct { int cols, rows; td_cell_t cells[TD_MAX_COLS * TD_MAX_ROWS]; } td_buffer_t;
+td_screen.h: typedef struct { int x, y, w, h; } td_rect_t;
+td_screen.h: static inline td_rect_t td_rect(int x, int y, int w, int h) { td_rect_t r = {x, y, w, h}; return r; } td_rect_t td_rect_intersect(td_rect_t a, td_rect_t b);
+td_screen.h: bool td_rect_contains(td_rect_t r, int x, int y);
+td_screen.h: void td_buffer_init(td_buffer_t *buf, int cols, int rows);
+td_screen.h: void td_buffer_invalidate(td_buffer_t *buf);
+td_screen.h: td_cell_t *td_buffer_cell(td_buffer_t *buf, int x, int y);
+td_screen.h: typedef enum { TD_BOX_SINGLE = 0, TD_BOX_DOUBLE, TD_BOX_ASCII, } td_box_style_t;
+td_screen.h: void td_draw_target(td_buffer_t *buf);
+td_screen.h: td_buffer_t *td_draw_get_target(void);
+td_screen.h: void td_draw_origin(int x, int y);
+td_screen.h: void td_draw_clip(td_rect_t clip);
+td_screen.h: td_rect_t td_draw_get_clip(void);
+td_screen.h: void td_putc(int x, int y, uint32_t ch, uint8_t fg, uint8_t bg, uint8_t attr);
+td_screen.h: void td_fill(td_rect_t r, uint32_t ch, uint8_t fg, uint8_t bg);
+td_screen.h: int td_text(int x, int y, const char *str, uint8_t fg, uint8_t bg, uint8_t attr);
+td_screen.h: int td_textn(int x, int y, const char *str, int max_cols, uint8_t fg, uint8_t bg, uint8_t attr);
+td_screen.h: void td_box(td_rect_t r, td_box_style_t style, uint8_t fg, uint8_t bg);
+td_screen.h: void td_shadow(td_rect_t r);
+td_screen.h: void td_draw_vscroll(int x, int y, int h, int pos, int total, int page, uint8_t fg, uint8_t bg);
+td_screen.h: void td_set_ascii_mode(bool on);
+td_screen.h: bool td_get_ascii_mode(void);
+td_screen.h: uint32_t td_ascii_fallback(uint32_t ch);
+td_screen.h: int td_utf8_encode(uint32_t cp, uint8_t out[4]);
+td_screen.h: uint32_t td_utf8_next(const char **s);
+td_screen.h: int td_utf8_len(const char *s);
+td_screen.h: int td_utf8_pad(char *out, size_t cap, const char *s, int cols);
+td_screen.h: int td_utf8_copy(char *out, size_t cap, const char *s, int cols);
+td_screen.h: const char *td_utf8_skip(const char *s, int cols);
+td_screen.h: typedef struct { uint32_t cp; uint8_t need; uint8_t len; } td_utf8_decoder_t;
+td_screen.h: int td_utf8_feed(td_utf8_decoder_t *d, uint8_t byte, uint32_t out[2]);
+td_screen.h: typedef struct { const td_hal_t *hal; int cur_x, cur_y; int cur_fg, cur_bg, cur_attr; uint8_t out[TD_OUT_BUF_SIZE]; int out_len; bool write_failed; uint32_t bytes_sent; } td_renderer_t;
+td_screen.h: void td_render_init(td_renderer_t *r, const td_hal_t *hal);
+td_screen.h: void td_render_reset_state(td_renderer_t *r);
+td_screen.h: void td_render_raw(td_renderer_t *r, const char *s);
+td_screen.h: void td_render_write(td_renderer_t *r, const void *data, int len);
+td_screen.h: bool td_render_flush(td_renderer_t *r);
+td_screen.h: bool td_render_diff(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back);
+td_screen.h: bool td_render_diff_region(td_renderer_t *r, td_buffer_t *front, const td_buffer_t *back, int x0, int y0, int w, int h);
+td_screen.h: void td_render_setup_terminal(td_renderer_t *r);
+td_screen.h: void td_render_restore_terminal(td_renderer_t *r);
+td_screen.h: void td_render_query_size(td_renderer_t *r);
+td_screen.h: enum { TD_SCREENS_DUPLICATE = 1, TD_SCREENS_EXTEND = 2 };
+td_screen.h: enum { TD_PLACE_RIGHT, TD_PLACE_LEFT, TD_PLACE_BELOW, TD_PLACE_ABOVE };
+td_screen.h: typedef struct { uint8_t mode; uint8_t place; int16_t offset; uint8_t main; int16_t cols[2], rows[2]; } td_screens_layout_t;
+td_screen.h: typedef struct { int term_cols, term_rows; td_rect_t area; } td_display_info_t;
+td_sock.h: #define TD_SOCK_INVALID ((td_sock_t)-1)
+td_sock.h: typedef intptr_t td_sock_t;
+td_sock.h: typedef struct { uint8_t data[28]; int len; } td_addr_t;
+td_sock.h: bool td_sock_resolve(const char *host, uint16_t port, td_addr_t *out, char *err, size_t cap);
+td_sock.h: td_sock_t td_sock_connect_start(const td_addr_t *addr, char *err, size_t cap);
+td_sock.h: int td_sock_connect_poll(td_sock_t s, char *err, size_t cap);
+td_sock.h: int td_sock_send(td_sock_t s, const void *buf, int len);
+td_sock.h: int td_sock_recv(td_sock_t s, void *buf, int cap);
+td_sock.h: void td_sock_close(td_sock_t s);
+td_sock.h: td_sock_t td_sock_listen(uint16_t port, char *err, size_t cap);
+td_sock.h: td_sock_t td_sock_accept(td_sock_t listener, char *peer, size_t peer_cap);
+td_sock.h: void td_addr_text(const td_addr_t *addr, char *buf, size_t cap);
+td_sock.h: uint32_t td_proto_millis(void);
+td_sock.h: void td_proto_sleep_ms(uint32_t ms);
+td_sock.h: void td_proto_lock(void);
+td_sock.h: void td_proto_unlock(void);
+td_sock.h: bool td_split_host_port(const char *text, char *host, size_t host_cap, uint16_t *port, uint16_t default_port);
+td_sysinfo.h: #define TD_FS_READ 0
+td_sysinfo.h: #define TD_FS_WRITE 1
+td_sysinfo.h: #define TD_FS_LIST 2
+td_sysinfo.h: #define TD_FS_EXISTS 3
+td_sysinfo.h: #define TD_FS_REMOVE 4
+td_sysinfo.h: #define TD_USER_ROLE_USER 0
+td_sysinfo.h: #define TD_USER_ROLE_ADMIN 1
+td_sysinfo.h: #define TD_USER_ROLE_ROOT 2
+td_sysinfo.h: #define TD_RIGHT_USERS (1u << 0)
+td_sysinfo.h: #define TD_RIGHT_SYSTEM (1u << 1)
+td_sysinfo.h: #define TD_RIGHT_NETWORK (1u << 2)
+td_sysinfo.h: #define TD_RIGHT_HARDWARE (1u << 3)
+td_sysinfo.h: #define TD_RIGHT_SHARED (1u << 4)
+td_sysinfo.h: #define TD_RIGHT_TIME (1u << 5)
+td_sysinfo.h: #define TD_RIGHT_APPS (1u << 6)
+td_sysinfo.h: #define TD_RIGHT_ALL 127u
+td_sysinfo.h: #define TD_HINT_MAX 64
+td_sysinfo.h: typedef struct { const char *root; int (*list)(const char *dir, void (*fn)(const char *name, bool is_dir, uint32_t size, void *user), void *user); int (*read)(const char *path, char *buf, int cap); int (*remove)(const char *path); int (*mkdir)(const char *path); int (*write)(const char *path, const char *data, int len); int (*rename)(const char *from, const char *to); int (*exists)(const char *path); int (*read_at)(const char *path, uint32_t offset, char *buf, int cap); int (*append)(const char *path, const char *data, int len); } td_fs_ops_t;
+td_sysinfo.h: typedef struct { bool wifi_up; char ssid[33]; int rssi; char wifi_ip[16]; bool eth_present; bool eth_up; char eth_ip[16]; bool busy; char message[64]; } td_net_status_t;
+td_sysinfo.h: enum { TD_SERVER_SSH = 0, TD_SERVER_FTP = 1 };
+td_sysinfo.h: typedef struct { char ssid[33]; int rssi; bool secure; bool saved; } td_wifi_ap_t;
+td_sysinfo.h: typedef struct { void (*status)(td_net_status_t *out); bool (*scan)(void); int (*scan_results)(td_wifi_ap_t *out, int max); bool (*connect)(const char *ssid, const char *password); bool (*disconnect)(void); bool (*forget)(const char *ssid); bool (*server_status)(int which, int *port, int *clients); bool (*server_set)(int which, bool on); bool (*telnet_enabled)(void); void (*telnet_enable)(bool on); const char *(*telnet_peer)(void); } td_net_ops_t;
+td_sysinfo.h: enum { TD_DISPLAY_OFF = 0, TD_DISPLAY_BOARD = 1, TD_DISPLAY_TELNET = 2, TD_DISPLAY_SERIAL = 3, TD_DISPLAY_SOURCES = 4 };
+td_sysinfo.h: typedef struct { bool (*source_available)(int display, int src); int (*source)(int display); void (*set_source)(int display, int src); const char *(*source_label)(int src); void (*status)(int display, char *buf, int cap); void (*save_layout)(const td_screens_layout_t *layout); int (*rotation)(int display); bool (*set_rotation)(int display, int degrees); } td_display_ops_t;
+td_sysinfo.h: typedef struct { int speed; int accel; int precision; } td_mouse_settings_t;
+td_sysinfo.h: typedef struct { bool (*status)(char *buf, int cap); void (*get)(td_mouse_settings_t *s); bool (*set)(const td_mouse_settings_t *s); } td_mouse_ops_t;
+td_sysinfo.h: typedef struct { int layout; int delay_ms; int rate; } td_keyboard_settings_t;
+td_sysinfo.h: typedef struct { bool (*status)(char *buf, int cap); void (*get)(td_keyboard_settings_t *s); bool (*set)(const td_keyboard_settings_t *s); const char *(*layout_name)(int i); } td_keyboard_ops_t;
+td_sysinfo.h: enum { TD_OTA_IDLE, TD_OTA_CHECKING, TD_OTA_INSTALLING, TD_OTA_DONE, TD_OTA_FAILED };
+td_sysinfo.h: typedef struct { char version[32]; char built[32]; char sdk[32]; char running[17]; char next[17]; bool on_trial; bool can_roll_back; char other_version[32]; } td_ota_info_t;
+td_sysinfo.h: typedef struct { int state; int percent; uint32_t done, total; uint32_t bytes_per_s; char new_version[32]; char new_built[32]; char message[96]; } td_ota_status_t;
+td_sysinfo.h: typedef struct { bool valid; bool newer; char version[24]; char date[12]; char url[200]; uint32_t size; char notes[128]; char error[96]; uint32_t checks; } td_ota_release_t;
+td_sysinfo.h: typedef struct { void (*info)(td_ota_info_t *out); bool (*start)(const char *source, bool check_only); void (*status)(td_ota_status_t *out); void (*cancel)(void); void (*restart)(void); bool (*roll_back)(void); bool (*check_official)(bool quiet); void (*official)(td_ota_release_t *out); bool (*auto_check)(void); void (*set_auto_check)(bool on); void (*notified)(char *out, int cap); void (*set_notified)(const char *version); int (*unsaved_settings)(void); bool (*save_settings)(char *msg, int cap); } td_ota_ops_t;
+td_sysinfo.h: enum { TD_FETCH_IDLE, TD_FETCH_RUNNING, TD_FETCH_DONE, TD_FETCH_FAILED };
+td_sysinfo.h: typedef struct { int state; uint32_t done, total; char message[96]; } td_fetch_status_t;
+td_sysinfo.h: typedef struct { bool (*start)(const char *source, const char *dest, uint32_t max); void (*status)(td_fetch_status_t *out); void (*cancel)(void); } td_fetch_ops_t;
+td_sysinfo.h: typedef struct { char name[16]; char state; uint8_t priority; int8_t core; uint32_t stack_free; int16_t cpu_tenths; } td_task_info_t;
+td_sysinfo.h: typedef struct { const char *name; const char *text; } td_desktop_file_t;
+td_sysinfo.h: typedef struct { char name[32]; int role; uint32_t rights; } td_user_info_t;
+td_sysinfo.h: typedef struct { int (*list)(int index, td_user_info_t *out); int (*role)(const char *username); uint32_t (*rights)(const char *username); uint32_t (*generation)(const char *username); int (*create)(const char *actor, const char *name, const char *password, int role, uint32_t rights); int (*access_set)(const char *actor, const char *name, int role, uint32_t rights); int (*password_set)(const char *actor, const char *name, const char *old_password, const char *password); uint32_t (*remembered)(char *name, int cap); bool (*remember_allowed)(const char *name); uint32_t (*login)(const char *name, const char *password); int (*boot_user_set)(const char *actor, const char *name); int (*require_password)(const char *actor); int (*hint_get)(const char *name, char *out, int cap); int (*hint_set)(const char *actor, const char *name, const char *hint); } td_user_ops_t;
+td_sysinfo.h: typedef struct { const char *platform; const char *chip; const char *sdk_version; uint32_t (*free_heap)(void); uint32_t (*min_free_heap)(void); uint32_t (*total_heap)(void); uint32_t (*psram_free)(void); uint32_t (*psram_total)(void); int (*task_count)(void); int (*cpu_mhz)(void); bool (*chip_temp)(int *tenths_c); int (*tasks)(td_task_info_t *out, int max); bool (*time_now)(int64_t *utc); bool (*time_set)(int64_t utc); bool (*time_auto_get)(void); bool (*time_auto_set)(bool on); bool (*time_sync)(void); bool (*get_tz)(long *seconds); bool (*set_tz)(long seconds); const td_net_ops_t *net; const td_display_ops_t *displays; const td_ota_ops_t *ota; const td_fetch_ops_t *fetch; const char *store_url; const char *no_ota_text; bool (*user_exists)(const char *user); bool (*authenticate)(const char *user, const char *password); const td_user_ops_t *users; bool (*settings_load)(void *data, int len); bool (*settings_save)(const void *data, int len); const td_fs_ops_t *fs; const char *extra; const td_desktop_file_t *desktop_files; const td_mouse_ops_t *mouse; const td_keyboard_ops_t *keyboard; const char *kiosk_app; const char *kiosk_splash; bool kiosk_hide_status; } td_sysinfo_t;
+td_sysinfo.h: void td_set_sysinfo(const td_sysinfo_t *info);
+td_sysinfo.h: const td_sysinfo_t *td_sysinfo(void);
+td_tls.h: typedef struct td_tls td_tls_t;
+td_tls.h: typedef struct { const char *ca; size_t ca_len; const char *cert; size_t cert_len; const char *key; size_t key_len; const char *key_pass; const char *server_name; bool insecure; } td_tls_config_t;
+td_tls.h: bool td_tls_available(void);
+td_tls.h: td_tls_t *td_tls_start(td_sock_t sock, const td_tls_config_t *cfg, char *err, size_t cap);
+td_tls.h: int td_tls_handshake(td_tls_t *t, char *err, size_t cap);
+td_tls.h: int td_tls_send(td_tls_t *t, const void *buf, int len);
+td_tls.h: int td_tls_recv(td_tls_t *t, void *buf, int cap);
+td_tls.h: void td_tls_info(td_tls_t *t, char *buf, size_t cap);
+td_tls.h: void td_tls_free(td_tls_t *t);
+td_tls.h: char *td_read_file(const char *path, size_t max, size_t *len, char *err, size_t cap);
+td_vterm.h: typedef struct { uint16_t ch; uint8_t fg, bg; } td_vcell_t;
+td_vterm.h: typedef void (*td_vterm_reply_fn)(void *user, const char *data, int len);
+td_vterm.h: typedef struct { int cols, rows; td_vcell_t cells[TD_VT_MAX_ROWS * TD_VT_MAX_COLS]; td_vcell_t sb[TD_VT_SCROLLBACK * TD_VT_MAX_COLS]; int sb_head; int sb_count; int cx, cy; int saved_cx, saved_cy; uint8_t fg, bg; uint8_t attr; uint8_t saved_fg, saved_bg, saved_attr; uint8_t def_fg, def_bg; int top, bottom; bool wrap_pending; bool autowrap; bool cursor_visible; bool synchronized_output; bool newline_mode; uint16_t mouse; uint8_t state; char params[40]; int plen; bool priv; td_utf8_decoder_t utf8; td_vterm_reply_fn reply; void *reply_user; bool dirty; void (*dcs)(void *user, int b); void *dcs_user; bool sixel; int cell_w, cell_h; } td_vterm_t;
+td_vterm.h: void td_vterm_init(td_vterm_t *vt, int cols, int rows);
+td_vterm.h: void td_vterm_resize(td_vterm_t *vt, int cols, int rows);
+td_vterm.h: void td_vterm_write(td_vterm_t *vt, const uint8_t *data, int len);
+td_vterm.h: int td_vterm_scrollback_lines(const td_vterm_t *vt);
+td_vterm.h: void td_vterm_draw(const td_vterm_t *vt, int x, int y, int scroll_back, bool show_cursor);
+td_widgets.h: #define TD_COLOR_DEFAULT (-1)
+td_widgets.h: typedef enum { TD_WT_LABEL, TD_WT_BUTTON, TD_WT_CHECKBOX, TD_WT_TEXTBOX, TD_WT_LIST, TD_WT_PROGRESS, TD_WT_SCROLLBAR, } td_widget_type_t;
+td_widgets.h: typedef enum { TD_ALIGN_LEFT, TD_ALIGN_CENTER, TD_ALIGN_RIGHT } td_align_t;
+td_widgets.h: typedef void (*td_widget_fn)(td_widget_t *w, void *user);
+td_widgets.h: typedef const char *(*td_list_item_fn)(td_widget_t *w, int index, int *fg, void *user);
+td_widgets.h: struct td_widget { bool used; uint8_t type; uint8_t align; bool focusable; bool visible; bool pressed; bool secret; td_rect_t rect; td_window_t *win; td_widget_t *next; char text[TD_TEXT_MAX]; char *ext; int ext_cap; int value; int scroll; int count; int maxlen; int fg, bg; td_widget_fn on_activate; td_list_item_fn get_item; td_widget_t *target; uint32_t last_click_ms; void *user; bool multi; bool band; int anchor; uint8_t *marks; int marks_cap; };
+td_widgets.h: td_widget_t *td_label(td_window_t *win, int x, int y, int width, const char *text);
+td_widgets.h: td_widget_t *td_button(td_window_t *win, int x, int y, const char *caption, td_widget_fn fn, void *user);
+td_widgets.h: td_widget_t *td_checkbox(td_window_t *win, int x, int y, const char *caption, bool checked, td_widget_fn fn, void *user);
+td_widgets.h: td_widget_t *td_textbox(td_window_t *win, int x, int y, int width, int maxlen, td_widget_fn fn, void *user);
+td_widgets.h: bool td_widgets_paste(td_window_t *win);
+td_widgets.h: td_widget_t *td_list(td_window_t *win, td_rect_t rect, td_list_item_fn get_item, td_widget_fn fn, void *user);
+td_widgets.h: td_widget_t *td_progress(td_window_t *win, int x, int y, int width);
+td_widgets.h: td_widget_t *td_scrollbar(td_window_t *win, int x, int y, int height, td_widget_t *target);
+td_widgets.h: void td_widget_set_text(td_widget_t *w, const char *text);
+td_widgets.h: const char *td_widget_text(const td_widget_t *w);
+td_widgets.h: void td_textbox_set_buffer(td_widget_t *w, char *buf, int cap);
+td_widgets.h: void td_widget_printf(td_widget_t *w, const char *fmt, ...);
+td_widgets.h: void td_widget_set_align(td_widget_t *w, td_align_t align);
+td_widgets.h: void td_widget_set_color(td_widget_t *w, int fg, int bg);
+td_widgets.h: void td_widget_set_visible(td_widget_t *w, bool visible);
+td_widgets.h: void td_widget_focus(td_widget_t *w);
+td_widgets.h: td_rect_t td_widget_rect(const td_widget_t *w);
+td_widgets.h: bool td_checkbox_get(const td_widget_t *w);
+td_widgets.h: void td_checkbox_set(td_widget_t *w, bool checked);
+td_widgets.h: void td_progress_set(td_widget_t *w, int percent);
+td_widgets.h: void td_list_set_count(td_widget_t *w, int count);
+td_widgets.h: int td_list_selected(const td_widget_t *w);
+td_widgets.h: void td_list_set_view(td_widget_t *w, int selected, int scroll);
+td_widgets.h: void td_list_select(td_widget_t *w, int index);
+td_widgets.h: void td_list_set_multi(td_widget_t *w, bool on);
+td_widgets.h: bool td_list_marked(const td_widget_t *w, int index);
+td_widgets.h: void td_list_mark(td_widget_t *w, int index, bool on);
+td_widgets.h: void td_list_mark_all(td_widget_t *w, bool on);
+td_widgets.h: int td_list_marked_count(const td_widget_t *w);
+td_widgets.h: int td_type_ahead(int count, int from, uint32_t key, const char *(*name)(int index, void *user), void *user);
+td_widgets.h: td_window_t *td_msgbox(const char *title, const char *text, const char *buttons, void (*fn)(int button, void *user), void *user);
+td_widgets.h: td_window_t *td_inputbox(const char *title, const char *prompt, const char *initial, void (*fn)(const char *text, void *user), void *user);
+td_widgets.h: td_window_t *td_passwordbox(const char *title, const char *prompt, void (*fn)(const char *text, void *user), void *user);
+td_wm.h: #define TD_WIN_MOVABLE 0x0001u
+td_wm.h: #define TD_WIN_RESIZABLE 0x0002u
+td_wm.h: #define TD_WIN_CLOSABLE 0x0004u
+td_wm.h: #define TD_WIN_MODAL 0x0008u
+td_wm.h: #define TD_WIN_RAW_KEYS 0x0010u
+td_wm.h: #define TD_WIN_MOUSE_MOVES 0x0020u
+td_wm.h: #define TD_WIN_HIDDEN 0x0100u
+td_wm.h: #define TD_WIN_MAXIMIZED 0x0200u
+td_wm.h: #define TD_WIN_FULLSCREEN 0x0400u
+td_wm.h: #define TD_WIN_NO_FOCUS 0x0800u
+td_wm.h: #define TD_WIN_DEFAULT (TD_WIN_MOVABLE | TD_WIN_RESIZABLE | TD_WIN_CLOSABLE)
+td_wm.h: #define TD_START_USER_MAX 16
+td_wm.h: #define TD_MAX_ICON_PLACES 96
+td_wm.h: #define TD_THEME_CLASSIC 0
+td_wm.h: #define TD_THEME_DARK 1
+td_wm.h: #define TD_THEME_DEFAULT TD_THEME_DARK
+td_wm.h: typedef struct td_window td_window_t;
+td_wm.h: typedef struct td_widget td_widget_t;
+td_wm.h: void td_wm_set_input_gate(bool locked, td_window_t *window);
+td_wm.h: typedef struct { char path[TD_PATH_MAX]; char name[48]; bool is_dir; } td_drag_item_t;
+td_wm.h: typedef struct { const char *title; td_rect_t rect; uint16_t flags; int min_w, min_h; void (*on_draw)(td_window_t *win, int client_w, int client_h); bool (*on_event)(td_window_t *win, const td_event_t *ev); void (*on_close)(td_window_t *win); bool (*on_close_request)(td_window_t *win); void (*on_tick)(td_window_t *win); uint32_t tick_ms; bool (*on_drag_start)(td_window_t *win, int x, int y, td_drag_item_t *item); bool (*on_drag_more)(td_window_t *win, int index, td_drag_item_t *item); bool (*on_drop)(td_window_t *win, int x, int y, const td_drag_item_t *item); const char *icon; void *user; } td_window_desc_t;
+td_wm.h: struct td_window { bool used; uint8_t id; uint32_t generation; char title[TD_TITLE_MAX]; td_rect_t rect; td_rect_t restore_rect; uint16_t flags; int min_w, min_h; td_widget_t *widgets; td_widget_t *focus; bool incomplete; void (*on_draw)(td_window_t *win, int client_w, int client_h); bool (*on_event)(td_window_t *win, const td_event_t *ev); void (*on_close)(td_window_t *win); bool (*on_close_request)(td_window_t *win); void (*on_tick)(td_window_t *win); bool (*on_drag_start)(td_window_t *win, int x, int y, td_drag_item_t *item); bool (*on_drag_more)(td_window_t *win, int index, td_drag_item_t *item); bool (*on_drop)(td_window_t *win, int x, int y, const td_drag_item_t *item); int timer_id; const char *icon; void *user; };
+td_wm.h: td_window_t *td_win_create(const td_window_desc_t *desc);
+td_wm.h: void td_win_close(td_window_t *win);
+td_wm.h: void td_win_request_close(td_window_t *win);
+td_wm.h: void td_win_focus(td_window_t *win);
+td_wm.h: td_window_t *td_win_focused(void);
+td_wm.h: void td_win_set_title(td_window_t *win, const char *title);
+td_wm.h: void td_win_move(td_window_t *win, int x, int y);
+td_wm.h: void td_win_resize(td_window_t *win, int w, int h);
+td_wm.h: void td_win_minimize(td_window_t *win);
+td_wm.h: void td_win_toggle_maximize(td_window_t *win);
+td_wm.h: void td_win_set_fullscreen(td_window_t *win, bool on);
+td_wm.h: td_rect_t td_win_client(const td_window_t *win);
+td_wm.h: void td_win_invalidate(td_window_t *win);
+td_wm.h: bool td_win_is_open(const td_window_t *win);
+td_wm.h: void td_wm_init(int cols, int rows);
+td_wm.h: void td_wm_set_screen_size(int cols, int rows);
+td_wm.h: void td_wm_screen_size(int *cols, int *rows);
+td_wm.h: void td_wm_set_monitors(const td_rect_t *mons, int count, int main);
+td_wm.h: int td_wm_monitors(td_rect_t *mons, int max, int *main);
+td_wm.h: td_rect_t td_wm_main_monitor(void);
+td_wm.h: int td_wm_monitor_of(td_window_t *win);
+td_wm.h: bool td_win_move_to_monitor(td_window_t *win, int index);
+td_wm.h: void td_wm_dispatch(const td_event_t *ev);
+td_wm.h: void td_wm_compose(td_buffer_t *back);
+td_wm.h: bool td_wm_needs_redraw(void);
+td_wm.h: void td_wm_invalidate(void);
+td_wm.h: void td_wm_toggle_start_menu(void);
+td_wm.h: void td_wm_add_start_item(const char *label, void (*fn)(void));
+td_wm.h: typedef struct { int (*count)(void *user); const char *(*label)(int i, void *user); const char *(*icon)(int i, void *user); void (*open)(int i, void *user); void *user; } td_start_provider_t;
+td_wm.h: void td_wm_set_start_provider(const td_start_provider_t *provider);
+td_wm.h: void td_wm_close_all(void);
+td_wm.h: void td_wm_set_kiosk(bool on, bool (*hook)(const td_event_t *ev));
+td_wm.h: bool td_wm_kiosk(void);
+td_wm.h: typedef struct { bool (*text)(char *buf, int cap); void (*click)(int button, int x, int y); bool (*parts)(char *time, int tcap, char *date, int dcap); } td_clock_provider_t;
+td_wm.h: void td_wm_set_clock(const td_clock_provider_t *clock);
+td_wm.h: void td_wm_set_user_label(const char *label);
+td_wm.h: typedef enum { TD_UI_SMALL, TD_UI_MEDIUM, TD_UI_LARGE } td_ui_size_t;
+td_wm.h: void td_wm_set_icon_size(td_ui_size_t size);
+td_wm.h: td_ui_size_t td_wm_icon_size(void);
+td_wm.h: typedef struct { uint32_t key; int16_t col, row; } td_icon_place_t;
+td_wm.h: void td_wm_set_icon_arrange(bool on);
+td_wm.h: bool td_wm_icon_arrange(void);
+td_wm.h: int td_wm_icon_places(td_icon_place_t *out, int max);
+td_wm.h: void td_wm_set_icon_places(const td_icon_place_t *places, int count);
+td_wm.h: void td_wm_on_icons_moved(void (*fn)(void));
+td_wm.h: void td_wm_pin_icon(const char *app_name);
+td_wm.h: uint32_t td_wm_icon_key(bool file, const char *name);
+td_wm.h: void td_wm_set_start_menu_size(td_ui_size_t size);
+td_wm.h: td_ui_size_t td_wm_start_menu_size(void);
+td_wm.h: void td_wm_set_taskbar_size(td_ui_size_t size);
+td_wm.h: td_ui_size_t td_wm_taskbar_size(void);
+td_wm.h: void td_wm_set_window_size(td_ui_size_t size);
+td_wm.h: td_ui_size_t td_wm_window_size(void);
+td_wm.h: int td_wm_title_rows(void);
+td_wm.h: const char *td_ui_size_name(td_ui_size_t size);
+td_wm.h: typedef void (*td_menu_fn)(int item, void *user);
+td_wm.h: void td_menu_popup(int x, int y, const char *const *items, int count, td_menu_fn fn, void *user);
+td_wm.h: void td_menu_close(void);
+td_wm.h: bool td_menu_is_open(void);
+td_wm.h: int td_wm_windows(td_window_t **out, int max);
+td_wm.h: int td_wm_desktop_rows(void);
+td_wm.h: td_window_t *td_wm_window_at(int x, int y);
+td_wm.h: bool td_wm_mouse_pos(int *x, int *y);
+td_wm.h: void td_wm_set_pointer(bool on);
+td_wm.h: typedef struct { const char *name; void (*launch)(void); const char *icon; } td_app_t;
+td_wm.h: int td_app_register(const td_app_t *app);
+td_wm.h: int td_app_count(void);
+td_wm.h: const td_app_t *td_app_get(int index);
+td_wm.h: bool td_app_launch(const char *name);
+td_wm.h: typedef struct { const char *name; uint8_t desktop_fg, desktop_bg; uint8_t win_fg, win_bg; uint8_t frame_fg, frame_active_fg; uint8_t title_fg, title_bg; uint8_t title_inactive_fg, title_inactive_bg; uint8_t button_fg, button_bg; uint8_t focus_fg, focus_bg; uint8_t input_fg, input_bg; uint8_t select_fg, select_bg; uint8_t shadow_fg, shadow_bg; uint8_t taskbar_fg, taskbar_bg; uint8_t taskbar_active_fg, taskbar_active_bg; uint8_t menu_fg, menu_bg, menu_select_fg, menu_select_bg; uint8_t accent; uint8_t dim; uint8_t icon_fg; uint8_t close_hover_fg, close_hover_bg; } td_theme_t;
+td_wm.h: const td_theme_t *td_theme(void);
+td_wm.h: int td_theme_count(void);
+td_wm.h: const td_theme_t *td_theme_get(int index);
+td_wm.h: void td_theme_set(int index);
+td_wm.h: int td_theme_index(void);
+td_wm.h: void td_desktop_set_pattern(uint32_t ch);
+td_wm.h: uint32_t td_desktop_pattern(void);
+td_wm.h: void td_desktop_set_icons(bool on);
+td_wm.h: bool td_desktop_icons(void);
+td_wm.h: typedef struct { int (*count)(void *user); const char *(*label)(int index, void *user); const char *(*icon)(int index, void *user); int (*icon_fg)(int index, void *user); void (*open)(int index, void *user); void (*context)(int index, int x, int y, void *user); bool (*drag)(int index, td_drag_item_t *item, void *user); void (*drop)(int index, const td_drag_item_t *item, void *user); void *user; void (*remove)(bool for_good, void *user); } td_desktop_provider_t;
+td_wm.h: int td_desktop_selection(int *items, int max);
+td_wm.h: bool td_drag_active(void);
+td_wm.h: void td_desktop_set_provider(const td_desktop_provider_t *provider);

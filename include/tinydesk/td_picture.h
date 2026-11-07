@@ -82,21 +82,7 @@ void td_palette_rgb(uint8_t i, uint8_t rgb[3]);
   /* Sixel data for w x h palette indexes, through write (any chunk sizes). */
 void td_sixel_encode(const uint8_t *px, int w, int h, void (*write)(void *user, const char *s, int n), void *user);
 
-  /* Used by the core (src/td.c) around composing and sending a frame. */
-void td_pictures_begin(void);
 int td_pictures_available(void);
- /* Retain an existing image while its replacement is transmitted; update
- * the logical front cells without emitting their low-resolution fallback. */
-void td_pictures_mark(td_buffer_t *front, const td_buffer_t *back);
-void td_pictures_send(void (*write)(void *user, const char *s, int n), void *user, bool *cursor_moved);
 void td_pictures_forget(void);   /* the terminal was set up anew: send all again */
- /* Only pictures inside area go out (w 0: all), placed from its corner:
- * the primary terminal's display on an extended screen. */
-void td_pictures_clip(td_rect_t area);
- /* The window manager, while composing: pictures added so far, and drop
- * those of first .. last - 1 that r overlaps (a window, menu or the taskbar
- * drawn above them), so they cannot cover it. */
-int td_pictures_count(void);
-void td_pictures_cover(int first, int last, td_rect_t r);
 
 #endif
