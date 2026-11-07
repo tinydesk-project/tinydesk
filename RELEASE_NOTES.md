@@ -7,6 +7,13 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## Unreleased
+
+* **Arduino Nano ESP32:** the Desktop edition on a board whose USB-C connector
+  is wired to the ESP32-S3's own USB Serial/JTAG peripheral rather than to a
+  bridge chip, so the desktop is served on that port instead of UART0 and
+  UART0 stays free.
+
 ## New in 0.2.0
 
 * **ESP32-S3:** the Desktop edition for an ESP32-S3 with 16 MB flash and

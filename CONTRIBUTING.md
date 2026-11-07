@@ -6,8 +6,8 @@ revision when reporting a problem.
 1. Clone with `git clone --recursive` (the shell is the submodule
    `third_party/tdsh`, repository `tinydesk-shell`).
 2. Build and test on the PC: `cmake -B build -G Ninja && cmake --build build && ctest --test-dir build`.
-3. Build the firmware you touched: `idf.py build` in `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb`
-   or `ports/esp32s3` (ESP-IDF 5.3.1). Code in `ports/esp_idf` is shared by all four.
+3. Build the firmware you touched: `idf.py build` in `ports/esp32c6`, `ports/esp32`, `ports/esp32-4mb`,
+   `ports/esp32s3` or `ports/nanoesp32` (ESP-IDF 5.3.1). Code in `ports/esp_idf` is shared by all five.
 4. Describe what changed for users (and the API) in the pull request, so the documentation
    and the changelog can follow. Add yourself to [CONTRIBUTORS.md](CONTRIBUTORS.md).
 5. Set up formatting once:

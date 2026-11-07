@@ -1,4 +1,4 @@
-﻿# tinydesk firmware for the Arduino Nano ESP32 (ESP32-S3, NORA-W106,
+# tinydesk firmware for the Arduino Nano ESP32 (ESP32-S3, NORA-W106,
 # 16 MB flash, 8 MB Octal PSRAM), ESP-IDF 5.3.1.
 #
 #   idf.py set-target esp32s3
@@ -30,6 +30,13 @@ else()
     set(PROJECT_VER "0.2.0")
 endif()
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+# The desktop runs on the chip's USB Serial/JTAG peripheral (GPIO19/20)
+# rather than UART0, and the machine module's pin rules have to know that.
+# Project-wide, set before project() so every component sees it -- see
+# TD_LINK_USJ in ports/common/python/hw/td_py_hw_pins.h.
+add_compile_definitions(TD_LINK_USJ)
+
 project(tinydesk)
 
 # Fresh build date and time in every firmware image.

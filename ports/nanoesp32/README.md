@@ -26,8 +26,13 @@ partition table is not rebuilt from the sketch alone. Read the flash out first
 if it holds anything that cannot be regenerated:
 
 ```
-esptool --port /dev/ttyACM0 --before no_reset read-flash 0 0x1000000 backup.bin
+esptool --port /dev/ttyACM0 --before usb_reset read_flash 0 0x1000000 backup.bin
 ```
+
+The underscore in `read_flash` is esptool 4.x's spelling, and this is the
+version ESP-IDF 5.3.1 installs; the older hyphenated name is not accepted.
+`--before usb_reset` is the same rule as below: a reset over this port goes
+through the USB peripheral, not a UART's RTS line.
 
 **A reset over USB-JTAG is not a UART reset.** `esptool --after hard_reset`
 toggles RTS, which does nothing on this port, and `--before no_reset` leaves the
@@ -39,13 +44,6 @@ esptool --port /dev/ttyACM0 --before usb_reset --after watchdog_reset read-mac
 ```
 
 or unplug and replug. Plain `idf.py flash` is correct and needs neither.
-
-## The shell's root is `/fs`
-
-The desktop's Terminal starts in `/root`, which is `/fs/root` — the LittleFS
-volume mounted from the `storage` partition. A shell path of `/Desktop/x` means
-`/fs/Desktop/x`; the Editor's "Save as" dialog writes to the Desktop, so a file
-saved as `untitled.txt` is at `/fs/root/Desktop/untitled.txt`.
 
 ## Not built here
 
