@@ -278,6 +278,49 @@ static void test_icons_and_hover(void)
     CHECK(!td_wm_needs_redraw());
 }
 
+/* The start menu's tail: a desktop whose registry and start items together
+ * exceed what the menu can show must still reach "Redraw screen" and "Exit".
+ * Exit is the only caller of td_quit(), so an entry that cannot be chosen is a
+ * desktop that cannot be left from its own menu.
+ *
+ * No build configuration is needed to reach this: at the default TD_MAX_APPS
+ * of 16, two extra start items leave the old fixed menu holding 15 apps, so the
+ * sixteenth is dropped and every entry below the separator shifts up by one. */
+static void test_start_menu_tail(void)
+{
+    static td_buffer_t back;
+    static char names[TD_MAX_APPS][24];
+    static td_app_t apps[TD_MAX_APPS];
+
+    /* Fill the registry: the earlier tests registered two apps, the rest are
+     * named here so a dropped one is visible in the composed frame. */
+    for (int i = td_app_count(); i < TD_MAX_APPS; i++)
+    {
+        snprintf(names[i], sizeof(names[i]), "Tail app %d", i);
+        apps[i].name = names[i];
+        apps[i].launch = launch_app;
+        apps[i].icon = NULL;
+        CHECK_EQ(td_app_register(&apps[i]), 0);
+    }
+    CHECK_EQ(td_app_count(), TD_MAX_APPS);
+    td_wm_add_start_item("Extra one", launch_app);
+    td_wm_add_start_item("Extra two", launch_app);
+
+    /* Both fixed entries are on the menu.  Their labels appear nowhere else on
+     * the desktop, unlike an app's name, which is also drawn under its icon. */
+    td_wm_toggle_start_menu();
+    td_wm_compose(&back);
+    CHECK(find_text(&back, "Redraw screen") >= 0);
+    CHECK(find_text(&back, "Exit") >= 0);
+
+    /* END is the last item, and the last item quits.  An offset computed from
+     * the registry rather than from what the menu placed lands on "Redraw
+     * screen" instead, which returns true and leaves the desktop running. */
+    key(TD_KEY_END, 0);
+    key(TD_KEY_ENTER, 0);
+    CHECK(!td_step());
+}
+
 int main(void)
 {
     td_init(&s_hal);   /* no size answer: falls back to 80x25 */
@@ -366,5 +409,6 @@ int main(void)
     test_icons_and_hover();
     test_icon_labels_utf8();
     test_drag_and_drop();
+    test_start_menu_tail();
     return TD_TEST_RESULT();
 }

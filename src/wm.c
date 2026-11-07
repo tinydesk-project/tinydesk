@@ -640,8 +640,14 @@ bool td_app_launch(const char *name)
 /* ------------------------------------------------------ popup menus */
 
 /* One popup at a time: the start menu or a right-click (context) menu.
- * Labels are copied; "-" is a separator line. */
-#define MENU_MAX   20
+ * Labels are copied; "-" is a separator line.
+ *
+ * MENU_MAX is sized from the two limits rather than picked, because a menu
+ * that cannot hold every app silently loses the tail of its list -- and the
+ * tail is where "Exit" is: every app, every extra start-menu entry, and the
+ * three fixed entries below the separator (the separator itself, "Redraw
+ * screen" and "Exit"). */
+#define MENU_MAX   (TD_MAX_APPS + START_EXTRA_MAX + 3)
 #define MENU_LABEL 28
 
 static struct
@@ -778,12 +784,18 @@ static void menu_activate(int i)
         fn(i, user);
 }
 
+/* How many apps the open start menu was able to show.  The callback below is
+ * handed the index of the item in the menu as drawn, and the app section can
+ * be shorter than s_app_count when the menu cannot hold every app, so the
+ * entries after it have to be offset by this and not by s_app_count. */
+static int s_menu_apps;
+
 /* The start menu: every app, then the extra entries. */
 static void start_menu_chosen(int i, void *user)
 {
     (void)user;
-    int extra = i - s_app_count - 1;       /* after the separator */
-    if (i < s_app_count)
+    int extra = i - s_menu_apps - 1;       /* after the separator */
+    if (i < s_menu_apps)
         launch_app(s_apps[i]);
     else if (extra >= 0 && extra < s_start_extra_count)
         s_start_extra[extra].fn();
@@ -868,6 +880,7 @@ void td_wm_toggle_start_menu(void)
         glyphs[n] = s_apps[i]->icon;
         items[n++] = s_apps[i]->name;
     }
+    s_menu_apps = n;
     glyphs[n] = NULL;
     items[n++] = "-";
     for (int i = 0; i < s_start_extra_count; i++)
