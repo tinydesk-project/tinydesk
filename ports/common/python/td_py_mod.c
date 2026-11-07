@@ -21,6 +21,7 @@
 #include "td_mqtt.h"
 #include "td_py.h"
 #include "td_py_desktop.h"
+#include "td_py_tdsh.h"
 #include "tinydesk/td.h"
 
 static mp_obj_t td_version(void)
@@ -29,24 +30,8 @@ static mp_obj_t td_version(void)
 }
 static MP_DEFINE_CONST_FUN_OBJ_0(td_version_obj, td_version);
 
-/* shell(line): runs in the script's session, starting from the script's
- * current directory; a `cd` in it does not move the shell. Output goes to
- * the same place as print(). Returns the exit status. */
-static mp_obj_t td_shell(mp_obj_t line_in)
-{
-    const char *line = mp_obj_str_get_str(line_in);
-    tdsh_session_t *session = td_py_session();
-    if (!session)
-        mp_raise_OSError(MP_EIO);
-    const char *cwd = mp_obj_str_get_str(mp_vfs_getcwd());
-    char saved[TDSH_MAX_PATH];
-    memcpy(saved, session->cwd, sizeof(saved));
-    snprintf(session->cwd, sizeof(session->cwd), "%s", cwd);
-    int status = tdsh_execute_line(session, line);
-    memcpy(session->cwd, saved, sizeof(saved));
-    return MP_OBJ_NEW_SMALL_INT(status);
-}
-static MP_DEFINE_CONST_FUN_OBJ_1(td_shell_obj, td_shell);
+/* shell(line) is the shell's tdsh.shell() (td_py_tdsh.c): the same
+ * function under TinyDesk's module name. */
 
 static mp_obj_t td_log(size_t n_args, const mp_obj_t *args)
 {
@@ -203,7 +188,7 @@ static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(td_modbus_write_obj, 5, 5, td_modbus_
 static const mp_rom_map_elem_t td_module_globals_table[] = {
     {MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_tinydesk)},
     {MP_ROM_QSTR(MP_QSTR_version), MP_ROM_PTR(&td_version_obj)},
-    {MP_ROM_QSTR(MP_QSTR_shell), MP_ROM_PTR(&td_shell_obj)},
+    {MP_ROM_QSTR(MP_QSTR_shell), MP_ROM_PTR(&td_py_shell_obj)},
     {MP_ROM_QSTR(MP_QSTR_log), MP_ROM_PTR(&td_log_obj)},
     {MP_ROM_QSTR(MP_QSTR_mqtt_publish), MP_ROM_PTR(&td_mqtt_pub_obj)},
     {MP_ROM_QSTR(MP_QSTR_modbus_read), MP_ROM_PTR(&td_modbus_read_obj)},

@@ -104,6 +104,10 @@ extern const struct _mp_obj_module_t mp_module_sys;
 #undef MODULE_DEF_SYS
 #define MODULE_DEF_SYS { MP_ROM_QSTR(MP_QSTR_sys), MP_ROM_PTR(&mp_module_sys) },
 
+extern const struct _mp_obj_module_t td_py_tdsh_module;
+#undef MODULE_DEF_TDSH
+#define MODULE_DEF_TDSH { MP_ROM_QSTR(MP_QSTR_tdsh), MP_ROM_PTR(&td_py_tdsh_module) },
+
 extern const struct _mp_obj_module_t td_py_module;
 #undef MODULE_DEF_TINYDESK
 #define MODULE_DEF_TINYDESK { MP_ROM_QSTR(MP_QSTR_tinydesk), MP_ROM_PTR(&td_py_module) },
@@ -122,6 +126,7 @@ extern const struct _mp_obj_module_t mp_module_tls;
     MODULE_DEF_NETWORK \
     MODULE_DEF_SOCKET \
     MODULE_DEF_SYS \
+    MODULE_DEF_TDSH \
     MODULE_DEF_TINYDESK \
     MODULE_DEF_TLS \
     MODULE_DEF__ASYNCIO \
