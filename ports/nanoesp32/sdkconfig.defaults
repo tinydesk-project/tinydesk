@@ -1,0 +1,77 @@
+# tinydesk on the Arduino Nano ESP32 (ESP32-S3, NORA-W106, 16 MB flash,
+# 8 MB Octal PSRAM), ESP-IDF 5.3.1.
+
+# --- Target ---------------------------------------------------------------
+CONFIG_IDF_TARGET_ESP32S3=y
+
+# --- The USB Serial/JTAG port belongs to tinydesk alone -------------------
+# The board has no USB-UART bridge: USB-C is the ESP32-S3's own USB
+# Serial/JTAG peripheral, which is what the desktop is drawn to
+# (main/link_usj.c). The ESP-IDF console is off; logs go to the Log Viewer
+# app (esp_log_set_vprintf in main.c). UART0 is free (it is on D0/D1 here,
+# nowhere else), so it is left for the shell's use.
+CONFIG_ESP_CONSOLE_NONE=y
+CONFIG_ESP_CONSOLE_SECONDARY_NONE=y
+
+# Even with the console off, the ROM printf used by the bootloader and
+# early start-up can write to USB Serial/JTAG. Keep boot quiet: the
+# bootloader only reports warnings, and the app starts at WARN and raises
+# the level to INFO in app_main() (after which logs only reach the Log
+# Viewer). app_main() also detaches the ROM's USB output, and the desktop
+# redraws the whole screen on start.
+CONFIG_BOOTLOADER_LOG_LEVEL_WARN=y
+CONFIG_LOG_DEFAULT_LEVEL_WARN=y
+CONFIG_LOG_MAXIMUM_LEVEL_INFO=y
+
+CONFIG_FREERTOS_HZ=1000
+
+# --- Flash and Octal PSRAM ------------------------------------------------
+# 16 MB flash (quad, 3.3 V, as fitted); the NORA-W106's PSRAM is 8 MB octal.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHMODE_DIO=y
+CONFIG_ESPTOOLPY_FLASHFREQ_80M=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_TYPE_AUTO=y
+CONFIG_SPIRAM_USE_MALLOC=y
+CONFIG_SPIRAM_TRY_ALLOCATE_WIFI_LWIP=y
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=4096
+
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+
+# --- TinyDesk Shell settings (as on the C6) -------------------------------
+CONFIG_ESP_SYSTEM_EVENT_TASK_STACK_SIZE=6144
+CONFIG_VFS_SUPPORT_DIR=y
+# Board wiring (RS-485, W6100 Ethernet, SD card...) is not configured here:
+# see board.example.conf.
+
+# --- Firmware updates (OTA) and TLS ---------------------------------------
+CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE=y
+CONFIG_ESP_HTTPS_OTA_ALLOW_HTTP=y
+CONFIG_MBEDTLS_DYNAMIC_BUFFER=y
+
+# Static buffers of tinydesk and TinyDesk Shell go to PSRAM (main/extram.lf).
+CONFIG_SPIRAM_ALLOW_BSS_SEG_EXTERNAL_MEMORY=y
+
+# Memory protection off, as on the classic ESP32 (which has none): py runs
+# @micropython.native/viper code and native .mpy files (root only) from
+# internal RAM, which the protection keeps non-executable.
+CONFIG_ESP_SYSTEM_MEMPROT_FEATURE=n
+
+# Task Manager: task list and CPU shares (a few bytes per task).
+CONFIG_FREERTOS_USE_TRACE_FACILITY=y
+CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS=y
+
+# FreeRTOS kernel code (non-ISR functions) in flash: frees about 8 KB of
+# IRAM, which the RS-485 driver and the rest of the firmware need.
+CONFIG_FREERTOS_PLACE_FUNCTIONS_INTO_FLASH=y
+
+# SD card (sd mount): FAT with long file names in UTF-8, the name buffer on
+# the heap only while a call runs.
+CONFIG_FATFS_LFN_HEAP=y
+CONFIG_FATFS_MAX_LFN=255
+CONFIG_FATFS_API_ENCODING_UTF_8=y

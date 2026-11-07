@@ -2,12 +2,25 @@
  * test_py_pins.c - the pins and UARTs the machine module leaves to
  * TinyDesk (third_party/tdsh/python/hw/td_py_hw_pins.c): the board
  * configuration's, the desktop's link, and the strapping pins.
+ *
+ * Built twice: once as the plain rules, once as the rules of a board whose
+ * desktop link is USB (TD_LINK_USJ). The second build says so with
+ * TD_EXPECT_USJ, and this file refuses to compile a disagreeing pair -- a USJ
+ * target that lost the define would otherwise just compile the other half of
+ * the file and pass, which is the failure this test exists to catch.
  */
 #include <string.h>
 
 #include "td_py_hw_pins.h"
 #include "td_test.h"
 #include "tdsh_board.h"
+
+#if defined(TD_EXPECT_USJ) && !defined(TD_LINK_USJ)
+#error "the TD_LINK_USJ test must be built with TD_LINK_USJ defined"
+#endif
+#if !defined(TD_EXPECT_USJ) && defined(TD_LINK_USJ)
+#error "a TD_LINK_USJ build must not run the plain expectations"
+#endif
 
 static bool owner_is(int pin, td_hw_chip_t chip, const char *expect)
 {
@@ -38,15 +51,27 @@ int main(void)
     CHECK(owner_is(20, TD_HW_CHIP_ESP32, NULL));   /* eth.spi_mhz */
     CHECK(owner_is(25, TD_HW_CHIP_ESP32, NULL));
 
-    /* The desktop's link: UART0 on the classic ESP32 and the ESP32-S3, USB on the C6. */
+    /* The desktop's link: UART0 on the classic ESP32 and the ESP32-S3, USB on the
+     * C6, and USB on an ESP32-S3 that defines TD_LINK_USJ (the Nano ESP32). */
     CHECK(owner_is(1, TD_HW_CHIP_ESP32, "the desktop's serial link"));
     CHECK(owner_is(3, TD_HW_CHIP_ESP32, "the desktop's serial link"));
     CHECK(owner_is(1, TD_HW_CHIP_ESP32C6, NULL));
     CHECK(owner_is(12, TD_HW_CHIP_ESP32C6, "USB, the desktop's link"));
     CHECK(owner_is(13, TD_HW_CHIP_ESP32C6, "USB, the desktop's link"));
     CHECK(owner_is(12, TD_HW_CHIP_ESP32, NULL));
+#ifdef TD_LINK_USJ
+    /* The Arduino Nano ESP32: the desktop is on the USB peripheral, so D-/D+
+     * are the link and UART0's pins are free. */
+    CHECK(owner_is(19, TD_HW_CHIP_ESP32S3, "USB, the desktop's link"));
+    CHECK(owner_is(20, TD_HW_CHIP_ESP32S3, "USB, the desktop's link"));
+    CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, NULL));
+    CHECK(owner_is(44, TD_HW_CHIP_ESP32S3, NULL));
+#else
     CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, "the desktop's serial link"));
     CHECK(owner_is(44, TD_HW_CHIP_ESP32S3, "the desktop's serial link"));
+    CHECK(owner_is(19, TD_HW_CHIP_ESP32S3, NULL));
+    CHECK(owner_is(20, TD_HW_CHIP_ESP32S3, NULL));
+#endif
     CHECK(owner_is(1, TD_HW_CHIP_ESP32S3, NULL));
 
     /* UARTs: RS-485's, and UART0 as the classic ESP32's console. */
@@ -54,7 +79,11 @@ int main(void)
     CHECK(!td_hw_uart_kept(2, TD_HW_CHIP_ESP32));
     CHECK(td_hw_uart_kept(0, TD_HW_CHIP_ESP32));
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32C6));
+#ifdef TD_LINK_USJ
+    CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));   /* the link is USB */
+#else
     CHECK(td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
+#endif
 
     /* A console on other pins frees UART0's usual ones. */
     CHECK_EQ(tdsh_board_load("console.uart = 2\nconsole.tx = 22\nconsole.rx = 21\n", NULL), 0);
@@ -73,7 +102,12 @@ int main(void)
     CHECK(owner_is(43, TD_HW_CHIP_ESP32S3, NULL));
     CHECK(owner_is(44, TD_HW_CHIP_ESP32S3, NULL));
     CHECK(!td_hw_uart_kept(0, TD_HW_CHIP_ESP32S3));
+#ifdef TD_LINK_USJ
+    /* USB carries the desktop here: the link comes first, a USB host cannot be. */
+    CHECK(owner_is(19, TD_HW_CHIP_ESP32S3, "USB, the desktop's link"));
+#else
     CHECK(owner_is(19, TD_HW_CHIP_ESP32S3, "usb.host"));
+#endif
     CHECK(owner_is(17, TD_HW_CHIP_ESP32S3, "rs485.1.tx"));
 
     CHECK(td_hw_pin_strapping(0, TD_HW_CHIP_ESP32));

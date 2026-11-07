@@ -58,9 +58,15 @@ static volatile bool s_cancel;
 static volatile bool s_busy;
 static int64_t s_start_us;
 
-/* The official update feed. */
+/* The official update feed. A port whose chip is the same as another port's
+ * but whose firmware is not interchangeable defines TD_UPDATE_BOARD: the
+ * Nano ESP32 is an ESP32-S3 served over USB, the CrowPanel an ESP32-S3 with
+ * an LCD, and the esp32s3 image would replace either with a UART build the
+ * board cannot display. (From PR #15, by aquasock.) */
 #define UPDATE_SITE "https://tinydesk-project.github.io/install/"
-#if CONFIG_IDF_TARGET_ESP32C6
+#ifdef TD_UPDATE_BOARD
+#define UPDATE_BOARD TD_UPDATE_BOARD
+#elif CONFIG_IDF_TARGET_ESP32C6
 #define UPDATE_BOARD "esp32c6"
 #elif CONFIG_IDF_TARGET_ESP32S3
 #define UPDATE_BOARD "esp32s3"

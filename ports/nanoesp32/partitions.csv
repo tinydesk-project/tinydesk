@@ -1,0 +1,10 @@
+# tinydesk on the Arduino Nano ESP32 (16 MB flash): the ports/esp32s3 layout,
+# two 4 MB OTA slots (the most code the chip's flash cache can map), 7.9 MB /fs.
+# It replaces the Arduino table (see README.md before flashing).
+# Name,     Type, SubType,  Offset,   Size,
+nvs,        data, nvs,      0x9000,   0x6000,
+phy_init,   data, phy,      0xF000,   0x1000,
+ota_0,      app,  ota_0,    0x10000,  0x400000,
+ota_1,      app,  ota_1,    0x410000, 0x400000,
+otadata,    data, ota,      0x810000, 0x2000,
+storage,    data, littlefs, 0x820000, 0x7E0000,
