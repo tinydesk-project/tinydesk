@@ -20,6 +20,7 @@
 #include "td_modbus.h"
 #include "td_mqtt.h"
 #include "td_py.h"
+#include "td_py_desktop.h"
 #include "tinydesk/td.h"
 
 static mp_obj_t td_version(void)
@@ -216,3 +217,30 @@ const mp_obj_module_t td_py_module = {
 };
 
 MP_REGISTER_MODULE(MP_QSTR_tinydesk, td_py_module);
+
+/* help() with no argument: the shell's modules and TinyDesk's (built with
+ * HELP_EXTERNAL, see td_py.h). */
+const char td_py_help_text[] =
+    "MicroPython in TinyDesk\n"
+    "\n"
+    "Run a script from the shell with:  py FILE [ARG...]\n"
+    "Leave this prompt with Ctrl+D or exit(). Ctrl+C stops a running script.\n"
+    "\n"
+    "Modules: sys, os, time, json, re, math, random, binascii, hashlib, heapq,\n"
+    "collections, struct, errno, gc, select, asyncio, micropython, machine and\n"
+    "neopixel (pins and buses, for root), tdui (windows on the desktop),\n"
+    "tdapp (what tdui apps share) and tinydesk:\n"
+    "  tinydesk.shell('ls -l')               run a shell command, get its status\n"
+    "  tinydesk.log('text')                  add a line to the Log Viewer\n"
+    "  tinydesk.mqtt_publish(topic, payload) publish on the connected broker\n"
+    "  tinydesk.modbus_read(target, unit, table, addr, count=1)\n"
+    "  tinydesk.modbus_write(target, unit, table, addr, values)\n"
+    "Files: open(), os.listdir() etc. use TinyDesk paths (/home/root, ...).\n"
+    "\n"
+    "help('modules') lists the modules; help(obj) shows an object's members.\n";
+
+void td_py_desktop_setup(bool (*desktop_check)(void))
+{
+    td_py_set_desktop_check(desktop_check);
+    td_py_add_cleanup(td_tdui_release);   /* a script's windows close when it ends */
+}

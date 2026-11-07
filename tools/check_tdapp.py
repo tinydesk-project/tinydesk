@@ -104,7 +104,7 @@ def main():
     for e in errors:
         print("check_tdapp:", e)
     if errors:
-        print("check_tdapp: if tdapp.py changed, regenerate third_party/micropython with tools/micropython/gen.sh")
+        print("check_tdapp: if tdapp.py changed, regenerate ports/common/python/gen with tools/micropython/gen.sh")
         return 1
     print("check_tdapp: tdapp %d.%d works: pages, page canvases, Field, Link.put with a binding, require"
           % tuple(got["version"]))

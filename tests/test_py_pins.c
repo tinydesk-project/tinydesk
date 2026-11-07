@@ -1,6 +1,6 @@
 /*
  * test_py_pins.c - the pins and UARTs the machine module leaves to
- * TinyDesk (ports/common/python/hw/td_py_hw_pins.c): the board
+ * TinyDesk (third_party/tdsh/python/hw/td_py_hw_pins.c): the board
  * configuration's, the desktop's link, and the strapping pins.
  */
 #include <string.h>

@@ -25,6 +25,7 @@
 #include "tdsh.h"
 #if defined(TD_WITH_PYTHON)
 #include "td_py.h"
+#include "td_py_desktop.h"
 #endif
 #include "tdsh_terminal.h"
 
@@ -345,7 +346,7 @@ static void shell_main(void)
 #if defined(TD_WITH_PYTHON)
     td_py_register_shell_command();           /* py (MicroPython) */
     td_py_set_break_check(break_requested);   /* Ctrl+C stops a script */
-    td_py_set_desktop_check(on_desktop);      /* tdui windows */
+    td_py_desktop_setup(on_desktop);          /* tinydesk, tdui, tdapp; windows from the desktop */
 #endif
 
     /* Everything the shell prints goes to the Terminal window. */

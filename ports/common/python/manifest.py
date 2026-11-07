@@ -1,20 +1,11 @@
-# Python modules frozen into TinyDesk's MicroPython (compiled to bytecode by
-# tools/micropython into third_party/micropython/frozen_content.c).
+# Python modules frozen into TinyDesk's MicroPython: the shell's (asyncio,
+# neopixel) and TinyDesk's own. tools/micropython/gen.sh compiles them to
+# bytecode into ports/common/python/gen/frozen.
+include("$(TDSH_PY_DIR)/manifest.py")
 
-# asyncio; its C part (_asyncio) and select are built in (mpconfigport.h).
-package(
-    "asyncio",
-    ("__init__.py", "core.py", "event.py", "funcs.py", "lock.py", "stream.py"),
-    base_path="$(MPY_DIR)/extmod",
-    opt=3,
-)
-
-# neopixel: RGB LED strips through machine.bitstream (TinyDesk's own).
-module("neopixel.py", base_path="$(PORT_DIR)/modules", opt=3)
-
-# tdui: windows on the desktop, over the _tdui module (TinyDesk's own).
-module("tdui.py", base_path="$(PORT_DIR)/modules", opt=3)
+# tdui: windows on the desktop, over the _tdui module.
+module("tdui.py", base_path="$(TD_PY_DIR)/modules", opt=3)
 
 # tdapp: what most tdui apps share (pages, canvas elements, Modbus / UART
 # links with bound widgets), so an app keeps only its own logic.
-module("tdapp.py", base_path="$(PORT_DIR)/modules", opt=3)
+module("tdapp.py", base_path="$(TD_PY_DIR)/modules", opt=3)

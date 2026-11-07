@@ -3,7 +3,7 @@
     python tools/check_tdui_frozen.py PATH/TO/tdsim
 
 tdui reaches the boards as bytecode frozen into
-third_party/micropython/frozen/frozen_content.c, made by
+ports/common/python/gen/frozen/frozen_content.c, made by
 tools/micropython/gen.sh and committed. Change tdui.py without
 regenerating it and every board still runs the old tdui. This starts the
 simulated desktop (tools/tdsim.c), runs a script in its MicroPython that
@@ -87,7 +87,7 @@ def main():
     for e in errors:
         print("check_tdui_frozen:", e)
     if errors:
-        print("check_tdui_frozen: regenerate third_party/micropython with tools/micropython/gen.sh")
+        print("check_tdui_frozen: regenerate ports/common/python/gen with tools/micropython/gen.sh")
         return 1
     print("check_tdui_frozen: the frozen tdui has all %d module names and %d class members of tdui.py; "
           "api %d.%d, capabilities %s" % (len(want["module"]), sum(len(m) for m in want["classes"].values()),

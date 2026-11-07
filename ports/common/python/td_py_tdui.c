@@ -26,6 +26,7 @@
 #include "py/runtime.h"
 #include "td_apps.h"
 #include "td_py.h"
+#include "td_py_desktop.h"
 #include "tinydesk/td_canvas.h"
 #include "tinydesk/td_picture.h"
 #ifdef ESP_PLATFORM
