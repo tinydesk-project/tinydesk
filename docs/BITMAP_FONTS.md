@@ -1,6 +1,6 @@
 # Generated bitmap fonts
 
-`.tdfont` files can be generated from a desktop font. These
+TinyDesk App Builder can generate `.tdfont` files from a desktop font. These
 immutable files contain only the selected glyphs, so the device needs no TTF
 parser and performs no font generation at runtime. A font is loaded once into
 native graphics memory, shared by text boxes, pictures and buttons, and drawn
@@ -52,7 +52,7 @@ transferring ownership to the desktop task. Malformed files, replaced labels,
 copied pages and script teardown have native tests. Allocation failures report
 an error and release the reserved graphics budget.
 
-A text element's background setting applies transparency per element;
+App Builder's Text background selector applies transparency per text element;
 font files contain glyph coverage rather than a baked background. CLEAR leaves
 the underlying artwork visible. The native terminal fallback is clipped to the
 element rectangle, including long and multiline labels, so it cannot leave

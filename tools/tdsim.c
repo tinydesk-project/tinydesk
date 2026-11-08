@@ -429,7 +429,7 @@ int main(int argc, char **argv)
         s_term.cell_h = ch;
         first++;
     }
-    /* Automation launches apps directly. Login UI tests can
+    /* Automation and App Builder launch apps directly. Login UI tests can
      * opt into the simulator-only root/secret and bob/pw test accounts. */
     bool accounts = argc > first && !strcmp(argv[first], "auth=on");
     if (argc > first && (!strcmp(argv[first], "auth=off") || accounts))
