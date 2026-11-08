@@ -110,7 +110,7 @@ just after start-up, before Wi-Fi):
 | --- | --- | --- |
 | ESP32-C6 | 2.42 MB (3 MB slot, 19 % free) | about 157 KB |
 | ESP32 with PSRAM | 2.26 MB (4 MB slot, 43 % free) | about 218 KB internal + 3.2 MB PSRAM |
-| ESP32 4 MB | 2.18 MB (3 MB slot, 27 % free) | |
+| ESP32 4 MB | 2.18 MB (3 MB slot, 27 % free) | about 70 KB |
 | ESP32-S3 | 2.25 MB (4 MB slot, 44 % free) | about 258 KB internal + 7.2 MB PSRAM |
 | CrowPanel 7.0 | 2.36 MB (2.75 MB slot, 14 % free) | |
 | Arduino Nano ESP32 | 2.19 MB (4 MB slot, 45 % free) | not measured here |
