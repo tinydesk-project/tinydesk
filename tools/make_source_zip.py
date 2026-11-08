@@ -48,7 +48,7 @@ def add_tree(z, src, arc_root, counts):
 
 def version():
     with open(os.path.join(ROOT, "include", "tinydesk", "td.h"), encoding="utf-8") as f:
-        m = re.search(r'#define TD_VERSION "([^"]+)"', f.read())
+        m = re.search(r'#define TD_VERSION\s+"([^"]+)"', f.read())
     return m.group(1) if m else "dev"
 
 

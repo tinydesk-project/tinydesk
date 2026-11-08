@@ -1,10 +1,11 @@
-# tinydesk on ESP32-C6-WROOM-1/1U-N8 (8 MB flash): two 3 MB OTA app slots,
-# 1.9 MB /fs. NVS stays where it was (users, Wi-Fi, settings). The /fs
-# partition moved: back up its files before flashing this table.
+# tinydesk on the ESP32-C6 (8 MB flash). Flash layout since 0.3.0, meant to
+# stay: 64 KB NVS, a 64 KB crash-dump slot (reserved; the dump is off for
+# now), two 3 MB OTA slots and 1.8 MB /fs.
 # Name,     Type, SubType,  Offset,   Size,
-nvs,        data, nvs,      0x9000,   0x6000,
-phy_init,   data, phy,      0xF000,   0x1000,
-ota_0,      app,  ota_0,    0x10000,  0x300000,
-ota_1,      app,  ota_1,    0x310000, 0x300000,
-otadata,    data, ota,      0x610000, 0x2000,
-storage,    data, littlefs, 0x620000, 0x1E0000,
+nvs,        data, nvs,      0x9000,   0x10000,
+phy_init,   data, phy,      0x19000,  0x1000,
+otadata,    data, ota,      0x1A000,  0x2000,
+coredump,   data, coredump, 0x1C000,  0x10000,
+ota_0,      app,  ota_0,    0x30000,  0x300000,
+ota_1,      app,  ota_1,    0x330000, 0x300000,
+storage,    data, littlefs, 0x630000, 0x1D0000,
