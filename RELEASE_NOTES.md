@@ -34,8 +34,9 @@ promises it.
   1.8 MB, the 4 MB ESP32 a 3 MB app (the same layout as TinyDesk Shell's,
   so it switches editions and keeps its files); the boards with room get a
   64 KB NVS for accounts and Wi-Fi networks and a crash-dump slot.
-* **App Builder apps:** `tdapp`, the library App Builder's apps share, is
-  built into the firmware; App Builder can export small packages that use it.
+* **`tdapp`, the app library,** is built into the firmware: pages, Modbus
+  and UART links with bindings, canvas elements, for scripts and `.tdapp`
+  packages alike, so packages stay small.
 * **Remote Desktop:** hover works, and no stray characters at the login.
 * **API stability:** the public C headers, Python modules and board keys
   are recorded and checked by the tests; `TD_VERSION_MAJOR`, `_MINOR`,

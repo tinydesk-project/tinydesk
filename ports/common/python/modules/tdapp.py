@@ -2,7 +2,7 @@
 
 An app imports it and keeps only its own logic: its windows and widgets,
 its artwork and what happens when something is clicked. tdapp brings the
-rest, the same code App Builder's apps use:
+rest, the same code app packages use:
 
   App            a window with pages, timers, a serial link and bindings
   require        stop with a clear message when the firmware is too old
@@ -290,7 +290,7 @@ def _rtu(data):
     return bytes(data) + bytes((crc & 255, crc >> 8))
 
 
-# What a link config or a binding leaves out (App Builder's defaults).
+# What a link config or a binding leaves out (the defaults).
 _LINK_DEFAULTS = {"version": 1, "mode": "none", "uart": 1, "tx": None, "rx": None, "baud": 9600, "bits": 8,
                   "parity": "none", "stop": 1, "de": -1, "deActive": 1, "unit": 1, "pollMs": 250,
                   "timeoutMs": 300, "retries": 1, "staleMs": 2000, "codec": "rtu", "codecModule": "",
@@ -303,7 +303,7 @@ _BIND_DEFAULTS = {"direction": "read", "table": "hr", "address": 0, "dataType": 
 class Link:
     """A serial link: Modbus RTU master / slave or a UART protocol, with
     widgets bound to registers (the "Serial links" part of the tdapp
-    documentation). Keys config leaves out take App Builder's defaults."""
+    documentation). Keys config leaves out take the defaults."""
 
     def __init__(self, config, simulated=False):
         config = dict(_LINK_DEFAULTS, **config)

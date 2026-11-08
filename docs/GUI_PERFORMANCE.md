@@ -7,7 +7,7 @@ PSRAM builds expose `tdui.SUPPORTS_RGB_PICTURES`. Call
 RGB565 image, gradient and coarse underlay colors. Palette mode remains the
 default, with unchanged legacy allocation budgets. RGB mode adds two bytes
 per decoded image/coarse canvas/background pixel and a visible native
-backdrop picture per two canvas rows. App Builder 0.9 includes these costs when its
+backdrop picture per two canvas rows. App makers should include these costs when their
 RGB565 export option is selected; small targets export their palette fallback.
 
 CrowPanel copies RGB565 pictures directly into its existing frame-boundary
@@ -51,7 +51,7 @@ captures its visible P6 framebuffer without invalidating anything. The
 `redraw` action explicitly rebuilds a complete frame for comparison. This
 tests incremental rendering; it does not simulate PSRAM contention or DMA.
 
-Current App Builder exports allocate their bounded canvas/page groups, load
+App packages allocate their bounded canvas/page groups, load
 images/fonts once, and paint every retained page before `on_ready`. A matching
 page rectangle shares a native canvas with multiple cached pictures. Selecting
 a page is one atomic PAGE request that sets both drawing and shown pictures.
@@ -77,7 +77,7 @@ accepts 0–128); zero disables reuse and warming. Configuration is queued to
 the UI owner. Allocation requires at least 768 KiB free PSRAM at that point,
 and failure simply leaves normal rendering active. The cache is backend
 storage, separate from the application `MAX_PIXELS` allocation budget.
-Smaller builds retain no cache arena/index. App Builder 0.10 exposes these
+Smaller builds retain no cache arena/index. App makers can expose these
 choices; existing RGB apps use the automatic policy without recompilation.
 
 `tdui.render_cache_info()` reports capacity, used compressed bytes, hits,
