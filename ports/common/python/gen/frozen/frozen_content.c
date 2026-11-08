@@ -63,6 +63,7 @@ enum {
     MP_QSTR__hyphen_h,
     MP_QSTR__hyphen_r,
     MP_QSTR__hyphen_r_space_takes_space_one_space_file,
+    MP_QSTR__dot_,
     MP_QSTR__dot__colon_,
     MP_QSTR__dot_json,
     MP_QSTR__dot_mpy,
@@ -903,6 +904,7 @@ const qstr_hash_t mp_qstr_frozen_const_hashes[] = {
     26336,
     26362,
     16592,
+    46475,
     26321,
     16755,
     7567,
@@ -1743,6 +1745,7 @@ const qstr_len_t mp_qstr_frozen_const_lengths[] = {
     2,
     2,
     17,
+    1,
     2,
     5,
     4,
@@ -2567,7 +2570,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
     MP_QSTRnumber_of, // previous pool size
     true, // is_sorted
     10, // allocated entries
-    837, // used entries
+    838, // used entries
     (qstr_hash_t *)mp_qstr_frozen_const_hashes,
     (qstr_len_t *)mp_qstr_frozen_const_lengths,
     {
@@ -2592,6 +2595,7 @@ const qstr_pool_t mp_qstr_frozen_const_pool = {
         "-h",
         "-r",
         "-r takes one file",
+        ".",
         ".:",
         ".json",
         ".mpy",
@@ -15400,21 +15404,21 @@ static const byte fun_data_upip__lt_module_gt_[93] = {
     0x32,0x08, // MAKE_FUNCTION 8
     0x16,0x1e, // STORE_NAME 'install'
     0x32,0x09, // MAKE_FUNCTION 9
-    0x16,0x28, // STORE_NAME 'uninstall'
+    0x16,0x2b, // STORE_NAME 'uninstall'
     0x32,0x0a, // MAKE_FUNCTION 10
-    0x16,0x2f, // STORE_NAME 'listing'
+    0x16,0x32, // STORE_NAME 'listing'
     0x51, // LOAD_CONST_NONE
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
     0x33,0x0b, // MAKE_FUNCTION_DEFARGS 11
-    0x16,0x31, // STORE_NAME 'freeze'
+    0x16,0x34, // STORE_NAME 'freeze'
     0x23,0x00, // LOAD_CONST_OBJ 0
-    0x16,0x41, // STORE_NAME 'USAGE'
+    0x16,0x44, // STORE_NAME 'USAGE'
     0x51, // LOAD_CONST_NONE
     0x2a,0x01, // BUILD_TUPLE 1
     0x53, // LOAD_NULL
     0x33,0x0c, // MAKE_FUNCTION_DEFARGS 12
-    0x16,0x36, // STORE_NAME 'main'
+    0x16,0x39, // STORE_NAME 'main'
     0x51, // LOAD_CONST_NONE
     0x63, // RETURN_VALUE
 };
@@ -15422,7 +15426,7 @@ static const byte fun_data_upip__lt_module_gt_[93] = {
 // frozen bytecode for file upip.py, scope upip__isdir
 static const byte fun_data_upip__isdir[35] = {
     0x35,0x04, // prelude
-    0x06,0x42, // names: _isdir, path
+    0x06,0x45, // names: _isdir, path
      // code info
     0x48,0x11, // SETUP_EXCEPT 17
     0x12,0x03, // LOAD_GLOBAL 'os'
@@ -15437,7 +15441,7 @@ static const byte fun_data_upip__isdir[35] = {
     0xdc, // BINARY_OP 5 __ne__
     0x63, // RETURN_VALUE
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x43, // POP_JUMP_IF_FALSE 3
     0x59, // POP_TOP
@@ -15486,7 +15490,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__isdir = {
 // frozen bytecode for file upip.py, scope upip__exists
 static const byte fun_data_upip__exists[28] = {
     0x35,0x04, // prelude
-    0x08,0x42, // names: _exists, path
+    0x08,0x45, // names: _exists, path
      // code info
     0x48,0x0a, // SETUP_EXCEPT 10
     0x12,0x03, // LOAD_GLOBAL 'os'
@@ -15497,7 +15501,7 @@ static const byte fun_data_upip__exists[28] = {
     0x52, // LOAD_CONST_TRUE
     0x63, // RETURN_VALUE
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x43, // POP_JUMP_IF_FALSE 3
     0x59, // POP_TOP
@@ -15631,10 +15635,10 @@ static const mp_raw_code_truncated_t proto_fun_upip_place = {
 // frozen bytecode for file upip.py, scope upip__load
 static const byte fun_data_upip__load[57] = {
     0xc9,0x02,0x04, // prelude
-    0x12,0x44, // names: _load, record
+    0x12,0x47, // names: _load, record
      // code info
     0x48,0x15, // SETUP_EXCEPT 21
-    0x12,0x45, // LOAD_GLOBAL 'open'
+    0x12,0x48, // LOAD_GLOBAL 'open'
     0xb0, // LOAD_FAST 0
     0x34,0x01, // CALL_FUNCTION 1
     0x47,0x0a, // SETUP_WITH 10
@@ -15649,8 +15653,8 @@ static const byte fun_data_upip__load[57] = {
     0x5d, // END_FINALLY
     0x4a,0x11, // POP_EXCEPT_JUMP 17
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
-    0x12,0x46, // LOAD_GLOBAL 'ValueError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
+    0x12,0x49, // LOAD_GLOBAL 'ValueError'
     0x2a,0x02, // BUILD_TUPLE 2
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x46, // POP_JUMP_IF_FALSE 6
@@ -15707,9 +15711,9 @@ static const mp_raw_code_truncated_t proto_fun_upip__load = {
 // frozen bytecode for file upip.py, scope upip__save
 static const byte fun_data_upip__save[29] = {
     0x46,0x06, // prelude
-    0x16,0x44,0x47, // names: _save, record, data
+    0x16,0x47,0x4a, // names: _save, record, data
      // code info
-    0x12,0x45, // LOAD_GLOBAL 'open'
+    0x12,0x48, // LOAD_GLOBAL 'open'
     0xb0, // LOAD_FAST 0
     0x10,0x17, // LOAD_CONST_STRING 'w'
     0x34,0x02, // CALL_FUNCTION 2
@@ -15766,7 +15770,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__save = {
 // frozen bytecode for file upip.py, scope upip__files
 static const byte fun_data_upip__files[42] = {
     0x29,0x85,0x01, // prelude
-    0x19,0x48, // names: _files, top
+    0x19,0x4b, // names: _files, top
     0x00,0x01,0x02, // code info
     0x2b,0x00, // BUILD_LIST 0
     0x27,0x01, // STORE_DEREF 1
@@ -15783,7 +15787,7 @@ static const byte fun_data_upip__files[42] = {
     0x10,0x1a, // LOAD_CONST_STRING ''
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
-    0x12,0x49, // LOAD_GLOBAL 'set'
+    0x12,0x4c, // LOAD_GLOBAL 'set'
     0x25,0x01, // LOAD_DEREF 1
     0x34,0x01, // CALL_FUNCTION 1
     0x63, // RETURN_VALUE
@@ -15792,7 +15796,7 @@ static const byte fun_data_upip__files[42] = {
 // frozen bytecode for file upip.py, scope upip__files_walk
 static const byte fun_data_upip__files_walk[79] = {
     0xe8,0x04,0x0a, // prelude
-    0x3a,0x4f,0x4f,0x4f,0x50, // names: walk, *, *, *, rel
+    0x3d,0x52,0x52,0x52,0x53, // names: walk, *, *, *, rel
      // code info
     0x25,0x00, // LOAD_DEREF 0
     0xb3, // LOAD_FAST 3
@@ -15805,7 +15809,7 @@ static const byte fun_data_upip__files_walk[79] = {
     0xf2, // BINARY_OP 27 __add__
     0xc4, // STORE_FAST 4
     0x12,0x03, // LOAD_GLOBAL 'os'
-    0x14,0x3b, // LOAD_METHOD 'listdir'
+    0x14,0x3e, // LOAD_METHOD 'listdir'
     0xb4, // LOAD_FAST 4
     0x36,0x01, // CALL_METHOD 1
     0x5f, // GET_ITER_STACK
@@ -15835,7 +15839,7 @@ static const byte fun_data_upip__files_walk[79] = {
     0x59, // POP_TOP
     0x42,0x48, // JUMP 8
     0x25,0x01, // LOAD_DEREF 1
-    0x14,0x3c, // LOAD_METHOD 'append'
+    0x14,0x3f, // LOAD_METHOD 'append'
     0xb6, // LOAD_FAST 6
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -15866,7 +15870,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__files_walk = {
         .n_pos_args = 4,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 58,
+        .qstr_block_name_idx = 61,
         .line_info = fun_data_upip__files_walk + 8,
         .line_info_top = fun_data_upip__files_walk + 8,
         .opcodes = fun_data_upip__files_walk + 8,
@@ -15917,9 +15921,9 @@ static const mp_raw_code_truncated_t proto_fun_upip__files = {
 // frozen bytecode for file upip.py, scope upip__requirements
 static const byte fun_data_upip__requirements[22] = {
     0x35,0x04, // prelude
-    0x1b,0x42, // names: _requirements, path
+    0x1b,0x45, // names: _requirements, path
      // code info
-    0x12,0x45, // LOAD_GLOBAL 'open'
+    0x12,0x48, // LOAD_GLOBAL 'open'
     0xb0, // LOAD_FAST 0
     0x34,0x01, // CALL_FUNCTION 1
     0x47,0x07, // SETUP_WITH 7
@@ -15937,7 +15941,7 @@ static const byte fun_data_upip__requirements[22] = {
 // frozen bytecode for file upip.py, scope upip__requirements__lt_listcomp_gt_
 static const byte fun_data_upip__requirements__lt_listcomp_gt_[44] = {
     0x49,0x04, // prelude
-    0x3d,0x4f, // names: <listcomp>, *
+    0x40,0x52, // names: <listcomp>, *
      // code info
     0x2b,0x00, // BUILD_LIST 0
     0xb0, // LOAD_FAST 0
@@ -15945,21 +15949,21 @@ static const byte fun_data_upip__requirements__lt_listcomp_gt_[44] = {
     0x4b,0x21, // FOR_ITER 33
     0xc1, // STORE_FAST 1
     0xb1, // LOAD_FAST 1
-    0x14,0x3e, // LOAD_METHOD 'split'
-    0x10,0x3f, // LOAD_CONST_STRING '#'
+    0x14,0x41, // LOAD_METHOD 'split'
+    0x10,0x42, // LOAD_CONST_STRING '#'
     0x36,0x01, // CALL_METHOD 1
     0x80, // LOAD_CONST_SMALL_INT 0
     0x55, // LOAD_SUBSCR
-    0x14,0x40, // LOAD_METHOD 'strip'
+    0x14,0x43, // LOAD_METHOD 'strip'
     0x36,0x00, // CALL_METHOD 0
     0x44,0x2e, // POP_JUMP_IF_FALSE -18
     0xb1, // LOAD_FAST 1
-    0x14,0x3e, // LOAD_METHOD 'split'
-    0x10,0x3f, // LOAD_CONST_STRING '#'
+    0x14,0x41, // LOAD_METHOD 'split'
+    0x10,0x42, // LOAD_CONST_STRING '#'
     0x36,0x01, // CALL_METHOD 1
     0x80, // LOAD_CONST_SMALL_INT 0
     0x55, // LOAD_SUBSCR
-    0x14,0x40, // LOAD_METHOD 'strip'
+    0x14,0x43, // LOAD_METHOD 'strip'
     0x36,0x00, // CALL_METHOD 0
     0x2f,0x14, // STORE_COMP 20
     0x42,0x1d, // JUMP -35
@@ -15988,7 +15992,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__requirements__lt_listcomp_g
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 61,
+        .qstr_block_name_idx = 64,
         .line_info = fun_data_upip__requirements__lt_listcomp_gt_ + 4,
         .line_info_top = fun_data_upip__requirements__lt_listcomp_gt_ + 4,
         .opcodes = fun_data_upip__requirements__lt_listcomp_gt_ + 4,
@@ -16039,7 +16043,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__requirements = {
 // frozen bytecode for file upip.py, scope upip__names
 static const byte fun_data_upip__names[43] = {
     0x19,0x04, // prelude
-    0x1c,0x4a, // names: _names, args
+    0x1c,0x4d, // names: _names, args
      // code info
     0xb0, // LOAD_FAST 0
     0x51, // LOAD_CONST_NONE
@@ -16050,13 +16054,13 @@ static const byte fun_data_upip__names[43] = {
     0x2b,0x01, // BUILD_LIST 1
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x58, // POP_JUMP_IF_FALSE 24
-    0x12,0x4b, // LOAD_GLOBAL 'len'
+    0x12,0x4e, // LOAD_GLOBAL 'len'
     0xb0, // LOAD_FAST 0
     0x34,0x01, // CALL_FUNCTION 1
     0x82, // LOAD_CONST_SMALL_INT 2
     0xdc, // BINARY_OP 5 __ne__
     0x44,0x47, // POP_JUMP_IF_FALSE 7
-    0x12,0x46, // LOAD_GLOBAL 'ValueError'
+    0x12,0x49, // LOAD_GLOBAL 'ValueError'
     0x23,0x03, // LOAD_CONST_OBJ 3
     0x34,0x01, // CALL_FUNCTION 1
     0x65, // RAISE_OBJ
@@ -16106,8 +16110,8 @@ static const mp_raw_code_truncated_t proto_fun_upip__names = {
 
 // child of upip__lt_module_gt_
 // frozen bytecode for file upip.py, scope upip_install
-static const byte fun_data_upip_install[183] = {
-    0xb9,0x10,0x04, // prelude
+static const byte fun_data_upip_install[211] = {
+    0xdd,0x10,0x04, // prelude
     0x1e,0x15, // names: install, packages
      // code info
     0x80, // LOAD_CONST_SMALL_INT 0
@@ -16137,7 +16141,7 @@ static const byte fun_data_upip_install[183] = {
     0xc6, // STORE_FAST 6
     0xb0, // LOAD_FAST 0
     0x5f, // GET_ITER_STACK
-    0x4b,0x81,0x01, // FOR_ITER 129
+    0x4b,0x9d,0x01, // FOR_ITER 157
     0xc7, // STORE_FAST 7
     0xb7, // LOAD_FAST 7
     0x14,0x21, // LOAD_METHOD 'partition'
@@ -16151,28 +16155,45 @@ static const byte fun_data_upip_install[183] = {
     0xb2, // LOAD_FAST 2
     0x34,0x01, // CALL_FUNCTION 1
     0xca, // STORE_FAST 10
+    0x12,0x03, // LOAD_GLOBAL 'os'
+    0x14,0x23, // LOAD_METHOD 'getcwd'
+    0x36,0x00, // CALL_METHOD 0
+    0xcb, // STORE_FAST 11
+    0x12,0x03, // LOAD_GLOBAL 'os'
+    0x14,0x24, // LOAD_METHOD 'chdir'
+    0xb2, // LOAD_FAST 2
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x49,0x13, // SETUP_FINALLY 19
     0xb1, // LOAD_FAST 1
     0x14,0x1e, // LOAD_METHOD 'install'
     0xb8, // LOAD_FAST 8
-    0x10,0x23, // LOAD_CONST_STRING 'target'
-    0xb2, // LOAD_FAST 2
-    0x10,0x24, // LOAD_CONST_STRING 'version'
+    0x10,0x25, // LOAD_CONST_STRING 'target'
+    0x10,0x26, // LOAD_CONST_STRING '.'
+    0x10,0x27, // LOAD_CONST_STRING 'version'
     0xb9, // LOAD_FAST 9
     0x45,0x01, // JUMP_IF_TRUE_OR_POP 1
     0x51, // LOAD_CONST_NONE
     0x36,0x84,0x01, // CALL_METHOD 513
     0x59, // POP_TOP
-    0x12,0x4c, // LOAD_GLOBAL 'sorted'
+    0x51, // LOAD_CONST_NONE
+    0x12,0x03, // LOAD_GLOBAL 'os'
+    0x14,0x24, // LOAD_METHOD 'chdir'
+    0xbb, // LOAD_FAST 11
+    0x36,0x01, // CALL_METHOD 1
+    0x59, // POP_TOP
+    0x5d, // END_FINALLY
+    0x12,0x4f, // LOAD_GLOBAL 'sorted'
     0x12,0x19, // LOAD_GLOBAL '_files'
     0xb2, // LOAD_FAST 2
     0x34,0x01, // CALL_FUNCTION 1
     0xba, // LOAD_FAST 10
     0xf3, // BINARY_OP 28 __sub__
     0x34,0x01, // CALL_FUNCTION 1
-    0xcb, // STORE_FAST 11
-    0xbb, // LOAD_FAST 11
+    0xcc, // STORE_FAST 12
+    0xbc, // LOAD_FAST 12
     0x43,0x4e, // POP_JUMP_IF_TRUE 14
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0x23,0x04, // LOAD_CONST_OBJ 4
     0xb7, // LOAD_FAST 7
     0xf8, // BINARY_OP 33 __mod__
@@ -16180,35 +16201,35 @@ static const byte fun_data_upip_install[183] = {
     0x59, // POP_TOP
     0x50, // LOAD_CONST_FALSE
     0xc6, // STORE_FAST 6
-    0x42,0xbc,0x7f, // JUMP -68
+    0x42,0xa0,0x7f, // JUMP -96
     0xb5, // LOAD_FAST 5
     0x10,0x15, // LOAD_CONST_STRING 'packages'
     0x55, // LOAD_SUBSCR
-    0x14,0x25, // LOAD_METHOD 'get'
+    0x14,0x28, // LOAD_METHOD 'get'
     0xb8, // LOAD_FAST 8
     0x2c,0x00, // BUILD_MAP 0
     0x36,0x02, // CALL_METHOD 2
-    0x14,0x25, // LOAD_METHOD 'get'
-    0x10,0x26, // LOAD_CONST_STRING 'files'
+    0x14,0x28, // LOAD_METHOD 'get'
+    0x10,0x29, // LOAD_CONST_STRING 'files'
     0x2b,0x00, // BUILD_LIST 0
     0x36,0x02, // CALL_METHOD 2
-    0xcc, // STORE_FAST 12
+    0xcd, // STORE_FAST 13
     0x2c,0x02, // BUILD_MAP 2
     0xb9, // LOAD_FAST 9
     0x45,0x02, // JUMP_IF_TRUE_OR_POP 2
-    0x10,0x27, // LOAD_CONST_STRING 'latest'
-    0x10,0x24, // LOAD_CONST_STRING 'version'
+    0x10,0x2a, // LOAD_CONST_STRING 'latest'
+    0x10,0x27, // LOAD_CONST_STRING 'version'
     0x62, // STORE_MAP
-    0x12,0x4c, // LOAD_GLOBAL 'sorted'
-    0x12,0x49, // LOAD_GLOBAL 'set'
-    0xbc, // LOAD_FAST 12
+    0x12,0x4f, // LOAD_GLOBAL 'sorted'
+    0x12,0x4c, // LOAD_GLOBAL 'set'
+    0xbd, // LOAD_FAST 13
     0x34,0x01, // CALL_FUNCTION 1
-    0x12,0x49, // LOAD_GLOBAL 'set'
-    0xbb, // LOAD_FAST 11
+    0x12,0x4c, // LOAD_GLOBAL 'set'
+    0xbc, // LOAD_FAST 12
     0x34,0x01, // CALL_FUNCTION 1
     0xed, // BINARY_OP 22 __or__
     0x34,0x01, // CALL_FUNCTION 1
-    0x10,0x26, // LOAD_CONST_STRING 'files'
+    0x10,0x29, // LOAD_CONST_STRING 'files'
     0x62, // STORE_MAP
     0xb5, // LOAD_FAST 5
     0x10,0x15, // LOAD_CONST_STRING 'packages'
@@ -16220,7 +16241,7 @@ static const byte fun_data_upip_install[183] = {
     0xb5, // LOAD_FAST 5
     0x34,0x02, // CALL_FUNCTION 2
     0x59, // POP_TOP
-    0x42,0xfc,0x7e, // JUMP -132
+    0x42,0xe0,0x7e, // JUMP -160
     0xb6, // LOAD_FAST 6
     0x44,0x42, // POP_JUMP_IF_FALSE 2
     0x80, // LOAD_CONST_SMALL_INT 0
@@ -16237,7 +16258,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_install = {
     .fun_data = fun_data_upip_install,
     .children = NULL,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 183,
+    .fun_data_len = 211,
     .n_children = 0,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -16245,8 +16266,8 @@ static const mp_raw_code_truncated_t proto_fun_upip_install = {
     #if MICROPY_PY_SYS_SETTRACE
     .line_of_definition = 0,
     .prelude = {
-        .n_state = 24,
-        .n_exc_stack = 0,
+        .n_state = 28,
+        .n_exc_stack = 1,
         .scope_flags = 0,
         .n_pos_args = 1,
         .n_kwonly_args = 0,
@@ -16267,7 +16288,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_install = {
 // frozen bytecode for file upip.py, scope upip_uninstall
 static const byte fun_data_upip_uninstall[217] = {
     0xc5,0x10,0x04, // prelude
-    0x28,0x15, // names: uninstall, packages
+    0x2b,0x15, // names: uninstall, packages
      // code info
     0x12,0x09, // LOAD_GLOBAL 'place'
     0x34,0x00, // CALL_FUNCTION 0
@@ -16295,7 +16316,7 @@ static const byte fun_data_upip_uninstall[217] = {
     0xb4, // LOAD_FAST 4
     0x10,0x15, // LOAD_CONST_STRING 'packages'
     0x55, // LOAD_SUBSCR
-    0x14,0x29, // LOAD_METHOD 'pop'
+    0x14,0x2c, // LOAD_METHOD 'pop'
     0xb6, // LOAD_FAST 6
     0x51, // LOAD_CONST_NONE
     0x36,0x02, // CALL_METHOD 2
@@ -16304,7 +16325,7 @@ static const byte fun_data_upip_uninstall[217] = {
     0x51, // LOAD_CONST_NONE
     0xde, // BINARY_OP 7 <is>
     0x44,0x4d, // POP_JUMP_IF_FALSE 13
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0x23,0x05, // LOAD_CONST_OBJ 5
     0xb6, // LOAD_FAST 6
     0xf8, // BINARY_OP 33 __mod__
@@ -16313,18 +16334,18 @@ static const byte fun_data_upip_uninstall[217] = {
     0x50, // LOAD_CONST_FALSE
     0xc5, // STORE_FAST 5
     0x42,0x15, // JUMP -43
-    0x12,0x49, // LOAD_GLOBAL 'set'
+    0x12,0x4c, // LOAD_GLOBAL 'set'
     0x34,0x00, // CALL_FUNCTION 0
     0xc8, // STORE_FAST 8
     0xb7, // LOAD_FAST 7
-    0x10,0x26, // LOAD_CONST_STRING 'files'
+    0x10,0x29, // LOAD_CONST_STRING 'files'
     0x55, // LOAD_SUBSCR
     0x5f, // GET_ITER_STACK
     0x4b,0x38, // FOR_ITER 56
     0xc9, // STORE_FAST 9
     0x48,0x0f, // SETUP_EXCEPT 15
     0x12,0x03, // LOAD_GLOBAL 'os'
-    0x14,0x2a, // LOAD_METHOD 'remove'
+    0x14,0x2d, // LOAD_METHOD 'remove'
     0xb1, // LOAD_FAST 1
     0x10,0x0e, // LOAD_CONST_STRING '/'
     0xf2, // BINARY_OP 27 __add__
@@ -16334,7 +16355,7 @@ static const byte fun_data_upip_uninstall[217] = {
     0x59, // POP_TOP
     0x4a,0x0a, // POP_EXCEPT_JUMP 10
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x43, // POP_JUMP_IF_FALSE 3
     0x59, // POP_TOP
@@ -16350,7 +16371,7 @@ static const byte fun_data_upip_uninstall[217] = {
     0x55, // LOAD_SUBSCR
     0xc9, // STORE_FAST 9
     0xb8, // LOAD_FAST 8
-    0x14,0x2b, // LOAD_METHOD 'add'
+    0x14,0x2e, // LOAD_METHOD 'add'
     0xb9, // LOAD_FAST 9
     0x36,0x01, // CALL_METHOD 1
     0x59, // POP_TOP
@@ -16359,11 +16380,11 @@ static const byte fun_data_upip_uninstall[217] = {
     0xdd, // BINARY_OP 6 <in>
     0x43,0x28, // POP_JUMP_IF_TRUE -24
     0x42,0x06, // JUMP -58
-    0x12,0x4c, // LOAD_GLOBAL 'sorted'
+    0x12,0x4f, // LOAD_GLOBAL 'sorted'
     0xb8, // LOAD_FAST 8
-    0x10,0x2c, // LOAD_CONST_STRING 'key'
-    0x12,0x4b, // LOAD_GLOBAL 'len'
-    0x10,0x2d, // LOAD_CONST_STRING 'reverse'
+    0x10,0x2f, // LOAD_CONST_STRING 'key'
+    0x12,0x4e, // LOAD_GLOBAL 'len'
+    0x10,0x30, // LOAD_CONST_STRING 'reverse'
     0x52, // LOAD_CONST_TRUE
     0x34,0x84,0x01, // CALL_FUNCTION 513
     0x5f, // GET_ITER_STACK
@@ -16371,7 +16392,7 @@ static const byte fun_data_upip_uninstall[217] = {
     0xca, // STORE_FAST 10
     0x48,0x0f, // SETUP_EXCEPT 15
     0x12,0x03, // LOAD_GLOBAL 'os'
-    0x14,0x2e, // LOAD_METHOD 'rmdir'
+    0x14,0x31, // LOAD_METHOD 'rmdir'
     0xb1, // LOAD_FAST 1
     0x10,0x0e, // LOAD_CONST_STRING '/'
     0xf2, // BINARY_OP 27 __add__
@@ -16381,19 +16402,19 @@ static const byte fun_data_upip_uninstall[217] = {
     0x59, // POP_TOP
     0x4a,0x0a, // POP_EXCEPT_JUMP 10
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x43, // POP_JUMP_IF_FALSE 3
     0x59, // POP_TOP
     0x4a,0x01, // POP_EXCEPT_JUMP 1
     0x5d, // END_FINALLY
     0x42,0x20, // JUMP -32
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0x23,0x06, // LOAD_CONST_OBJ 6
     0xb6, // LOAD_FAST 6
-    0x12,0x4b, // LOAD_GLOBAL 'len'
+    0x12,0x4e, // LOAD_GLOBAL 'len'
     0xb7, // LOAD_FAST 7
-    0x10,0x26, // LOAD_CONST_STRING 'files'
+    0x10,0x29, // LOAD_CONST_STRING 'files'
     0x55, // LOAD_SUBSCR
     0x34,0x01, // CALL_FUNCTION 1
     0x2a,0x02, // BUILD_TUPLE 2
@@ -16436,7 +16457,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_uninstall = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 40,
+        .qstr_block_name_idx = 43,
         .line_info = fun_data_upip_uninstall + 5,
         .line_info_top = fun_data_upip_uninstall + 5,
         .opcodes = fun_data_upip_uninstall + 5,
@@ -16452,7 +16473,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_uninstall = {
 // frozen bytecode for file upip.py, scope upip_listing
 static const byte fun_data_upip_listing[100] = {
     0x80,0x10,0x02, // prelude
-    0x2f, // names: listing
+    0x32, // names: listing
      // code info
     0x12,0x09, // LOAD_GLOBAL 'place'
     0x34,0x00, // CALL_FUNCTION 0
@@ -16464,8 +16485,8 @@ static const byte fun_data_upip_listing[100] = {
     0xb1, // LOAD_FAST 1
     0x34,0x01, // CALL_FUNCTION 1
     0xc3, // STORE_FAST 3
-    0x12,0x4d, // LOAD_GLOBAL 'print'
-    0x10,0x30, // LOAD_CONST_STRING '%s (%s):'
+    0x12,0x50, // LOAD_GLOBAL 'print'
+    0x10,0x33, // LOAD_CONST_STRING '%s (%s):'
     0xb0, // LOAD_FAST 0
     0xb2, // LOAD_FAST 2
     0x44,0x46, // POP_JUMP_IF_FALSE 6
@@ -16482,11 +16503,11 @@ static const byte fun_data_upip_listing[100] = {
     0x10,0x15, // LOAD_CONST_STRING 'packages'
     0x55, // LOAD_SUBSCR
     0x43,0x47, // POP_JUMP_IF_TRUE 7
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0x23,0x09, // LOAD_CONST_OBJ 9
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
-    0x12,0x4c, // LOAD_GLOBAL 'sorted'
+    0x12,0x4f, // LOAD_GLOBAL 'sorted'
     0xb3, // LOAD_FAST 3
     0x10,0x15, // LOAD_CONST_STRING 'packages'
     0x55, // LOAD_SUBSCR
@@ -16500,15 +16521,15 @@ static const byte fun_data_upip_listing[100] = {
     0xb4, // LOAD_FAST 4
     0x55, // LOAD_SUBSCR
     0xc5, // STORE_FAST 5
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0x23,0x0a, // LOAD_CONST_OBJ 10
     0xb4, // LOAD_FAST 4
     0xb5, // LOAD_FAST 5
-    0x10,0x24, // LOAD_CONST_STRING 'version'
+    0x10,0x27, // LOAD_CONST_STRING 'version'
     0x55, // LOAD_SUBSCR
-    0x12,0x4b, // LOAD_GLOBAL 'len'
+    0x12,0x4e, // LOAD_GLOBAL 'len'
     0xb5, // LOAD_FAST 5
-    0x10,0x26, // LOAD_CONST_STRING 'files'
+    0x10,0x29, // LOAD_CONST_STRING 'files'
     0x55, // LOAD_SUBSCR
     0x34,0x01, // CALL_FUNCTION 1
     0x2a,0x03, // BUILD_TUPLE 3
@@ -16542,7 +16563,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_listing = {
         .n_pos_args = 0,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 47,
+        .qstr_block_name_idx = 50,
         .line_info = fun_data_upip_listing + 4,
         .line_info_top = fun_data_upip_listing + 4,
         .opcodes = fun_data_upip_listing + 4,
@@ -16558,7 +16579,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_listing = {
 // frozen bytecode for file upip.py, scope upip_freeze
 static const byte fun_data_upip_freeze[89] = {
     0xdd,0x01,0x04, // prelude
-    0x31,0x4e, // names: freeze, out
+    0x34,0x51, // names: freeze, out
      // code info
     0x12,0x12, // LOAD_GLOBAL '_load'
     0x12,0x09, // LOAD_GLOBAL 'place'
@@ -16568,32 +16589,32 @@ static const byte fun_data_upip_freeze[89] = {
     0x34,0x01, // CALL_FUNCTION 1
     0xc1, // STORE_FAST 1
     0x32,0x00, // MAKE_FUNCTION 0
-    0x12,0x4c, // LOAD_GLOBAL 'sorted'
+    0x12,0x4f, // LOAD_GLOBAL 'sorted'
     0xb1, // LOAD_FAST 1
     0x10,0x15, // LOAD_CONST_STRING 'packages'
     0x55, // LOAD_SUBSCR
-    0x14,0x32, // LOAD_METHOD 'items'
+    0x14,0x35, // LOAD_METHOD 'items'
     0x36,0x00, // CALL_METHOD 0
     0x34,0x01, // CALL_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
     0xc2, // STORE_FAST 2
     0xb0, // LOAD_FAST 0
     0x44,0x66, // POP_JUMP_IF_FALSE 38
-    0x12,0x45, // LOAD_GLOBAL 'open'
+    0x12,0x48, // LOAD_GLOBAL 'open'
     0xb0, // LOAD_FAST 0
     0x10,0x17, // LOAD_CONST_STRING 'w'
     0x34,0x02, // CALL_FUNCTION 2
     0x47,0x19, // SETUP_WITH 25
     0xc3, // STORE_FAST 3
     0xb3, // LOAD_FAST 3
-    0x14,0x33, // LOAD_METHOD 'write'
-    0x10,0x34, // LOAD_CONST_STRING '\n'
-    0x14,0x35, // LOAD_METHOD 'join'
+    0x14,0x36, // LOAD_METHOD 'write'
+    0x10,0x37, // LOAD_CONST_STRING '\n'
+    0x14,0x38, // LOAD_METHOD 'join'
     0xb2, // LOAD_FAST 2
     0x36,0x01, // CALL_METHOD 1
     0xb2, // LOAD_FAST 2
     0x44,0x44, // POP_JUMP_IF_FALSE 4
-    0x10,0x34, // LOAD_CONST_STRING '\n'
+    0x10,0x37, // LOAD_CONST_STRING '\n'
     0x42,0x42, // JUMP 2
     0x10,0x1a, // LOAD_CONST_STRING ''
     0xf2, // BINARY_OP 27 __add__
@@ -16607,7 +16628,7 @@ static const byte fun_data_upip_freeze[89] = {
     0x5f, // GET_ITER_STACK
     0x4b,0x09, // FOR_ITER 9
     0xc4, // STORE_FAST 4
-    0x12,0x4d, // LOAD_GLOBAL 'print'
+    0x12,0x50, // LOAD_GLOBAL 'print'
     0xb4, // LOAD_FAST 4
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
@@ -16619,7 +16640,7 @@ static const byte fun_data_upip_freeze[89] = {
 // frozen bytecode for file upip.py, scope upip_freeze__lt_listcomp_gt_
 static const byte fun_data_upip_freeze__lt_listcomp_gt_[40] = {
     0x51,0x04, // prelude
-    0x3d,0x4f, // names: <listcomp>, *
+    0x40,0x52, // names: <listcomp>, *
      // code info
     0x2b,0x00, // BUILD_LIST 0
     0xb0, // LOAD_FAST 0
@@ -16629,9 +16650,9 @@ static const byte fun_data_upip_freeze__lt_listcomp_gt_[40] = {
     0xc1, // STORE_FAST 1
     0xc2, // STORE_FAST 2
     0xb2, // LOAD_FAST 2
-    0x10,0x24, // LOAD_CONST_STRING 'version'
+    0x10,0x27, // LOAD_CONST_STRING 'version'
     0x55, // LOAD_SUBSCR
-    0x10,0x27, // LOAD_CONST_STRING 'latest'
+    0x10,0x2a, // LOAD_CONST_STRING 'latest'
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x43, // POP_JUMP_IF_FALSE 3
     0xb1, // LOAD_FAST 1
@@ -16640,7 +16661,7 @@ static const byte fun_data_upip_freeze__lt_listcomp_gt_[40] = {
     0x10,0x22, // LOAD_CONST_STRING '@'
     0xf2, // BINARY_OP 27 __add__
     0xb2, // LOAD_FAST 2
-    0x10,0x24, // LOAD_CONST_STRING 'version'
+    0x10,0x27, // LOAD_CONST_STRING 'version'
     0x55, // LOAD_SUBSCR
     0xf2, // BINARY_OP 27 __add__
     0x2f,0x14, // STORE_COMP 20
@@ -16670,7 +16691,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_freeze__lt_listcomp_gt_ = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 61,
+        .qstr_block_name_idx = 64,
         .line_info = fun_data_upip_freeze__lt_listcomp_gt_ + 4,
         .line_info_top = fun_data_upip_freeze__lt_listcomp_gt_ + 4,
         .opcodes = fun_data_upip_freeze__lt_listcomp_gt_ + 4,
@@ -16708,7 +16729,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_freeze = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
-        .qstr_block_name_idx = 49,
+        .qstr_block_name_idx = 52,
         .line_info = fun_data_upip_freeze + 5,
         .line_info_top = fun_data_upip_freeze + 5,
         .opcodes = fun_data_upip_freeze + 5,
@@ -16721,15 +16742,15 @@ static const mp_raw_code_truncated_t proto_fun_upip_freeze = {
 // frozen bytecode for file upip.py, scope upip_main
 static const byte fun_data_upip_main[189] = {
     0xd9,0x03,0x04, // prelude
-    0x36,0x37, // names: main, argv
+    0x39,0x3a, // names: main, argv
      // code info
-    0x12,0x38, // LOAD_GLOBAL 'list'
+    0x12,0x3b, // LOAD_GLOBAL 'list'
     0xb0, // LOAD_FAST 0
     0x51, // LOAD_CONST_NONE
     0xde, // BINARY_OP 7 <is>
     0x44,0x4b, // POP_JUMP_IF_FALSE 11
     0x12,0x04, // LOAD_GLOBAL 'sys'
-    0x13,0x37, // LOAD_ATTR 'argv'
+    0x13,0x3a, // LOAD_ATTR 'argv'
     0x81, // LOAD_CONST_SMALL_INT 1
     0x51, // LOAD_CONST_NONE
     0x2e,0x02, // BUILD_SLICE 2
@@ -16746,8 +16767,8 @@ static const byte fun_data_upip_main[189] = {
     0x23,0x0b, // LOAD_CONST_OBJ 11
     0xdd, // BINARY_OP 6 <in>
     0x44,0x4e, // POP_JUMP_IF_FALSE 14
-    0x12,0x4d, // LOAD_GLOBAL 'print'
-    0x12,0x41, // LOAD_GLOBAL 'USAGE'
+    0x12,0x50, // LOAD_GLOBAL 'print'
+    0x12,0x44, // LOAD_GLOBAL 'USAGE'
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
     0xb1, // LOAD_FAST 1
@@ -16781,37 +16802,37 @@ static const byte fun_data_upip_main[189] = {
     0x34,0x01, // CALL_FUNCTION 1
     0x63, // RETURN_VALUE
     0xb2, // LOAD_FAST 2
-    0x10,0x28, // LOAD_CONST_STRING 'uninstall'
+    0x10,0x2b, // LOAD_CONST_STRING 'uninstall'
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x4d, // POP_JUMP_IF_FALSE 13
     0xb3, // LOAD_FAST 3
     0x44,0x4a, // POP_JUMP_IF_FALSE 10
-    0x12,0x28, // LOAD_GLOBAL 'uninstall'
+    0x12,0x2b, // LOAD_GLOBAL 'uninstall'
     0x12,0x1c, // LOAD_GLOBAL '_names'
     0xb3, // LOAD_FAST 3
     0x34,0x01, // CALL_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
     0x63, // RETURN_VALUE
     0xb2, // LOAD_FAST 2
-    0x10,0x38, // LOAD_CONST_STRING 'list'
+    0x10,0x3b, // LOAD_CONST_STRING 'list'
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x48, // POP_JUMP_IF_FALSE 8
     0xb3, // LOAD_FAST 3
     0x43,0x45, // POP_JUMP_IF_TRUE 5
-    0x12,0x2f, // LOAD_GLOBAL 'listing'
+    0x12,0x32, // LOAD_GLOBAL 'listing'
     0x34,0x00, // CALL_FUNCTION 0
     0x63, // RETURN_VALUE
     0xb2, // LOAD_FAST 2
-    0x10,0x31, // LOAD_CONST_STRING 'freeze'
+    0x10,0x34, // LOAD_CONST_STRING 'freeze'
     0xd9, // BINARY_OP 2 __eq__
     0x44,0x57, // POP_JUMP_IF_FALSE 23
-    0x12,0x4b, // LOAD_GLOBAL 'len'
+    0x12,0x4e, // LOAD_GLOBAL 'len'
     0xb3, // LOAD_FAST 3
     0x34,0x01, // CALL_FUNCTION 1
     0x81, // LOAD_CONST_SMALL_INT 1
     0xda, // BINARY_OP 3 __le__
     0x44,0x4e, // POP_JUMP_IF_FALSE 14
-    0x12,0x31, // LOAD_GLOBAL 'freeze'
+    0x12,0x34, // LOAD_GLOBAL 'freeze'
     0xb3, // LOAD_FAST 3
     0x44,0x45, // POP_JUMP_IF_FALSE 5
     0xb3, // LOAD_FAST 3
@@ -16823,15 +16844,15 @@ static const byte fun_data_upip_main[189] = {
     0x63, // RETURN_VALUE
     0x4a,0x1f, // POP_EXCEPT_JUMP 31
     0x57, // DUP_TOP
-    0x12,0x43, // LOAD_GLOBAL 'OSError'
-    0x12,0x46, // LOAD_GLOBAL 'ValueError'
+    0x12,0x46, // LOAD_GLOBAL 'OSError'
+    0x12,0x49, // LOAD_GLOBAL 'ValueError'
     0x2a,0x02, // BUILD_TUPLE 2
     0xdf, // BINARY_OP 8 <exception match>
     0x44,0x54, // POP_JUMP_IF_FALSE 20
     0xc4, // STORE_FAST 4
     0x49,0x0a, // SETUP_FINALLY 10
-    0x12,0x4d, // LOAD_GLOBAL 'print'
-    0x10,0x39, // LOAD_CONST_STRING 'upip:'
+    0x12,0x50, // LOAD_GLOBAL 'print'
+    0x10,0x3c, // LOAD_CONST_STRING 'upip:'
     0xb4, // LOAD_FAST 4
     0x34,0x02, // CALL_FUNCTION 2
     0x59, // POP_TOP
@@ -16843,8 +16864,8 @@ static const byte fun_data_upip_main[189] = {
     0x5d, // END_FINALLY
     0x4a,0x01, // POP_EXCEPT_JUMP 1
     0x5d, // END_FINALLY
-    0x12,0x4d, // LOAD_GLOBAL 'print'
-    0x12,0x41, // LOAD_GLOBAL 'USAGE'
+    0x12,0x50, // LOAD_GLOBAL 'print'
+    0x12,0x44, // LOAD_GLOBAL 'USAGE'
     0x34,0x01, // CALL_FUNCTION 1
     0x59, // POP_TOP
     0x82, // LOAD_CONST_SMALL_INT 2
@@ -16873,7 +16894,7 @@ static const mp_raw_code_truncated_t proto_fun_upip_main = {
         .n_pos_args = 1,
         .n_kwonly_args = 0,
         .n_def_pos_args = 1,
-        .qstr_block_name_idx = 54,
+        .qstr_block_name_idx = 57,
         .line_info = fun_data_upip_main + 5,
         .line_info_top = fun_data_upip_main + 5,
         .opcodes = fun_data_upip_main + 5,
@@ -16932,7 +16953,7 @@ static const mp_raw_code_truncated_t proto_fun_upip__lt_module_gt_ = {
     #endif
 };
 
-static const qstr_short_t const_qstr_table_data_upip[81] = {
+static const qstr_short_t const_qstr_table_data_upip[84] = {
     MP_QSTR_upip_dot_py,
     MP_QSTR__lt_module_gt_,
     MP_QSTR_json,
@@ -16968,7 +16989,10 @@ static const qstr_short_t const_qstr_table_data_upip[81] = {
     MP_QSTR_mkdir,
     MP_QSTR_partition,
     MP_QSTR__at_sign_,
+    MP_QSTR_getcwd,
+    MP_QSTR_chdir,
     MP_QSTR_target,
+    MP_QSTR__dot_,
     MP_QSTR_version,
     MP_QSTR_get,
     MP_QSTR_files,
@@ -48360,8 +48384,8 @@ MICROPY_FROZEN_LIST_ITEM("tdapp", "tdapp.py")
 
 /*
 byte sizes:
-qstr content: 837 unique, 9841 bytes
-bc content: 36310
+qstr content: 838 unique, 9846 bytes
+bc content: 36338
 const str content: 2131
 const int content: 40
 const obj content: 1344
@@ -48370,5 +48394,5 @@ const table ptr content: 196 entries, 784 bytes
 raw code content: 507 * 4 = 8112
 mp_frozen_mpy_names_content: 273
 mp_frozen_mpy_content_size: 72
-total: 58907
+total: 58940
 */

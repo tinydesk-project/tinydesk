@@ -82,6 +82,27 @@ jobs:
           cat py.txt
           grep -q "42 1180591620717411303424" py.txt
 
+  generated:
+    # The MicroPython tables in ports/common/python/gen and the shell's
+    # python/gen must match their sources: regenerate them and compare.
+    runs-on: ubuntu-latest
+    container: espressif/idf:v5.3.1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: The generated MicroPython tables are current
+        shell: bash
+        run: |
+          git config --global --add safe.directory '*'
+          command -v gcc >/dev/null || (apt-get update && apt-get install -y build-essential)
+          git clone --depth 1 --branch v1.29.0 https://github.com/micropython/micropython.git /tmp/mp
+          git -C /tmp/mp submodule update --init lib/micropython-lib
+          (cd third_party/tdsh && tools/micropython/gen.sh /tmp/mp)
+          tools/micropython/gen.sh /tmp/mp
+          git -C third_party/tdsh diff --stat --exit-code -- python/gen
+          git diff --stat --exit-code -- ports/common/python/gen
+
   firmware:
     runs-on: ubuntu-latest
     container: espressif/idf:v5.3.1
