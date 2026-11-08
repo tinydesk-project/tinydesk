@@ -13,17 +13,17 @@
 #include "td_screen.h"
 
   /* Window flags. */
-#define TD_WIN_MOVABLE    0x0001u
-#define TD_WIN_RESIZABLE  0x0002u
-#define TD_WIN_CLOSABLE   0x0004u
-#define TD_WIN_MODAL      0x0008u
-#define TD_WIN_RAW_KEYS   0x0010u  /* all keys (Tab, Esc, ...) go to on_event */
+#define TD_WIN_MOVABLE     0x0001u
+#define TD_WIN_RESIZABLE   0x0002u
+#define TD_WIN_CLOSABLE    0x0004u
+#define TD_WIN_MODAL       0x0008u
+#define TD_WIN_RAW_KEYS    0x0010u  /* all keys (Tab, Esc, ...) go to on_event */
 #define TD_WIN_MOUSE_MOVES 0x0020u /* on_event also gets plain moves (TD_MOUSE_MOVE)
                                     * over the client area */
-#define TD_WIN_HIDDEN     0x0100u  /* minimised to the taskbar */
-#define TD_WIN_MAXIMIZED  0x0200u
-#define TD_WIN_FULLSCREEN 0x0400u  /* no frame, covers the taskbar */
-#define TD_WIN_NO_FOCUS   0x0800u  /* a tool (the on-screen keyboard): stays above
+#define TD_WIN_HIDDEN      0x0100u  /* minimised to the taskbar */
+#define TD_WIN_MAXIMIZED   0x0200u
+#define TD_WIN_FULLSCREEN  0x0400u  /* no frame, covers the taskbar */
+#define TD_WIN_NO_FOCUS    0x0800u  /* a tool (the on-screen keyboard): stays above
                                     * the others, also dialogs, and gets clicks,
                                     * but never the focus or the keys */
 

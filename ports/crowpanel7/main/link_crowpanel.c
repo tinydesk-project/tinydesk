@@ -45,7 +45,7 @@ static bool s_uart = true;       /* UART0 is the keyboard (console.uart 0) */
 static bool s_touch;
 static char s_platform[64] = "ESP32-S3 CrowPanel 7.0";
 
-  /* ------------------------------------------ input from the LCD and touch */
+    /* ------------------------------------------ input from the LCD and touch */
 
 static portMUX_TYPE s_inject_mux = portMUX_INITIALIZER_UNLOCKED;
 static char s_inject[INJECT_SIZE];
@@ -78,9 +78,9 @@ static int take_injected(uint8_t *buf, int cap)
     return n;
 }
 
-  /* ------------------------------------- UART0 without PuTTY's size replies */
+    /* ------------------------------------- UART0 without PuTTY's size replies */
 
-  /* A cursor position report, ESC [ rows ; cols R, is PuTTY answering the
+    /* A cursor position report, ESC [ rows ; cols R, is PuTTY answering the
  * desktop's size query: the desktop must see the LCD's size instead. Bytes
  * that might start one are held until it is clear. */
 static uint8_t s_held[16];
@@ -99,7 +99,7 @@ static bool could_be_report(const uint8_t *s, int n)
     return true;
 }
 
-  /* Filter in place; returns the bytes kept. */
+    /* Filter in place; returns the bytes kept. */
 static int filter_reports(uint8_t *buf, int n, int cap)
 {
     uint8_t out[RX_BUFFER < 256 ? RX_BUFFER : 256];
@@ -116,7 +116,7 @@ static int filter_reports(uint8_t *buf, int n, int cap)
         s_held[s_held_len++] = buf[i];
         if (!could_be_report(s_held, s_held_len) || s_held_len == (int)sizeof(s_held))
         {
-             /* Not a report: let the bytes through, a new ESC starts over. */
+              /* Not a report: let the bytes through, a new ESC starts over. */
             int keep_last = (buf[i] == 0x1b && s_held_len > 1);
             int pass = s_held_len - keep_last;
             memcpy(out + o, s_held, (size_t)pass);
@@ -133,7 +133,7 @@ static int filter_reports(uint8_t *buf, int n, int cap)
             s_held_len = 0;        /* a whole report: dropped */
         }
     }
-     /* A lone ESC (the Esc key) or a cut-off sequence: give it out after a while. */
+      /* A lone ESC (the Esc key) or a cut-off sequence: give it out after a while. */
     if (s_held_len && esp_timer_get_time() - s_held_since > HOLD_US)
     {
         memcpy(out + o, s_held, (size_t)s_held_len);
@@ -165,9 +165,9 @@ static int uart_take(uint8_t *buf, int cap)
     return filter_reports(buf, n, cap);
 }
 
-  /* --------------------------------------------------------------- link */
+    /* --------------------------------------------------------------- link */
 
-  /* Orientation (Settings -> Displays): NVS tinydesk/lcd_rot, else the
+    /* Orientation (Settings -> Displays): NVS tinydesk/lcd_rot, else the
  * board key lcd.rotation, else 0. It applies at the next start. */
 static int saved_rotation(void)
 {
@@ -206,7 +206,7 @@ bool link_init(void)
     if (baud < 9600)
         baud = DEFAULT_BAUD;
     s_mirror = tdsh_board_int("lcd.mirror", 1) != 0;
-     /* console.uart = -1: UART0 is not the keyboard (a kiosk app's Modbus
+      /* console.uart = -1: UART0 is not the keyboard (a kiosk app's Modbus
      * line, for example): TinyDesk leaves it alone, except on a
      * maintenance start (BOOT held after RESET, main.c). */
     s_uart = tdsh_board_int("console.uart", 0) == 0 || board_maintenance_start();

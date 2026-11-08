@@ -34,7 +34,7 @@
 #include "tinydesk/td_vterm.h"
 
 #define PIN_BACKLIGHT 2
- /* A frame is 928 x 525 clocks. 24 MHz gives about 49 Hz and leaves PSRAM
+  /* A frame is 928 x 525 clocks. 24 MHz gives about 49 Hz and leaves PSRAM
  * bandwidth for a full-page render without starving the RGB bounce reader.
  * Board configuration key lcd.pclk_mhz changes it (10 to 40). */
 #define PCLK_MHZ      24
@@ -45,7 +45,7 @@
 
 static const char *TAG = "display";
 
-  /* RGB565 data lines: B0-B4, G0-G5, R0-R4. */
+    /* RGB565 data lines: B0-B4, G0-G5, R0-R4. */
 static const int s_data_pins[16] = {15, 7, 6, 5, 4, 9, 46, 3, 8, 16, 1, 14, 21, 47, 48, 45};
 #define PIN_DE    41
 #define PIN_VSYNC 40
@@ -60,7 +60,7 @@ static SemaphoreHandle_t s_frame_done;
 static portMUX_TYPE s_swap_lock = portMUX_INITIALIZER_UNLOCKED;
 static bool s_swap_waiting, s_present_pending;
 static atomic_uint s_scanout[8];
- /* When the desktop last sent cells or a picture: a synchronised frame that
+  /* When the desktop last sent cells or a picture: a synchronised frame that
  * is still arriving is waited for (see paint()). */
 static atomic_uint s_activity_tick;
 #define SYNC_IDLE_MS 1500   /* nothing new for this long: the sender is gone */
@@ -86,16 +86,16 @@ static display_reply_fn s_reply;
 static uint16_t s_palette[256];
 static uint8_t s_rgb[256][3];       /* the same colours in 8-bit RGB, for the shades */
 
-  /* The font (lcd.font): cell size, bytes a glyph row, glyphs. */
+    /* The font (lcd.font): cell size, bytes a glyph row, glyphs. */
 static int s_cw = 8, s_ch = 16, s_bpr = 1;
 static int s_cols = DISPLAY_MAX_COLS, s_rows = DISPLAY_MAX_ROWS;
 static const uint8_t *(*s_glyph)(uint16_t cp) = font8x16_glyph;
 
-  /* What the panel shows, to paint only what changed. */
+    /* What the panel shows, to paint only what changed. */
 static td_vcell_t s_shown[2][DISPLAY_MAX_CELLS];   /* row r, column c at r * s_cols + c */
 static td_vcell_t s_snap[DISPLAY_MAX_CELLS];
 
-  /* Orientation (display_set_rotation): the cells are painted into a
+    /* Orientation (display_set_rotation): the cells are painted into a
  * logical frame of s_lw x s_lh pixels (portrait when turned by 90 or 270
  * degrees), which is turned into the panel's frame when it is shown. At
  * 0 degrees the panel's frame is painted directly. */
@@ -104,7 +104,7 @@ static int s_lw = DISPLAY_W, s_lh = DISPLAY_H;
 static uint16_t *s_logical;
 static int s_cur_x[2] = {-1, -1}, s_cur_y[2] = {-1, -1};
 
-  /* ------------------------------------------------------------ colours */
+    /* ------------------------------------------------------------ colours */
 
 static uint16_t rgb565(int r, int g, int b)
 {
@@ -119,7 +119,7 @@ static void set_colour(int i, int r, int g, int b)
     s_palette[i] = rgb565(r, g, b);
 }
 
-  /* The xterm palette: 16 colours, the 6x6x6 cube, 24 greys. */
+    /* The xterm palette: 16 colours, the 6x6x6 cube, 24 greys. */
 static void make_palette(void)
 {
     static const uint8_t base[16][3] = {
@@ -152,7 +152,7 @@ static void make_palette(void)
     }
 }
 
-  /* fg over bg at quarters (1: 25 %, 2: 50 %, 3: 75 %). */
+    /* fg over bg at quarters (1: 25 %, 2: 50 %, 3: 75 %). */
 static uint16_t blend(uint8_t fg, uint8_t bg, int quarters)
 {
     int c[3];
@@ -161,9 +161,9 @@ static uint16_t blend(uint8_t fg, uint8_t bg, int quarters)
     return rgb565(c[0], c[1], c[2]);
 }
 
-  /* ------------------------------------------------------------ pictures */
+    /* ------------------------------------------------------------ pictures */
 
-  /* Sixel pictures (td_picture.h on the desktop's side) at the panel's own
+    /* Sixel pictures (td_picture.h on the desktop's side) at the panel's own
  * resolution. A decoded picture goes into a slot in full colour, and the
  * cells it covers get tile marks: character TILE_BASE + its tile, the slot
  * in fg. The painter draws a marked cell from the picture; text written
@@ -185,14 +185,14 @@ static slot_t s_slots[IMG_SLOTS];
 static uint32_t s_slot_generation, s_shown_generation[2][IMG_SLOTS];
 static int s_next_slot;
 static SemaphoreHandle_t s_img_lock;   /* the slots, between decoding and painting */
- /* Native RGB pictures are already composited/opaque. Keep their final pixels
+  /* Native RGB pictures are already composited/opaque. Keep their final pixels
  * once at screen coordinates instead of retaining every overlapping panel,
  * label, background and old page in separate full-size allocations. */
 static uint16_t *s_rgb_plane;
 static uint32_t *s_rgb_generation, *s_rgb_shown[2], s_rgb_sequence;
 static bool s_have_slots;
 
-  /* Caller holds s_img_lock and s_lock. */
+    /* Caller holds s_img_lock and s_lock. */
 static void release_unused_slots(void)
 {
     if (!s_have_slots)
@@ -276,7 +276,7 @@ static void six_sixel(int bits)
     }
 }
 
-  /* The finished picture into a slot, and its cells marked. Runs while
+    /* The finished picture into a slot, and its cells marked. Runs while
  * td_vterm_write() holds s_lock. */
 static bool six_finish(void)
 {
@@ -290,7 +290,7 @@ static bool six_finish(void)
         return false;
     }
     xSemaphoreTake(s_img_lock, portMAX_DELAY);
-     /* A rotating allocator must not replace a slot still referenced by a
+      /* A rotating allocator must not replace a slot still referenced by a
      * different field. Rapid value changes used to wrap onto static labels
      * and other readings, leaving their tiles showing unrelated pixels.
      * Tiles inside this incoming rectangle will be replaced together, so
@@ -337,7 +337,7 @@ static bool six_finish(void)
     return true;
 }
 
-  /* Local kiosk output avoids encoding pixels as terminal bytes only to
+    /* Local kiosk output avoids encoding pixels as terminal bytes only to
  * decode them back on the same CPU. Serial mirror mode keeps Sixel. */
 static bool direct_picture(int x, int y, const uint8_t *indexed, const uint16_t *rgb, int w, int h, const uint16_t *runs, size_t words)
 {
@@ -471,7 +471,7 @@ bool display_picture_runs(void *user, int x, int y, const uint16_t *runs, size_t
     return runs && direct_picture(x, y, NULL, NULL, w, h, runs, words);
 }
 
-  /* td_vterm_t.dcs: the bytes of a DCS string; -1 before, -2 after. */
+    /* td_vterm_t.dcs: the bytes of a DCS string; -1 before, -2 after. */
 static void six_byte(void *user, int b)
 {
     (void)user;
@@ -535,7 +535,7 @@ static void six_byte(void *user, int b)
         six_sixel(b - '?');
 }
 
-  /* A tile of a picture into the cell at col, row; false if it is gone. */
+    /* A tile of a picture into the cell at col, row; false if it is gone. */
 static bool paint_tile(int col, int row, td_vcell_t c)
 {
     bool ok = false;
@@ -570,15 +570,15 @@ static bool paint_tile(int col, int row, td_vcell_t c)
     return ok;
 }
 
-  /* ----------------------------------------------------------- painting */
+    /* ----------------------------------------------------------- painting */
 
 static void paint_cell(int col, int row, td_vcell_t c, bool cursor)
 {
-     /* A terminal caret must never reinterpret an image tile as a font
+      /* A terminal caret must never reinterpret an image tile as a font
      * glyph (private-use tile codes otherwise become a '?' on black). */
     if (c.ch >= TILE_BASE && c.ch < TILE_BASE + TILE_MAX && paint_tile(col, row, c))
         return;
-     /* The shades (the desktop's background) as one mixed colour: as dots
+      /* The shades (the desktop's background) as one mixed colour: as dots
      * of pixels they flicker on this TN panel, whose polarity inversion
      * beats against such patterns. */
     uint16_t *p = s_fb + (size_t)row * s_ch * s_lw + (size_t)col * s_cw;
@@ -630,7 +630,7 @@ static bool cell_changed(unsigned frame, int r, int c, td_vcell_t cell, int cx, 
     return (c == cx && r == cy) || (c == s_cur_x[frame] && r == s_cur_y[frame]) || cell_pixels_changed(frame, r, c, cell);
 }
 
-  /* Adjacent native cells are adjacent pixels in the shared composition
+    /* Adjacent native cells are adjacent pixels in the shared composition
  * plane. Copy each horizontal row once instead of walking 20 tiny rows
  * per character tile; source-row boundaries still stop a run after VT
  * scrolling/moves. All writes remain in the off-screen framebuffer. */
@@ -643,7 +643,7 @@ static void paint_rgb_span(int col, int row, td_vcell_t cell, int cols)
                (size_t)cols * s_cw * sizeof(uint16_t));
 }
 
-  /* The logical frame into the panel's, turned by s_rot degrees clockwise
+    /* The logical frame into the panel's, turned by s_rot degrees clockwise
  * (the panel's rows are written in order; PSRAM likes that best). */
 static void turn_frame(uint16_t *out)
 {
@@ -706,12 +706,12 @@ void display_touch_point(int tx, int ty, int *x, int *y, int *w, int *h)
     *h = s_lh;
 }
 
-  /* Copy the cells under the lock, paint outside it. */
+    /* Copy the cells under the lock, paint outside it. */
 static void paint(void)
 {
     static TickType_t sync_started;
     static bool waiting;
-     /* Do not recycle the old front buffer until the RGB bounce reader
+      /* Do not recycle the old front buffer until the RGB bounce reader
      * has switched to the submitted complete frame. A delayed callback
      * leaves both buffers intact; a later tick can finish the handoff. */
     if (s_present_pending)
@@ -730,7 +730,7 @@ static void paint(void)
         if (!waiting)
             sync_started = now;
         waiting = true;
-         /* Recover if a sender disappears mid-frame, but keep waiting while
+          /* Recover if a sender disappears mid-frame, but keep waiting while
          * the frame is still arriving: a heavy first page (every strip and
          * picture rendered cold) can take longer than SYNC_IDLE_MS in all,
          * and painting it half done shows its blank cells for a moment
@@ -751,7 +751,7 @@ static void paint(void)
     }
     s_vt->dirty = false;
     int64_t paint_began = esp_timer_get_time();
-     /* Pin the image slots used by this snapshot until all its tiles have
+      /* Pin the image slots used by this snapshot until all its tiles have
      * been painted. Writers take s_lock then s_img_lock in the same order. */
     xSemaphoreTake(s_img_lock, portMAX_DELAY);
     for (int r = 0; r < s_rows; r++)
@@ -778,7 +778,7 @@ static void paint(void)
         xSemaphoreGive(s_img_lock);
         return;
     }
-     /* A retained backbuffer may already contain the requested scene.
+      /* A retained backbuffer may already contain the requested scene.
      * Compare visibility against the front, then update against the back;
      * it still needs presenting even when no destination pixels changed. */
     bool changed = true;
@@ -831,7 +831,7 @@ static void paint(void)
         if (err != ESP_OK)
         {
             ESP_LOGE(TAG, "present frame: %s", esp_err_to_name(err));
-             /* Retry the completed frame; never paint into a submitted one. */
+              /* Retry the completed frame; never paint into a submitted one. */
             xSemaphoreTake(s_lock, portMAX_DELAY);
             s_vt->dirty = true;
             xSemaphoreGive(s_lock);
@@ -846,7 +846,7 @@ static void paint(void)
             atomic_store(&s_paint_timing[2], work_us);
         atomic_fetch_add(&s_paint_timing[3], work_us);
         atomic_fetch_add(&s_scanout[4], 1);
-         /* Arm after draw_bitmap commits the requested buffer. A callback
+          /* Arm after draw_bitmap commits the requested buffer. A callback
          * racing before this point is ignored, so it cannot release the
          * previous buffer before the driver has stopped reading it. */
         portENTER_CRITICAL(&s_swap_lock);
@@ -866,7 +866,7 @@ static void paint_task(void *arg)
     }
 }
 
-  /* ---------------------------------------------------------- terminal */
+    /* ---------------------------------------------------------- terminal */
 
 static void vt_reply(void *user, const char *data, int len)
 {
@@ -885,7 +885,7 @@ void display_write(const uint8_t *buf, int len)
     xSemaphoreGive(s_lock);
 }
 
-  /* -------------------------------------------------------------- panel */
+    /* -------------------------------------------------------------- panel */
 
 static bool IRAM_ATTR frame_complete(esp_lcd_panel_handle_t panel,
                                      const esp_lcd_rgb_panel_event_data_t *event, void *user)
@@ -920,7 +920,7 @@ static bool IRAM_ATTR scanout_vsync(esp_lcd_panel_handle_t panel,
     (void)event;
     (void)user;
     unsigned frames = atomic_fetch_add(&s_scanout[0], 1);
-     /* Skip startup phase alignment; completion should advance once between
+      /* Skip startup phase alignment; completion should advance once between
      * successive VSYNCs. This callback precedes IDF's underrun recovery. */
     if (frames > 2 && s_prepared_at == s_previous_prepared)
         atomic_fetch_add(&s_scanout[2], 1);
@@ -1001,7 +1001,7 @@ static bool panel_init(void)
     }
     s_fb = s_logical ? s_logical : s_frames[s_draw_frame];
 
-      /* The LCD's pins are not for scripts (machine.Pin refuses reserved pins). */
+        /* The LCD's pins are not for scripts (machine.Pin refuses reserved pins). */
     uint64_t mask = BIT64(PIN_DE) | BIT64(PIN_VSYNC) | BIT64(PIN_HSYNC) | BIT64(PIN_PCLK) | BIT64(PIN_BACKLIGHT);
     for (int i = 0; i < 16; i++)
         mask |= BIT64(s_data_pins[i]);
@@ -1026,7 +1026,7 @@ int display_rows(void)
     return s_rows;
 }
 
-  /* lcd.font: 16 (8x16, the default), 20, 24 or 32 pixels high. */
+    /* lcd.font: 16 (8x16, the default), 20, 24 or 32 pixels high. */
 static void choose_font(void)
 {
     switch (tdsh_board_int("lcd.font", 16))
@@ -1060,7 +1060,7 @@ bool display_init(display_reply_fn reply)
         return false;
     td_vterm_init(s_vt, s_cols, s_rows);
     s_vt->reply = vt_reply;
-     /* Pictures: Sixel at the panel's own pixels, a cell s_cw x s_ch. */
+      /* Pictures: Sixel at the panel's own pixels, a cell s_cw x s_ch. */
     s_img_lock = xSemaphoreCreateMutex();
     s_vt->dcs = six_byte;
     s_vt->dcs_user = NULL;
@@ -1068,7 +1068,7 @@ bool display_init(display_reply_fn reply)
     s_vt->cell_w = s_cw;
     s_vt->cell_h = s_ch;
 
-      /* Each buffer tracks its own last cells; updating small values does
+        /* Each buffer tracks its own last cells; updating small values does
      * not require copying the entire 750 KiB framebuffer on every swap. */
     memset(s_shown, 0xFF, sizeof(s_shown));
     s_vt->dirty = true;

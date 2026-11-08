@@ -206,8 +206,7 @@ int main(void)
     td_win_close(win);
 
     /* ---- dragging three selected rows onto another window */
-    td_window_desc_t sd = {.title = "Source", .rect = td_rect(0, 0, 30, 12), .flags = TD_WIN_DEFAULT,
-                           .on_drag_start = drag_start, .on_drag_more = drag_more};
+    td_window_desc_t sd = {.title = "Source", .rect = td_rect(0, 0, 30, 12), .flags = TD_WIN_DEFAULT, .on_drag_start = drag_start, .on_drag_more = drag_more};
     td_window_desc_t td = {.title = "Target", .rect = td_rect(45, 0, 30, 12), .flags = TD_WIN_DEFAULT, .on_drop = drop};
     td_window_t *target = td_win_create(&td);
     td_window_t *source = td_win_create(&sd);

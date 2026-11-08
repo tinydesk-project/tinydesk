@@ -12883,7 +12883,7 @@ static const mp_frozen_module_t frozen_module_requests___init__ = {
 // - .mpy header: 4d:06:00:1f
 
 // frozen bytecode for file ssl.py, scope ssl__lt_module_gt_
-static const byte fun_data_ssl__lt_module_gt_[43] = {
+static const byte fun_data_ssl__lt_module_gt_[60] = {
     0x30,0x02, // prelude
     0x01, // names: <module>
      // code info
@@ -12891,20 +12891,29 @@ static const byte fun_data_ssl__lt_module_gt_[43] = {
     0x51, // LOAD_CONST_NONE
     0x1b,0x02, // IMPORT_NAME 'tls'
     0x16,0x02, // STORE_NAME 'tls'
+    0x11,0x12, // LOAD_NAME 'hasattr'
+    0x11,0x02, // LOAD_NAME 'tls'
+    0x10,0x03, // LOAD_CONST_STRING 'SSLContext'
+    0x34,0x02, // CALL_FUNCTION 2
+    0x43,0x47, // POP_JUMP_IF_TRUE 7
+    0x11,0x13, // LOAD_NAME 'ImportError'
+    0x23,0x00, // LOAD_CONST_OBJ 0
+    0x34,0x01, // CALL_FUNCTION 1
+    0x65, // RAISE_OBJ
     0x80, // LOAD_CONST_SMALL_INT 0
-    0x10,0x03, // LOAD_CONST_STRING '*'
+    0x10,0x04, // LOAD_CONST_STRING '*'
     0x2a,0x01, // BUILD_TUPLE 1
     0x1b,0x02, // IMPORT_NAME 'tls'
     0x69, // IMPORT_STAR
     0x54, // LOAD_BUILD_CLASS
     0x32,0x00, // MAKE_FUNCTION 0
-    0x10,0x04, // LOAD_CONST_STRING 'SSLContext'
+    0x10,0x03, // LOAD_CONST_STRING 'SSLContext'
     0x34,0x02, // CALL_FUNCTION 2
-    0x16,0x04, // STORE_NAME 'SSLContext'
+    0x16,0x03, // STORE_NAME 'SSLContext'
     0x50, // LOAD_CONST_FALSE
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
-    0x11,0x12, // LOAD_NAME 'CERT_NONE'
+    0x11,0x14, // LOAD_NAME 'CERT_NONE'
     0x51, // LOAD_CONST_NONE
     0x51, // LOAD_CONST_NONE
     0x52, // LOAD_CONST_TRUE
@@ -12919,15 +12928,15 @@ static const byte fun_data_ssl__lt_module_gt_[43] = {
 // frozen bytecode for file ssl.py, scope ssl_SSLContext
 static const byte fun_data_ssl_SSLContext[58] = {
     0x10,0x02, // prelude
-    0x04, // names: SSLContext
+    0x03, // names: SSLContext
      // code info
-    0x11,0x13, // LOAD_NAME '__name__'
-    0x16,0x14, // STORE_NAME '__module__'
-    0x10,0x04, // LOAD_CONST_STRING 'SSLContext'
-    0x16,0x15, // STORE_NAME '__qualname__'
+    0x11,0x15, // LOAD_NAME '__name__'
+    0x16,0x16, // STORE_NAME '__module__'
+    0x10,0x03, // LOAD_CONST_STRING 'SSLContext'
+    0x16,0x17, // STORE_NAME '__qualname__'
     0x32,0x00, // MAKE_FUNCTION 0
     0x16,0x0e, // STORE_NAME '__init__'
-    0x11,0x16, // LOAD_NAME 'property'
+    0x11,0x18, // LOAD_NAME 'property'
     0x32,0x01, // MAKE_FUNCTION 1
     0x34,0x01, // CALL_FUNCTION 1
     0x16,0x0a, // STORE_NAME 'verify_mode'
@@ -12958,10 +12967,10 @@ static const byte fun_data_ssl_SSLContext[58] = {
 // frozen bytecode for file ssl.py, scope ssl_SSLContext___init__
 static const byte fun_data_ssl_SSLContext___init__[20] = {
     0xa9,0x80,0x80,0x40,0x04, // prelude
-    0x0e,0x1e, // names: __init__, self
+    0x0e,0x20, // names: __init__, self
      // code info
     0x12,0x02, // LOAD_GLOBAL 'tls'
-    0x14,0x04, // LOAD_METHOD 'SSLContext'
+    0x14,0x03, // LOAD_METHOD 'SSLContext'
     0xb1, // LOAD_FAST 1
     0x81, // LOAD_CONST_SMALL_INT 1
     0x37,0x01, // CALL_METHOD_VAR_KW 1
@@ -13009,7 +13018,7 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext___init__ = {
 // frozen bytecode for file ssl.py, scope ssl_SSLContext_verify_mode
 static const byte fun_data_ssl_SSLContext_verify_mode[10] = {
     0x09,0x04, // prelude
-    0x0a,0x1e, // names: verify_mode, self
+    0x0a,0x20, // names: verify_mode, self
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x0f, // LOAD_ATTR '_context'
@@ -13055,7 +13064,7 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_verify_mode = {
 // frozen bytecode for file ssl.py, scope ssl_SSLContext_verify_mode2
 static const byte fun_data_ssl_SSLContext_verify_mode2[13] = {
     0x1a,0x06, // prelude
-    0x0a,0x1e,0x1f, // names: verify_mode, self, val
+    0x0a,0x20,0x21, // names: verify_mode, self, val
      // code info
     0xb1, // LOAD_FAST 1
     0xb0, // LOAD_FAST 0
@@ -13103,14 +13112,14 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_verify_mode2 = {
 // frozen bytecode for file ssl.py, scope ssl_SSLContext_load_cert_chain
 static const byte fun_data_ssl_SSLContext_load_cert_chain[74] = {
     0x47,0x08, // prelude
-    0x07,0x1e,0x20,0x21, // names: load_cert_chain, self, certfile, keyfile
+    0x07,0x20,0x22,0x23, // names: load_cert_chain, self, certfile, keyfile
      // code info
-    0x12,0x22, // LOAD_GLOBAL 'isinstance'
+    0x12,0x24, // LOAD_GLOBAL 'isinstance'
     0xb1, // LOAD_FAST 1
-    0x12,0x23, // LOAD_GLOBAL 'str'
+    0x12,0x25, // LOAD_GLOBAL 'str'
     0x34,0x02, // CALL_FUNCTION 2
     0x44,0x53, // POP_JUMP_IF_FALSE 19
-    0x12,0x24, // LOAD_GLOBAL 'open'
+    0x12,0x26, // LOAD_GLOBAL 'open'
     0xb1, // LOAD_FAST 1
     0x10,0x10, // LOAD_CONST_STRING 'rb'
     0x34,0x02, // CALL_FUNCTION 2
@@ -13123,12 +13132,12 @@ static const byte fun_data_ssl_SSLContext_load_cert_chain[74] = {
     0x51, // LOAD_CONST_NONE
     0x5c, // WITH_CLEANUP
     0x5d, // END_FINALLY
-    0x12,0x22, // LOAD_GLOBAL 'isinstance'
+    0x12,0x24, // LOAD_GLOBAL 'isinstance'
     0xb2, // LOAD_FAST 2
-    0x12,0x23, // LOAD_GLOBAL 'str'
+    0x12,0x25, // LOAD_GLOBAL 'str'
     0x34,0x02, // CALL_FUNCTION 2
     0x44,0x53, // POP_JUMP_IF_FALSE 19
-    0x12,0x24, // LOAD_GLOBAL 'open'
+    0x12,0x26, // LOAD_GLOBAL 'open'
     0xb2, // LOAD_FAST 2
     0x10,0x10, // LOAD_CONST_STRING 'rb'
     0x34,0x02, // CALL_FUNCTION 2
@@ -13190,11 +13199,11 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_load_cert_chain = 
 // frozen bytecode for file ssl.py, scope ssl_SSLContext_load_verify_locations
 static const byte fun_data_ssl_SSLContext_load_verify_locations[41] = {
     0xc7,0x80,0x01,0x08, // prelude
-    0x08,0x1e,0x25,0x09, // names: load_verify_locations, self, cafile, cadata
+    0x08,0x20,0x27,0x09, // names: load_verify_locations, self, cafile, cadata
      // code info
     0xb1, // LOAD_FAST 1
     0x44,0x53, // POP_JUMP_IF_FALSE 19
-    0x12,0x24, // LOAD_GLOBAL 'open'
+    0x12,0x26, // LOAD_GLOBAL 'open'
     0xb1, // LOAD_FAST 1
     0x10,0x10, // LOAD_CONST_STRING 'rb'
     0x34,0x02, // CALL_FUNCTION 2
@@ -13255,7 +13264,7 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext_load_verify_locati
 // frozen bytecode for file ssl.py, scope ssl_SSLContext_wrap_socket
 static const byte fun_data_ssl_SSLContext_wrap_socket[29] = {
     0xe9,0x85,0x01,0x0c, // prelude
-    0x06,0x1e,0x17,0x0b,0x0c,0x0d, // names: wrap_socket, self, sock, server_side, do_handshake_on_connect, server_hostname
+    0x06,0x20,0x19,0x0b,0x0c,0x0d, // names: wrap_socket, self, sock, server_side, do_handshake_on_connect, server_hostname
      // code info
     0xb0, // LOAD_FAST 0
     0x13,0x0f, // LOAD_ATTR '_context'
@@ -13336,7 +13345,7 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext = {
         .n_pos_args = 0,
         .n_kwonly_args = 0,
         .n_def_pos_args = 0,
-        .qstr_block_name_idx = 4,
+        .qstr_block_name_idx = 3,
         .line_info = fun_data_ssl_SSLContext + 3,
         .line_info_top = fun_data_ssl_SSLContext + 3,
         .opcodes = fun_data_ssl_SSLContext + 3,
@@ -13349,14 +13358,14 @@ static const mp_raw_code_truncated_t proto_fun_ssl_SSLContext = {
 // frozen bytecode for file ssl.py, scope ssl_wrap_socket
 static const byte fun_data_ssl_wrap_socket[76] = {
     0x88,0x91,0x85,0x01,0x12, // prelude
-    0x06,0x17,0x0b,0x18,0x19,0x1a,0x09,0x0d,0x1b, // names: wrap_socket, sock, server_side, key, cert, cert_reqs, cadata, server_hostname, do_handshake
+    0x06,0x19,0x0b,0x1a,0x1b,0x1c,0x09,0x0d,0x1d, // names: wrap_socket, sock, server_side, key, cert, cert_reqs, cadata, server_hostname, do_handshake
      // code info
-    0x12,0x04, // LOAD_GLOBAL 'SSLContext'
+    0x12,0x03, // LOAD_GLOBAL 'SSLContext'
     0xb1, // LOAD_FAST 1
     0x44,0x44, // POP_JUMP_IF_FALSE 4
-    0x12,0x1c, // LOAD_GLOBAL 'PROTOCOL_TLS_SERVER'
+    0x12,0x1e, // LOAD_GLOBAL 'PROTOCOL_TLS_SERVER'
     0x42,0x42, // JUMP 2
-    0x12,0x1d, // LOAD_GLOBAL 'PROTOCOL_TLS_CLIENT'
+    0x12,0x1f, // LOAD_GLOBAL 'PROTOCOL_TLS_CLIENT'
     0x34,0x01, // CALL_FUNCTION 1
     0xc8, // STORE_FAST 8
     0xb3, // LOAD_FAST 3
@@ -13440,7 +13449,7 @@ static const mp_raw_code_truncated_t proto_fun_ssl__lt_module_gt_ = {
     .fun_data = fun_data_ssl__lt_module_gt_,
     .children = (void *)&children_ssl__lt_module_gt_,
     #if MICROPY_PERSISTENT_CODE_SAVE
-    .fun_data_len = 43,
+    .fun_data_len = 60,
     .n_children = 2,
     #if MICROPY_EMIT_MACHINE_CODE
     .prelude_offset = 0,
@@ -13463,12 +13472,12 @@ static const mp_raw_code_truncated_t proto_fun_ssl__lt_module_gt_ = {
     #endif
 };
 
-static const qstr_short_t const_qstr_table_data_ssl[38] = {
+static const qstr_short_t const_qstr_table_data_ssl[40] = {
     MP_QSTR_ssl_dot_py,
     MP_QSTR__lt_module_gt_,
     MP_QSTR_tls,
-    MP_QSTR__star_,
     MP_QSTR_SSLContext,
+    MP_QSTR__star_,
     MP_QSTR_setter,
     MP_QSTR_wrap_socket,
     MP_QSTR_load_cert_chain,
@@ -13482,6 +13491,8 @@ static const qstr_short_t const_qstr_table_data_ssl[38] = {
     MP_QSTR__context,
     MP_QSTR_rb,
     MP_QSTR_read,
+    MP_QSTR_hasattr,
+    MP_QSTR_ImportError,
     MP_QSTR_CERT_NONE,
     MP_QSTR___name__,
     MP_QSTR___module__,
@@ -13504,10 +13515,18 @@ static const qstr_short_t const_qstr_table_data_ssl[38] = {
     MP_QSTR_cafile,
 };
 
+// constants
+static const mp_obj_str_t const_obj_ssl_0 = {{&mp_type_str}, 42518, 44, (const byte*)"\x6e\x6f\x20\x54\x4c\x53\x20\x69\x6e\x20\x74\x68\x69\x73\x20\x62\x75\x69\x6c\x64\x20\x28\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x6f\x75\x74\x20\x6d\x62\x65\x64\x54\x4c\x53\x29"};
+
+// constant table
+static const mp_rom_obj_t const_obj_table_data_ssl[1] = {
+    MP_ROM_PTR(&const_obj_ssl_0),
+};
+
 static const mp_frozen_module_t frozen_module_ssl = {
     .constants = {
         .qstr_table = (qstr_short_t *)&const_qstr_table_data_ssl,
-        .obj_table = NULL,
+        .obj_table = (mp_obj_t *)&const_obj_table_data_ssl,
     },
     .proto_fun = &proto_fun_ssl__lt_module_gt_,
 };
@@ -48385,14 +48404,14 @@ MICROPY_FROZEN_LIST_ITEM("tdapp", "tdapp.py")
 /*
 byte sizes:
 qstr content: 838 unique, 9846 bytes
-bc content: 36338
-const str content: 2131
+bc content: 36355
+const str content: 2175
 const int content: 40
-const obj content: 1344
+const obj content: 1360
 const table qstr content: 0 entries, 0 bytes
-const table ptr content: 196 entries, 784 bytes
+const table ptr content: 197 entries, 788 bytes
 raw code content: 507 * 4 = 8112
 mp_frozen_mpy_names_content: 273
 mp_frozen_mpy_content_size: 72
-total: 58940
+total: 59021
 */

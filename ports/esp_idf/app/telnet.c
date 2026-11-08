@@ -57,7 +57,7 @@ typedef enum
     ST_ACTIVE
 } state_t;
 
-  /* One connection: its login, input filter and a small buffer of filtered
+    /* One connection: its login, input filter and a small buffer of filtered
  * bytes. */
 typedef struct
 {
@@ -84,7 +84,7 @@ static int s_listen = -1;
 static int64_t s_next_try_us;
 static client_t s_cl[TELNET_CLIENTS] = {{.fd = -1}, {.fd = -1}};
 
-  /* ------------------------------------------------------------ helpers */
+    /* ------------------------------------------------------------ helpers */
 
 static int64_t now_us(void)
 {
@@ -103,7 +103,7 @@ static void say(client_t *c, const char *s)
         send(c->fd, s, strlen(s), 0);
 }
 
-  /* Strip telnet commands in place; returns the number of data bytes. */
+    /* Strip telnet commands in place; returns the number of data bytes. */
 static int filter(client_t *c, uint8_t *buf, int n)
 {
     int m = 0;
@@ -157,7 +157,7 @@ static int filter(client_t *c, uint8_t *buf, int n)
     return m;
 }
 
-  /* Fetch whatever the client sent (non-blocking). Returns false when the
+    /* Fetch whatever the client sent (non-blocking). Returns false when the
  * connection has ended. */
 static bool fill_input(client_t *c)
 {
@@ -195,7 +195,7 @@ static void close_listener(void)
     s_listen = -1;
 }
 
-  /* ----------------------------------------------------------- states */
+    /* ----------------------------------------------------------- states */
 
 static void open_listener(void)
 {
@@ -243,7 +243,7 @@ static void try_accept(void)
     inet_ntoa_r(peer.sin_addr, c->peer, sizeof(c->peer));
     int one = 1;
     setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
-     /* Sends may block briefly, so a full frame (larger than the TCP send
+      /* Sends may block briefly, so a full frame (larger than the TCP send
      * buffer) still gets out; reads never block (MSG_DONTWAIT). */
     struct timeval tv = {.tv_sec = 0, .tv_usec = 300000};
     setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
@@ -255,7 +255,7 @@ static void try_accept(void)
     c->state = ST_USER;
 }
 
-  /* Collect a line of input during login; true when Enter was pressed. */
+    /* Collect a line of input during login; true when Enter was pressed. */
 static bool login_line(client_t *c, bool secret)
 {
     while (c->in_pos < c->in_len)
@@ -301,7 +301,7 @@ static void login_step(client_t *c)
     }
     if (!login_line(c, true))
         return;
-     /* This takes over a shared shell, including any command already running.
+      /* This takes over a shared shell, including any command already running.
      * Until isolated sessions exist, only root may take over the desktop. */
     bool ok = strcmp(c->user, "root") == 0 && tdsh_user_authenticate_remote(c->user, c->line);
     memset(c->line, 0, sizeof(c->line));
@@ -334,7 +334,7 @@ static client_t *active(int i)
     return i >= 0 && i < TELNET_CLIENTS && s_cl[i].state == ST_ACTIVE ? &s_cl[i] : NULL;
 }
 
-  /* --------------------------------------------------------------- api */
+    /* --------------------------------------------------------------- api */
 
 void telnet_start(void)
 {
