@@ -2,6 +2,7 @@
  * painter regression. Frame completion is advanced explicitly by the test. */
 #ifndef CROWPANEL_TEST_PLATFORM_H
 #define CROWPANEL_TEST_PLATFORM_H
+#undef NDEBUG /* the checks are asserts: keep them in Release builds */
 #include <assert.h>
 #include <stdarg.h>
 #include <stdlib.h>

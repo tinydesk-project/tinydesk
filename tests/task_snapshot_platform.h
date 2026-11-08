@@ -2,6 +2,7 @@
 #define TASK_SNAPSHOT_TEST_PLATFORM_H
 #include <stdint.h>
 #include <string.h>
+#undef NDEBUG /* the checks are asserts: keep them in Release builds */
 #include <assert.h>
 typedef unsigned UBaseType_t;
 typedef int BaseType_t;

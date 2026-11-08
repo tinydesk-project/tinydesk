@@ -525,7 +525,8 @@ static bool free_name(char *path, size_t cap, bool is_dir)
     }
     for (int n = 2; n < 100; n++)
     {
-        snprintf(path, cap, "%s (%d)%s", base, n, ext);
+        if (snprintf(path, cap, "%s (%d)%s", base, n, ext) >= (int)cap)
+            return false;   /* too long for a path */
         if (!fs()->exists(path))
             return true;
     }
@@ -555,8 +556,8 @@ const char *td_trash_restore(const char *id, char *where, int where_cap)
     bool inside = strncmp(info.path, home, hl) == 0 && info.path[hl] == '/' && !strstr(info.path, "/../");
     if (td_session_is_root() || inside)
         snprintf(to, sizeof(to), "%s", info.path);
-    else
-        snprintf(to, sizeof(to), "%s/%s", home, name);
+    else if (snprintf(to, sizeof(to), "%s/%s", home, name) >= (int)sizeof(to))
+        return "Its name is too long for your home folder.";
     make_parents(to);
     if (!free_name(to, sizeof(to), info.is_dir))
         return "There is no free name for it.";
