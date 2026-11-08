@@ -82,7 +82,7 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
 
 | Desktop target | Hardware | Console / limits |
 | --- | --- | --- |
-| ESP32-S3 with PSRAM | 16 MB flash, Octal PSRAM | USB-UART, 921600 baud |
+| ESP32-S3 with PSRAM | 16 MB flash, Octal PSRAM | USB-UART, 921600 baud; optional USB keyboard and mouse on the chip's USB port (`usb.host = 1`): one device, no hubs, so a set with one receiver |
 | ESP32-C6 | 8 MB flash | Built-in USB Serial/JTAG |
 | Classic ESP32 with PSRAM | 16 MB flash, PSRAM required | USB-UART, 921600 baud |
 | Classic ESP32, 4 MB | PSRAM optional | USB-UART, 921600 baud; 80×25, no SSH server or OTA |
