@@ -140,6 +140,9 @@ just after start-up, before Wi-Fi):
 
 ## Known issues
 
+- **Python on the 4 MB ESP32:** without PSRAM, a script gets about 21 KB
+  of RAM before Wi-Fi and about 16 KB with Wi-Fi connected: enough for
+  small scripts and plain sockets, not for TLS (`https://`, `wss://`).
 - **SSH on the ESP32-C6:** `ssh start` refuses with "insufficient internal
   RAM" on the ESP32-C6 (it has done so since 0.1.0). A fix is ready and
   tested and comes in a later release. The other boards with SSH are not
