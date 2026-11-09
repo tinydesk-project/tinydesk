@@ -164,7 +164,11 @@ def package_firmware(out, edition, title, version, builds):
         # get the app image alone and an update feed: Software Update's
         # "Check for official updates" reads it from the web installer's site.
         if any("ota_data_initial" in os.path.basename(src) for _, src in parts):
-            app_src = next(src for off, src in parts if off == 0x10000)
+            # The app's offset depends on the partition table (0x10000 or
+            # 0x30000 since 0.3.0); flasher_args.json says where it is.
+            with open(os.path.join(build, "flasher_args.json")) as f:
+                app_entry = json.load(f)["app"]
+            app_src = os.path.join(build, app_entry["file"])
             app = "tinydesk-%s-%s-%s-app.bin" % (edition, version, board)
             shutil.copy2(app_src, os.path.join(out, app))
             feed = {
