@@ -7,6 +7,14 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## New in 0.3.1
+
+* **`ssl` in the PC shell program:** 0.3.0's `tdsh_host` (Linux) and
+  `tdsh_host.exe` (Windows) were built without TLS, so `py` had no `ssl`
+  there (no HTTPS, MQTT over TLS or `upip`). They have it now, and a
+  release build stops if it would leave it out. The firmware and the
+  desktop programs had it already; nothing else changed.
+
 ## New in 0.3.0
 
 The public API is frozen in this release as the candidate for 1.0

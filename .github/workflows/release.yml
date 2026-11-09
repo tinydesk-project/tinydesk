@@ -43,7 +43,8 @@ jobs:
           sudo apt-get install -y ninja-build
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DTD_REQUIRE_TLS=ON -DTD_MBEDTLS_DIR="$MBEDTLS_DIR"
           cmake --build build
-          cmake -S third_party/tdsh -B build-shell -G Ninja -DTDSH_BUILD_HOST=ON -DCMAKE_BUILD_TYPE=Release
+          cmake -S third_party/tdsh -B build-shell -G Ninja -DTDSH_BUILD_HOST=ON -DCMAKE_BUILD_TYPE=Release \
+            -DTDSH_REQUIRE_TLS=ON -DTDSH_MBEDTLS_DIR="$MBEDTLS_DIR"
           cmake --build build-shell
           ctest --test-dir build --output-on-failure --no-tests=error
           ctest --test-dir build-shell --output-on-failure --no-tests=error
@@ -89,7 +90,8 @@ jobs:
         shell: bash
         run: |
           cmake -S third_party/tdsh -B build-shell -G Ninja -DCMAKE_C_COMPILER=gcc -DTDSH_BUILD_HOST=ON \
-            -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS=-static
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXE_LINKER_FLAGS=-static \
+            -DTDSH_REQUIRE_TLS=ON -DTDSH_MBEDTLS_DIR="$MBEDTLS_DIR"
           cmake --build build-shell
           ctest --test-dir build-shell --output-on-failure --no-tests=error
           strip build-shell/tdsh_host.exe
