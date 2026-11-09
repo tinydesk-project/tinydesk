@@ -182,10 +182,44 @@ const char *td_start_menu_remove(const char *target)
     return NULL;
 }
 
-const char *td_copy_to_apps(const char *path, char *copy, int cap)
+const char *td_copy_file(const char *from, const char *to)
 {
     const td_fs_ops_t *f = fs();
     if (!f || !f->read_at || !f->append || !f->write || !f->exists)
+        return "Copying is not supported here.";
+    if (f->exists(to))
+        return "Something with that name is already there.";
+    enum
+    {
+        CHUNK = 2048
+    };
+    char *buf = malloc(CHUNK);
+    if (!buf)
+        return "Not enough memory.";
+    bool ok = f->write(to, "", 0) == 0;
+    for (uint32_t at = 0; ok;)
+    {
+        int n = f->read_at(from, at, buf, CHUNK);
+        if (n < 0)
+            ok = false;
+        if (n <= 0)
+            break;
+        ok = f->append(to, buf, n) == 0;
+        at += (uint32_t)n;
+    }
+    free(buf);
+    if (!ok)
+    {
+        f->remove(to);
+        return "The copy failed (is the drive full?).";
+    }
+    return NULL;
+}
+
+const char *td_copy_to_apps(const char *path, char *copy, int cap)
+{
+    const td_fs_ops_t *f = fs();
+    if (!f || !f->exists)
         return "Copying is not supported here.";
     const char *slash = strrchr(path, '/');
     const char *name = slash ? slash + 1 : path;
@@ -195,32 +229,10 @@ const char *td_copy_to_apps(const char *path, char *copy, int cap)
     if (f->exists(copy))
         return "Apps already has a file of that name.";
     f->mkdir(td_apps_dir());
-    enum
-    {
-        CHUNK = 2048
-    };
-    char *buf = malloc(CHUNK);
-    if (!buf)
-        return "Not enough memory.";
-    bool ok = f->write(copy, "", 0) == 0;
-    for (uint32_t at = 0; ok;)
-    {
-        int n = f->read_at(path, at, buf, CHUNK);
-        if (n < 0)
-            ok = false;
-        if (n <= 0)
-            break;
-        ok = f->append(copy, buf, n) == 0;
-        at += (uint32_t)n;
-    }
-    free(buf);
-    if (!ok)
-    {
-        f->remove(copy);
-        return "The copy failed (is the file system full?).";
-    }
-    td_desktop_refresh();
-    return NULL;
+    const char *err = td_copy_file(path, copy);
+    if (!err)
+        td_desktop_refresh();
+    return err;
 }
 
 /* -------------------------------------------- the Start menu entries */

@@ -216,6 +216,16 @@ typedef struct
     const char *(*layout_name)(int i);
 } td_keyboard_ops_t;
 
+    /* --------------------------------------------------------------- drives */
+
+typedef struct
+{
+    char label[24];              /* "SD card" */
+    char path[48];               /* where it is in td_sysinfo()->fs (a real path, "/fs/sd") */
+    bool removable;
+    uint64_t total, free;        /* bytes; 0: not known */
+} td_drive_t;
+
     /* ------------------------------------------------------------ Bluetooth */
 
     /* Bluetooth keyboards and mice, for the Bluetooth app and the bt command.
@@ -588,6 +598,14 @@ typedef struct
         /* Optional: Bluetooth keyboards and mice (the Bluetooth app, the bt
      * command). NULL: none on this port or build. */
     const td_bt_ops_t *bt;
+
+        /* Optional: drives besides the board's own file system, such as an SD
+     * card, while they are there: the desktop shows an icon for each, and
+     * Files opens them. drives() fills up to max and returns how many (it
+     * is called every few seconds; keep it cheap). drive_eject (optional)
+     * lets one go so it can be taken out; false with *why when it cannot. */
+    int (*drives)(td_drive_t *out, int max);
+    bool (*drive_eject)(const char *path, const char **why);
 } td_sysinfo_t;
 
     /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

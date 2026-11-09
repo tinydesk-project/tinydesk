@@ -152,6 +152,8 @@ void td_files_open(const char *dir);
 
 /* Something changed on disk: let an open Files window re-read its folder. */
 void td_files_changed(void);
+/* A drive (td_sysinfo()->drives) went away: Files leaves it if it was there. */
+void td_files_drive_gone(const char *path);
 
 /* The current user's home directory and Desktop folder (real paths, e.g.
  * "/fs/home/bob/Desktop" on the ESP32). The Desktop folder's files are
@@ -407,6 +409,8 @@ const char *td_start_dir(void);
 bool td_in_start_menu(const char *target);
 const char *td_start_menu_remove(const char *target);              /* NULL or an error */
 /* Copy a file into ~/Apps (copy: its real path there). NULL or an error. */
+/* Copy a file (made anew; NULL, or why not). It works across drives. */
+const char *td_copy_file(const char *from, const char *to);
 const char *td_copy_to_apps(const char *path, char *copy, int cap);
 /* Open a file or folder as the Desktop and Files do: folders in Files,
  * pictures in the Image Viewer, app packages run, shortcuts their target,

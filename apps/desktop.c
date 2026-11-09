@@ -24,6 +24,11 @@ typedef struct
 
 static item_t s_items[DESK_MAX];
 static int s_count;
+/* Drives besides the board's own (td_sysinfo()->drives): their icons come
+ * first, so a provider index p is drive p, or s_items[p - s_nd]. */
+#define DRIVES_MAX 4
+static td_drive_t s_drives[DRIVES_MAX];
+static int s_nd;
 static char s_desk[PATH_LEN];        /* <user's home>/Desktop */
 static bool s_timer_started;
 static int s_target = -1;           /* item a menu or dialog is about */
@@ -81,8 +86,36 @@ static bool item_before(const item_t *a, const item_t *b)
     return strcmp(a->name, b->name) < 0;
 }
 
+/* The drives the user may open now; a drive that went away closes what
+ * Files had open on it. */
+static void refresh_drives(void)
+{
+    td_drive_t now[DRIVES_MAX];
+    int n = td_sysinfo()->drives ? td_sysinfo()->drives(now, DRIVES_MAX) : 0;
+    int kept = 0;
+    for (int i = 0; i < n && i < DRIVES_MAX; i++)
+        if (td_session_path_allowed(now[i].path, TD_FS_LIST))
+            now[kept++] = now[i];
+    bool same = kept == s_nd;
+    for (int i = 0; same && i < kept; i++)
+        same = !strcmp(now[i].path, s_drives[i].path) && !strcmp(now[i].label, s_drives[i].label);
+    for (int i = 0; i < s_nd; i++)
+    {
+        bool still = false;
+        for (int j = 0; j < kept; j++)
+            still |= !strcmp(s_drives[i].path, now[j].path);
+        if (!still)
+            td_files_drive_gone(s_drives[i].path);
+    }
+    memcpy(s_drives, now, sizeof(td_drive_t) * (size_t)kept);
+    s_nd = kept;
+    if (!same)
+        td_wm_invalidate();
+}
+
 void td_desktop_refresh(void)
 {
+    refresh_drives();
     if (!fs() || !fs()->list || !s_desk[0])
         return;
     s_scan_count = 0;
@@ -123,6 +156,14 @@ const char *td_shell_path(const char *path)
     return path;
 }
 
+static void no_entry(const char *name, bool is_dir, uint32_t size, void *user)
+{
+    (void)name;
+    (void)is_dir;
+    (void)size;
+    (void)user;
+}
+
 const char *td_move_into(const char *path, const char *dir)
 {
     const td_fs_ops_t *f = fs();
@@ -147,7 +188,17 @@ const char *td_move_into(const char *path, const char *dir)
     if (f->exists && f->exists(to))
         return "Something with that name is already there.";
     if (f->rename(path, to) != 0)
-        return "Move failed.";
+    {
+        /* Another drive (the SD card): rename cannot cross it; a file is
+         * copied, then removed here. */
+        if (!f->list || f->list(path, no_entry, NULL) >= 0)
+            return "Folders cannot move to another drive yet: move their files.";
+        const char *err = td_copy_file(path, to);
+        if (err)
+            return err;
+        if (!f->remove || f->remove(path) != 0)
+            return "Copied, but the original could not be removed.";
+    }
     td_desktop_refresh();
     return NULL;
 }
@@ -157,12 +208,15 @@ const char *td_move_into(const char *path, const char *dir)
 static int prov_count(void *user)
 {
     (void)user;
-    return s_count;
+    return s_nd + s_count;
 }
 
 static const char *prov_label(int i, void *user)
 {
     (void)user;
+    if (i < s_nd)
+        return s_drives[i].label;
+    i -= s_nd;
     if (!td_is_shortcut(s_items[i].name))
         return s_items[i].name;
     static char label[NAME_LEN];   /* used at once by the caller */
@@ -173,6 +227,9 @@ static const char *prov_label(int i, void *user)
 static const char *prov_icon(int i, void *user)
 {
     (void)user;
+    if (i < s_nd)
+        return "[=";   /* a drive */
+    i -= s_nd;
     if (s_items[i].is_dir)
         return "[/";
     if (td_is_shortcut(s_items[i].name))
@@ -187,6 +244,9 @@ static const char *prov_icon(int i, void *user)
 static int prov_icon_fg(int i, void *user)
 {
     (void)user;
+    if (i < s_nd)
+        return -1;
+    i -= s_nd;
     return !s_items[i].is_dir && td_is_script(s_items[i].name) ? td_script_colour(td_theme()->desktop_bg) : -1;
 }
 
@@ -202,7 +262,10 @@ static void open_item(int i)
 static void prov_open(int i, void *user)
 {
     (void)user;
-    open_item(i);
+    if (i < s_nd)
+        td_files_open(s_drives[i].path);
+    else
+        open_item(i - s_nd);
 }
 
 /* --------------------------------------------------------- actions */
@@ -276,11 +339,12 @@ static void delete_selection(bool for_good)
     int k = 0;
     for (int j = 0; paths && j < n; j++)
     {
-        if (sel[j] < 0 || sel[j] >= s_count)
+        int f = sel[j] - s_nd;   /* drives are not deleted */
+        if (f < 0 || f >= s_count)
             continue;
-        item_path(paths + (size_t)k * PATH_LEN, s_items[sel[j]].name);
+        item_path(paths + (size_t)k * PATH_LEN, s_items[f].name);
         list[k] = paths + (size_t)k * PATH_LEN;
-        dirs[k] = s_items[sel[j]].is_dir;
+        dirs[k] = s_items[f].is_dir;
         k++;
     }
     if (k)
@@ -382,9 +446,40 @@ static void desktop_menu_chosen(int item, void *user)
     }
 }
 
+/* Right-click on a drive: open it, or let it go (eject). */
+static char s_drive_path[48];
+
+static void drive_menu_chosen(int item, void *user)
+{
+    (void)user;
+    if (item == 0)
+    {
+        td_files_open(s_drive_path);
+        return;
+    }
+    const char *why = "It cannot be ejected.";
+    if (td_sysinfo()->drive_eject && td_sysinfo()->drive_eject(s_drive_path, &why))
+    {
+        td_files_drive_gone(s_drive_path);
+        td_desktop_refresh();
+        td_msgbox("Eject", "It can be taken out now.", "OK", NULL, NULL);
+    }
+    else
+        error_box(why);
+}
+
 static void prov_context(int i, int x, int y, void *user)
 {
     (void)user;
+    if (i >= 0 && i < s_nd)
+    {
+        static const char *const items[] = {"Open", "Eject"};
+        snprintf(s_drive_path, sizeof(s_drive_path), "%s", s_drives[i].path);
+        td_menu_popup(x, y, items, td_sysinfo()->drive_eject && s_drives[i].removable ? 2 : 1, drive_menu_chosen,
+                      NULL);
+        return;
+    }
+    i -= s_nd;
     if (i >= 0 && i < s_count)
     {
         const char *items[9] = {"Run", "Open", "Rename", "Delete", "Delete for good"};
@@ -437,6 +532,7 @@ static void prov_context(int i, int x, int y, void *user)
 static bool prov_drag(int i, td_drag_item_t *item, void *user)
 {
     (void)user;
+    i -= s_nd;   /* drives stay where they are */
     if (i < 0 || i >= s_count)
         return false;
     char path[PATH_LEN];
@@ -453,8 +549,10 @@ static void prov_drop(int i, const td_drag_item_t *item, void *user)
 {
     (void)user;
     char dir[PATH_LEN];
-    if (i >= 0 && i < s_count && s_items[i].is_dir)
-        item_path(dir, s_items[i].name);
+    if (i >= 0 && i < s_nd)
+        snprintf(dir, sizeof(dir), "%s", s_drives[i].path);   /* onto a drive */
+    else if (i >= s_nd && i - s_nd < s_count && s_items[i - s_nd].is_dir)
+        item_path(dir, s_items[i - s_nd].name);
     else
         snprintf(dir, sizeof(dir), "%s", s_desk);
     const char *err = td_move_into(item->path, dir);

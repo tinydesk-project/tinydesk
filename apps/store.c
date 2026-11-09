@@ -6,10 +6,17 @@
  * its size and SHA-256 against the catalog, then keeps it and adds it to
  * the user's Start menu. What is installed, and which unpack folder
  * (.tdapp-<hash>) each app uses, is kept in ~/Apps/.store, so Update and
- * Remove can clean up after a package. Apps the board cannot run (a newer
+ * Uninstall can clean up after a package. Apps the board cannot run (a newer
  * tdui API, more canvas cells than it has, a missing capability, native
  * code for another CPU) are listed but not installed. Downloads use the
  * port's td_fetch_ops_t; installing needs the Apps permission.
+ *
+ * With a drive such as the SD card (td_sysinfo()->drives) that the user may
+ * use, "Install on the SD card" puts the package, and so its unpack folder,
+ * in <drive>/TinyDesk/Apps/<user> instead, for room: the record in
+ * ~/Apps/.store keeps where each package is ("sd" as a fourth field), and
+ * the Start menu entry points at it. Without the card such an app does not
+ * start; removing it then only forgets it.
  */
 #include "td_apps.h"
 
@@ -48,11 +55,12 @@ enum
 
 static td_window_t *s_win;
 static td_widget_t *s_list, *s_title, *s_meta, *s_sum[4], *s_state, *s_install, *s_remove, *s_refresh;
-static td_widget_t *s_progress, *s_note;
+static td_widget_t *s_progress, *s_note, *s_on_card;
 static entry_t *s_apps;
 static int s_count, s_shown = -2, s_phase, s_busy_app = -1;
 static char s_source[TD_PATH_MAX];
 static uint32_t s_verified;
+static char s_where[8];   /* where the package being installed goes: "sd" or "" */
 
 /* ------------------------------------------------------------- SHA-256 */
 
@@ -379,13 +387,58 @@ static void apps_path(char *out, size_t cap, const char *name)
     snprintf(out, cap, "%s/%s", td_apps_dir(), name);
 }
 
-/* The installed version of id ("" none) and its unpack folder. */
-static bool installed(const char *id, char *version, size_t vcap, char *cache, size_t ccap)
+/* The removable drive the user may keep apps on, or NULL. */
+static const char *card(void)
+{
+    static td_drive_t d[4];
+    int n = td_sysinfo()->drives ? td_sysinfo()->drives(d, 4) : 0;
+    for (int i = 0; i < n; i++)
+        if (d[i].removable && td_session_path_allowed(d[i].path, TD_FS_WRITE))
+            return d[i].path;
+    return NULL;
+}
+
+/* Where packages of a location go: "sd" (the card) or "" (~/Apps); false
+ * when that is the card and it is not there. */
+static bool package_dir(const char *where, char *out, size_t cap)
+{
+    if (strcmp(where, "sd") != 0)
+    {
+        snprintf(out, cap, "%s", td_apps_dir());
+        return true;
+    }
+    const char *c = card();
+    if (!c)
+        return false;
+    snprintf(out, cap, "%s/TinyDesk/Apps/%s", c, td_session_user());
+    return true;
+}
+
+static void make_package_dir(const char *where)
+{
+    char dir[TD_PATH_MAX];
+    if (strcmp(where, "sd") != 0 || !package_dir(where, dir, sizeof(dir)))
+    {
+        fs()->mkdir(td_apps_dir());
+        return;
+    }
+    char step[TD_PATH_MAX];
+    snprintf(step, sizeof(step), "%s/TinyDesk/Apps", card());
+    fs()->mkdir(step);
+    fs()->mkdir(dir);
+}
+
+/* The installed version of id ("" none), its unpack folder and where its
+ * package is ("sd" or ""). */
+static bool installed_at(const char *id, char *version, size_t vcap, char *cache, size_t ccap, char *where,
+                         size_t wcap)
 {
     char path[TD_PATH_MAX + 16], buf[RECORD_MAX];
     version[0] = 0;
     if (cache)
         cache[0] = 0;
+    if (where)
+        where[0] = 0;
     apps_path(path, sizeof(path), ".store");
     int n = fs() && fs()->read ? fs()->read(path, buf, (int)sizeof(buf) - 1) : -1;
     if (n <= 0)
@@ -393,20 +446,27 @@ static bool installed(const char *id, char *version, size_t vcap, char *cache, s
     buf[n] = 0;
     for (char *line = strtok(buf, "\n"); line; line = strtok(NULL, "\n"))
     {
-        char lid[32], lver[16], lcache[24];
-        if (sscanf(line, "%31s %15s %23s", lid, lver, lcache) == 3 && !strcmp(lid, id))
+        char lid[32], lver[16], lcache[24], lwhere[8] = "";
+        if (sscanf(line, "%31s %15s %23s %7s", lid, lver, lcache, lwhere) >= 3 && !strcmp(lid, id))
         {
             snprintf(version, vcap, "%s", lver);
             if (cache)
                 snprintf(cache, ccap, "%s", lcache);
+            if (where)
+                snprintf(where, wcap, "%s", lwhere);
             return true;
         }
     }
     return false;
 }
 
+static bool installed(const char *id, char *version, size_t vcap, char *cache, size_t ccap)
+{
+    return installed_at(id, version, vcap, cache, ccap, NULL, 0);
+}
+
 /* Writes id's line (version NULL: removes it). */
-static bool record(const char *id, const char *version, const char *cache)
+static bool record(const char *id, const char *version, const char *cache, const char *where)
 {
     char path[TD_PATH_MAX + 16], buf[RECORD_MAX], out[RECORD_MAX];
     apps_path(path, sizeof(path), ".store");
@@ -422,7 +482,8 @@ static bool record(const char *id, const char *version, const char *cache)
             return false;
     }
     if (version)
-        len += snprintf(out + len, sizeof(out) - (size_t)len, "%s %s %s\n", id, version, cache);
+        len += snprintf(out + len, sizeof(out) - (size_t)len, "%s %s %s%s%s\n", id, version, cache,
+                        where[0] ? " " : "", where);
     return fs()->write(path, out, len) == 0;
 }
 
@@ -531,6 +592,31 @@ static void show_details(void)
     td_win_invalidate(s_win);
 }
 
+/* Without a catalog (offline), the installed apps from ~/Apps/.store, so
+ * they can still be uninstalled. A package is always <id>.tdapp. */
+static int list_installed(void)
+{
+    char path[TD_PATH_MAX + 16], buf[RECORD_MAX];
+    apps_path(path, sizeof(path), ".store");
+    int n = fs() && fs()->read ? fs()->read(path, buf, (int)sizeof(buf) - 1) : -1;
+    if (n <= 0)
+        return 0;
+    buf[n] = 0;
+    int count = 0;
+    for (char *line = strtok(buf, "\n"); line && count < MAX_APPS; line = strtok(NULL, "\n"))
+    {
+        entry_t *e = &s_apps[count];
+        memset(e, 0, sizeof(*e));
+        if (sscanf(line, "%31s %15s %23s", e->id, e->version, e->cache) < 3)
+            continue;
+        snprintf(e->title, sizeof(e->title), "%s", e->id);
+        snprintf(e->file, sizeof(e->file), "%s.tdapp", e->id);
+        snprintf(e->summary, sizeof(e->summary), "Installed. The catalog could not be loaded.");
+        count++;
+    }
+    return count;
+}
+
 static void start_catalog(void)
 {
     char dest[TD_PATH_MAX + 16];
@@ -554,6 +640,8 @@ static void start_catalog(void)
     note("Loading the catalog...%s", NULL);
 }
 
+static int list_installed(void);
+
 static void catalog_loaded(void)
 {
     char path[TD_PATH_MAX + 16];
@@ -568,8 +656,10 @@ static void catalog_loaded(void)
     free(text);
     if (n <= 0 || s_count < 0)
     {
-        s_count = 0;
-        note("The catalog could not be read.%s", NULL);
+        s_count = list_installed();
+        note(s_count ? "No catalog (offline?): the installed apps can still be uninstalled.%s"
+                     : "The catalog could not be read.%s",
+             NULL);
     }
     else
         note(s_count ? "Choose an app.%s" : "The catalog has no apps.%s", NULL);
@@ -602,9 +692,12 @@ static void on_install(td_widget_t *w, void *user)
         note("This file system cannot hold apps.%s", NULL);
         return;
     }
-    char url[TD_PATH_MAX + 64], dest[TD_PATH_MAX + 48];
+    char url[TD_PATH_MAX + 64], dest[TD_PATH_MAX + 48], dir[TD_PATH_MAX];
+    snprintf(s_where, sizeof(s_where), "%s", s_on_card && td_checkbox_get(s_on_card) && card() ? "sd" : "");
+    package_dir(s_where, dir, sizeof(dir));
+    make_package_dir(s_where);
     package_url(url, sizeof(url), &s_apps[i]);
-    snprintf(dest, sizeof(dest), "%s/%s.part", td_apps_dir(), s_apps[i].file);
+    snprintf(dest, sizeof(dest), "%s/%s.part", dir, s_apps[i].file);
     if (!fetch()->start(url, dest, s_apps[i].size))
     {
         note("Another download is running; try again.%s", NULL);
@@ -617,12 +710,12 @@ static void on_install(td_widget_t *w, void *user)
     show_details();
 }
 
-static void remove_cache(const char *cache)
+static void remove_cache(const char *cache, const char *where)
 {
-    char path[TD_PATH_MAX + 32];
-    if (strncmp(cache, ".tdapp-", 7) != 0 || !hex_ok(cache + 7, 16))
+    char path[TD_PATH_MAX + 32], dir[TD_PATH_MAX];
+    if (strncmp(cache, ".tdapp-", 7) != 0 || !hex_ok(cache + 7, 16) || !package_dir(where, dir, sizeof(dir)))
         return;   /* only an unpack folder, nothing else */
-    apps_path(path, sizeof(path), cache);
+    snprintf(path, sizeof(path), "%s/%s", dir, cache);
     if (fs()->exists(path))
         fs()->remove(path);
 }
@@ -630,10 +723,16 @@ static void remove_cache(const char *cache)
 static void finish_install(void)
 {
     const entry_t *e = &s_apps[s_busy_app];
-    char part[TD_PATH_MAX + 48], final_[TD_PATH_MAX + 48], old_version[16], old_cache[24];
-    snprintf(part, sizeof(part), "%s/%s.part", td_apps_dir(), e->file);
-    snprintf(final_, sizeof(final_), "%s/%s", td_apps_dir(), e->file);
-    installed(e->id, old_version, sizeof(old_version), old_cache, sizeof(old_cache));
+    char part[TD_PATH_MAX + 48], final_[TD_PATH_MAX + 48], old_version[16], old_cache[24], old_where[8];
+    char dir[TD_PATH_MAX];
+    if (!package_dir(s_where, dir, sizeof(dir)))
+    {
+        note("The SD card was taken out; nothing was installed.%s", NULL);
+        return;
+    }
+    snprintf(part, sizeof(part), "%s/%s.part", dir, e->file);
+    snprintf(final_, sizeof(final_), "%s/%s", dir, e->file);
+    installed_at(e->id, old_version, sizeof(old_version), old_cache, sizeof(old_cache), old_where, sizeof(old_where));
     if (fs()->exists(final_))
         fs()->remove(final_);
     if (fs()->rename(part, final_) != 0)
@@ -642,9 +741,23 @@ static void finish_install(void)
         note("The app could not be saved.%s", NULL);
         return;
     }
-    if (old_cache[0] && strcmp(old_cache, e->cache) != 0)
-        remove_cache(old_cache);
-    const char *err = record(e->id, e->version, e->cache) ? NULL : "Installed, but not recorded.";
+    if (old_version[0] && strcmp(old_where, s_where) != 0)
+    {
+        /* Moved between ~/Apps and the card: the old copy goes. */
+        char old_dir[TD_PATH_MAX], old_pkg[TD_PATH_MAX + 48];
+        if (package_dir(old_where, old_dir, sizeof(old_dir)))
+        {
+            snprintf(old_pkg, sizeof(old_pkg), "%s/%s", old_dir, e->file);
+            if (td_in_start_menu(old_pkg))
+                td_start_menu_remove(old_pkg);
+            if (fs()->exists(old_pkg))
+                fs()->remove(old_pkg);
+        }
+        remove_cache(old_cache, old_where);
+    }
+    else if (old_cache[0] && strcmp(old_cache, e->cache) != 0)
+        remove_cache(old_cache, old_where);
+    const char *err = record(e->id, e->version, e->cache, s_where) ? NULL : "Installed, but not recorded.";
     if (!err && !td_in_start_menu(final_))
         err = td_shortcut_make(td_start_dir(), final_);
     td_desktop_refresh();
@@ -659,8 +772,16 @@ static sha_t s_sha;
 static void verify_step(void)
 {
     const entry_t *e = &s_apps[s_busy_app];
-    char part[TD_PATH_MAX + 48];
-    snprintf(part, sizeof(part), "%s/%s.part", td_apps_dir(), e->file);
+    char part[TD_PATH_MAX + 48], dir[TD_PATH_MAX];
+    if (!package_dir(s_where, dir, sizeof(dir)))
+    {
+        s_phase = P_IDLE;
+        s_busy_app = -1;
+        note("The SD card was taken out; nothing was installed.%s", NULL);
+        show_details();
+        return;
+    }
+    snprintf(part, sizeof(part), "%s/%s.part", dir, e->file);
     char *buf = malloc(2048);
     bool failed = !buf;
     for (int done = 0; !failed && done < VERIFY_STEP && s_verified < e->size; done += 2048)
@@ -702,17 +823,21 @@ static void removed(int button, void *user)
     if (button != 0 || i < 0 || i >= s_count || !td_win_is_open(s_win))
         return;
     const entry_t *e = &s_apps[i];
-    char path[TD_PATH_MAX + 48], version[16], cache[24];
-    installed(e->id, version, sizeof(version), cache, sizeof(cache));
-    snprintf(path, sizeof(path), "%s/%s", td_apps_dir(), e->file);
-    if (td_in_start_menu(path))
-        td_start_menu_remove(path);
-    if (fs()->exists(path))
-        fs()->remove(path);
-    remove_cache(cache);
-    record(e->id, NULL, NULL);
+    char path[TD_PATH_MAX + 48], version[16], cache[24], where[8], dir[TD_PATH_MAX];
+    installed_at(e->id, version, sizeof(version), cache, sizeof(cache), where, sizeof(where));
+    bool there = package_dir(where, dir, sizeof(dir));
+    if (there)
+    {
+        snprintf(path, sizeof(path), "%s/%s", dir, e->file);
+        if (td_in_start_menu(path))
+            td_start_menu_remove(path);
+        if (fs()->exists(path))
+            fs()->remove(path);
+        remove_cache(cache, where);
+    }
+    record(e->id, NULL, NULL, "");
     td_desktop_refresh();
-    note("%s is removed.", e->title);
+    note(there ? "%s is uninstalled." : "%s is forgotten; its files stay on the SD card.", e->title);
     td_list_set_count(s_list, s_count);
     show_details();
 }
@@ -726,12 +851,12 @@ static void on_remove(td_widget_t *w, void *user)
         return;
     if (!td_session_has_right(TD_RIGHT_APPS))
     {
-        note("Removing apps needs the Apps permission.%s", NULL);
+        note("Uninstalling apps needs the Apps permission.%s", NULL);
         return;
     }
     static char text[96];
-    snprintf(text, sizeof(text), "Remove %s from Apps and the Start menu?", s_apps[i].title);
-    td_msgbox("Remove app", text, "Remove|Cancel", removed, (void *)(intptr_t)i);
+    snprintf(text, sizeof(text), "Uninstall %s? It goes from Apps and the Start menu.", s_apps[i].title);
+    td_msgbox("Uninstall app", text, "Uninstall|Cancel", removed, (void *)(intptr_t)i);
 }
 
 static void on_refresh(td_widget_t *w, void *user)
@@ -761,6 +886,12 @@ static void on_tick(td_window_t *win)
         {
             note("%s", st.message[0] ? st.message : "The download failed.");
             s_busy_app = -1;
+            if (phase == P_CATALOG && (s_count = list_installed()) > 0)
+            {   /* offline: what is installed can still be uninstalled */
+                note("No catalog (offline?): the installed apps can still be uninstalled.%s", NULL);
+                td_list_set_count(s_list, s_count);
+                td_list_select(s_list, 0);
+            }
         }
         else if (phase == P_CATALOG)
             catalog_loaded();
@@ -808,7 +939,7 @@ static void on_close(td_window_t *win)
     s_phase = P_IDLE;
     s_busy_app = -1;
     s_shown = -2;
-    s_list = s_title = s_meta = s_state = s_install = s_remove = s_refresh = s_progress = s_note = NULL;
+    s_list = s_title = s_meta = s_state = s_install = s_remove = s_refresh = s_progress = s_note = s_on_card = NULL;
     memset(s_sum, 0, sizeof(s_sum));
 }
 
@@ -852,10 +983,12 @@ static void launch(void)
         s_sum[i] = td_label(s_win, x, 4 + i, 0, "");
     s_state = td_label(s_win, x, 9, 0, "");
     s_install = td_button(s_win, x, 11, "Install", on_install, NULL);
-    s_remove = td_button(s_win, x + 14, 11, "Remove", on_remove, NULL);
+    s_remove = td_button(s_win, x + 14, 11, "Uninstall", on_remove, NULL);
     s_progress = td_progress(s_win, 1, WIN_H - 5, WIN_W - 4);
     s_note = td_label(s_win, 1, WIN_H - 4, 0, "");
     s_refresh = td_button(s_win, 1, -1, "Refresh", on_refresh, NULL);
+    if (card())   /* room for apps on the SD card */
+        s_on_card = td_checkbox(s_win, 14, -1, "Install on the SD card", true, NULL, NULL);
     td_list_set_count(s_list, 0);
     show_details();
     start_catalog();

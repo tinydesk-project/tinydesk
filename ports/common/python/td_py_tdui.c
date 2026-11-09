@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
+#include <sys/stat.h>
 
 #include "py/mphal.h"
 #include "py/runtime.h"
@@ -252,6 +254,116 @@ static mp_obj_t tdui_image(size_t n_args, const mp_obj_t *args)
 }
 static MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(tdui_image_obj, 4, 4, tdui_image);
 
+/* ---------------------------------------------- decoded-picture cache */
+
+/* tdui.Image.load() keeps what it made (palette pixels, the transparency
+ * mask, RGB565) in a file per source picture and size, where the port says
+ * (td_py_set_image_cache), and reads it back next time. A file that does
+ * not match exactly is ignored: the picture is decoded again. */
+#define CACHE_MAGIC "TDIMG001"
+#define CACHE_MIN   4096   /* pixels; smaller pictures decode quickly */
+
+static bool (*s_cache_dir)(char *out, size_t cap);
+
+void td_py_set_image_cache(bool (*dir)(char *out, size_t cap))
+{
+    s_cache_dir = dir;
+}
+
+typedef struct
+{
+    char magic[8];
+    uint16_t w, h;
+    uint8_t mask, rgb, pad[2];
+} cache_head_t;
+
+/* The cache file for a picture loaded with these options; false: none. */
+static bool cache_path(char *out, size_t cap, const char *real, mp_int_t key, bool dither, mp_int_t w, mp_int_t h,
+                       bool rgb)
+{
+    struct stat st;
+    char dir[TDSH_MAX_PATH];
+    if (!s_cache_dir || (long)w * h < CACHE_MIN || stat(real, &st) != 0 || !s_cache_dir(dir, sizeof(dir)))
+        return false;
+    uint64_t hash = 0xcbf29ce484222325ull;   /* FNV-1a over the source and the options */
+    char text[TDSH_MAX_PATH + 96];
+    int n = snprintf(text, sizeof(text), "%s|%ld|%ld|%ld|%ld|%ld|%d|%d", real, (long)st.st_size, (long)st.st_mtime,
+                     (long)key, (long)w, (long)h, dither, rgb);
+    for (int i = 0; i > -1 && i < n && i < (int)sizeof(text); i++)
+        hash = (hash ^ (uint8_t)text[i]) * 0x100000001b3ull;
+#ifdef _WIN32
+    (void)mkdir(dir);
+#else
+    (void)mkdir(dir, 0755);
+#endif
+    int m = snprintf(out, cap, "%s/%08lx%08lx.tdimg", dir, (unsigned long)(hash >> 32), (unsigned long)hash);
+    return m > 0 && (size_t)m < cap;
+}
+
+/* An image made but not sent: its memory and its pixel bytes back. */
+static void drop_image(td_pyui_image_t *img)
+{
+    if (!img)
+        return;
+    td_pyui_pixels_give(td_pyui_image_bytes(img));
+    free(img);
+}
+
+static bool cache_read(const char *path, td_pyui_image_t *img)
+{
+    FILE *f = fopen(path, "rb");
+    if (!f)
+        return false;
+    cache_head_t h;
+    size_t n = (size_t)img->w * (size_t)img->h;
+    bool ok = fread(&h, sizeof(h), 1, f) == 1 && !memcmp(h.magic, CACHE_MAGIC, 8) && h.w == img->w && h.h == img->h &&
+              h.mask == (img->mask != NULL) && h.rgb == (img->rgb != NULL) && fread(img->px, 1, n, f) == n &&
+              (!img->mask || fread(img->mask, 1, n, f) == n) && (!img->rgb || fread(img->rgb, 2, n, f) == n) &&
+              fgetc(f) == EOF;
+    fclose(f);
+    return ok;
+}
+
+/* Pictures that changed leave files behind: past CACHE_FILES of them the
+ * folder is emptied (each picture is decoded once more), so it stays small. */
+#define CACHE_FILES 256
+static void cache_trim(const char *path)
+{
+    char dir[TDSH_MAX_PATH];
+    const char *slash = strrchr(path, '/');
+    if (!slash || (size_t)(slash - path) >= sizeof(dir))
+        return;
+    memcpy(dir, path, (size_t)(slash - path));
+    dir[slash - path] = '\0';
+    DIR *d = opendir(dir);
+    if (!d)
+        return;
+    int count = 0;
+    for (struct dirent *e = readdir(d); e; e = readdir(d))
+        count += strstr(e->d_name, ".tdimg") != NULL;
+    rewinddir(d);
+    char file[TDSH_MAX_PATH + 64];
+    for (struct dirent *e = count > CACHE_FILES ? readdir(d) : NULL; e; e = readdir(d))
+        if (strstr(e->d_name, ".tdimg") && snprintf(file, sizeof(file), "%s/%s", dir, e->d_name) < (int)sizeof(file))
+            remove(file);
+    closedir(d);
+}
+
+static void cache_write(const char *path, const td_pyui_image_t *img)
+{
+    cache_trim(path);
+    FILE *f = fopen(path, "wb");
+    if (!f)
+        return;
+    cache_head_t h = {.w = (uint16_t)img->w, .h = (uint16_t)img->h, .mask = img->mask != NULL, .rgb = img->rgb != NULL};
+    memcpy(h.magic, CACHE_MAGIC, 8);
+    size_t n = (size_t)img->w * (size_t)img->h;
+    bool ok = fwrite(&h, sizeof(h), 1, f) == 1 && fwrite(img->px, 1, n, f) == n &&
+              (!img->mask || fwrite(img->mask, 1, n, f) == n) && (!img->rgb || fwrite(img->rgb, 2, n, f) == n);
+    if (fclose(f) != 0 || !ok)
+        remove(path);   /* a full card: no half file */
+}
+
 /* The image decoder (apps/imagefile.c) reads files in parts. */
 static int real_read_at(const char *path, uint32_t offset, char *buf, int cap)
 {
@@ -283,10 +395,29 @@ static mp_obj_t tdui_image_load(size_t n_args, const mp_obj_t *args)
     bool dither = mp_obj_is_true(args[3]);
     mp_int_t fw = mp_obj_get_int(args[4]), fh = mp_obj_get_int(args[5]);
 
+    /* Asked for at a size: the cache may have it, without decoding at all. */
+    char cached[TDSH_MAX_PATH + 32];
+    bool rgb_on = td_pyui_rgb_enabled();
+    td_pyui_image_t *img = NULL;   /* made here when the cache is tried; decoded into on a miss */
+    if (fw > 0 && fh > 0 && fw <= 4096 && fh <= 4096 &&
+        cache_path(cached, sizeof(cached), real, key, dither, fw, fh, rgb_on))
+    {
+        img = new_image(fw, fh, key >= 0, rgb_on);
+        if (cache_read(cached, img))
+        {
+            td_pyui_send_image(TD_PYUI_IMAGE, (uint16_t)mp_obj_get_int(args[0]), 0, 0, img, queue_wait);
+            mp_obj_t size[2] = {MP_OBJ_NEW_SMALL_INT(fw), MP_OBJ_NEW_SMALL_INT(fh)};
+            return mp_obj_new_tuple(2, size);
+        }
+    }
+
     td_image_t im;
     char err[80];
     if (!td_image_load(&im, &s_real_fs, real, err, sizeof(err)))
+    {
+        drop_image(img);
         mp_raise_msg_varg(&mp_type_OSError, MP_ERROR_TEXT("tdui: %s"), err);
+    }
     if (fw <= 0 && fh <= 0)
     {
         fw = im.w;
@@ -301,6 +432,7 @@ static mp_obj_t tdui_image_load(size_t n_args, const mp_obj_t *args)
     uint8_t *rgb = fw <= 4096 && fh <= 4096 ? malloc((size_t)im.w * 3) : NULL;
     if (!rgb)
     {
+        drop_image(img);
         td_image_close(&im);
         if (fw > 4096 || fh > 4096)
             mp_raise_ValueError(MP_ERROR_TEXT("tdui: an image is 1 to 4096 pixels each way: give w or h"));
@@ -313,7 +445,8 @@ static mp_obj_t tdui_image_load(size_t n_args, const mp_obj_t *args)
         td_image_close(&im);
         nlr_jump(nlr.ret_val);
     }
-    td_pyui_image_t *img = new_image(fw, fh, key >= 0, td_pyui_rgb_enabled());
+    if (!img)
+        img = new_image(fw, fh, key >= 0, rgb_on);
     nlr_pop();
 
     /* Each stored row (in the file's order) fills the image rows that come
@@ -339,6 +472,8 @@ static mp_obj_t tdui_image_load(size_t n_args, const mp_obj_t *args)
     }
     free(rgb);
     td_image_close(&im);
+    if (cache_path(cached, sizeof(cached), real, key, dither, fw, fh, img->rgb != NULL))
+        cache_write(cached, img);   /* before the desktop owns it */
     td_pyui_send_image(TD_PYUI_IMAGE, (uint16_t)mp_obj_get_int(args[0]), 0, 0, img, queue_wait);
     mp_obj_t size[2] = {MP_OBJ_NEW_SMALL_INT(fw), MP_OBJ_NEW_SMALL_INT(fh)};
     return mp_obj_new_tuple(2, size);

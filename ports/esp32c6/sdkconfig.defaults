@@ -71,15 +71,6 @@ CONFIG_FATFS_LFN_HEAP=y
 CONFIG_FATFS_MAX_LFN=255
 CONFIG_FATFS_API_ENCODING_UTF_8=y
 
-# Bluetooth LE keyboards and mice (bt_hid.c; off unless board key bt.enable = 1).
-# NimBLE as a central only: it connects to devices, never advertises.
-CONFIG_BT_ENABLED=y
-CONFIG_BT_NIMBLE_ENABLED=y
-CONFIG_BT_NIMBLE_ROLE_CENTRAL=y
-CONFIG_BT_NIMBLE_ROLE_OBSERVER=y
-# CONFIG_BT_NIMBLE_ROLE_PERIPHERAL is not set
-# CONFIG_BT_NIMBLE_ROLE_BROADCASTER is not set
-CONFIG_BT_NIMBLE_MAX_CONNECTIONS=3
-CONFIG_BT_NIMBLE_MAX_BONDS=6
-CONFIG_BT_NIMBLE_NVS_PERSIST=y
-CONFIG_BT_NIMBLE_LOG_LEVEL_WARNING=y
+# No Bluetooth: built in, it takes about 35 KB of this board's internal RAM
+# (it has no PSRAM) even while off, and tdui needs that room.
+# CONFIG_BT_ENABLED is not set

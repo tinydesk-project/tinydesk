@@ -162,6 +162,8 @@ bool td_session_path_allowed(const char *path, int action)
     {
         if (child_path(path, "/shared"))
             return action != TD_FS_REMOVE || !same_folder(path, "/shared");
+        if (child_path(path, "/sd"))   /* the SD card: no owners on FAT, shared like /shared */
+            return action != TD_FS_REMOVE || !same_folder(path, "/sd");
         if ((action == TD_FS_LIST || action == TD_FS_EXISTS) && (!path[0] || !strcmp(path, "/") || !strcmp(path, "/home")))
             return true;
     }

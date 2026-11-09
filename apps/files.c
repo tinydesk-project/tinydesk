@@ -117,11 +117,25 @@ static bool at_root(void)
     return strcmp(s_cwd, jail()) == 0;
 }
 
-/* True if path is the jail or inside it. */
+/* True if path is the jail or inside it, or a place the user's rights
+ * open besides (a drive such as the SD card, for the Shared right). */
 static bool in_jail(const char *path)
 {
     size_t n = strlen(jail());
-    return strncmp(path, jail(), n) == 0 && (path[n] == '\0' || path[n] == '/');
+    if (strncmp(path, jail(), n) == 0 && (path[n] == '\0' || path[n] == '/'))
+        return true;
+    return td_session_jail()[0] && td_session_path_allowed(path, TD_FS_LIST);
+}
+
+/* The top of a drive (td_sysinfo()->drives). */
+static bool at_drive_top(void)
+{
+    td_drive_t d[4];
+    int n = td_sysinfo()->drives ? td_sysinfo()->drives(d, 4) : 0;
+    for (int i = 0; i < n; i++)
+        if (!strcmp(s_cwd, d[i].path))
+            return true;
+    return false;
 }
 
 void td_files_reset(void)
@@ -158,6 +172,15 @@ static void reload_select(const char *select)
 static void reload(void)
 {
     reload_select(NULL);
+}
+
+void td_files_drive_gone(const char *path)
+{
+    size_t n = strlen(path);
+    if (!td_win_is_open(s_win) || strncmp(s_cwd, path, n) != 0 || (s_cwd[n] && s_cwd[n] != '/'))
+        return;
+    snprintf(s_cwd, sizeof(s_cwd), "%s", td_home_dir()[0] ? td_home_dir() : jail());
+    reload();
 }
 
 static const char *get_item(td_widget_t *w, int index, int *fg, void *user)
@@ -198,6 +221,12 @@ static void go_up(void)
 {
     if (at_root())
         return;
+    if (at_drive_top() && td_session_jail()[0])
+    {   /* a user's way back from a drive is home */
+        snprintf(s_cwd, sizeof(s_cwd), "%s", td_home_dir()[0] ? td_home_dir() : jail());
+        reload();
+        return;
+    }
     char old[NAME_MAX_];
     char *slash = strrchr(s_cwd, '/');
     snprintf(old, sizeof(old), "%s", slash ? slash + 1 : "");

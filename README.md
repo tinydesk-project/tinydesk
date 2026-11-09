@@ -36,7 +36,9 @@ Terminal window. The core is portable C11; ports exist for ESP32 boards
   Windows, Linux and macOS terminals for development.
 * On the ESP32-S3, a USB keyboard and mouse can also be plugged into the
   board itself (`usb.host = 1`), with Windows-key shortcuts.
-* Bluetooth LE keyboards and mice on the ESP32 boards with PSRAM and the C6 (`bt.enable = 1`):
+* An SD card as a drive: it mounts by itself, shows on the desktop, and holds
+  apps and caches (`/sd/TinyDesk`).
+* Bluetooth LE keyboards and mice on the ESP32 boards with PSRAM (`bt.enable = 1`):
   pair them in the Bluetooth app or with `bt`; they reconnect by themselves.
 * Kiosk mode: one Python app on the whole screen instead of the desktop
   (`kiosk.app`), for operator panels; root's password leaves it.
