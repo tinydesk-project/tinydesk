@@ -128,6 +128,7 @@ add_library(tinydesk_apps STATIC
     apps/modbus.c
     apps/mqtt.c
     apps/network.c
+    apps/bluetooth.c
     apps/displays.c
     apps/pyui.c
     apps/pyui_cache.c
@@ -438,6 +439,12 @@ if(TD_BUILD_TESTS)
     set_target_properties(test_pyui PROPERTIES C_STANDARD 11)
     target_compile_options(test_pyui PRIVATE ${TD_WARNINGS})
     add_test(NAME test_pyui COMMAND test_pyui)
+    # The Bluetooth window against a recording td_bt_ops_t.
+    add_executable(test_bluetooth tests/test_bluetooth.c)
+    target_link_libraries(test_bluetooth PRIVATE tinydesk_apps)
+    set_target_properties(test_bluetooth PROPERTIES C_STANDARD 11)
+    target_compile_options(test_bluetooth PRIVATE ${TD_WARNINGS})
+    add_test(NAME test_bluetooth COMMAND test_bluetooth)
     add_executable(test_session tests/test_session.c)
     target_link_libraries(test_session PRIVATE tinydesk_apps)
     target_compile_options(test_session PRIVATE ${TD_WARNINGS})

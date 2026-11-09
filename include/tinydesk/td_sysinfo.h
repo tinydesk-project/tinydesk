@@ -68,7 +68,27 @@ typedef struct
     char eth_ip[16];
     bool busy;                 /* a scan / connect / disconnect is running */
     char message[64];          /* outcome of the last operation */
+    bool ap_up;                /* the board's own access point is on */
+    char ap_ssid[33];
+    char ap_ip[16];
+    int ap_clients;
 } td_net_status_t;
+
+    /* The board's own Wi-Fi access point (STA+AP), for Telnet and SSH when
+ * there is no other network. */
+enum
+{
+    TD_AP_OFF = 0,
+    TD_AP_ON = 1,
+    TD_AP_AUTO = 2             /* on while there is no network */
+};
+
+typedef struct
+{
+    int mode;                  /* TD_AP_OFF, TD_AP_ON or TD_AP_AUTO */
+    char ssid[33];             /* 1 to 32 characters */
+    char password[65];         /* WPA2: 8 to 63 characters */
+} td_wifi_ap_conf_t;
 
 enum
 {
@@ -111,6 +131,12 @@ typedef struct
     void (*telnet_enable)(bool on);
       /* Address of the connected Telnet client, or NULL. */
     const char *(*telnet_peer)(void);
+
+        /* The access point (optional). ap_set saves and applies it; false
+     * (with a status message) for a bad name or password, or when the
+     * current user may not. */
+    bool (*ap_get)(td_wifi_ap_conf_t *out);
+    bool (*ap_set)(const td_wifi_ap_conf_t *conf);
 } td_net_ops_t;
 
     /* ------------------------------------------------------------- displays */
@@ -189,6 +215,120 @@ typedef struct
       /* The layouts' names ("US (English)", "German"...); NULL past the last. */
     const char *(*layout_name)(int i);
 } td_keyboard_ops_t;
+
+    /* ------------------------------------------------------------ Bluetooth */
+
+    /* Bluetooth keyboards and mice, for the Bluetooth app and the bt command.
+ * The shape comes from aquasock's TinyTang port (tinydesk issue #7) and has
+ * td_net_ops_t's contract: every call returns at once, slow work runs in
+ * the background, and its outcome shows up in status(). Paired devices
+ * live in slots: one keyboard, one mouse, and one combo (keyboard and
+ * pointer in one device). Their keys and clicks reach the desktop through
+ * the port's normal input path, as a terminal's would. Addresses are least
+ * significant byte first. */
+enum
+{
+    TD_BT_SLOT_KEYBOARD = 0,
+    TD_BT_SLOT_MOUSE = 1,
+    TD_BT_SLOT_COMBO = 2,
+    TD_BT_SLOTS = 3
+};
+#define TD_BT_NAME_LEN    24
+#define TD_BT_ADDR_LEN    6
+#define TD_BT_MAX_DEVICES 24
+#define TD_BT_MESSAGE_LEN 64
+
+    /* One slot: what is connected to it now, and what is paired to it. */
+typedef struct
+{
+    const char *state;           /* idle, connecting, pairing, discovering, ready, waiting */
+    bool active;                 /* not idle: addr and name are set */
+    bool ready;                  /* connected and delivering input */
+    bool connected;              /* the same as ready */
+    uint8_t addr[TD_BT_ADDR_LEN];
+    char name[TD_BT_NAME_LEN];
+    bool boot_protocol;          /* HID boot protocol rather than report protocol */
+    uint32_t reports;            /* input reports delivered */
+    bool paired;                 /* a pairing is stored for this slot */
+    uint8_t paired_addr[TD_BT_ADDR_LEN];
+    char paired_name[TD_BT_NAME_LEN];
+    bool reconnects;             /* reconnects by itself when it advertises */
+    char last[TD_BT_MESSAGE_LEN + 32];   /* its latest event, in words */
+} td_bt_slot_t;
+
+typedef enum
+{
+    TD_BT_RADIO_OFF,             /* started by a scan, or at start when devices are paired */
+    TD_BT_RADIO_STARTING,
+    TD_BT_RADIO_UP,
+    TD_BT_RADIO_FAILED           /* see enable_error */
+} td_bt_radio_t;
+
+    /* Everything the radio is doing; status() never blocks or starts
+ * anything, so a window may call it from its tick. */
+typedef struct
+{
+    td_bt_radio_t radio;
+    bool radio_up;               /* the stack is running */
+    int enable_error;            /* the stack's error while radio is FAILED */
+    uint32_t stack_heap;         /* heap the stack took at start (0: not known) */
+    const char *pairings;        /* where and how the pairings are kept, in words (NULL: not said) */
+    bool busy;                   /* a scan, pair or connect is running */
+    bool job_failed;             /* the last operation failed */
+    char message[TD_BT_MESSAGE_LEN];   /* outcome of the last operation */
+    uint32_t scan_ms_left;       /* while a scan runs, how long it has left */
+    int paired;                  /* slots holding a pairing */
+    int connected;               /* slots delivering input now */
+    bool wifi_exclusive;         /* this board cannot run Bluetooth and Wi-Fi at once */
+    td_bt_slot_t slot[TD_BT_SLOTS];
+} td_bt_status_t;
+
+typedef enum
+{
+    TD_BT_KIND_OTHER,            /* gave a name but advertises no HID service */
+    TD_BT_KIND_HID,              /* advertises the HID service */
+    TD_BT_KIND_KEYBOARD,         /* HID appearance: keyboard */
+    TD_BT_KIND_MOUSE             /* HID appearance: mouse */
+} td_bt_kind_t;
+
+    /* One device the last scan found. */
+typedef struct
+{
+    uint8_t addr[TD_BT_ADDR_LEN];
+    uint8_t addr_type;
+    int8_t rssi;                 /* dBm, the strongest heard */
+    td_bt_kind_t kind;
+    char name[TD_BT_NAME_LEN];
+} td_bt_device_t;
+
+    /* One slot's stored pairing. */
+typedef struct
+{
+    int slot;
+    uint8_t addr[TD_BT_ADDR_LEN];
+    char name[TD_BT_NAME_LEN];
+    bool connected;              /* delivering input now */
+    bool reconnects;
+} td_bt_paired_t;
+
+typedef struct
+{
+    void (*status)(td_bt_status_t *out);
+      /* Listen for a while and collect devices; false (the reason in
+     * status().message) when refused, for example too little memory. */
+    bool (*scan)(void);
+      /* The last scan's devices, strongest first; -1 while a scan runs. */
+    int (*scan_results)(td_bt_device_t *out, int max);
+      /* Connect dev and keep it in slot, replacing that slot's pairing. */
+    bool (*pair)(int slot, const td_bt_device_t *dev);
+      /* Let go of a slot's device and stop reconnecting it; the pairing stays. */
+    bool (*disconnect)(int slot);
+      /* The stored pairings, one per slot that has one; -1: not known yet. */
+    int (*paired)(td_bt_paired_t *out, int max);
+    bool (*forget)(int slot);
+      /* Whether a slot's device reconnects by itself (on: also now). */
+    bool (*set_reconnect)(int slot, bool on);
+} td_bt_ops_t;
 
     /* ------------------------------------------------------ software update */
 
@@ -444,6 +584,10 @@ typedef struct
       /* Optional startup artwork; app-independent and never compiled into firmware. */
     const char *kiosk_splash;
     bool kiosk_hide_status;
+
+        /* Optional: Bluetooth keyboards and mice (the Bluetooth app, the bt
+     * command). NULL: none on this port or build. */
+    const td_bt_ops_t *bt;
 } td_sysinfo_t;
 
     /* Install / read the port's sysinfo (never NULL; unset members are NULL). */

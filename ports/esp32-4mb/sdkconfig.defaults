@@ -46,3 +46,7 @@ CONFIG_FREERTOS_PLACE_FUNCTIONS_INTO_FLASH=y
 CONFIG_FATFS_LFN_HEAP=y
 CONFIG_FATFS_MAX_LFN=255
 CONFIG_FATFS_API_ENCODING_UTF_8=y
+
+# No Bluetooth: on the classic ESP32 the controller reserves about 64 KB of
+# internal RAM at link time, which this board (no PSRAM) does not have.
+# CONFIG_BT_ENABLED is not set

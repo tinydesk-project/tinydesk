@@ -41,6 +41,7 @@ void td_apps_register_all(void)
     td_trash_register();
     td_mouse_register();
     td_keyboard_register();
+    td_bluetooth_register();
     td_osk_register();
     td_store_register();
     td_remote_register();

@@ -1,5 +1,5 @@
 /*
- * td_proto_cmds.h - the `mqtt` and `modbus` shell commands.
+ * td_proto_cmds.h - the `mqtt`, `modbus` and `bt` shell commands.
  */
 #ifndef TD_PROTO_CMDS_H
 #define TD_PROTO_CMDS_H

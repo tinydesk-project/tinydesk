@@ -19,6 +19,7 @@
 static td_window_t *s_win;
 static td_widget_t *s_wifi, *s_addr, *s_eth, *s_telnet, *s_telnet_mode, *s_peer, *s_list, *s_msg;
 static td_widget_t *s_srv_label[2], *s_srv_button[2];
+static td_widget_t *s_ap;
 static td_wifi_ap_t s_aps[AP_MAX];
 static int s_ap_count;
 static bool s_scanning;
@@ -88,6 +89,17 @@ static void update_status(void)
         else
             td_widget_printf(s_srv_label[i], "%-10s stopped", names[i]);
         td_widget_set_text(s_srv_button[i], on ? "Stop" : "Start");
+    }
+
+    if (s_ap)
+    {
+        td_wifi_ap_conf_t c;
+        memset(&c, 0, sizeof(c));
+        if (st.ap_up)
+            td_widget_printf(s_ap, "Access pt: %.32s, %s, %d client%s", st.ap_ssid, st.ap_ip, st.ap_clients,
+                             st.ap_clients == 1 ? "" : "s");
+        else if (net()->ap_get && net()->ap_get(&c))
+            td_widget_printf(s_ap, "Access pt: off%s", c.mode == TD_AP_AUTO ? " (on without a network)" : "");
     }
 
     if (net()->telnet_peer)
@@ -248,11 +260,101 @@ static void on_server(td_widget_t *w, void *user)
         td_widget_set_text(s_msg, on ? "Stopping..." : "Starting...");
 }
 
+/* ------------------------------------------------- the access point */
+
+static td_window_t *s_ap_win;
+static td_widget_t *s_ap_mode[3], *s_ap_ssid, *s_ap_pass, *s_ap_msg;
+static char s_ap_pass_buf[65];
+
+static void on_ap_mode(td_widget_t *w, void *user)
+{
+    (void)w;
+    int mode = (int)(intptr_t)user;
+    for (int i = 0; i < 3; i++)
+        td_checkbox_set(s_ap_mode[i], i == mode);
+}
+
+static void on_ap_save(td_widget_t *w, void *user)
+{
+    (void)w;
+    (void)user;
+    td_wifi_ap_conf_t c;
+    memset(&c, 0, sizeof(c));
+    for (int i = 0; i < 3; i++)
+        if (td_checkbox_get(s_ap_mode[i]))
+            c.mode = i;
+    snprintf(c.ssid, sizeof(c.ssid), "%s", td_widget_text(s_ap_ssid));
+    snprintf(c.password, sizeof(c.password), "%s", td_widget_text(s_ap_pass));
+    if (net()->ap_set(&c))
+    {
+        td_win_close(s_ap_win);
+        return;
+    }
+    td_net_status_t st;
+    memset(&st, 0, sizeof(st));
+    net()->status(&st);
+    td_widget_set_text(s_ap_msg, st.message);
+}
+
+static void on_ap_cancel(td_widget_t *w, void *user)
+{
+    (void)w;
+    (void)user;
+    td_win_close(s_ap_win);
+}
+
+static void on_ap_close(td_window_t *win)
+{
+    (void)win;
+    s_ap_win = NULL;
+}
+
+/* Off, on, or on while there is no network; its name and password. */
+static void on_ap(td_widget_t *w, void *user)
+{
+    (void)w;
+    (void)user;
+    td_wifi_ap_conf_t c;
+    memset(&c, 0, sizeof(c));
+    if (!net()->ap_get || !net()->ap_get(&c))
+        return;
+    if (td_win_is_open(s_ap_win))
+    {
+        td_win_focus(s_ap_win);
+        return;
+    }
+    td_window_desc_t d = {
+        .title = "Access point",
+        .rect = td_rect(-1, -1, 56, 13),
+        .flags = TD_WIN_DEFAULT,
+        .on_close = on_ap_close,
+    };
+    s_ap_win = td_win_create(&d);
+    if (!s_ap_win)
+        return;
+    static const char *const modes[3] = {"Off", "On", "On while there is no network"};
+    for (int i = 0; i < 3; i++)
+        s_ap_mode[i] = td_checkbox(s_ap_win, 1, i, modes[i], i == c.mode, on_ap_mode, (void *)(intptr_t)i);
+    td_label(s_ap_win, 1, 4, 0, "Name:");
+    s_ap_ssid = td_textbox(s_ap_win, 11, 4, 34, 32, NULL, NULL);
+    td_widget_set_text(s_ap_ssid, c.ssid);
+    td_label(s_ap_win, 1, 5, 0, "Password:");
+    s_ap_pass = td_textbox(s_ap_win, 11, 5, 34, 63, NULL, NULL);
+    td_textbox_set_buffer(s_ap_pass, s_ap_pass_buf, sizeof(s_ap_pass_buf));
+    td_widget_set_text(s_ap_pass, c.password);
+    td_label(s_ap_win, 1, 7, 0, "Clients get 192.168.4.x; the board is 192.168.4.1.");
+    s_ap_msg = td_label(s_ap_win, 1, 8, 0, "");
+    td_button(s_ap_win, 1, -1, "Save", on_ap_save, NULL);
+    td_button(s_ap_win, 10, -1, "Cancel", on_ap_cancel, NULL);
+    td_widget_focus(s_ap_ssid);
+}
+
 static void on_close(td_window_t *win)
 {
     (void)win;
     s_win = NULL;
     s_telnet_mode = NULL;
+    s_ap = NULL;
 }
 
 static void launch(void)
@@ -298,6 +400,11 @@ static void launch(void)
             s_srv_label[i] = td_label(s_win, 1, 4 + i, 50, "");
             s_srv_button[i] = td_button(s_win, 52, 4 + i, "Start", on_server, (void *)(intptr_t)i);
         }
+    }
+    if (net()->ap_get && net()->ap_set)
+    {
+        s_ap = td_label(s_win, 1, 6, 50, "");
+        td_button(s_win, 52, 6, "Access point...", on_ap, NULL);
     }
     td_label(s_win, 1, 7, 0, "Wi-Fi networks (double-click to connect)");
     s_list = td_list(s_win, td_rect(0, 8, -1, -2), get_item, on_activate, NULL);

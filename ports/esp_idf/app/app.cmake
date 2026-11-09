@@ -22,6 +22,8 @@ set(TD_ESP_APP_SRCS
     "${TD_ESP_APP_DIR}/ota_esp.c"
     "${TD_ESP_APP_DIR}/fetch_esp.c"
     "${TD_ESP_APP_DIR}/rs485.c"
+    "${TD_ESP_APP_DIR}/hid_input.c"
+    "${TD_ESP_APP_DIR}/bt_hid.c"
     "${TD_ESP_APP_DIR}/../../common/td_proto_cmds.c"
 )
 set(TD_ESP_APP_REQUIRES
@@ -42,6 +44,7 @@ set(TD_ESP_APP_REQUIRES
     esp_netif
     esp_event
     lwip
+    bt
 )
 
 # The board configuration built into the firmware (pins and other hardware

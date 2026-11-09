@@ -45,6 +45,7 @@ td_apps.h: void td_imageview_register(void);
 td_apps.h: void td_trash_register(void);
 td_apps.h: void td_mouse_register(void);
 td_apps.h: void td_keyboard_register(void);
+td_apps.h: void td_bluetooth_register(void);
 td_apps.h: void td_terminal_register(void);
 td_apps.h: void td_editor_register(void);
 td_apps.h: void td_network_register(void);
@@ -469,6 +470,10 @@ td_sysinfo.h: #define TD_FS_WRITE 1
 td_sysinfo.h: #define TD_FS_LIST 2
 td_sysinfo.h: #define TD_FS_EXISTS 3
 td_sysinfo.h: #define TD_FS_REMOVE 4
+td_sysinfo.h: #define TD_BT_NAME_LEN 24
+td_sysinfo.h: #define TD_BT_ADDR_LEN 6
+td_sysinfo.h: #define TD_BT_MAX_DEVICES 24
+td_sysinfo.h: #define TD_BT_MESSAGE_LEN 64
 td_sysinfo.h: #define TD_USER_ROLE_USER 0
 td_sysinfo.h: #define TD_USER_ROLE_ADMIN 1
 td_sysinfo.h: #define TD_USER_ROLE_ROOT 2
@@ -482,16 +487,26 @@ td_sysinfo.h: #define TD_RIGHT_APPS (1u << 6)
 td_sysinfo.h: #define TD_RIGHT_ALL 127u
 td_sysinfo.h: #define TD_HINT_MAX 64
 td_sysinfo.h: typedef struct { const char *root; int (*list)(const char *dir, void (*fn)(const char *name, bool is_dir, uint32_t size, void *user), void *user); int (*read)(const char *path, char *buf, int cap); int (*remove)(const char *path); int (*mkdir)(const char *path); int (*write)(const char *path, const char *data, int len); int (*rename)(const char *from, const char *to); int (*exists)(const char *path); int (*read_at)(const char *path, uint32_t offset, char *buf, int cap); int (*append)(const char *path, const char *data, int len); } td_fs_ops_t;
-td_sysinfo.h: typedef struct { bool wifi_up; char ssid[33]; int rssi; char wifi_ip[16]; bool eth_present; bool eth_up; char eth_ip[16]; bool busy; char message[64]; } td_net_status_t;
+td_sysinfo.h: typedef struct { bool wifi_up; char ssid[33]; int rssi; char wifi_ip[16]; bool eth_present; bool eth_up; char eth_ip[16]; bool busy; char message[64]; bool ap_up; char ap_ssid[33]; char ap_ip[16]; int ap_clients; } td_net_status_t;
+td_sysinfo.h: enum { TD_AP_OFF = 0, TD_AP_ON = 1, TD_AP_AUTO = 2 };
+td_sysinfo.h: typedef struct { int mode; char ssid[33]; char password[65]; } td_wifi_ap_conf_t;
 td_sysinfo.h: enum { TD_SERVER_SSH = 0, TD_SERVER_FTP = 1 };
 td_sysinfo.h: typedef struct { char ssid[33]; int rssi; bool secure; bool saved; } td_wifi_ap_t;
-td_sysinfo.h: typedef struct { void (*status)(td_net_status_t *out); bool (*scan)(void); int (*scan_results)(td_wifi_ap_t *out, int max); bool (*connect)(const char *ssid, const char *password); bool (*disconnect)(void); bool (*forget)(const char *ssid); bool (*server_status)(int which, int *port, int *clients); bool (*server_set)(int which, bool on); bool (*telnet_enabled)(void); void (*telnet_enable)(bool on); const char *(*telnet_peer)(void); } td_net_ops_t;
+td_sysinfo.h: typedef struct { void (*status)(td_net_status_t *out); bool (*scan)(void); int (*scan_results)(td_wifi_ap_t *out, int max); bool (*connect)(const char *ssid, const char *password); bool (*disconnect)(void); bool (*forget)(const char *ssid); bool (*server_status)(int which, int *port, int *clients); bool (*server_set)(int which, bool on); bool (*telnet_enabled)(void); void (*telnet_enable)(bool on); const char *(*telnet_peer)(void); bool (*ap_get)(td_wifi_ap_conf_t *out); bool (*ap_set)(const td_wifi_ap_conf_t *conf); } td_net_ops_t;
 td_sysinfo.h: enum { TD_DISPLAY_OFF = 0, TD_DISPLAY_BOARD = 1, TD_DISPLAY_TELNET = 2, TD_DISPLAY_SERIAL = 3, TD_DISPLAY_SOURCES = 4 };
 td_sysinfo.h: typedef struct { bool (*source_available)(int display, int src); int (*source)(int display); void (*set_source)(int display, int src); const char *(*source_label)(int src); void (*status)(int display, char *buf, int cap); void (*save_layout)(const td_screens_layout_t *layout); int (*rotation)(int display); bool (*set_rotation)(int display, int degrees); } td_display_ops_t;
 td_sysinfo.h: typedef struct { int speed; int accel; int precision; } td_mouse_settings_t;
 td_sysinfo.h: typedef struct { bool (*status)(char *buf, int cap); void (*get)(td_mouse_settings_t *s); bool (*set)(const td_mouse_settings_t *s); } td_mouse_ops_t;
 td_sysinfo.h: typedef struct { int layout; int delay_ms; int rate; } td_keyboard_settings_t;
 td_sysinfo.h: typedef struct { bool (*status)(char *buf, int cap); void (*get)(td_keyboard_settings_t *s); bool (*set)(const td_keyboard_settings_t *s); const char *(*layout_name)(int i); } td_keyboard_ops_t;
+td_sysinfo.h: enum { TD_BT_SLOT_KEYBOARD = 0, TD_BT_SLOT_MOUSE = 1, TD_BT_SLOT_COMBO = 2, TD_BT_SLOTS = 3 };
+td_sysinfo.h: typedef struct { const char *state; bool active; bool ready; bool connected; uint8_t addr[TD_BT_ADDR_LEN]; char name[TD_BT_NAME_LEN]; bool boot_protocol; uint32_t reports; bool paired; uint8_t paired_addr[TD_BT_ADDR_LEN]; char paired_name[TD_BT_NAME_LEN]; bool reconnects; char last[TD_BT_MESSAGE_LEN + 32]; } td_bt_slot_t;
+td_sysinfo.h: typedef enum { TD_BT_RADIO_OFF, TD_BT_RADIO_STARTING, TD_BT_RADIO_UP, TD_BT_RADIO_FAILED } td_bt_radio_t;
+td_sysinfo.h: typedef struct { td_bt_radio_t radio; bool radio_up; int enable_error; uint32_t stack_heap; const char *pairings; bool busy; bool job_failed; char message[TD_BT_MESSAGE_LEN]; uint32_t scan_ms_left; int paired; int connected; bool wifi_exclusive; td_bt_slot_t slot[TD_BT_SLOTS]; } td_bt_status_t;
+td_sysinfo.h: typedef enum { TD_BT_KIND_OTHER, TD_BT_KIND_HID, TD_BT_KIND_KEYBOARD, TD_BT_KIND_MOUSE } td_bt_kind_t;
+td_sysinfo.h: typedef struct { uint8_t addr[TD_BT_ADDR_LEN]; uint8_t addr_type; int8_t rssi; td_bt_kind_t kind; char name[TD_BT_NAME_LEN]; } td_bt_device_t;
+td_sysinfo.h: typedef struct { int slot; uint8_t addr[TD_BT_ADDR_LEN]; char name[TD_BT_NAME_LEN]; bool connected; bool reconnects; } td_bt_paired_t;
+td_sysinfo.h: typedef struct { void (*status)(td_bt_status_t *out); bool (*scan)(void); int (*scan_results)(td_bt_device_t *out, int max); bool (*pair)(int slot, const td_bt_device_t *dev); bool (*disconnect)(int slot); int (*paired)(td_bt_paired_t *out, int max); bool (*forget)(int slot); bool (*set_reconnect)(int slot, bool on); } td_bt_ops_t;
 td_sysinfo.h: enum { TD_OTA_IDLE, TD_OTA_CHECKING, TD_OTA_INSTALLING, TD_OTA_DONE, TD_OTA_FAILED };
 td_sysinfo.h: typedef struct { char version[32]; char built[32]; char sdk[32]; char running[17]; char next[17]; bool on_trial; bool can_roll_back; char other_version[32]; } td_ota_info_t;
 td_sysinfo.h: typedef struct { int state; int percent; uint32_t done, total; uint32_t bytes_per_s; char new_version[32]; char new_built[32]; char message[96]; } td_ota_status_t;
@@ -504,7 +519,7 @@ td_sysinfo.h: typedef struct { char name[16]; char state; uint8_t priority; int8
 td_sysinfo.h: typedef struct { const char *name; const char *text; } td_desktop_file_t;
 td_sysinfo.h: typedef struct { char name[32]; int role; uint32_t rights; } td_user_info_t;
 td_sysinfo.h: typedef struct { int (*list)(int index, td_user_info_t *out); int (*role)(const char *username); uint32_t (*rights)(const char *username); uint32_t (*generation)(const char *username); int (*create)(const char *actor, const char *name, const char *password, int role, uint32_t rights); int (*access_set)(const char *actor, const char *name, int role, uint32_t rights); int (*password_set)(const char *actor, const char *name, const char *old_password, const char *password); uint32_t (*remembered)(char *name, int cap); bool (*remember_allowed)(const char *name); uint32_t (*login)(const char *name, const char *password); int (*boot_user_set)(const char *actor, const char *name); int (*require_password)(const char *actor); int (*hint_get)(const char *name, char *out, int cap); int (*hint_set)(const char *actor, const char *name, const char *hint); } td_user_ops_t;
-td_sysinfo.h: typedef struct { const char *platform; const char *chip; const char *sdk_version; uint32_t (*free_heap)(void); uint32_t (*min_free_heap)(void); uint32_t (*total_heap)(void); uint32_t (*psram_free)(void); uint32_t (*psram_total)(void); int (*task_count)(void); int (*cpu_mhz)(void); bool (*chip_temp)(int *tenths_c); int (*tasks)(td_task_info_t *out, int max); bool (*time_now)(int64_t *utc); bool (*time_set)(int64_t utc); bool (*time_auto_get)(void); bool (*time_auto_set)(bool on); bool (*time_sync)(void); bool (*get_tz)(long *seconds); bool (*set_tz)(long seconds); const td_net_ops_t *net; const td_display_ops_t *displays; const td_ota_ops_t *ota; const td_fetch_ops_t *fetch; const char *store_url; const char *no_ota_text; bool (*user_exists)(const char *user); bool (*authenticate)(const char *user, const char *password); const td_user_ops_t *users; bool (*settings_load)(void *data, int len); bool (*settings_save)(const void *data, int len); const td_fs_ops_t *fs; const char *extra; const td_desktop_file_t *desktop_files; const td_mouse_ops_t *mouse; const td_keyboard_ops_t *keyboard; const char *kiosk_app; const char *kiosk_splash; bool kiosk_hide_status; } td_sysinfo_t;
+td_sysinfo.h: typedef struct { const char *platform; const char *chip; const char *sdk_version; uint32_t (*free_heap)(void); uint32_t (*min_free_heap)(void); uint32_t (*total_heap)(void); uint32_t (*psram_free)(void); uint32_t (*psram_total)(void); int (*task_count)(void); int (*cpu_mhz)(void); bool (*chip_temp)(int *tenths_c); int (*tasks)(td_task_info_t *out, int max); bool (*time_now)(int64_t *utc); bool (*time_set)(int64_t utc); bool (*time_auto_get)(void); bool (*time_auto_set)(bool on); bool (*time_sync)(void); bool (*get_tz)(long *seconds); bool (*set_tz)(long seconds); const td_net_ops_t *net; const td_display_ops_t *displays; const td_ota_ops_t *ota; const td_fetch_ops_t *fetch; const char *store_url; const char *no_ota_text; bool (*user_exists)(const char *user); bool (*authenticate)(const char *user, const char *password); const td_user_ops_t *users; bool (*settings_load)(void *data, int len); bool (*settings_save)(const void *data, int len); const td_fs_ops_t *fs; const char *extra; const td_desktop_file_t *desktop_files; const td_mouse_ops_t *mouse; const td_keyboard_ops_t *keyboard; const char *kiosk_app; const char *kiosk_splash; bool kiosk_hide_status; const td_bt_ops_t *bt; } td_sysinfo_t;
 td_sysinfo.h: void td_set_sysinfo(const td_sysinfo_t *info);
 td_sysinfo.h: const td_sysinfo_t *td_sysinfo(void);
 td_tls.h: typedef struct td_tls td_tls_t;

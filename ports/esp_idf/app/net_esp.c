@@ -10,6 +10,7 @@
  */
 #include "net_esp.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -139,6 +140,15 @@ static void net_status(td_net_status_t *out)
             st.rssi = wi.rssi;
             ip_text(wi.ip.addr, st.wifi_ip, sizeof(st.wifi_ip));
         }
+        tdsh_wifi_ap_info_t ai;
+        if (tdsh_wifi_ap_get_info(&ai) == 0)
+        {
+            st.ap_up = ai.up;
+            snprintf(st.ap_ssid, sizeof(st.ap_ssid), "%s", ai.ssid);
+            st.ap_clients = ai.clients;
+            if (ai.up)
+                ip_text(ai.ip.addr, st.ap_ip, sizeof(st.ap_ip));
+        }
         tdsh_eth_info_t ei;
         if (tdsh_eth_get_info(&ei) == 0)
         {
@@ -257,6 +267,40 @@ static void net_telnet_enable(bool on)
                       : "Telnet is unencrypted; root login only");
 }
 
+static bool net_ap_get(td_wifi_ap_conf_t *out)
+{
+    tdsh_wifi_ap_config_t c;
+    if (tdsh_wifi_ap_get_config(&c) != 0)
+        return false;
+    out->mode = (int)c.mode;
+    snprintf(out->ssid, sizeof(out->ssid), "%s", c.ssid);
+    /* The password only for those who may change it. */
+    snprintf(out->password, sizeof(out->password), "%s", td_session_has_right(TD_RIGHT_NETWORK) ? c.password : "");
+    return true;
+}
+
+static bool net_ap_set(const td_wifi_ap_conf_t *conf)
+{
+    if (!td_session_has_right(TD_RIGHT_NETWORK))
+    {
+        set_msg("%s", "The access point needs the Network right");
+        return false;
+    }
+    tdsh_wifi_ap_config_t c = {.mode = (tdsh_wifi_ap_mode_t)conf->mode};
+    snprintf(c.ssid, sizeof(c.ssid), "%s", conf->ssid);
+    snprintf(c.password, sizeof(c.password), "%s", conf->password);
+    int rc = tdsh_wifi_ap_set_config(&c);
+    if (rc != 0)
+    {
+        set_msg("%s", rc == -EINVAL ? "Name: 1 to 32 characters; password: 8 to 63" : "Could not save it");
+        return false;
+    }
+    set_msg("Access point: %s", conf->mode == TD_AP_ON ? "on" : conf->mode == TD_AP_AUTO ? "on without a network"
+                                                                                         : "off");
+    s_cache_us = 0;
+    return true;
+}
+
 static const td_net_ops_t s_ops = {
     .status = net_status,
     .scan = net_scan,
@@ -269,6 +313,8 @@ static const td_net_ops_t s_ops = {
     .telnet_enabled = telnet_enabled,
     .telnet_enable = net_telnet_enable,
     .telnet_peer = telnet_peer,
+    .ap_get = net_ap_get,
+    .ap_set = net_ap_set,
 };
 
 const td_net_ops_t *net_esp_ops(void)

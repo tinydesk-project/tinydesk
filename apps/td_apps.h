@@ -26,6 +26,7 @@ void td_imageview_register(void);
 void td_trash_register(void);      /* the Recycle Bin, and its hourly clean-up */
 void td_mouse_register(void);      /* only where td_sysinfo()->mouse is set */
 void td_keyboard_register(void);   /* only where td_sysinfo()->keyboard is set */
+void td_bluetooth_register(void);  /* only where td_sysinfo()->bt is set */
 void td_terminal_register(void);
 void td_editor_register(void);
 void td_network_register(void);

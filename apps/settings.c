@@ -365,6 +365,13 @@ static void on_network(td_widget_t *w, void *user)
     td_app_launch("Network");
 }
 
+static void on_bluetooth(td_widget_t *w, void *user)
+{
+    (void)w;
+    (void)user;
+    td_app_launch("Bluetooth");
+}
+
 static void on_displays(td_widget_t *w, void *user)
 {
     (void)w;
@@ -431,6 +438,8 @@ static void launch(void)
     td_button(s_win, 16, 16, "Date & time...", on_datetime, NULL);
     td_button(s_win, 1, 17, "Software update...", on_update, NULL);
     td_button(s_win, 24, 17, "Displays...", on_displays, NULL);
+    if (td_sysinfo()->bt)
+        td_button(s_win, 1, 18, "Bluetooth...", on_bluetooth, NULL);
     td_button(s_win, 1, -1, "Close", on_close_btn, NULL);
     s_status = td_label(s_win, 11, -1, 33, "");
     td_widget_printf(s_status, "Settings of %.24s", td_session_user());

@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include "driver/uart.h"
+#include "hid_input.h"
 #include "link.h"
 #include "nvs.h"
 #include "td_apps.h"
@@ -46,7 +47,11 @@ static int local_read_byte(link_ctx_t *c)
 {
     if (c->rx_pos == c->rx_len)
     {
-        int n = link_read(c->rx, sizeof(c->rx));
+         /* Keyboards and mice the board reads itself (USB, Bluetooth) come
+         * first, as whole key and mouse reports; the link's bytes wait. */
+        int n = hid_input_read(c->rx, sizeof(c->rx));
+        if (n <= 0)
+            n = link_read(c->rx, sizeof(c->rx));
         if (n <= 0)
             return -1;
         c->rx_len = n;
@@ -68,7 +73,7 @@ static void hal_sleep(void *ctx, uint32_t ms)
     vTaskDelay(ticks > 0 ? ticks : 1);   /* always yield to lower priorities */
 }
 
-    /* ------------------------------------------------------------ settings */
+      /* ------------------------------------------------------------ settings */
 
 static uint8_t s_src[2] = {TD_DISPLAY_BOARD, TD_DISPLAY_OFF};
 enum
@@ -103,7 +108,7 @@ static void load_settings(void)
     }
     if (!have)
     {
-          /* The Telnet mode of 0.2.x builds: Telnet only, Duplicate, Extend. */
+           /* The Telnet mode of 0.2.x builds: Telnet only, Duplicate, Extend. */
         switch (s_old_mode)
         {
         case OLD_DUPLICATE:
@@ -132,7 +137,7 @@ static void save_u8(const char *key, uint8_t v)
     }
 }
 
-    /* Telnet client index of each display, or -1. */
+      /* Telnet client index of each display, or -1. */
 static int telnet_client(int display)
 {
     if (s_src[display] != TD_DISPLAY_TELNET)
@@ -140,7 +145,7 @@ static int telnet_client(int display)
     return display == 1 && s_src[0] == TD_DISPLAY_TELNET ? 1 : 0;
 }
 
-    /* ------------------------------------------------- second serial port */
+      /* ------------------------------------------------- second serial port */
 
 static int s_s2_uart = -2;   /* -2: not read yet, -1: not configured */
 static int s_s2_tx, s_s2_rx, s_s2_baud;
@@ -221,14 +226,14 @@ static int serial2_write(const uint8_t *buf, int len)
     return len > 0 ? uart_write_bytes((uart_port_t)s_s2_uart, buf, (size_t)len) : 0;
 }
 
-    /* ---------------------------------------------- following the sources */
+      /* ---------------------------------------------- following the sources */
 
 static bool s_remote;            /* display 1 is a Telnet client */
 static int s_attached_src;       /* display 2's source while attached, else TD_DISPLAY_OFF */
 static char s_local_user[32];    /* whose desktop the local link had before Telnet took it */
 static bool s_local_locked;
 
-    /* Switch the desktop's user unless it is already theirs. */
+      /* Switch the desktop's user unless it is already theirs. */
 static void become(const char *user)
 {
     if (user && user[0] && (td_session_locked() || strcmp(user, td_session_user()) != 0))
@@ -247,7 +252,7 @@ static int screen2_write(void *ctx, const uint8_t *buf, int len)
     return s_attached_src == TD_DISPLAY_SERIAL ? serial2_write(buf, len) : telnet_write_n(telnet_client(1), buf, len);
 }
 
-    /* Display 2: attached while its source can show it. It sees (and drives)
+      /* Display 2: attached while its source can show it. It sees (and drives)
  * the desktop as it is. */
 static void follow_display2(void)
 {
@@ -269,7 +274,7 @@ static void follow_display2(void)
     }
 }
 
-    /* Display 1: a Telnet client takes the desktop over (as the user who
+      /* Display 1: a Telnet client takes the desktop over (as the user who
  * logged in) and it comes back to the local link and its user when the
  * client leaves. Only root may log in over Telnet. */
 static void follow_display1(void)
@@ -304,7 +309,7 @@ static void follow_display1(void)
 
 static int mux_read_byte(void *ctx)
 {
-      /* The main loop reads until -1 once per pass: poll Telnet and the
+       /* The main loop reads until -1 once per pass: poll Telnet and the
      * sources on the first read of each pass only. */
     static bool s_drained = true;
     if (s_drained)
@@ -326,7 +331,7 @@ static int mux_write(void *ctx, const uint8_t *buf, int len)
 
 static const td_hal_t s_hal = {mux_read_byte, mux_write, hal_millis, hal_sleep, &s_ctx};
 
-    /* ------------------------------------------------------ display ops */
+      /* ------------------------------------------------------ display ops */
 
 __attribute__((weak)) int board_display_rotation(void)
 {

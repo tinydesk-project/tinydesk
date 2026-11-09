@@ -1,5 +1,5 @@
 /*
- * td_proto_cmds.c - `mqtt` and `modbus` commands for TinyDesk Shell. They drive the
+ * td_proto_cmds.c - `mqtt`, `modbus` and `bt` commands for TinyDesk Shell. They drive the
  * same connections as the MQTT and Modbus apps (td_mqtt / td_modbus), so a
  * broker connected from the shell shows up in the app and the other way
  * round.
@@ -17,6 +17,7 @@
 #include "td_mqtt.h"
 #include "td_sock.h"
 #include "tdsh.h"
+#include "tinydesk/td_sysinfo.h"
 
 /* ------------------------------------------------------------ helpers */
 
@@ -849,6 +850,198 @@ static int cmd_modbus(tdsh_session_t *session, int argc, char **argv)
     return 2;
 }
 
+/* -------------------------------------------------------------- bt */
+
+/* Bluetooth keyboards and mice through the port's td_bt_ops_t (the same
+ * table the Bluetooth app uses). Every call there returns at once; this
+ * command waits for the outcome, and Ctrl+C stops the waiting (the work
+ * goes on in the background, the app shows it). */
+
+static const char *const s_bt_slots[TD_BT_SLOTS] = {"keyboard", "mouse", "combo"};
+
+static int bt_slot(const char *s)
+{
+    for (int i = 0; i < TD_BT_SLOTS; i++)
+        if (!strcmp(s, s_bt_slots[i]) || (s[0] - '0' == i && !s[1]))
+            return i;
+    return -1;
+}
+
+static void bt_addr(char *out, size_t n, const uint8_t a[TD_BT_ADDR_LEN])
+{
+    snprintf(out, n, "%02X:%02X:%02X:%02X:%02X:%02X", a[5], a[4], a[3], a[2], a[1], a[0]);
+}
+
+static const char *bt_kind(td_bt_kind_t k)
+{
+    return k == TD_BT_KIND_KEYBOARD ? "keyboard" : k == TD_BT_KIND_MOUSE ? "mouse"
+                                               : k == TD_BT_KIND_HID     ? "HID"
+                                                                         : "other";
+}
+
+/* Wait up to ms for the running job to finish; false on Ctrl+C. */
+static bool bt_wait(const td_bt_ops_t *bt, uint32_t ms)
+{
+    td_bt_status_t st;
+    for (uint32_t t = 0; t < ms; t += 100)
+    {
+        bt->status(&st);
+        if (!st.busy)
+            return true;
+        if (break_requested())
+        {
+            printf("^C (it goes on in the background; bt status shows it)\n");
+            return false;
+        }
+        td_proto_sleep_ms(100);
+    }
+    return true;
+}
+
+static void bt_print_status(const td_bt_ops_t *bt)
+{
+    static td_bt_status_t st;   /* large: keep it off the command's stack */
+    bt->status(&st);
+    static const char *const radio[] = {"off (a scan or a paired device starts it)", "starting", "up", "failed"};
+    printf("Radio:     %s", st.radio <= TD_BT_RADIO_FAILED ? radio[st.radio] : "?");
+    if (st.radio == TD_BT_RADIO_FAILED)
+        printf(" (%d)", st.enable_error);
+    if (st.radio == TD_BT_RADIO_UP && st.stack_heap)
+        printf(", the stack took %lu bytes", (unsigned long)st.stack_heap);
+    printf("\n");
+    if (st.pairings)
+        printf("Pairings:  %s\n", st.pairings);
+    if (st.wifi_exclusive)
+        printf("Wi-Fi:     off while Bluetooth runs on this board\n");
+    for (int i = 0; i < TD_BT_SLOTS; i++)
+    {
+        const td_bt_slot_t *s = &st.slot[i];
+        char a[18];
+        printf("%-10s %s", s_bt_slots[i], s->state ? s->state : "idle");
+        if (s->active)
+        {
+            bt_addr(a, sizeof(a), s->addr);
+            printf(", %s%s%s", s->name, s->name[0] ? " " : "", a);
+        }
+        if (s->ready)
+            printf(" (%lu reports)", (unsigned long)s->reports);
+        printf("\n");
+        if (s->paired)
+        {
+            bt_addr(a, sizeof(a), s->paired_addr);
+            printf("           paired with %s%s%s, %s\n", s->paired_name, s->paired_name[0] ? " " : "", a,
+                   s->reconnects ? "reconnects by itself" : "off");
+        }
+    }
+    if (st.busy || st.message[0])
+        printf("%s%s\n", st.busy ? "Working: " : "", st.message);
+}
+
+static td_bt_device_t s_bt_found[TD_BT_MAX_DEVICES];
+static int s_bt_found_n;
+
+static int cmd_bt(tdsh_session_t *session, int argc, char **argv)
+{
+    (void)session;
+    const td_bt_ops_t *bt = td_sysinfo()->bt;
+    if (!bt)
+    {
+        printf("bt: there is no Bluetooth on this board (or it is off: board key bt.enable)\n");
+        return 1;
+    }
+    const char *op = argc > 1 ? argv[1] : "status";
+    td_bt_status_t *st = calloc(1, sizeof(*st));
+    if (!st)
+        return 1;
+    int rc = 0;
+    if (!strcmp(op, "status"))
+    {
+        bt_print_status(bt);
+    }
+    else if (!strcmp(op, "scan"))
+    {
+        if (!bt->scan())
+        {
+            bt->status(st);
+            printf("bt: %s\n", st->message);
+            rc = 1;
+        }
+        else
+        {
+            printf("Listening for devices in pairing mode...\n");
+            fflush(stdout);
+            int n = -1;
+            for (int t = 0; t < 600 && (n = bt->scan_results(NULL, 0)) < 0; t++)
+            {
+                if (break_requested())
+                    break;
+                td_proto_sleep_ms(100);
+            }
+            s_bt_found_n = bt->scan_results(s_bt_found, TD_BT_MAX_DEVICES);
+            if (s_bt_found_n < 0)
+                s_bt_found_n = 0;
+            for (int i = 0; i < s_bt_found_n; i++)
+            {
+                char a[18];
+                bt_addr(a, sizeof(a), s_bt_found[i].addr);
+                printf("%2d  %-8s %-24s %4d dBm  %s\n", i + 1, bt_kind(s_bt_found[i].kind),
+                       s_bt_found[i].name[0] ? s_bt_found[i].name : "(no name)", s_bt_found[i].rssi, a);
+            }
+            printf("%d found.%s\n", s_bt_found_n, s_bt_found_n ? " Pair one: bt pair <keyboard|mouse|combo> <number>" : "");
+        }
+    }
+    else if (!strcmp(op, "pair") && argc == 4 && bt_slot(argv[2]) >= 0)
+    {
+        int slot = bt_slot(argv[2]), n = atoi(argv[3]);
+        if (n < 1 || n > s_bt_found_n)
+        {
+            printf("bt: %s is not a number from the last bt scan\n", argv[3]);
+            rc = 1;
+        }
+        else if (!bt->pair(slot, &s_bt_found[n - 1]))
+        {
+            bt->status(st);
+            printf("bt: %s\n", st->message);
+            rc = 1;
+        }
+        else
+        {
+            printf("Pairing %s as the %s...\n", s_bt_found[n - 1].name[0] ? s_bt_found[n - 1].name : "the device",
+                   s_bt_slots[slot]);
+            fflush(stdout);
+            bt_wait(bt, 60000);
+            bt->status(st);
+            printf("%s\n", st->message);
+            rc = st->job_failed ? 1 : 0;
+        }
+    }
+    else if ((!strcmp(op, "forget") || !strcmp(op, "off") || !strcmp(op, "on")) && argc == 3 && bt_slot(argv[2]) >= 0)
+    {
+        int slot = bt_slot(argv[2]);
+        bool ok = !strcmp(op, "forget") ? bt->forget(slot) : !strcmp(op, "off") ? bt->disconnect(slot)
+                                                                                : bt->set_reconnect(slot, true);
+        if (ok)
+            bt_wait(bt, 10000);
+        bt->status(st);
+        printf("%s\n", st->message[0] ? st->message : ok ? "done"
+                                                         : "refused");
+        rc = ok && !st->job_failed ? 0 : 1;
+    }
+    else
+    {
+        printf("usage:\n"
+               "  bt [status]                     the radio and the keyboard, mouse and combo slots\n"
+               "  bt scan                         list devices in pairing mode (numbered)\n"
+               "  bt pair <slot> <number>         pair one from the last scan into a slot\n"
+               "  bt off <slot> | bt on <slot>    stop or start using a paired device\n"
+               "  bt forget <slot>                delete a slot's pairing\n"
+               "slot: keyboard, mouse or combo. The Bluetooth app does the same.\n");
+        rc = 2;
+    }
+    free(st);
+    return rc;
+}
+
 /* ---------------------------------------------------------- register */
 
 static const tdsh_command_t s_cmds[] = {
@@ -856,6 +1049,8 @@ static const tdsh_command_t s_cmds[] = {
      "MQTT client, TLS and ~/mqtt.conf (shared with the MQTT app)", cmd_mqtt, 0},
     {"modbus", "modbus <read|write|server> ...",
      "Modbus TCP/RTU client and TCP server (shared with the Modbus app)", cmd_modbus, 0},
+    {"bt", "bt [status|scan|pair|off|on|forget] ...", "Bluetooth keyboards and mice (shared with the Bluetooth app)",
+     cmd_bt, TDSH_CMD_ROOT_ONLY},
 };
 
 int td_proto_register_shell_commands(void)

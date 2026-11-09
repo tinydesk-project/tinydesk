@@ -1,3 +1,4 @@
+bt.enable
 console.baud
 console.rx
 console.tx

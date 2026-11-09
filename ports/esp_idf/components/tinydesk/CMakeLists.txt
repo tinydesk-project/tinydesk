@@ -36,6 +36,7 @@ idf_component_register(
         "${TD_ROOT}/apps/modbus.c"
         "${TD_ROOT}/apps/mqtt.c"
         "${TD_ROOT}/apps/network.c"
+        "${TD_ROOT}/apps/bluetooth.c"
         "${TD_ROOT}/apps/displays.c"
         "${TD_ROOT}/apps/pyui.c"
         "${TD_ROOT}/apps/pyui_cache.c"

@@ -57,6 +57,8 @@
 #include "tdsh_board.h"
 #include "tdsh_bridge_esp.h"
 #include "tdsh_espidf.h"
+#include "bt_hid.h"
+#include "hid_input.h"
 #if TD_USB_HID
 #include "usb_hid.h"
 #endif
@@ -71,9 +73,9 @@
 
 static const char *TAG = "tinydesk";
 
-  /* ------------------------------------------------------------ sysinfo */
+    /* ------------------------------------------------------------ sysinfo */
 
-  /* Internal RAM; PSRAM (classic ESP32 port) is reported on its own. */
+    /* Internal RAM; PSRAM (classic ESP32 port) is reported on its own. */
 #define INTERNAL (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
 static uint32_t free_heap(void)
 {
@@ -100,12 +102,12 @@ static int task_count(void)
     return (int)uxTaskGetNumberOfTasks();
 }
 
-  /* The board configuration built into the firmware (the port's board.conf,
+    /* The board configuration built into the firmware (the port's board.conf,
  * or board.example.conf; see main/CMakeLists.txt). */
 extern const char s_board_builtin[] asm("_binary_board_builtin_conf_start");
 
 #if CONFIG_FREERTOS_USE_TRACE_FACILITY && CONFIG_FREERTOS_GENERATE_RUN_TIME_STATS
- /* The previous sample, to turn run-time counters into CPU shares. The
+  /* The previous sample, to turn run-time counters into CPU shares. The
  * buffers are allocated on the first call (when the Task Manager opens) and
  * kept, growing only when there are more tasks: a refresh then needs no
  * memory, so the list does not go blank when RAM is short. */
@@ -233,7 +235,7 @@ static int cpu_mhz(void)
 }
 
 #if SOC_TEMP_SENSOR_SUPPORTED
- /* The chip's built-in temperature sensor (not on the classic ESP32), started
+  /* The chip's built-in temperature sensor (not on the classic ESP32), started
  * on the first reading. */
 static temperature_sensor_handle_t s_tsens;
 static bool s_tsens_failed;
@@ -254,13 +256,13 @@ static bool chip_temp(int *tenths_c)
 }
 #endif
 
-  /* Time zone: the same offset file TinyDesk Shell's `tz` command uses, so the
+    /* Time zone: the same offset file TinyDesk Shell's `tz` command uses, so the
  * taskbar clock and `date` agree. Re-read now and then (tz may change it). */
 static long s_tz;
 static int64_t s_tz_read_us = -1;
 static char s_tz_user[32];
 
-  /* The logged-in user's own tz file. */
+    /* The logged-in user's own tz file. */
 static void tz_path(char *out, size_t cap)
 {
     snprintf(out, cap, "%.140s" TZ_NAME, td_session_home());
@@ -302,7 +304,7 @@ static bool set_tz(long seconds)
     return ok;
 }
 
-  /* The system clock, once SNTP (or Date & time) has set it. */
+    /* The system clock, once SNTP (or Date & time) has set it. */
 static bool time_now(int64_t *utc)
 {
     time_t now = time(NULL);
@@ -327,7 +329,7 @@ static bool time_auto_set(bool on)
     return tdsh_time_set_auto(on) == 0;
 }
 
-  /* "Sync now" waits for SNTP for a few seconds, so it runs in a short-lived
+    /* "Sync now" waits for SNTP for a few seconds, so it runs in a short-lived
  * task. */
 static volatile bool s_syncing;
 
@@ -441,7 +443,7 @@ static const td_user_ops_t s_user_ops = {
     .hint_set = tdsh_user_hint_set,
 };
 
-  /* The chip's name as Espressif writes it (About). */
+    /* The chip's name as Espressif writes it (About). */
 static const char *chip_model(esp_chip_model_t model)
 {
     switch (model)
@@ -491,7 +493,7 @@ static void fill_sysinfo(void)
     s_info.set_tz = set_tz;
     s_info.net = net_esp_ops();
     s_info.displays = hal_mux_displays();
-     /* Updates need a second app slot (not on the 4 MB ESP32 layout). */
+      /* Updates need a second app slot (not on the 4 MB ESP32 layout). */
     if (esp_ota_get_next_update_partition(NULL))
     {
         s_info.ota = ota_esp_ops();
@@ -514,13 +516,13 @@ static void fill_sysinfo(void)
     s_info.settings_save = settings_save;
     s_info.fs = td_fs_stdio(TDSH_MOUNT_POINT);
     td_fs_stdio_guard(td_session_path_allowed);
-     /* A mounted SD card (sd mount) shows up in Files as the folder "sd". */
+      /* A mounted SD card (sd mount) shows up in Files as the folder "sd". */
     td_fs_stdio_redirect(TDSH_MOUNT_POINT "/sd", "/sd", tdsh_sdcard_mounted);
     s_info.extra = "Shell:     TinyDesk Shell " TDSH_VERSION;
     td_set_sysinfo(&s_info);
 }
 
-  /* ----------------------------------------------------- log capture */
+    /* ----------------------------------------------------- log capture */
 
 static vprintf_like_t s_prev_vprintf;
 static portMUX_TYPE s_log_mux = portMUX_INITIALIZER_UNLOCKED;
@@ -536,7 +538,7 @@ static void log_unlock(void *ctx)
     taskEXIT_CRITICAL(&s_log_mux);
 }
 
-  /* Every esp_log line: copy into the Log Viewer ring, then print it as
+    /* Every esp_log line: copy into the Log Viewer ring, then print it as
  * before (to the Terminal window for the shell task; nowhere otherwise). */
 static int log_hook(const char *fmt, va_list ap)
 {
@@ -549,10 +551,10 @@ static int log_hook(const char *fmt, va_list ap)
     return s_prev_vprintf ? s_prev_vprintf(fmt, ap) : 0;
 }
 
-  /* --------------------------------------------------- canvas memory */
+    /* --------------------------------------------------- canvas memory */
 
 #if CONFIG_SPIRAM
- /* Pixel canvases (td_canvas.h) go to PSRAM, so they never take the internal
+  /* Pixel canvases (td_canvas.h) go to PSRAM, so they never take the internal
  * RAM that Wi-Fi, SSH and task stacks need; internal RAM only when PSRAM is
  * full. Each allocation is logged (Log Viewer). */
 static void *canvas_alloc(size_t bytes)
@@ -568,9 +570,9 @@ static void *canvas_alloc(size_t bytes)
 }
 #endif
 
-  /* ----------------------------------------------------------- UI task */
+    /* ----------------------------------------------------------- UI task */
 
-  /* Maintenance start (link.h), for ports that have no way of their own:
+    /* Maintenance start (link.h), for ports that have no way of their own:
  * the board's BOOT button (GPIO0; GPIO9 on the ESP32-C6, or the board
  * key kiosk.maint_pin, -1 for none) held for 0.2 s within 1.5 s of the
  * start. Pressed after RESET is let go: held through the reset, it selects
@@ -638,13 +640,13 @@ static void ui_task(void *arg)
                      (unsigned)min_free_heap());
         }
     }
-     /* Start menu > Exit: restart the board. */
+      /* Start menu > Exit: restart the board. */
     td_shutdown();
     vTaskDelay(pdMS_TO_TICKS(100));
     esp_restart();
 }
 
-  /* Keep ROM / early-boot output off the USB port, which belongs to the
+    /* Keep ROM / early-boot output off the USB port, which belongs to the
  * desktop (see sdkconfig.defaults). */
 static void quiet_usb_port(void)
 {
@@ -666,7 +668,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(err);
 
-      /* The TCP/IP stack and the default event loop, up front: the desktop's
+        /* The TCP/IP stack and the default event loop, up front: the desktop's
      * Telnet listener (and MQTT, Modbus TCP...) open sockets before any
      * network interface is started, and a board with no Ethernet only
      * starts Wi-Fi later, if at all. Wi-Fi and Ethernet accept both
@@ -700,11 +702,12 @@ void app_main(void)
     td_mb_set_serial(board_rtu_lines());        /* Modbus RTU lines, if the board has any */
 #if TD_USB_HID
     usb_hid_start();                            /* a USB keyboard and mouse (usb.host = 1) */
-    s_info.mouse = usb_hid_mouse_ops();         /* the Mouse and Keyboard apps, when it is on */
-    s_info.keyboard = usb_hid_keyboard_ops();
 #endif
+    s_info.bt = bt_hid_start();                 /* Bluetooth keyboards and mice (bt.enable = 1) */
+    s_info.mouse = hid_input_mouse_ops();       /* the Mouse and Keyboard apps, when either is on */
+    s_info.keyboard = hid_input_keyboard_ops();
 
-      /* Downloads (the Store app), and board key store.url: another catalog,
+        /* Downloads (the Store app), and board key store.url: another catalog,
      * a URL or a file on the device (a shell path), e.g. for testing. */
     s_info.fetch = fetch_esp_ops();
     static char s_store_url[TDSH_MAX_PATH];
@@ -718,7 +721,7 @@ void app_main(void)
         s_info.store_url = s_store_url;
     }
 
-      /* Kiosk mode: board configuration key kiosk.app names the Python app,
+        /* Kiosk mode: board configuration key kiosk.app names the Python app,
      * unless this is a maintenance start (link.h; the BOOT button). */
     static char s_kiosk_app[TDSH_MAX_PATH];
     const char *kiosk = tdsh_board_get("kiosk.app");
@@ -749,7 +752,7 @@ void app_main(void)
     xTaskCreate(ui_task, "tinydesk", UI_TASK_STACK, NULL, UI_TASK_PRIORITY, NULL);
 #endif
 
-      /* A new firmware runs on trial: confirm it once it has run for 30 s,
+        /* A new firmware runs on trial: confirm it once it has run for 30 s,
      * otherwise a crash or a reset makes the bootloader go back. */
     static esp_timer_handle_t s_ok_timer;
     const esp_timer_create_args_t ok = {.callback = confirm_firmware, .name = "ota_ok"};
