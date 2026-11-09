@@ -110,6 +110,9 @@ typedef struct
     uint8_t *px;
     uint16_t *rgb;
     uint32_t rgb_serial;
+    /* canvas: how its pictures went into its pixels: 0 none yet, 1 pairs
+     * (half blocks), 2 single pixels (quadrants); see refresh_fallbacks() */
+    uint8_t fb_mode;
     long px_bytes;
     /* image: its pixels; a mask added later is a block of its own */
     td_pyui_image_t *img;
@@ -579,10 +582,13 @@ static uint8_t main_colour(const uint8_t q[4]);
 /* A canvas's cells: text, or the cell's four pixels as one quadrant
  * character (Fine pictures) or an upper half block (two of them). */
 static void show_pictures(const obj_t *o, td_rect_t client);
+static void refresh_fallbacks(obj_t *o);
 
 static void draw_canvas(const obj_t *o, const td_theme_t *t, td_rect_t client)
 {
     bool quad = td_canvas_detail() == TD_CANVAS_QUAD && !td_get_ascii_mode();
+    if (o->fb_mode && o->fb_mode != (quad ? 2 : 1))
+        refresh_fallbacks((obj_t *)o);   /* the picture detail changed */
     const cell_t *cells = canvas_page(o, o->show);
     for (int y = 0; y < o->rect.h; y++)
     {
@@ -2008,14 +2014,71 @@ static void render_canvas_fallback(void *user, uint8_t *px, int w, int h)
             px[y * w + x] = src[(2 * row + y * 2 / ch) * 2 * o->rect.w + 2 * col + x * 2 / cw];
 }
 
+/* Canvas pixels in half-block mode: a cell shows two of its four (the left
+ * column), so pictures go in as pairs of equal pixels side by side. */
+static bool fallback_half(void)
+{
+    return td_canvas_detail() != TD_CANVAS_QUAD || td_get_ascii_mode();
+}
+
+/* The colours of one block of a picture's samples, to choose its pixel. */
+#define FB_COLOURS 6
+typedef struct
+{
+    uint32_t c[FB_COLOURS];   /* fb_key() */
+    int n[FB_COLOURS];
+    int kinds, total, other;
+    int sum[3];
+} fb_block_t;
+
+static void fb_add(fb_block_t *b, uint32_t c, const uint8_t rgb[3])
+{
+    for (int k = 0; k < 3; k++)
+        b->sum[k] += rgb[k];
+    b->total++;
+    for (int i = 0; i < b->kinds; i++)
+        if (b->c[i] == c)
+        {
+            b->n[i]++;
+            return;
+        }
+    if (b->kinds < FB_COLOURS)
+    {
+        b->c[b->kinds] = c;
+        b->n[b->kinds++] = 1;
+    }
+    else
+        b->other++;
+}
+
+/* Flat art (QR codes, logos, text, UI pieces): where one or two colours
+ * cover nearly all of the block, its most common colour, exactly, so edges
+ * stay sharp instead of turning into an in-between shade. Photos and
+ * gradients: the average. */
+#define FB_PALETTE 0x10000u   /* a palette index; otherwise RGB565 */
+static uint32_t fb_pick(const fb_block_t *b)
+{
+    int a = 0, second = 0;
+    for (int i = 1; i < b->kinds; i++)
+        if (b->n[i] > b->n[a])
+            a = i;
+    for (int i = 0; i < b->kinds; i++)
+        if (i != a && b->n[i] > second)
+            second = b->n[i];
+    if ((b->n[a] + second) * 10 >= b->total * 9)
+        return b->c[a];
+    return td_rgb565((uint8_t)(b->sum[0] / b->total), (uint8_t)(b->sum[1] / b->total), (uint8_t)(b->sum[2] / b->total));
+}
+
 /* A picture in a canvas's pixels (dx, dy, dw x dh of them): drawn at FB
- * pixels to each canvas pixel (as a screen would), then each block averaged
- * to the nearest palette colour, so curves and gradients come out clean
- * and dithering does not speckle. Mostly transparent blocks leave the
- * canvas as it is. border < 0: stretched, not nine-slice. */
+ * pixels to each canvas pixel (as a screen would), then each block turned
+ * into one pixel (fb_pick), so curves and gradients come out clean, flat
+ * art stays sharp and dithering does not speckle. Mostly transparent blocks
+ * leave the canvas as it is. border < 0: stretched, not nine-slice. half:
+ * pixel pairs side by side get one colour (fallback_half()). */
 #define FB 8
 static void picture_fallback(surf_t *d, int dx, int dy, int dw, int dh, const td_pyui_image_t *img, int sx, int sy,
-                             int sw, int sh, int border)
+                             int sw, int sh, int border, bool half)
 {
     int w = dw * FB, h = dh * FB;
     /* Downsample one logical row at a time. A full temporary enlarged
@@ -2034,11 +2097,16 @@ static void picture_fallback(surf_t *d, int dx, int dy, int dw, int dh, const td
             nine(&s, 0, -ty * FB, w, h, img, sx, sy, sw, sh, border);
         else
             blit(&s, 0, -ty * FB, w, h, img, sx, sy, sw, sh);
-        for (int tx = 0; tx < dw; tx++)
+        /* In half-block mode a pair starts on an even canvas pixel. */
+        int step = half ? 2 : 1;
+        for (int tx = half ? -((dx % 2 + 2) % 2) : 0; tx < dw; tx += step)
         {
-            int sum[3] = {0, 0, 0}, n = 0;
+            fb_block_t b = {0};
+            int x0 = tx < 0 ? 0 : tx * FB, x1 = (tx + step) * FB;
+            if (x1 > w)
+                x1 = w;
             for (int y = 0; y < FB; y++)
-                for (int x = tx * FB; x < (tx + 1) * FB; x++)
+                for (int x = x0; x < x1; x++)
                 {
                     size_t i = (size_t)y * (size_t)w + (size_t)x;
                     if (mask[i])
@@ -2048,19 +2116,78 @@ static void picture_fallback(surf_t *d, int dx, int dy, int dw, int dh, const td
                         td_rgb565_rgb(s.rgb[i], rgb);
                     else
                         td_palette_rgb(px[i], rgb);
-                    for (int k = 0; k < 3; k++)
-                        sum[k] += rgb[k];
-                    n++;
+                    fb_add(&b, s.rgb ? s.rgb[i] : FB_PALETTE | px[i], rgb);
                 }
-            if (n * 2 >= FB * FB)
+            if (b.total * 2 < (x1 - x0) * FB || !b.total)
+                continue;
+            uint32_t key = fb_pick(&b);
+            uint8_t rgb[3], index;
+            if (key & FB_PALETTE)
             {
-                plot(d, dx + tx, dy + ty, td_rgb256((uint8_t)(sum[0] / n), (uint8_t)(sum[1] / n), (uint8_t)(sum[2] / n)));
-                if (d->rgb && dx + tx >= 0 && dy + ty >= 0 && dx + tx < d->w && dy + ty < d->h)
-                    d->rgb[(dy + ty) * d->w + dx + tx] = td_rgb565((uint8_t)(sum[0] / n), (uint8_t)(sum[1] / n), (uint8_t)(sum[2] / n));
+                index = (uint8_t)key;
+                td_palette_rgb(index, rgb);
+            }
+            else
+            {
+                td_rgb565_rgb((uint16_t)key, rgb);
+                index = td_rgb256(rgb[0], rgb[1], rgb[2]);
+            }
+            uint16_t c = td_rgb565(rgb[0], rgb[1], rgb[2]);
+            for (int k = tx < 0 ? -tx : 0; k < step && tx + k < dw; k++)
+            {
+                int x = dx + tx + k, y = dy + ty;
+                plot(d, x, y, index);
+                if (d->rgb && x >= 0 && y >= 0 && x < d->w && y < d->h)
+                    d->rgb[y * d->w + x] = c;
             }
         }
     }
     free(allocation);
+}
+
+/* The picture detail changed (Settings): draw the canvas's pictures into its
+ * pixels again for the new one, oldest first, each over the background it
+ * was drawn on. Pictures whose image the script freed keep what they had. */
+static void refresh_fallbacks(obj_t *o)
+{
+    o->fb_mode = fallback_half() ? 1 : 2;
+    uint8_t keep = o->draw;
+    uint32_t last = 0;
+    for (;;)
+    {
+        pic_t *p = NULL;
+        for (int i = 0; i < MAX_PICS; i++)
+        {
+            pic_t *q = &pictures()[i];
+            if (q->used && q->canvas == o->id && q->img && q->serial > last && (!p || q->serial < p->serial))
+                p = q;
+        }
+        if (!p)
+            break;
+        last = p->serial;
+        const obj_t *io = find(p->img);
+        if (!io || io->kind != K_IMAGE || p->page >= o->pages)
+            continue;
+        o->draw = p->page;
+        surf_t s;
+        if (!surface(o, &s))
+            continue;
+        if (p->bg)
+            for (int y = 0; y < p->bg->h; y++)
+                for (int x = 0; x < p->bg->w; x++)
+                {
+                    int cx = p->bg->x + x, cy = p->bg->y + y;
+                    s.px[cy * s.w + cx] = p->bg->px[y * p->bg->w + x];
+                    if (s.rgb && p->bg->rgb)
+                        s.rgb[cy * s.w + cx] = p->bg->rgb[y * p->bg->w + x];
+                }
+        int sx, sy, sw, sh;
+        picture_part(p, io->img, &sx, &sy, &sw, &sh);
+        picture_fallback(&s, 2 * p->x, 2 * p->y, 2 * p->w, 2 * p->h, io->img, sx, sy, sw, sh,
+                         p->nine ? p->part.border : -1, o->fb_mode == 1);
+    }
+    o->draw = keep;
+    o->rgb_serial = ++s_link->pic_serial;
 }
 
 /* Terminal fallback stays inside the picture. Native pictures cover only
@@ -2207,8 +2334,10 @@ static void picture_request(obj_t *o, const td_pyui_msg_t *m, const char *text)
     if (!text_only)
     {
         picture_part(&tmp, io->img, &sx, &sy, &sw, &sh);
+        if (!o->fb_mode)
+            o->fb_mode = fallback_half() ? 1 : 2;
         picture_fallback(&s, 2 * m->a, 2 * m->b, 2 * m->c, 2 * m->d, io->img, sx, sy, sw, sh,
-                         (m->flags & 1) ? part.border : -1);
+                         (m->flags & 1) ? part.border : -1, o->fb_mode == 1);
     }
     else if (m->f != TD_PYUI_CLEAR)
         round_rect(&s, 2 * m->a, 2 * m->b, 2 * m->c, 2 * m->d, 0, m->f < 0 ? td_theme()->win_bg : m->f, false);

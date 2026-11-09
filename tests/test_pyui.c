@@ -527,6 +527,74 @@ static void test_pictures(void)
     td_term_set_sixel(false);
 }
 
+/* A QR-like picture (black and white modules) shrunk by an uneven amount
+ * into a terminal without pictures stays black and white: no grey edges,
+ * in half blocks and in quadrants, and again after the detail changes. */
+static bool black_or_white(int colour)
+{
+    return colour == 16 || colour == 231;
+}
+static void check_sharp(int x0, int y0, int w, int h)
+{
+    int black = 0, white = 0;
+    for (int y = y0; y < y0 + h; y++)
+        for (int x = x0; x < x0 + w; x++)
+        {
+            td_cell_t c = cell(x, y);
+            CHECK(black_or_white(c.fg));
+            CHECK(black_or_white(c.bg));
+            black += (c.fg == 16) + (c.bg == 16);
+            white += (c.fg == 231) + (c.bg == 231);
+        }
+    CHECK(black > 0 && white > 0);
+}
+static void test_sharp_pictures(void)
+{
+    enum
+    {
+        N = 21   /* a version 1 QR code's modules */
+    };
+    static uint8_t qr[N * N];
+    uint32_t seed = 12345;
+    for (int i = 0; i < N * N; i++)
+    {
+        seed = seed * 1103515245u + 12345u;
+        qr[i] = (seed >> 16) & 1 ? 16 : 231;
+    }
+    send_image(32, N, N, qr, NULL);
+    send(TD_PYUI_FILL, CANVAS, 0, 0, 0, 12, 4, -1, -1, " ");
+    td_term_set_sixel(false);
+    td_canvas_set_detail(TD_CANVAS_HALF);
+
+    /* 21 modules into 9 x 4 cells: 18 x 8 pixels, neither a whole number. */
+    td_pyui_picture_t part = {0, 0, 0, 15, 0};
+    td_pyui_msg_t m = {0};
+    m.op = TD_PYUI_PICTURE;
+    m.id = CANVAS;
+    m.win = 32;
+    m.a = 1;
+    m.b = 0;
+    m.c = 9;
+    m.d = 4;
+    m.len = sizeof(part);
+    CHECK(td_pyui_send(&m, (const char *)&part));
+    settle();
+    CHECK(!*error_event());
+    check_sharp(1, 0, 9, 4);
+
+    /* Quadrants: drawn again for four pixels to a cell, still sharp. */
+    td_canvas_set_detail(TD_CANVAS_QUAD);
+    td_wm_invalidate();
+    settle();
+    check_sharp(1, 0, 9, 4);
+    td_canvas_set_detail(TD_CANVAS_HALF);
+    td_wm_invalidate();
+    settle();
+    check_sharp(1, 0, 9, 4);
+    send(TD_PYUI_CLOSE, 32, 0, 0, 0, 0, 0, 0, 0, NULL);
+    settle();
+}
+
 static void test_picture_background(void)
 {
     uint8_t px[64], mask[64] = {0};
@@ -909,6 +977,7 @@ int main(void)
     test_big();
     test_pixels();
     test_pictures();
+    test_sharp_pictures();
     test_picture_background();
     test_generated_fonts();
     test_canvas_release();
