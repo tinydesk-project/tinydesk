@@ -468,6 +468,52 @@ static void compiled_launch(void)
     td_terminal_set_backend(NULL);
     compiled_files = false;
 }
+/* Where text is on the composed screen (row, column), or false. */
+static bool find_on_screen(const char *text, int *row, int *col)
+{
+    static td_buffer_t screen;
+    int cols = 0, rows = 0;
+    td_wm_screen_size(&cols, &rows);
+    td_buffer_init(&screen, cols, rows);
+    td_wm_compose(&screen);
+    for (int y = 0; y < rows; y++)
+    {
+        char line[512];
+        int n = 0;
+        for (int x = 0; x < cols && n < (int)sizeof(line) - 1; x++)
+        {
+            uint32_t ch = td_buffer_cell(&screen, x, y)->ch;
+            line[n++] = ch >= 32 && ch < 127 ? (char)ch : ' ';
+        }
+        line[n] = 0;
+        const char *at = strstr(line, text);
+        if (at)
+        {
+            *row = y;
+            *col = (int)(at - line);
+            return true;
+        }
+    }
+    return false;
+}
+
+/* The sign-in screen keeps its controls with its text through every change
+ * of the terminal's size, not only the first. */
+static void login_resize(void)
+{
+    td_login_open();
+    static const int sizes[][2] = {{80, 24}, {120, 40}, {90, 30}, {100, 30}};
+    for (unsigned i = 0; i < sizeof(sizes) / sizeof(sizes[0]); i++)
+    {
+        td_wm_set_screen_size(sizes[i][0], sizes[i][1]);
+        int tr, tc, br, bc;
+        CHECK(find_on_screen("TINYDESK", &tr, &tc));
+        CHECK(find_on_screen("[ Sign in ]", &br, &bc));
+        CHECK_EQ(br, tr + 15);
+        CHECK_EQ(bc, tc);
+    }
+}
+
 int main(int argc, char **argv)
 {
     bool audit = argc > 1 && !strcmp(argv[1], "--audit");
@@ -488,6 +534,7 @@ int main(int argc, char **argv)
         log_follow();
         menu_scroll();
         compiled_launch();
+        login_resize();
     }
     return TD_TEST_RESULT();
 }
