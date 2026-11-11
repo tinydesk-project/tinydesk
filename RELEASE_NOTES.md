@@ -7,6 +7,31 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## New in 0.5.0
+
+* **No more cut-off text.** Message boxes word-wrap to fit the screen
+  (lines were cut at 63 bytes, and after 8 lines), input-box prompts wrap,
+  and a label keeps all of its text: one too narrow for it ends in a
+  highlighted **…** you click to read everything. List items, window
+  titles, taskbar buttons, Start menu entries, icon names and the apps'
+  status lines end in **…** where they are cut; the taskbar shows **»**
+  when it has more windows than buttons.
+* **Python apps on the ESP32-C6 with Wi-Fi on:** Python's heap now grows as
+  a script needs it and always leaves room for Wi-Fi and the desktop; the
+  C6's Wi-Fi driver runs from flash, which gives its RAM to apps.
+* **Store:** an app's details show its author, licence and source link.
+  Three new apps in the Store: MQTT Dashboard, Modbus Monitor and Network
+  Tools.
+
+**Fixes**
+
+* Installing an app from the Store restarted the ESP32-C6 and ESP32-S3
+  (tinydesk #19): the desktop task ran out of stack. It has 8 KB on the C6
+  and 12 KB on the other boards now.
+* "Install on the SD card" failed with "Cannot write the file".
+* The Store on the ESP32-C6 said "The catalog could not be read".
+* Offline, the Store called installed apps "Needs a newer TinyDesk".
+
 ## New in 0.4.0
 
 * **Bluetooth keyboards and mice** (`bt.enable = 1`): the **Bluetooth** app

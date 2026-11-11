@@ -23,10 +23,10 @@
  * terminals that support it act on it). At most TD_OSC52_MAX bytes. */
 void td_host_clipboard_set(const char *text, int len);
 
-#define TD_VERSION        "0.4.0"
+#define TD_VERSION        "0.5.0"
 /* The same as numbers, for #if (tools/check_api.py checks they agree). */
 #define TD_VERSION_MAJOR  0
-#define TD_VERSION_MINOR  4
+#define TD_VERSION_MINOR  5
 #define TD_VERSION_PATCH  0
 #define TD_REPO_URL       "https://github.com/tinydesk-project/tinydesk"
 #define TD_SHELL_REPO_URL "https://github.com/tinydesk-project/tinydesk-shell"
