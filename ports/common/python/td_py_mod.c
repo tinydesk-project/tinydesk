@@ -225,8 +225,17 @@ const char td_py_help_text[] =
     "\n"
     "help('modules') lists the modules; help(obj) shows an object's members.\n";
 
+/* Without PSRAM, room a tdui script needs outside its heap: the desktop link
+ * (about 6 KB) and its windows' cells. Measured on the ESP32-C6: the full
+ * heap left too little and tdui could not attach. */
+static unsigned desktop_reserve_kb(void)
+{
+    return 12;
+}
+
 void td_py_desktop_setup(bool (*desktop_check)(void))
 {
+    td_py_set_reserve(desktop_reserve_kb);
     td_py_set_desktop_check(desktop_check);
     td_py_add_cleanup(td_tdui_release);   /* a script's windows close when it ends */
 }

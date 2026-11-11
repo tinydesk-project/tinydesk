@@ -1352,7 +1352,7 @@ static void draw_menu(void)
                 td_textn(tx, y, s_menu.glyphs[i], 2, fg, bg, TD_BOLD);
             tx += 3;
         }
-        td_textn(tx, y, s_menu.labels[i], r.x + r.w - 2 - tx, fg, bg, 0);
+        td_textfit(tx, y, s_menu.labels[i], r.x + r.w - 2 - tx, fg, bg, 0);
     }
     if (s_menu.first > 0)
         td_putc(r.x + r.w - 3, r.y, 0x25B2, t->menu_fg, t->menu_bg, 0);
@@ -1679,7 +1679,10 @@ static void draw_taskbar(void)
             len = max_title;
         int bw = len + 2 + (glyph ? 3 : 0);
         if (x + bw > clock_x - 1)
+        {   /* more windows than buttons: say so (F6 reaches them all) */
+            td_putc(clock_x - 1, y, 0x00BB, t->taskbar_fg, t->taskbar_bg, TD_BOLD);   /* » */
             break;
+        }
 
         bool active = (w == focused);
         bool hidden = (w->flags & TD_WIN_HIDDEN) != 0;
@@ -1694,7 +1697,7 @@ static void draw_taskbar(void)
             td_textn(tx, y, w->icon, 2, fg, bg, TD_BOLD);
             tx += 3;
         }
-        td_textn(tx, y, w->title, len, fg, bg, 0);
+        td_textfit(tx, y, w->title, len, fg, bg, 0);
         if (h > 1)
         {
              /* A line under the button: bright for the active window, dim
@@ -2116,7 +2119,7 @@ static void draw_icon(int i)
         }
         td_fill(r, ' ', lfg, lbg);
         td_textn(r.x + 1, r.y, glyph, 2, own >= 0 ? (uint8_t)own : lfg, lbg, TD_BOLD);
-        td_textn(r.x + 4, r.y, name, r.w - 5, lfg, lbg, attr);
+        td_textfit(r.x + 4, r.y, name, r.w - 5, lfg, lbg, attr);
         return;
     }
 
@@ -2384,7 +2387,7 @@ static void draw_window(td_window_t *w, bool focused)
         int th = title_h(), ty = r.y + th - 1, bw = button_w();
         td_fill(td_rect(r.x + 1, r.y, r.w - 2, th), ' ', tfg, tbg);
         int buttons_x = (w->flags & TD_WIN_MODAL) ? close_x(w) : min_x(w);
-        td_textn(r.x + 2, ty, w->title, buttons_x - r.x - 3, tfg, tbg, focused ? TD_BOLD : 0);
+        td_textfit(r.x + 2, ty, w->title, buttons_x - r.x - 3, tfg, tbg, focused ? TD_BOLD : 0);
         bool top = td_wm_window_at(s_mouse_x, s_mouse_y) == w;
         bool wide = bw > 3;
         if (!(w->flags & TD_WIN_MODAL))

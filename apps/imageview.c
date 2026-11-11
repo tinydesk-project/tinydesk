@@ -287,7 +287,7 @@ static void on_draw(td_window_t *win, int cw, int ch)
         snprintf(line, sizeof(line), " %dx%d %s at %dx%d  D: dither %s  R: reload  O: open", s_img->w,
                  s_img->h, s_img->format, s_dw, s_dh, s_dither ? "on" : "off");
     td_fill(td_rect(0, ch - 1, cw, 1), ' ', th->win_fg, th->win_bg);
-    td_textn(0, ch - 1, line, cw, th->dim, th->win_bg, 0);
+    td_textfit(0, ch - 1, line, cw, th->dim, th->win_bg, 0);
 }
 
 static void on_tick(td_window_t *win)

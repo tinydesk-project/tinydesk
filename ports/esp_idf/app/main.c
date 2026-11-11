@@ -64,9 +64,11 @@
 #endif
 
 #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S3
-#define UI_TASK_STACK 8192   /* Xtensa frames are bigger; RAM is plentiful (PSRAM) */
+/* The Store's install (save, Start-menu shortcut, desktop refresh) is the
+ * deepest path: it overflowed 8 KB on the S3 and 5 KB on the C6. */
+#define UI_TASK_STACK 12288   /* Xtensa frames are bigger */
 #else
-#define UI_TASK_STACK 5120   /* measured on the C6: about 1.8 KB used */
+#define UI_TASK_STACK 8192
 #endif
 #define TZ_NAME          "/.tdsh_tz"   /* TinyDesk Shell's per-user `tz` setting, in the home */
 #define UI_TASK_PRIORITY 5

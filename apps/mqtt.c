@@ -20,7 +20,7 @@
 typedef struct
 {
     char user[32], pass[64];
-    char note[64];                    /* last action's outcome */
+    char note[128];                   /* last action's outcome */
     uint32_t first_seq;               /* first message shown */
     uint32_t shown_last;
     char item[TD_MQTT_TOPIC_MAX + TD_MQTT_PAYLOAD_KEEP + 40];
@@ -88,7 +88,7 @@ static void do_connect(void)
     {
         if (!td_mqtt_load_config(text, app_resolve, NULL, cfg, err, sizeof(err)))
         {
-            char msg[64];
+            char msg[128];
             snprintf(msg, sizeof(msg), "%.62s", err);
             note(msg);
             free(cfg);
@@ -113,7 +113,7 @@ static void do_connect(void)
     note("Connecting...");
     if (!td_mqtt_connect(cfg, err, sizeof(err)))
     {
-        char msg[64];
+        char msg[128];
         snprintf(msg, sizeof(msg), "%.62s", err);
         note(msg);
     }
@@ -300,7 +300,7 @@ static void on_draw(td_window_t *win, int w, int h)
         snprintf(line, sizeof(line), "%s  (%u in, %u out)", st.text, (unsigned)st.rx, (unsigned)st.tx);
     else
         snprintf(line, sizeof(line), "%s", st.text);
-    td_textn(0, 1, line, 58, fg, t->win_bg, st.state == TD_MQTT_CONNECTED ? TD_BOLD : 0);
+    td_textfit(0, 1, line, w, fg, t->win_bg, st.state == TD_MQTT_CONNECTED ? TD_BOLD : 0);
 
     /* Subscriptions, then the last action's outcome. */
     char subs[160] = "Subscribed: ";
@@ -316,7 +316,7 @@ static void on_draw(td_window_t *win, int w, int h)
         snprintf(subs, sizeof(subs), "Subscribed: nothing yet");
     td_textn(0, 4, subs, w, t->win_fg, t->win_bg, 0);
     if (U->note[0])
-        td_textn(0, 5, U->note, w, t->accent, t->win_bg, 0);
+        td_textfit(0, 5, U->note, w, t->accent, t->win_bg, 0);
     else
         td_textn(0, 5, "Time     Dir Topic  Message", w, t->dim, t->win_bg, 0);
 }

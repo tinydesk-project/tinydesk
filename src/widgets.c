@@ -38,6 +38,22 @@ static uint8_t pick(int custom, uint8_t fallback)
     return custom == TD_COLOR_DEFAULT ? fallback : (uint8_t)custom;
 }
 
+/* Columns of s without its trailing spaces (padding is not content). */
+static int shown_cols(const char *s)
+{
+    int cols = 0, last = 0;
+    while (*s)
+    {
+        bool space = *s == ' ';
+        if (!td_utf8_next(&s))
+            break;
+        cols++;
+        if (!space)
+            last = cols;
+    }
+    return last;
+}
+
 /* Rectangle relative to the client area with <= 0 sizes resolved. */
 static td_rect_t local_rect(const td_widget_t *w)
 {
@@ -123,6 +139,8 @@ void td_widgets_free(td_window_t *win)
             s_pressed = NULL;
         free(w->marks);
         w->marks = NULL;
+        free(w->full);
+        w->full = NULL;
         w->used = false;
     }
     win->widgets = NULL;
@@ -132,7 +150,10 @@ void td_widgets_free(td_window_t *win)
 void td_widgets_reset(void)
 {
     for (int i = 0; i < TD_MAX_WIDGETS; i++)
+    {
         free(s_pool[i].marks);
+        free(s_pool[i].full);
+    }
     memset(s_pool, 0, sizeof(s_pool));
     s_pressed = NULL;
 }
@@ -218,6 +239,23 @@ void td_widget_set_text(td_widget_t *w, const char *text)
     if (!w)
         return;
     td_utf8_copy(TXT(w), (size_t)CAP(w), text, INT_MAX); /* cut to fit, never inside a character */
+    if (w->type == TD_WT_LABEL)
+    {   /* longer than `text`: kept whole, so none of it is lost */
+        size_t n = text ? strlen(text) : 0;
+        if (n < sizeof(w->text))
+        {
+            free(w->full);
+            w->full = NULL;
+        }
+        else if (text != w->full)
+        {
+            char *f = malloc(n + 1);
+            if (f)
+                memcpy(f, text, n + 1);
+            free(w->full);
+            w->full = f;   /* NULL when memory is short: the cut copy shows */
+        }
+    }
     if (w->type == TD_WT_TEXTBOX)
     {
         w->value = (int)strlen(TXT(w));   /* cursor to the end */
@@ -230,7 +268,7 @@ void td_widget_set_text(td_widget_t *w, const char *text)
 
 const char *td_widget_text(const td_widget_t *w)
 {
-    return w ? TXT(w) : "";
+    return w ? (w->full ? w->full : TXT(w)) : "";
 }
 
 void td_textbox_set_buffer(td_widget_t *w, char *buf, int cap)
@@ -251,12 +289,26 @@ void td_widget_printf(td_widget_t *w, const char *fmt, ...)
     if (!w)
         return;
     char buf[TD_TEXT_MAX];
-    va_list ap;
+    va_list ap, again;
     va_start(ap, fmt);
-    vsnprintf(buf, sizeof(buf), fmt, ap);
+    va_copy(again, ap);
+    int n = vsnprintf(buf, sizeof(buf), fmt, ap);
     va_end(ap);
-    if (strcmp(buf, TXT(w)) != 0)
-        td_widget_set_text(w, buf);
+    char *text = buf;
+    if (n >= (int)sizeof(buf) && w->type == TD_WT_LABEL)
+    {   /* a label keeps all of a longer text */
+        char *big = malloc((size_t)n + 1);
+        if (big)
+        {
+            vsnprintf(big, (size_t)n + 1, fmt, again);
+            text = big;
+        }
+    }
+    va_end(again);
+    if (strcmp(text, td_widget_text(w)) != 0)
+        td_widget_set_text(w, text);
+    if (text != buf)
+        free(text);
 }
 
 void td_widget_set_align(td_widget_t *w, td_align_t align)
@@ -515,7 +567,15 @@ static void draw_label(const td_widget_t *w, td_rect_t r, const td_theme_t *t)
 {
     uint8_t fg = pick(w->fg, t->win_fg);
     uint8_t bg = pick(w->bg, t->win_bg);
-    int len = td_utf8_len(TXT(w));
+    const char *s = td_widget_text(w);
+    int len = td_utf8_len(s);
+    if (shown_cols(s) > r.w && r.w >= 2)
+    {   /* too long: as much as fits, then a "…" to click for all of it */
+        td_fill(r, ' ', fg, bg);
+        td_textn(r.x, r.y, s, r.w - 1, fg, bg, 0);
+        td_textn(r.x + r.w - 1, r.y, "\xE2\x80\xA6", 1, t->focus_fg, t->focus_bg, TD_BOLD);
+        return;
+    }
     int x = r.x;
     if (w->align == TD_ALIGN_CENTER)
         x += (r.w - len) / 2;
@@ -524,7 +584,7 @@ static void draw_label(const td_widget_t *w, td_rect_t r, const td_theme_t *t)
     if (x < r.x)
         x = r.x;
     td_fill(r, ' ', fg, bg);
-    td_textn(x, r.y, TXT(w), r.x + r.w - x, fg, bg, 0);
+    td_textn(x, r.y, s, r.x + r.w - x, fg, bg, 0);
 }
 
 /* True when the mouse is over the widget and nothing covers it there. */
@@ -605,6 +665,8 @@ static void draw_list(td_widget_t *w, td_rect_t r, bool focused, const td_theme_
             td_fill(td_rect(r.x, r.y + row, r.w, 1), ' ', ifg, ibg);
         }
         td_textn(r.x + 1, r.y + row, text ? text : "", r.w - 1, ifg, ibg, 0);
+        if (r.w >= 3 && text && shown_cols(text) > r.w - 1)   /* cut at the edge: say so */
+            td_text(r.x + r.w - 1, r.y + row, "\xE2\x80\xA6", ifg, ibg, TD_BOLD);
         if (w->multi && focused && i == w->value)
             td_putc(r.x, r.y + row, 0x25BA, marked ? ifg : t->accent, ibg, TD_BOLD);   /* the current item */
     }
@@ -1110,6 +1172,11 @@ static bool widgets_mouse(td_window_t *win, const td_event_t *ev)
         }
         if (ev->action == TD_MOUSE_PRESS && ev->button == TD_BUTTON_LEFT)
         {
+            if (w->type == TD_WT_LABEL && r.w >= 2 && shown_cols(td_widget_text(w)) > r.w)
+            {   /* a cut label: show all of it */
+                td_msgbox(w->win->title[0] ? w->win->title : "Text", td_widget_text(w), "OK", NULL, NULL);
+                return true;
+            }
             if (w->type == TD_WT_LABEL || w->type == TD_WT_PROGRESS)
                 continue;
             widget_press(w, ev, r);
@@ -1133,7 +1200,9 @@ bool td_widgets_event(td_window_t *win, const td_event_t *ev)
 
 /* --------------------------------------------------------- inputbox */
 
-#define INPUTBOX_MAX 2
+#define INPUTBOX_MAX   2
+#define INPUTBOX_W     52   /* window width */
+#define INPUTBOX_LINES 4    /* prompt lines; a longer prompt's last label ends in "…" */
 
 typedef struct
 {
@@ -1184,9 +1253,23 @@ static td_window_t *inputbox_create(const char *title, const char *prompt, const
     if (!ib)
         return NULL;
 
+    /* The prompt wraps at the box's width, over up to INPUTBOX_LINES lines. */
+    const char *starts[INPUTBOX_LINES];
+    int lens[INPUTBOX_LINES], nlines = 0;
+    for (const char *p = prompt ? prompt : ""; *p && nlines < INPUTBOX_LINES;)
+    {
+        const char *next;
+        starts[nlines] = p;
+        lens[nlines] = td_wrap_line(p, INPUTBOX_W - 4, &next);
+        if (nlines == INPUTBOX_LINES - 1 && *next)
+            lens[nlines] = (int)strlen(p);   /* the rest on the last line, which ends in "…" */
+        nlines++;
+        p = next;
+    }
+    int extra = nlines > 1 ? nlines - 1 : 0;
     td_window_desc_t d = {
         .title = title,
-        .rect = td_rect(-1, -1, 44, 8),
+        .rect = td_rect(-1, -1, INPUTBOX_W, 8 + extra),
         .flags = TD_WIN_MOVABLE | TD_WIN_CLOSABLE | TD_WIN_MODAL,
         .on_close = inputbox_close,
         .user = ib,
@@ -1198,12 +1281,24 @@ static td_window_t *inputbox_create(const char *title, const char *prompt, const
     ib->fn = fn;
     ib->user = user;
 
-    td_label(win, 1, 0, -1, prompt ? prompt : "");
-    ib->box = td_textbox(win, 1, 2, -1, TD_TEXT_MAX - 1, inputbox_ok, ib);
+    for (int i = 0; i < nlines; i++)
+    {
+        char *line = malloc((size_t)lens[i] + 1);
+        if (!line)
+            break;
+        memcpy(line, starts[i], (size_t)lens[i]);
+        line[lens[i]] = '\0';
+        for (char *c = line; *c; c++)
+            if (*c == '\n')
+                *c = ' ';
+        td_label(win, 1, i, -1, line);
+        free(line);
+    }
+    ib->box = td_textbox(win, 1, 2 + extra, -1, TD_TEXT_MAX - 1, inputbox_ok, ib);
     td_widget_set_text(ib->box, initial ? initial : "");
     ib->box->secret = secret;
-    td_button(win, 12, 4, "OK", inputbox_ok, ib);
-    td_button(win, 21, 4, "Cancel", inputbox_cancel, NULL);
+    td_button(win, 12, 4 + extra, "OK", inputbox_ok, ib);
+    td_button(win, 21, 4 + extra, "Cancel", inputbox_cancel, NULL);
     td_widget_focus(ib->box);
     return win;
 }
@@ -1222,8 +1317,8 @@ td_window_t *td_passwordbox(const char *title, const char *prompt,
 
 /* ----------------------------------------------------------- msgbox */
 
-#define MSGBOX_MAX   4
-#define MSGBOX_LINES 8
+#define MSGBOX_MAX  4
+#define MSGBOX_COLS 72   /* widest text line; longer ones wrap */
 
 typedef struct
 {
@@ -1231,7 +1326,44 @@ typedef struct
     bool done;
     void (*fn)(int button, void *user);
     void *user;
+    char *text;   /* the message, from the heap: wrapped as it is drawn */
+    int cols;     /* the width it wraps at */
+    int lines;    /* the lines there is room for */
 } msgbox_t;
+
+/* Columns of the first wrapped line of p (see td_wrap_line). */
+static int wrapped_cols(const char *p, int width, const char **next)
+{
+    int bytes = td_wrap_line(p, width, next);
+    const char *q = p;
+    int cols = 0;
+    while (q < p + bytes && td_utf8_next(&q))
+        cols++;
+    return cols;
+}
+
+/* The message, word-wrapped and centred; "…" ends it when it does not fit
+ * the screen. */
+static void msgbox_draw(td_window_t *win, int w, int h)
+{
+    msgbox_t *mb = win->user;
+    const td_theme_t *t = td_theme();
+    td_fill(td_rect(0, 0, w, h), ' ', t->win_fg, t->win_bg);
+    const char *p = mb->text ? mb->text : "";
+    for (int i = 0; i < mb->lines && *p; i++)
+    {
+        const char *next;
+        int cols = wrapped_cols(p, mb->cols, &next);
+        bool cut = i == mb->lines - 1 && *next;   /* more than the screen holds */
+        if (cut && cols >= mb->cols)
+            cols = mb->cols - 1;
+        int x = 1 + (w - 2 - cols - (cut ? 1 : 0)) / 2;
+        td_textn(x, 1 + i, p, cols, t->win_fg, t->win_bg, 0);
+        if (cut)
+            td_text(x + cols, 1 + i, "\xE2\x80\xA6", t->win_fg, t->win_bg, 0);
+        p = next;
+    }
+}
 
 static msgbox_t s_msgboxes[MSGBOX_MAX];
 
@@ -1254,6 +1386,8 @@ static void msgbox_close(td_window_t *win)
     void (*fn)(int, void *) = mb->fn;
     void *fn_user = mb->user;
     mb->used = false;
+    free(mb->text);
+    mb->text = NULL;
     if (!done && fn)
         fn(-1, fn_user);   /* closed with Esc or [x] */
 }
@@ -1273,26 +1407,34 @@ td_window_t *td_msgbox(const char *title, const char *text, const char *buttons,
     if (!mb)
         return NULL;
 
-    /* Split the text into lines and measure. */
-    char lines[MSGBOX_LINES][TD_TEXT_MAX];
+    /* Wrap the text to fit the screen, and measure. */
+    const td_stats_t *st = td_stats();
+    int max_cols = st->cols - 8, max_lines = st->rows - 8;
+    if (max_cols > MSGBOX_COLS)
+        max_cols = MSGBOX_COLS;
+    if (max_cols < 16)
+        max_cols = 16;
+    if (max_lines < 3)
+        max_lines = 3;
     int nlines = 0, width = td_utf8_len(title ? title : "") + 10;
     const char *p = text ? text : "";
-    while (nlines < MSGBOX_LINES)
+    while (*p && nlines < max_lines)
     {
-        const char *nl = strchr(p, '\n');
-        size_t len = nl ? (size_t)(nl - p) : strlen(p);
-        if (len >= TD_TEXT_MAX)
-            len = TD_TEXT_MAX - 1;
-        memcpy(lines[nlines], p, len);
-        lines[nlines][len] = '\0';
-        int cols = td_utf8_len(lines[nlines]);
+        const char *next;
+        int cols = wrapped_cols(p, max_cols, &next);
         if (cols + 4 > width)
             width = cols + 4;
         nlines++;
-        if (!nl)
-            break;
-        p = nl + 1;
+        p = next;
     }
+    if (*p && width < max_cols + 4)
+        width = max_cols + 4;   /* cut: room for the "…" */
+    if (nlines == 0)
+        nlines = 1;
+    size_t text_len = text ? strlen(text) : 0;
+    char *copy = malloc(text_len + 1);
+    if (copy)
+        memcpy(copy, text ? text : "", text_len + 1);
 
     char names[4][TD_TEXT_MAX];
     int nbuttons = 0, buttons_w = 0;
@@ -1319,21 +1461,22 @@ td_window_t *td_msgbox(const char *title, const char *text, const char *buttons,
         .rect = td_rect(-1, -1, width + 2, nlines + 5),
         .flags = TD_WIN_MOVABLE | TD_WIN_CLOSABLE | TD_WIN_MODAL,
         .on_close = msgbox_close,
+        .on_draw = msgbox_draw,
         .user = mb,
     };
     td_window_t *win = td_win_create(&d);
     if (!win)
+    {
+        free(copy);
         return NULL;
+    }
     mb->used = true;
     mb->done = false;
     mb->fn = fn;
     mb->user = user;
-
-    for (int i = 0; i < nlines; i++)
-    {
-        td_widget_t *l = td_label(win, 1, 1 + i, -1, lines[i]);
-        td_widget_set_align(l, TD_ALIGN_CENTER);
-    }
+    mb->text = copy;
+    mb->cols = max_cols;   /* the same lines as measured */
+    mb->lines = nlines;
     int x = (width - buttons_w + 2) / 2;
     for (int i = 0; i < nbuttons; i++)
     {

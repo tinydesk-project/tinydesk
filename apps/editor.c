@@ -111,7 +111,7 @@ typedef struct
     uint32_t click_ms;
     int click_pos;
     char path[PATH_LEN];     /* "" for a new, unnamed file */
-    char status[48];
+    char status[96];
     uint32_t status_ms;
     int view_rows;      /* text rows in the window at the last draw */
     undo_t *undo;
@@ -139,7 +139,7 @@ typedef struct
     /* The error the last run stopped with. */
     int err_line;       /* 1-based; 0: none */
     bool err_here;      /* in this file */
-    char err_msg[64];
+    char err_msg[128];
     char err_file[PATH_LEN];   /* as the shell names it */
 
     /* Completion popup. */
@@ -720,7 +720,7 @@ static void paste_from_terminal(const td_event_t *ev)
     insert_text(buf, m, K_OTHER);
     td_clipboard_set(buf, m);                  /* Ctrl+V pastes it again */
     free(buf);
-    char msg[48];
+    char msg[96];
     snprintf(msg, sizeof(msg), "Pasted %d characters%s", m, ev->x ? " (cut: too long)" : "");
     set_status(msg);
 }
@@ -1066,7 +1066,7 @@ static void replace_with(const char *with, void *user)
     E.anchor = -1;
     if (count)
         after_change();
-    char msg[48];
+    char msg[96];
     if (count)
         snprintf(msg, sizeof(msg), "Replaced %d%s", count, full ? " (the file is full)" : "");
     else

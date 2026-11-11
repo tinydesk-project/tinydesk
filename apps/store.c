@@ -528,7 +528,16 @@ static const char *item(td_widget_t *w, int index, int *fg, void *user)
                                                                      : " (installed)";
     if (td_store_cannot_run(e))
         *fg = td_theme()->dim;
-    snprintf(text, sizeof(text), "%.*s%s", LIST_W - 3 - (int)strlen(mark), e->title, mark);
+    int room = LIST_W - 3 - (int)strlen(mark);   /* the title's columns */
+    char title[48];
+    if (td_utf8_len(e->title) <= room)
+        snprintf(title, sizeof(title), "%s", e->title);
+    else
+    {   /* cut, and say so: the details show all of it */
+        td_utf8_copy(title, sizeof(title) - 4, e->title, room - 1);
+        strcat(title, "\xE2\x80\xA6");
+    }
+    snprintf(text, sizeof(text), "%s%s", title, mark);
     return text;
 }
 
@@ -597,8 +606,11 @@ static void show_details(void)
     installed(e->id, version, sizeof(version), NULL, 0);
     snprintf(line, sizeof(line), "%s %s", e->title, e->version);
     td_widget_set_text(s_title, line);
-    snprintf(line, sizeof(line), "%s, %lu KB", e->category[0] ? e->category : "App",
-             (unsigned long)((e->size + 1023) / 1024));
+    if (e->size)
+        snprintf(line, sizeof(line), "%s, %lu KB", e->category[0] ? e->category : "App",
+                 (unsigned long)((e->size + 1023) / 1024));
+    else   /* installed, no catalog: the size is not known */
+        snprintf(line, sizeof(line), "%s", e->category[0] ? e->category : "App");
     td_widget_set_text(s_meta, line);
     wrap_summary(e->summary);
     show_source(e);
@@ -642,6 +654,7 @@ static int list_installed(void)
         snprintf(e->title, sizeof(e->title), "%s", e->id);
         snprintf(e->file, sizeof(e->file), "%s.tdapp", e->id);
         snprintf(e->summary, sizeof(e->summary), "Installed. The catalog could not be loaded.");
+        e->api_major = TDUI_MAJOR;   /* unknown without the catalog: it ran here */
         count++;
     }
     return count;

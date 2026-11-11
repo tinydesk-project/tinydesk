@@ -265,6 +265,7 @@ td_font.h: void td_font_draw_rgb(const td_font_t *font, const char *text, uint16
 td_fs_stdio.h: const td_fs_ops_t *td_fs_stdio(const char *root);
 td_fs_stdio.h: void td_fs_stdio_guard(bool (*allow)(const char *path, int action));
 td_fs_stdio.h: void td_fs_stdio_redirect(const char *from, const char *to, bool (*active)(void));
+td_fs_stdio.h: const char *td_fs_stdio_map(const char *path, char *buf, size_t cap);
 td_hal.h: typedef struct td_hal { int (*read_byte)(void *ctx); int (*write)(void *ctx, const uint8_t *buf, int len); uint32_t (*millis)(void *ctx); void (*sleep_ms)(void *ctx, uint32_t ms); void *ctx; } td_hal_t;
 td_host_hal.h: const td_hal_t *td_host_hal_open(void);
 td_host_hal.h: void td_host_hal_close(void);
@@ -422,6 +423,7 @@ td_screen.h: void td_putc(int x, int y, uint32_t ch, uint8_t fg, uint8_t bg, uin
 td_screen.h: void td_fill(td_rect_t r, uint32_t ch, uint8_t fg, uint8_t bg);
 td_screen.h: int td_text(int x, int y, const char *str, uint8_t fg, uint8_t bg, uint8_t attr);
 td_screen.h: int td_textn(int x, int y, const char *str, int max_cols, uint8_t fg, uint8_t bg, uint8_t attr);
+td_screen.h: int td_textfit(int x, int y, const char *str, int max_cols, uint8_t fg, uint8_t bg, uint8_t attr);
 td_screen.h: void td_box(td_rect_t r, td_box_style_t style, uint8_t fg, uint8_t bg);
 td_screen.h: void td_shadow(td_rect_t r);
 td_screen.h: void td_draw_vscroll(int x, int y, int h, int pos, int total, int page, uint8_t fg, uint8_t bg);
@@ -434,6 +436,7 @@ td_screen.h: int td_utf8_len(const char *s);
 td_screen.h: int td_utf8_pad(char *out, size_t cap, const char *s, int cols);
 td_screen.h: int td_utf8_copy(char *out, size_t cap, const char *s, int cols);
 td_screen.h: const char *td_utf8_skip(const char *s, int cols);
+td_screen.h: int td_wrap_line(const char *s, int cols, const char **next);
 td_screen.h: typedef struct { uint32_t cp; uint8_t need; uint8_t len; } td_utf8_decoder_t;
 td_screen.h: int td_utf8_feed(td_utf8_decoder_t *d, uint8_t byte, uint32_t out[2]);
 td_screen.h: typedef struct { const td_hal_t *hal; int cur_x, cur_y; int cur_fg, cur_bg, cur_attr; uint8_t out[TD_OUT_BUF_SIZE]; int out_len; bool write_failed; uint32_t bytes_sent; } td_renderer_t;
@@ -549,7 +552,7 @@ td_widgets.h: typedef enum { TD_WT_LABEL, TD_WT_BUTTON, TD_WT_CHECKBOX, TD_WT_TE
 td_widgets.h: typedef enum { TD_ALIGN_LEFT, TD_ALIGN_CENTER, TD_ALIGN_RIGHT } td_align_t;
 td_widgets.h: typedef void (*td_widget_fn)(td_widget_t *w, void *user);
 td_widgets.h: typedef const char *(*td_list_item_fn)(td_widget_t *w, int index, int *fg, void *user);
-td_widgets.h: struct td_widget { bool used; uint8_t type; uint8_t align; bool focusable; bool visible; bool pressed; bool secret; td_rect_t rect; td_window_t *win; td_widget_t *next; char text[TD_TEXT_MAX]; char *ext; int ext_cap; int value; int scroll; int count; int maxlen; int fg, bg; td_widget_fn on_activate; td_list_item_fn get_item; td_widget_t *target; uint32_t last_click_ms; void *user; bool multi; bool band; int anchor; uint8_t *marks; int marks_cap; };
+td_widgets.h: struct td_widget { bool used; uint8_t type; uint8_t align; bool focusable; bool visible; bool pressed; bool secret; td_rect_t rect; td_window_t *win; td_widget_t *next; char text[TD_TEXT_MAX]; char *ext; int ext_cap; int value; int scroll; int count; int maxlen; int fg, bg; td_widget_fn on_activate; td_list_item_fn get_item; td_widget_t *target; uint32_t last_click_ms; void *user; bool multi; bool band; int anchor; uint8_t *marks; int marks_cap; char *full; };
 td_widgets.h: td_widget_t *td_label(td_window_t *win, int x, int y, int width, const char *text);
 td_widgets.h: td_widget_t *td_button(td_window_t *win, int x, int y, const char *caption, td_widget_fn fn, void *user);
 td_widgets.h: td_widget_t *td_checkbox(td_window_t *win, int x, int y, const char *caption, bool checked, td_widget_fn fn, void *user);

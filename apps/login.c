@@ -228,7 +228,7 @@ static void draw_login(td_window_t *win, int w, int h)
     /* The note is drawn here, not by its label: labels hold only
      * TD_TEXT_MAX bytes and a hint line can be longer. */
     if (s_note)
-        td_textn(s_note->rect.x, s_note->rect.y, s_message, s_note->rect.w, t->accent, t->win_bg, 0);
+        td_textfit(s_note->rect.x, s_note->rect.y, s_message, s_note->rect.w, t->accent, t->win_bg, 0);
     if (s_keyboard)
         return;
     td_text(x, y, "TINYDESK", t->accent, t->win_bg, TD_BOLD);

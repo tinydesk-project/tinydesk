@@ -256,7 +256,7 @@ static void on_interval(td_widget_t *w, void *user)
     (void)user;
     if (read_interval())
     {
-        char msg[48];
+        char msg[96];
         snprintf(msg, sizeof(msg), "Repeat interval: %u ms", (unsigned)U->interval_ms);
         note(msg);
         U->period_ms = 0;
@@ -416,8 +416,8 @@ static void on_draw(td_window_t *win, int w, int h)
     td_text(16, 2, "Count", t->win_fg, t->win_bg, 0);
     td_text(0, 3, "Values", t->win_fg, t->win_bg, 0);
     td_text(63, 2, "ms", t->win_fg, t->win_bg, 0);
-    td_textn(0, 4, U->note[0] ? U->note : "Double-click a value in the list to change it.", w,
-             U->note[0] ? t->accent : t->dim, t->win_bg, 0);
+    td_textfit(0, 4, U->note[0] ? U->note : "Double-click a value in the list to change it.", w,
+               U->note[0] ? t->accent : t->dim, t->win_bg, 0);
     td_textn(0, 5, is_bits(s_table) ? " Addr   Value" : " Addr   Decimal  Hex      Signed", w, t->dim, t->win_bg, 0);
 
     uint16_t port;
@@ -428,7 +428,7 @@ static void on_draw(td_window_t *win, int w, int h)
     {
         snprintf(line, sizeof(line), "port %u, %d client%s, %u requests", (unsigned)port, clients,
                  clients == 1 ? "" : "s", (unsigned)reqs);
-        td_textn(22, h - 1, line, w - 22, t->accent, t->win_bg, 0);
+        td_textfit(22, h - 1, line, w - 22, t->accent, t->win_bg, 0);
     }
 }
 

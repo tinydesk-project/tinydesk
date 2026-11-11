@@ -47,6 +47,11 @@ static const char *map(const char *path, char *buf, size_t cap)
     return (w > 0 && w < (int)cap) ? buf : path;
 }
 
+const char *td_fs_stdio_map(const char *path, char *buf, size_t cap)
+{
+    return map(path, buf, cap);
+}
+
 /* The redirected folder itself (a mount point: never delete or rename it). */
 static bool is_redirect_root(const char *path)
 {

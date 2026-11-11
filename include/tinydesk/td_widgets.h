@@ -75,6 +75,10 @@ struct td_widget
     int anchor;              /* where Shift+click and a drag select from */
     uint8_t *marks;          /* one bit per item, from the heap */
     int marks_cap;           /* items it has room for */
+    /* A label whose text is longer than `text` holds: all of it, from the
+     * heap (td_widget_text returns it). A label too narrow for its text
+     * ends in a "…" that shows the whole text in a message box. */
+    char *full;
 };
 
 /* Static or dynamic text. width <= 0 means "to the right edge". */

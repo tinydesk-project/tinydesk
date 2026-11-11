@@ -18,6 +18,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 #include "freertos/task.h"
+#include "td_fs_stdio.h"
 
 #define CHUNK      2048
 #define TASK_STACK 8192      /* HTTPS handshake */
@@ -172,7 +173,10 @@ static bool fetch_start(const char *source, const char *dest, uint32_t max)
     if (s_busy || !source || !dest || strlen(source) >= sizeof(s_source) || strlen(dest) >= sizeof(s_dest))
         return false;
     snprintf(s_source, sizeof(s_source), "%s", source);
-    snprintf(s_dest, sizeof(s_dest), "%s", dest);
+    char mapped[sizeof(s_dest)];
+    /* Opened with stdio here, so a path on the SD card ("sd/...") must be
+     * mapped to where the card is mounted, as the Files operations do. */
+    snprintf(s_dest, sizeof(s_dest), "%s", td_fs_stdio_map(dest, mapped, sizeof(mapped)));
     s_max = max;
     s_cancel = false;
     s_busy = true;

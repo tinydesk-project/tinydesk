@@ -28,7 +28,7 @@ typedef struct
     uint32_t win_generation[WINS_MAX];
     int win_count;
     char item[128];
-    char note[64];
+    char note[128];
 } tm_t;
 
 static tm_t *T;
@@ -208,7 +208,7 @@ static void on_draw(td_window_t *win, int w, int h)
                  (unsigned)(si->total_heap ? si->total_heap() / 1024u : 0));
     else
         snprintf(line, sizeof(line), "n/a");
-    td_textn(x, 0, line, w - x, t->win_fg, t->win_bg, 0);
+    td_textfit(x, 0, line, w - x, t->win_fg, t->win_bg, 0);
     for (int i = 0; i < T->task_count; i++)
         if (T->tasks[i].stack_free == UINT32_MAX)
         {
@@ -237,7 +237,7 @@ static void on_draw(td_window_t *win, int w, int h)
         td_textn(0, ty + 1, " The task list is not available on this platform.", w, t->dim, t->win_bg, 0);
     }
     if (T->note[0])
-        td_textn(28, 3 + APPS_ROWS, T->note, w - 28, t->accent, t->win_bg, 0);
+        td_textfit(28, 3 + APPS_ROWS, T->note, w - 28, t->accent, t->win_bg, 0);
 }
 
 static void on_tick(td_window_t *win)

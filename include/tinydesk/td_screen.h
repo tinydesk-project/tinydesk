@@ -108,6 +108,11 @@ int td_text(int x, int y, const char *str, uint8_t fg, uint8_t bg, uint8_t attr)
 int td_textn(int x, int y, const char *str, int max_cols,
              uint8_t fg, uint8_t bg, uint8_t attr);
 
+  /* Like td_textn(), but text cut at max_cols ends in "…" so the cut shows
+ * (trailing spaces do not count). For status and note lines. */
+int td_textfit(int x, int y, const char *str, int max_cols,
+               uint8_t fg, uint8_t bg, uint8_t attr);
+
   /* Draw a frame around the edge of the rectangle (interior untouched). */
 void td_box(td_rect_t r, td_box_style_t style, uint8_t fg, uint8_t bg);
 
@@ -159,6 +164,13 @@ int td_utf8_copy(char *out, size_t cap, const char *s, int cols);
   /* The part of `s` after its first `cols` code points (the end of the string
  * if it is shorter), counted as td_utf8_next() does. */
 const char *td_utf8_skip(const char *s, int cols);
+
+  /* Word wrap: the first line of `s` at most `cols` code points wide. Returns
+ * its length in bytes and sets *next to where the following line starts
+ * (past a '\n' or the space it broke at; at the NUL when none is left). It
+ * breaks after a word when it can and inside one only when the word alone
+ * is wider than the line. Message boxes and prompts wrap with it. */
+int td_wrap_line(const char *s, int cols, const char **next);
 
   /* Streaming decoder for byte-at-a-time input. */
 typedef struct

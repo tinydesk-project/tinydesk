@@ -275,7 +275,7 @@ static void on_draw(td_window_t *win, int w, int h)
             int n = nl ? (int)(nl - p) : (int)strlen(p);
             char line[96];
             snprintf(line, sizeof(line), "%.*s", n, p);
-            td_textn(1, y, line, w - 1, y == 1 ? t->win_fg : t->dim, t->win_bg, 0);
+            td_textfit(1, y, line, w - 1, y == 1 ? t->win_fg : t->dim, t->win_bg, 0);
             p += n + (nl ? 1 : 0);
         }
         return;
@@ -287,15 +287,15 @@ static void on_draw(td_window_t *win, int w, int h)
     char line[240];
 
     snprintf(line, sizeof(line), "Installed   TinyDesk %s  (built %s, ESP-IDF %s)", i.version, i.built, i.sdk);
-    td_textn(1, 0, line, w - 1, t->win_fg, t->win_bg, TD_BOLD);
+    td_textfit(1, 0, line, w - 1, t->win_fg, t->win_bg, TD_BOLD);
     snprintf(line, sizeof(line), "Running     from %s%s", i.running,
              i.on_trial ? ", on trial: confirms itself 30 s after start-up" : ", confirmed");
-    td_textn(1, 1, line, w - 1, i.on_trial ? t->accent : t->win_fg, t->win_bg, 0);
+    td_textfit(1, 1, line, w - 1, i.on_trial ? t->accent : t->win_fg, t->win_bg, 0);
     if (i.other_version[0])
         snprintf(line, sizeof(line), "Other slot  %s holds version %s", i.next, i.other_version);
     else
         snprintf(line, sizeof(line), "Other slot  %s is empty (updates go there)", i.next);
-    td_textn(1, 2, line, w - 1, t->dim, t->win_bg, 0);
+    td_textfit(1, 2, line, w - 1, t->dim, t->win_bg, 0);
 
     td_text(1, 4, "Update from", t->win_fg, t->win_bg, 0);
     td_textn(1, 5, "http:// or https:// URL of a TinyDesk .bin, or a file here (e.g. ~/tinydesk.bin)", w - 1,
@@ -314,24 +314,24 @@ static void on_draw(td_window_t *win, int w, int h)
             snprintf(line, sizeof(line), "Official    TinyDesk %s%s%s%s%s  %s", r.version, r.date[0] ? ", " : "", r.date,
                      size[0] ? ", " : "", size, r.newer ? "(newer)" : !strcmp(r.version, i.version) ? "(installed)"
                                                                                                     : "");
-            td_textn(1, 9, line, w - 1, r.newer ? t->accent : t->win_fg, t->win_bg, r.newer ? TD_BOLD : 0);
+            td_textfit(1, 9, line, w - 1, r.newer ? t->accent : t->win_fg, t->win_bg, r.newer ? TD_BOLD : 0);
             if (r.notes[0])
             {
                 snprintf(line, sizeof(line), "Notes       %s", r.notes);
-                td_textn(1, 10, line, w - 1, t->dim, t->win_bg, 0);
+                td_textfit(1, 10, line, w - 1, t->dim, t->win_bg, 0);
             }
         }
         else if (r.error[0] && strcmp(r.error, st.message) != 0)
         {   /* a background check failed */
             snprintf(line, sizeof(line), "Official    %s", r.error);
-            td_textn(1, 9, line, w - 1, t->dim, t->win_bg, 0);
+            td_textfit(1, 9, line, w - 1, t->dim, t->win_bg, 0);
         }
     }
 
     if (st.new_version[0])
     {
         snprintf(line, sizeof(line), "Image       TinyDesk %s  (built %s)", st.new_version, st.new_built);
-        td_textn(1, 11, line, w - 1, t->win_fg, t->win_bg, 0);
+        td_textfit(1, 11, line, w - 1, t->win_fg, t->win_bg, 0);
     }
     if (st.state == TD_OTA_INSTALLING || st.state == TD_OTA_DONE || (st.state == TD_OTA_FAILED && st.done))
     {
@@ -348,11 +348,11 @@ static void on_draw(td_window_t *win, int w, int h)
         {
             snprintf(line, sizeof(line), "%3d%%   %s of %s", st.state == TD_OTA_DONE ? 100 : st.percent, done, total);
         }
-        td_textn(1, 13, line, w - 1, t->win_fg, t->win_bg, 0);
+        td_textfit(1, 13, line, w - 1, t->win_fg, t->win_bg, 0);
     }
     const char *msg = s_note[0] ? s_note : st.message;
     uint8_t fg = st.state == TD_OTA_FAILED && !s_note[0] ? t->accent : t->win_fg;
-    td_textn(1, 14, msg, w - 1, fg, t->win_bg, st.state == TD_OTA_DONE ? TD_BOLD : 0);
+    td_textfit(1, 14, msg, w - 1, fg, t->win_bg, st.state == TD_OTA_DONE ? TD_BOLD : 0);
     if (!td_session_is_root())
         td_textn(1, 15, "Only root can install updates or roll back.", w - 1, t->dim, t->win_bg, 0);
 }

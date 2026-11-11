@@ -16,4 +16,8 @@ void td_fs_stdio_guard(bool (*allow)(const char *path, int action));
  * cannot be removed or renamed through these operations. One redirect. */
 void td_fs_stdio_redirect(const char *from, const char *to, bool (*active)(void));
 
+/* The path stdio must open for `path` (the redirect applied): `path` itself
+ * or buf. For code that opens files directly, such as the downloader. */
+const char *td_fs_stdio_map(const char *path, char *buf, size_t cap);
+
 #endif

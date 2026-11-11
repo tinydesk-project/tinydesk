@@ -241,7 +241,7 @@ static bool kiosk_hook(const td_event_t *ev)
  * keyboard) opens below it and types into it as a keyboard would. */
 static td_window_t *s_kb;
 static char s_pw[PW_MAX + 1];
-static char s_note[48];
+static char s_note[128];
 static int s_fails;
 static uint32_t s_pause_until;
 
@@ -253,7 +253,7 @@ static void kb_draw(td_window_t *win, int w, int h)
     td_fill(td_rect(2, 1, w - 4, 1), ' ', t->input_fg, t->input_bg);
     for (int i = 0; s_pw[i] && i < w - 6; i++)
         td_putc(3 + i, 1, '*', t->input_fg, t->input_bg, 0);
-    td_text(2, 2, s_note, t->accent, t->win_bg, TD_BOLD);
+    td_textfit(2, 2, s_note, w - 4, t->accent, t->win_bg, TD_BOLD);
     (void)h;
 }
 

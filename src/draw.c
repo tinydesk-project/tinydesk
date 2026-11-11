@@ -98,6 +98,28 @@ int td_textn(int x, int y, const char *str, int max_cols,
     return n;
 }
 
+int td_textfit(int x, int y, const char *str, int max_cols,
+               uint8_t fg, uint8_t bg, uint8_t attr)
+{
+    if (!str || max_cols < 1)
+        return 0;
+    int cols = 0, shown = 0;   /* code points, and up to the last non-space */
+    for (const char *s = str; *s;)
+    {
+        bool space = *s == ' ';
+        if (!td_utf8_next(&s))
+            break;
+        cols++;
+        if (!space)
+            shown = cols;
+    }
+    if (shown <= max_cols || max_cols < 2)
+        return td_textn(x, y, str, max_cols, fg, bg, attr);
+    int n = td_textn(x, y, str, max_cols - 1, fg, bg, attr);
+    td_putc(x + n, y, 0x2026, fg, bg, attr);   /* … */
+    return n + 1;
+}
+
 int td_text(int x, int y, const char *str, uint8_t fg, uint8_t bg, uint8_t attr)
 {
     return td_textn(x, y, str, 0x7FFFFFFF, fg, bg, attr);

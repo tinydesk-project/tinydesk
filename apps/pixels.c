@@ -125,7 +125,7 @@ static void on_draw(td_window_t *win, int cw, int ch)
              s_mode == MODE_PLASMA ? "Plasma" : "Palette", s_paused ? " (paused)" : "", s_fps,
              (unsigned)(td_stats()->bytes_per_sec / 1024u), pw, ph);
     td_fill(td_rect(0, ch - 1, cw, 1), ' ', th->win_fg, th->win_bg);
-    td_textn(0, ch - 1, line, cw, th->dim, th->win_bg, 0);
+    td_textfit(0, ch - 1, line, cw, th->dim, th->win_bg, 0);
 }
 
 static void on_tick(td_window_t *win)

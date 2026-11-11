@@ -174,6 +174,33 @@ const char *td_utf8_skip(const char *s, int cols)
     return s;
 }
 
+int td_wrap_line(const char *s, int cols, const char **next)
+{
+    const char *p = s ? s : "", *q = p, *space = NULL;
+    if (cols < 1)
+        cols = 1;
+    for (int col = 0; *q && *q != '\n'; col++)
+    {
+        if (col == cols)
+        {
+            if (*q == ' ')   /* the line ends exactly before a space */
+                space = q;
+            if (space && space > p)
+            {
+                *next = space + 1;
+                return (int)(space - p);
+            }
+            *next = q;   /* one word wider than the line: break inside it */
+            return (int)(q - p);
+        }
+        if (*q == ' ')
+            space = q;
+        td_utf8_next(&q);
+    }
+    *next = *q == '\n' ? q + 1 : q;
+    return (int)(q - p);
+}
+
 /* Start a new sequence with byte; returns 1 if it completed at once. */
 static int start_sequence(td_utf8_decoder_t *d, uint8_t byte, uint32_t *out)
 {

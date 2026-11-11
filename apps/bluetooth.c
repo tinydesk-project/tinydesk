@@ -490,7 +490,7 @@ static void on_draw(td_window_t *win, int w, int h)
             snprintf(line, sizeof(line), "%d found; choose one and press Pair (or double-click)",
                      s_found_count);
         }
-        td_textn(1, SCAN_Y, line, w - 2, t->win_fg, t->win_bg, 0);
+        td_textfit(1, SCAN_Y, line, w - 2, t->win_fg, t->win_bg, 0);
     }
 
     /* The bottom line: a job's progress or outcome, else the window's note. */
@@ -505,7 +505,7 @@ static void on_draw(td_window_t *win, int w, int h)
             msg = "working...";
         }
     }
-    td_textn(9, h - 1, msg, w - 10, failed ? t->accent : t->win_fg, t->win_bg, 0);
+    td_textfit(9, h - 1, msg, w - 10, failed ? t->accent : t->win_fg, t->win_bg, 0);
 }
 
 /* ---- the window ---------------------------------------------------------- */
