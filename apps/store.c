@@ -672,12 +672,23 @@ static void start_catalog(void)
 
 static int list_installed(void);
 
+static void catalog_size(const char *name, bool is_dir, uint32_t size, void *user)
+{
+    if (!is_dir && !strcmp(name, ".catalog.txt"))
+        *(uint32_t *)user = size;
+}
+
 static void catalog_loaded(void)
 {
     char path[TD_PATH_MAX + 16];
     apps_path(path, sizeof(path), ".catalog.txt");
-    char *text = malloc(CATALOG_MAX + 1);
-    int n = text ? fs()->read(path, text, CATALOG_MAX) : -1;
+    /* Only as much memory as the file needs: a 32 KB block is often not to
+     * be had on boards without PSRAM (the ESP32-C6). */
+    uint32_t size = CATALOG_MAX;
+    if (fs()->list && fs()->list(td_apps_dir(), catalog_size, &size) >= 0 && size > CATALOG_MAX)
+        size = CATALOG_MAX;
+    char *text = malloc(size + 1);
+    int n = text ? fs()->read(path, text, (int)size) : -1;
     if (n > 0)
     {
         text[n] = 0;
