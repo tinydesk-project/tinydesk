@@ -508,7 +508,7 @@ td_sysinfo.h: typedef struct { const char *state; bool active; bool ready; bool 
 td_sysinfo.h: typedef enum { TD_BT_RADIO_OFF, TD_BT_RADIO_STARTING, TD_BT_RADIO_UP, TD_BT_RADIO_FAILED } td_bt_radio_t;
 td_sysinfo.h: typedef struct { td_bt_radio_t radio; bool radio_up; int enable_error; uint32_t stack_heap; const char *pairings; bool busy; bool job_failed; char message[TD_BT_MESSAGE_LEN]; uint32_t scan_ms_left; int paired; int connected; bool wifi_exclusive; td_bt_slot_t slot[TD_BT_SLOTS]; } td_bt_status_t;
 td_sysinfo.h: typedef enum { TD_BT_KIND_OTHER, TD_BT_KIND_HID, TD_BT_KIND_KEYBOARD, TD_BT_KIND_MOUSE } td_bt_kind_t;
-td_sysinfo.h: typedef struct { uint8_t addr[TD_BT_ADDR_LEN]; uint8_t addr_type; int8_t rssi; td_bt_kind_t kind; char name[TD_BT_NAME_LEN]; } td_bt_device_t;
+td_sysinfo.h: typedef struct { uint8_t addr[TD_BT_ADDR_LEN]; uint8_t addr_type; int8_t rssi; td_bt_kind_t kind; char name[TD_BT_NAME_LEN]; bool classic; } td_bt_device_t;
 td_sysinfo.h: typedef struct { int slot; uint8_t addr[TD_BT_ADDR_LEN]; char name[TD_BT_NAME_LEN]; bool connected; bool reconnects; } td_bt_paired_t;
 td_sysinfo.h: typedef struct { void (*status)(td_bt_status_t *out); bool (*scan)(void); int (*scan_results)(td_bt_device_t *out, int max); bool (*pair)(int slot, const td_bt_device_t *dev); bool (*disconnect)(int slot); int (*paired)(td_bt_paired_t *out, int max); bool (*forget)(int slot); bool (*set_reconnect)(int slot, bool on); } td_bt_ops_t;
 td_sysinfo.h: enum { TD_OTA_IDLE, TD_OTA_CHECKING, TD_OTA_INSTALLING, TD_OTA_DONE, TD_OTA_FAILED };

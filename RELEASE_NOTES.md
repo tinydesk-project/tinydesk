@@ -7,6 +7,47 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## New in 0.4.0
+
+* **Bluetooth keyboards and mice** (`bt.enable = 1`): the **Bluetooth** app
+  pairs a keyboard, a mouse and a combo device, which then reconnect by
+  themselves; the `bt` command does the same from the shell. LE on the
+  boards with PSRAM (ESP32-S3, CrowPanel, Nano ESP32), and Bluetooth
+  Classic too on the ESP32 WROVER, so keyboards such as Logitech's K380
+  work there. Keyboards that ask for a code show it in the app. The
+  interface and the app come from @aquasock's TinyTang port (#7).
+* **Wi-Fi access point (STA+AP):** the board's own network
+  (`TinyDesk-XXXX`, 192.168.4.1) for Telnet, SSH and SFTP where there is no
+  other one: off, always on, or on while there is no network. Its name and
+  password (random per board at first) are set in the Network app or with
+  `wifiap`.
+* **SD card as a drive:** a card mounts by itself when inserted and
+  unmounts when pulled out; the desktop shows an **SD card** icon (open,
+  eject, drop files on it) and Files opens it. The Store can install apps on
+  it, and `tdui` keeps decoded pictures there (`/sd/TinyDesk/cache`), so apps
+  start faster.
+* **Store:** **Uninstall** (was Remove), also offline, without a catalog.
+* **Sharper pictures without Sixel** (PuTTY, the Windows console) and in the
+  web terminal at any display scaling; right-click in the web terminal opens
+  TinyDesk's menus, not the browser's.
+
+**Fixes**
+
+* FTP answered "550 Invalid path" to everything since 0.3.0 (Windows
+  Explorer, FileZilla): its session lacked the account check the shell
+  added in 0.3.0.
+* The sign-in screen now follows the terminal's size: started small or
+  maximised later, its fields and buttons stay with its text.
+* The ESP32-C6 is built without Bluetooth, which took about 35 KB of its RAM
+  even while off; it has 119 KB free again and `tdui` windows open.
+
+**Good to know**
+
+* The ESP32 WROVER image now needs an ESP32 revision 3 chip (every
+  WROVER-E/IE, sold since 2019); older chips refuse it at start.
+* `sd.automount` is now on wherever the SD card pins are set.
+* No Bluetooth on the ESP32-C6 and the 4 MB ESP32 (no PSRAM for it).
+
 ## New in 0.3.1
 
 * **`ssl` in the PC shell program:** 0.3.0's `tdsh_host` (Linux) and

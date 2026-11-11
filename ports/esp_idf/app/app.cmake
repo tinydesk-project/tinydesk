@@ -24,6 +24,7 @@ set(TD_ESP_APP_SRCS
     "${TD_ESP_APP_DIR}/rs485.c"
     "${TD_ESP_APP_DIR}/hid_input.c"
     "${TD_ESP_APP_DIR}/bt_hid.c"
+    "${TD_ESP_APP_DIR}/bt_hid_bluedroid.c"
     "${TD_ESP_APP_DIR}/../../common/td_proto_cmds.c"
 )
 set(TD_ESP_APP_REQUIRES

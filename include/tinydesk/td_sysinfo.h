@@ -309,6 +309,7 @@ typedef struct
     int8_t rssi;                 /* dBm, the strongest heard */
     td_bt_kind_t kind;
     char name[TD_BT_NAME_LEN];
+    bool classic;                /* Bluetooth Classic (BR/EDR), not LE */
 } td_bt_device_t;
 
     /* One slot's stored pairing. */

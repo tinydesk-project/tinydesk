@@ -102,20 +102,33 @@ static void show_hint(td_widget_t *button, void *user)
     td_login_status(line);
     td_widget_focus(s_password);
 }
+/* Where the sign-in block (42 x 19 cells) starts in a w x h window: in the
+ * middle, as far as it fits. */
+static void block_origin(int w, int h, int *x, int *y)
+{
+    *x = (w - 42) / 2 < 1 ? 1 : (w - 42) / 2;
+    *y = (h - 19) / 2 < 0 ? 0 : (h - 19) / 2;
+}
+
+/* The window's size the controls were placed for: a terminal that reports
+ * its size late (at start) or changes it (a maximised PuTTY or browser)
+ * gets them placed again, from the window's own size, so they stay with
+ * the text draw_login() centres. */
+static int s_laid_w, s_laid_h;
+
 /* Without the keys: the account list in the middle. With them (the On-screen
  * keyboard window, apps/osk.c, at the bottom): the password, the buttons
  * and the note at the top. */
-static void login_layout(void)
+static void login_layout_for(int w, int h)
 {
     if (!s_accounts || !s_password || !s_remember || !s_sign_in || !s_note || !s_keyboard_button || !s_hint_button)
         return;
-    const td_stats_t *st = td_stats();
-    int w = st->cols, h = st->rows, x = (w - 42) / 2, y = (h - 19) / 2;
-    if (x < 1)
-        x = 1;
-    if (y < 0)
-        y = 0;
+    s_laid_w = w;
+    s_laid_h = h;
+    int x, y;
+    block_origin(w, h, &x, &y);
     s_accounts->visible = !s_keyboard;
+    s_accounts->rect = td_rect(x, y + 4, 40, 5);
     if (s_keyboard)
     {
         s_password->rect = td_rect(3, 2, w - 6, 1);
@@ -143,6 +156,14 @@ static void login_layout(void)
         s_note->rect = td_rect(x, y + 17, w - x - 1 < 60 ? w - x - 1 : 60, 1);
     }
     td_widget_set_text(s_keyboard_button, s_keyboard ? "Accounts" : "Keyboard");
+}
+
+static void login_layout(void)
+{
+    if (!s_win)
+        return;
+    td_rect_t c = td_win_client(s_win);
+    login_layout_for(c.w, c.h);
 }
 void td_login_status(const char *message)
 {
@@ -192,12 +213,10 @@ static void sign_in(td_widget_t *button, void *user)
 static void draw_login(td_window_t *win, int w, int h)
 {
     (void)win;
-    int x = (w - 42) / 2;
-    if (x < 1)
-        x = 1;
-    int y = (h - 19) / 2;
-    if (y < 0)
-        y = 0;
+    if (w != s_laid_w || h != s_laid_h)
+        login_layout_for(w, h);   /* the terminal's size changed: the controls follow */
+    int x, y;
+    block_origin(w, h, &x, &y);
     const td_theme_t *t = td_theme();
     td_fill(td_rect(0, 0, w, h), ' ', t->win_fg, t->win_bg);
     if (s_keyboard)
@@ -238,11 +257,8 @@ void td_login_open(void)
     }
     td_wm_set_input_gate(true, NULL);
     const td_stats_t *st = td_stats();
-    int x = (st->cols - 42) / 2, y = (st->rows - 19) / 2;
-    if (x < 1)
-        x = 1;
-    if (y < 0)
-        y = 0;
+    int x, y;
+    block_origin(st->cols, st->rows, &x, &y);
     td_window_desc_t d = {.title = "Sign in", .rect = td_rect(0, 0, st->cols, st->rows), .flags = TD_WIN_FULLSCREEN | TD_WIN_MODAL, .on_draw = draw_login, .on_close = login_closed, .on_close_request = prevent_close, .on_tick = login_tick, .tick_ms = 200};
     s_win = td_win_create(&d);
     if (!s_win)

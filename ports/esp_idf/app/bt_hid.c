@@ -28,12 +28,14 @@
 #include "sdkconfig.h"
 
 #if !CONFIG_BT_NIMBLE_ENABLED
-/* A board built without Bluetooth (the 4 MB ESP32: the classic ESP32's
- * controller reserves about 64 KB of internal RAM at link time). */
+#if !(CONFIG_BT_BLUEDROID_ENABLED && CONFIG_BT_CLASSIC_ENABLED)
+/* A board built without Bluetooth (the C6 and the 4 MB ESP32: no PSRAM for
+ * it). With Bluedroid (the WROVER, Classic too) bt_hid_bluedroid.c has it. */
 const td_bt_ops_t *bt_hid_start(void)
 {
     return NULL;
 }
+#endif
 #else
 
 #include <stdarg.h>
