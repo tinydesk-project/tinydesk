@@ -23,6 +23,9 @@ static const char *s_catalog = "TDSTORE 1\n"
                                "cache .tdapp-2c11cd0ada8203de\n"
                                "api 1.0\n"
                                "cells 2000\n"
+                               "author TinyDesk project\n"   /* shown in the details */
+                               "repo https://github.com/tinydesk-project/tinydesk-apps\n"
+                               "license MIT\n"
                                "future_key something new\r\n"   /* unknown keys and CRLF are fine */
                                "end\n"
                                "app big_panel\n"

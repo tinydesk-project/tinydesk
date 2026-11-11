@@ -41,6 +41,7 @@ typedef struct
 {
     char id[32], title[41], version[16], summary[161], category[24];
     char file[40], sha[65], cache[24], needs[64], cpu[16];
+    char author[41], repo[85], license[17];   /* shown only; 0.5.0 on */
     uint32_t size, cells;
     int api_major, api_minor;
 } entry_t;
@@ -55,7 +56,7 @@ enum
 
 static td_window_t *s_win;
 static td_widget_t *s_list, *s_title, *s_meta, *s_sum[4], *s_state, *s_install, *s_remove, *s_refresh;
-static td_widget_t *s_progress, *s_note, *s_on_card;
+static td_widget_t *s_progress, *s_note, *s_on_card, *s_by, *s_repo[2];
 static entry_t *s_apps;
 static int s_count, s_shown = -2, s_phase, s_busy_app = -1;
 static char s_source[TD_PATH_MAX];
@@ -323,6 +324,12 @@ int td_store_parse(char *text, void *list, int max)
             COPY(needs);
         else if (!strcmp(line, "cpu"))
             COPY(cpu);
+        else if (!strcmp(line, "author"))
+            COPY(author);
+        else if (!strcmp(line, "repo"))
+            COPY(repo);
+        else if (!strcmp(line, "license"))
+            COPY(license);
         else if (!strcmp(line, "size"))
             e->size = (uint32_t)strtoul(value, NULL, 10);
         else if (!strcmp(line, "cells"))
@@ -549,6 +556,27 @@ static void wrap_summary(const char *text)
     }
 }
 
+/* Who made the app, its licence and where its source is: the repo address
+ * over two lines. */
+static void show_source(const entry_t *e)
+{
+    const int width = WIN_W - LIST_W - 7;
+    char line[96];
+    line[0] = 0;
+    if (e && e->author[0])
+        snprintf(line, sizeof(line), "By %s%s%s%s", e->author, e->license[0] ? " (" : "", e->license,
+                 e->license[0] ? ")" : "");
+    else if (e && e->license[0])
+        snprintf(line, sizeof(line), "Licence: %s", e->license);
+    td_widget_set_text(s_by, line);
+    const char *repo = e ? e->repo : "";
+    int n = (int)strlen(repo);
+    snprintf(line, sizeof(line), "%.*s", n < width ? n : width, repo);
+    td_widget_set_text(s_repo[0], line);
+    snprintf(line, sizeof(line), "%.*s", width, n > width ? repo + width : "");
+    td_widget_set_text(s_repo[1], line);
+}
+
 static void show_details(void)
 {
     int i = td_list_selected(s_list);
@@ -559,6 +587,7 @@ static void show_details(void)
         td_widget_set_text(s_meta, "");
         wrap_summary("");
         td_widget_set_text(s_state, "");
+        show_source(NULL);
         td_widget_set_visible(s_install, false);
         td_widget_set_visible(s_remove, false);
         return;
@@ -572,6 +601,7 @@ static void show_details(void)
              (unsigned long)((e->size + 1023) / 1024));
     td_widget_set_text(s_meta, line);
     wrap_summary(e->summary);
+    show_source(e);
     const char *why = td_store_cannot_run(e);
     if (why)
         td_widget_set_text(s_state, why);
@@ -941,6 +971,7 @@ static void on_close(td_window_t *win)
     s_shown = -2;
     s_list = s_title = s_meta = s_state = s_install = s_remove = s_refresh = s_progress = s_note = s_on_card = NULL;
     memset(s_sum, 0, sizeof(s_sum));
+    s_by = s_repo[0] = s_repo[1] = NULL;
 }
 
 static void launch(void)
@@ -984,6 +1015,9 @@ static void launch(void)
     s_state = td_label(s_win, x, 9, 0, "");
     s_install = td_button(s_win, x, 11, "Install", on_install, NULL);
     s_remove = td_button(s_win, x + 14, 11, "Uninstall", on_remove, NULL);
+    s_by = td_label(s_win, x, 13, 0, "");
+    s_repo[0] = td_label(s_win, x, 14, 0, "");
+    s_repo[1] = td_label(s_win, x, 15, 0, "");
     s_progress = td_progress(s_win, 1, WIN_H - 5, WIN_W - 4);
     s_note = td_label(s_win, 1, WIN_H - 4, 0, "");
     s_refresh = td_button(s_win, 1, -1, "Refresh", on_refresh, NULL);
