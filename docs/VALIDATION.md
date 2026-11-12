@@ -377,8 +377,17 @@ bump (shell efb4e1f code).
   installed apps as installed. Opening every app from Search ran into
   *Too many windows are open* without a restart. With Bluetooth Classic and
   LE and the Wi-Fi access point on, 30 KB of internal RAM stays free.
-- 4 MB ESP32: the 0.5.0 firmware boots to the sign-in screen (manual
-  download mode: BOOT held while esptool resets the board).
+- 4 MB ESP32 (sign-in with the factory password): About shows TinyDesk
+  0.5.0 and TinyDesk Shell 0.5.0, 59 KB of internal RAM free; the UI task
+  has 10.5 KB of stack free after start and never less than 8.2 KB; every
+  app opened from Search up to *Too many windows are open*, without a
+  restart; offline, the Store says it cannot reach the server.
+  Found: `py` did not start on the desktop with the network off ("not
+  enough RAM: 59 KB free ... leaves 60 KB"). Fixed after 0.5.0 (shell
+  `td_py.c`): it now starts with a 26 KB heap and the low-RAM note, and a
+  script that fills it gets `MemoryError`. With the board's access point
+  on, 20 KB stays free in all, too little for `py` beside the desktop (as
+  in 0.4.0).
 - CrowPanel 7.0: the 0.5.0 firmware boots and its kiosk app runs (the
   owner checked the screen; its console belongs to the kiosk).
 
