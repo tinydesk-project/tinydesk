@@ -392,8 +392,7 @@ bump (shell efb4e1f code).
   owner checked the screen; its console belongs to the kiosk).
 
 Not tested with 0.5.0: the Arduino Nano ESP32 (not connected); the Store
-online on the WROVER, 4 MB ESP32 and CrowPanel; the desktop past sign-in on
-the 4 MB ESP32.
+online on the WROVER, 4 MB ESP32 and CrowPanel.
 
 ## Not validated yet
 
