@@ -370,8 +370,21 @@ bump (shell efb4e1f code).
 - Web installer after the Pages run: the manifests for all six Desktop
   boards and the three Shell boards give 0.5.0, and their images download.
 
-Not hardware-tested with 0.5.0: ESP32 with PSRAM (WROVER), 4 MB ESP32,
-CrowPanel 7.0, Arduino Nano ESP32.
+- ESP32 with PSRAM (WROVER), firmware updated in place (settings and apps
+  kept): About shows TinyDesk 0.5.0 and TinyDesk Shell 0.5.0; the UI task
+  has 10.7 KB of stack free after start; `py` reports a 1.8 MB heap
+  (PSRAM) and `socket.getaddrinfo` works. Offline, the Store lists the
+  installed apps as installed. Opening every app from Search ran into
+  *Too many windows are open* without a restart. With Bluetooth Classic and
+  LE and the Wi-Fi access point on, 30 KB of internal RAM stays free.
+- 4 MB ESP32: the 0.5.0 firmware boots to the sign-in screen (manual
+  download mode: BOOT held while esptool resets the board).
+- CrowPanel 7.0: the 0.5.0 firmware boots and its kiosk app runs (the
+  owner checked the screen; its console belongs to the kiosk).
+
+Not tested with 0.5.0: the Arduino Nano ESP32 (not connected); the Store
+online on the WROVER, 4 MB ESP32 and CrowPanel; the desktop past sign-in on
+the 4 MB ESP32.
 
 ## Not validated yet
 
