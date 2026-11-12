@@ -7,6 +7,13 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## New in 0.5.1
+
+**Fix:** on the 4 MB ESP32, Python apps and `py` did not start on the
+desktop while the network was off ("not enough RAM"). They run again; while
+such a script runs, Wi-Fi and Ethernet cannot be started, and `py` says so.
+Boards with more RAM are not affected.
+
 ## New in 0.5.0
 
 * **No more cut-off text.** Message boxes word-wrap to fit the screen
