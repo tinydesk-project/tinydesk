@@ -354,6 +354,25 @@ bump (shell efb4e1f code).
   `uscript: <file>:<line>: not enough memory to load the script`
   (tinydesk-shell tests/test_script_oom.c, which fails without the fix).
 
+## 0.5.0
+
+- Store installs on the ESP32-C6 and ESP32-S3 (tinydesk #19): installing
+  from the Store no longer restarts either board. Tested to internal
+  storage and, on the C6, to the SD card.
+- Python apps on the ESP32-C6 with Wi-Fi connected: three tdui apps open
+  and run.
+- Cut-off text: long labels end in a "…" that opens the whole text;
+  message boxes and input-box prompts wrap. Checked on the C6 and the S3.
+- The release firmware, flashed on the C6 (COM3) and the S3 (COM19),
+  shows 0.5.0 in About, and the Store works on both.
+- All nine firmware builds pass (six Desktop boards, three Shell boards).
+  PC CTest: TinyDesk 38/38, Shell 12/12. Site link check: 0 problems.
+- Web installer after the Pages run: the manifests for all six Desktop
+  boards and the three Shell boards give 0.5.0, and their images download.
+
+Not hardware-tested with 0.5.0: ESP32 with PSRAM (WROVER), 4 MB ESP32,
+CrowPanel 7.0, Arduino Nano ESP32.
+
 ## Not validated yet
 
 - The Editor's save and reopen on every board.
