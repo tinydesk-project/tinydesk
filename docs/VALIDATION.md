@@ -394,6 +394,13 @@ bump (shell efb4e1f code).
 Not tested with 0.5.0: the Arduino Nano ESP32 (not connected); the Store
 online on the WROVER, 4 MB ESP32 and CrowPanel.
 
+## After 0.5.1
+
+- Store, offline, on the ESP32 with PSRAM: Enter (as a double click) on an
+  installed app restarted the board (reproduced with 0.5.1). With the fix,
+  Enter on each of the three installed apps does nothing and the board
+  keeps running (uptime through the whole session). PC CTest 38/38.
+
 ## Not validated yet
 
 - The Editor's save and reopen on every board.

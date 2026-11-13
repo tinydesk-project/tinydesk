@@ -736,6 +736,14 @@ static void on_install(td_widget_t *w, void *user)
     int i = td_list_selected(s_list);
     if (s_phase != P_IDLE || i < 0 || i >= s_count)
         return;
+    /* Enter or a double click in the list does what the Install button
+     * would, and nothing when it is hidden: installed and up to date, an
+     * app this TinyDesk cannot run, or an installed app listed offline
+     * (no catalog: nothing to download). */
+    char version[16];
+    installed(s_apps[i].id, version, sizeof(version), NULL, 0);
+    if (td_store_cannot_run(&s_apps[i]) || !s_apps[i].size || (version[0] && !older(version, s_apps[i].version)))
+        return;
     if (!td_session_has_right(TD_RIGHT_APPS))
     {
         note("Installing apps needs the Apps permission.%s", NULL);
@@ -930,8 +938,9 @@ static void on_tick(td_window_t *win)
         fetch()->status(&st);
         if (st.state == TD_FETCH_RUNNING)
         {
-            if (s_phase == P_PACKAGE && s_busy_app >= 0)
-                td_progress_set(s_progress, (int)((uint64_t)st.done * 100 / s_apps[s_busy_app].size));
+            uint32_t total = s_phase == P_PACKAGE && s_busy_app >= 0 ? s_apps[s_busy_app].size : 0;
+            if (total)   /* 0: not known (installed apps listed offline) */
+                td_progress_set(s_progress, (int)((uint64_t)st.done * 100 / total));
             return;
         }
         int phase = s_phase;
