@@ -401,6 +401,15 @@ online on the WROVER, 4 MB ESP32 and CrowPanel.
   Enter on each of the three installed apps does nothing and the board
   keeps running (uptime through the whole session). PC CTest 38/38.
 
+- ESP32-S3: restarts after a failed download (Wi-Fi on, apps installed
+  and uninstalled, Wi-Fi off, double click in the Store). A core dump
+  (test build) showed littlefs asserting on a log line written through
+  stdout into the Store's read-only record file; a trap on `close()` and
+  `fclose()` (test build) showed `/etc/board.conf` getting descriptor 0 at
+  start-up. With descriptors 0 to 2 held by a null device, the owner's
+  steps no longer restart the S3; the ESP32 with PSRAM starts, opens the
+  Store offline and keeps running. The C6 firmware builds.
+
 ## Not validated yet
 
 - The Editor's save and reopen on every board.

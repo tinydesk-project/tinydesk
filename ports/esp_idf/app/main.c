@@ -14,6 +14,8 @@
 #include <string.h>
 #include <sys/time.h>
 #include <time.h>
+#include <fcntl.h>
+#include <unistd.h>
 
 #include "esp_chip_info.h"
 #include "esp_event.h"
@@ -27,6 +29,7 @@
 #include "esp_sleep.h"
 #include "esp_system.h"
 #include "esp_timer.h"
+#include "esp_vfs.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #ifdef TD_FAST_TASK_SNAPSHOT
@@ -700,8 +703,66 @@ static void quiet_usb_port(void)
     esp_log_level_set("*", ESP_LOG_INFO);    /* boot ran at WARN; normal logging again */
 }
 
+      /* ------------------------------------------- stdin, stdout, stderr */
+
+/* The desktop owns the serial port, so ESP-IDF has no console
+ * (CONFIG_ESP_CONSOLE_NONE) and nothing opens descriptors 0, 1 and 2,
+ * though stdin, stdout and stderr use them. The first files opened got
+ * them: a log line (through stdout) then went into whatever file held 1,
+ * and a read-only one made littlefs assert (a restart, e.g. a failed
+ * download logged while the Store read its records). Here they are held
+ * by a null device, before any file is opened. */
+static ssize_t null_write(int fd, const void *data, size_t size)
+{
+    (void)fd;
+    (void)data;
+    return (ssize_t)size;
+}
+
+static ssize_t null_read(int fd, void *dst, size_t size)
+{
+    (void)fd;
+    (void)dst;
+    (void)size;
+    return 0;
+}
+
+static int null_open(const char *path, int flags, int mode)
+{
+    (void)path;
+    (void)flags;
+    (void)mode;
+    return 0;
+}
+
+static int null_close(int fd)
+{
+    (void)fd;
+    return 0;
+}
+
+static void hold_std_fds(void)
+{
+    static const esp_vfs_t vfs = {
+        .flags = ESP_VFS_FLAG_DEFAULT,
+        .write = null_write,
+        .read = null_read,
+        .open = null_open,
+        .close = null_close,
+    };
+    if (esp_vfs_register("/dev/tdnull", &vfs, NULL) != ESP_OK)
+        return;
+    for (int i = 0; i < 3; i++)
+    {
+        int fd = open("/dev/tdnull", i ? O_WRONLY : O_RDONLY);
+        if (fd > 2)   /* 0-2 were taken after all: give it back */
+            close(fd);
+    }
+}
+
 void app_main(void)
 {
+    hold_std_fds();
     quiet_usb_port();
 
     esp_err_t err = nvs_flash_init();
