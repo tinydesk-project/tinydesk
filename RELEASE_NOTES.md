@@ -7,6 +7,22 @@ embedded shell. MQTT and Modbus apps connect the desktop to real projects.
 This release is a developer preview: expect rough edges, and please report
 what breaks.
 
+## New in 0.5.2
+
+**Fixes**
+
+* A board could restart when a download failed, for example a double click
+  on an app in the Store after Wi-Fi was turned off. System log lines went
+  into whichever file was open at the time (the boards have no ESP-IDF
+  console, so nothing held the descriptors stdin, stdout and stderr use); a
+  read-only file stopped the board, and a file open for writing got the log
+  text in it. These descriptors are now held from the start.
+* In the Store, offline, a double click (or Enter) on an installed app
+  restarted the board. A double click now does only what the Install button
+  would.
+
+TinyDesk Shell stays at 0.5.1.
+
 ## New in 0.5.1
 
 **Fix:** on the 4 MB ESP32, Python apps and `py` did not start on the
